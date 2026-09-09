@@ -1,0 +1,774 @@
+[
+  {
+    "id": "mat-blade-gold",
+    "slug": "gants-boxe-blade-metal-boxe-noir-blanc",
+    "name": "Gants de boxe Blade Metal Boxe — noir et blanc",
+    "brand": "Metal Boxe",
+    "category": "gants-de-boxe",
+    "price": 1790,
+    "short": "Le contraste noir et blanc du modèle Blade, en trois poids : 10, 12 et 14 oz.",
+    "description": "Le Blade de Metal Boxe se reconnaît à son contraste noir et blanc, qui traverse le dos du gant et se prolonge jusqu’à la fermeture. Sous son enveloppe en PU, le rembourrage est constitué de mousse EVA. La manchette large se ferme avec une bande auto-agrippante ; le modèle comporte également une aération WindTec. Vous pouvez examiner ces éléments sur les deux vues de la galerie avant de comparer les déclinaisons. La gamme présentée comprend trois poids, 10, 12 et 14 oz, dans ce même coloris. C’est cette possibilité de comparer plusieurs poids qui distingue ici le Blade de l’ERGO 90 présenté uniquement en 14 oz.",
+    "sizes": ["10 oz", "12 oz", "14 oz"],
+    "specs": {
+      "Modèle": "Blade",
+      "Matière extérieure": "PU",
+      "Rembourrage": "Mousse EVA",
+      "Fermeture": "Bande auto-agrippante large",
+      "Aération": "WindTec",
+      "Coloris": "Noir et blanc"
+    },
+    "images": [
+      {
+        "src": "/products/gants-boxe-blade-metal-boxe-noir-blanc-1-960.webp",
+        "small": "/products/gants-boxe-blade-metal-boxe-noir-blanc-1-480.webp",
+        "width": 960,
+        "height": 960,
+        "alt": "Gants de boxe Blade Metal Boxe — noir et blanc"
+      },
+      {
+        "src": "/products/gants-boxe-blade-metal-boxe-noir-blanc-2-960.webp",
+        "small": "/products/gants-boxe-blade-metal-boxe-noir-blanc-2-480.webp",
+        "width": 960,
+        "height": 960,
+        "alt": "Gants de boxe Blade Metal Boxe — noir et blanc — vue de détail"
+      }
+    ],
+    "notes": [],
+    "audience": "adulte",
+    "status": "upcoming",
+    "sourceRef": "MBGAN205",
+    "dateAdded": "2026-09-09",
+    "care": "",
+    "use": "Pour choisir entre les trois poids du Blade, partez des exercices prévus et des consignes de votre salle. Vérifiez ensuite l’ajustement du modèle ; le nombre d’onces ne remplace pas cet essai."
+  },
+  {
+    "id": "mat-pack-enfants",
+    "slug": "pack-boxe-enfant-gants-mitaines",
+    "name": "Pack de boxe enfant — gants, mitaines et porte-clés",
+    "brand": "Sélection Boutique de Boxe",
+    "category": "gants-de-boxe",
+    "price": 2500,
+    "short": "Trois éléments réunis : une paire de gants, des mitaines sous-gants et un porte-clés sac de frappe.",
+    "description": "Ce pack de boxe enfant réunit trois éléments précis : une paire de gants, des mitaines à porter sous les gants et un porte-clés représentant un sac de frappe Metal. Le porte-clés est un accessoire miniature ; aucun sac de frappe d’entraînement n’entre dans la composition du pack. Deux déclinaisons sont présentées, « 4 / 7 ans » et « 8 / 15 ans ». Vous pouvez ainsi comparer les éléments réunis avant de choisir une déclinaison. Le contenu décrit ne comprend ni tenue de boxe ni protège-dents : ces équipements font l’objet de références séparées dans le catalogue.",
+    "sizes": ["4 / 7 ans", "8 / 15 ans"],
+    "specs": {
+      "Composition": "Une paire de gants, Des mitaines sous-gants, Un porte-clés en forme de sac de frappe Metal",
+      "Déclinaisons source": "4 / 7 ans, 8 / 15 ans"
+    },
+    "images": [
+      {
+        "src": "/products/pack-boxe-enfant-gants-mitaines-1-960.webp",
+        "small": "/products/pack-boxe-enfant-gants-mitaines-1-480.webp",
+        "width": 960,
+        "height": 960,
+        "alt": "Pack de boxe enfant — gants, mitaines et porte-clés"
+      },
+      {
+        "src": "/products/pack-boxe-enfant-gants-mitaines-2-960.webp",
+        "small": "/products/pack-boxe-enfant-gants-mitaines-2-480.webp",
+        "width": 514,
+        "height": 514,
+        "alt": "Pack de boxe enfant — gants, mitaines et porte-clés — vue de détail"
+      },
+      {
+        "src": "/products/pack-boxe-enfant-gants-mitaines-3-960.webp",
+        "small": "/products/pack-boxe-enfant-gants-mitaines-3-480.webp",
+        "width": 960,
+        "height": 960,
+        "alt": "Pack de boxe enfant — gants, mitaines et porte-clés — vue de détail"
+      }
+    ],
+    "notes": [],
+    "audience": "enfant",
+    "status": "upcoming",
+    "sourceRef": "BC-PACK-ENFANTS",
+    "dateAdded": "2026-09-09",
+    "care": "",
+    "use": "Présentez la composition du pack à l’encadrant de votre enfant pour identifier les pièces utiles à ses séances. Les tranches d’âge désignent les déclinaisons ; vérifiez aussi l’ajustement des gants."
+  },
+  {
+    "id": "mat-sparring-16",
+    "slug": "gants-boxe-sparring-metal-boxe",
+    "name": "Gants de boxe Sparring Metal Boxe",
+    "brand": "Metal Boxe",
+    "category": "gants-de-boxe",
+    "price": 3490,
+    "short": "Une manchette haute et un pouce attaché pour ce modèle Sparring Metal Boxe.",
+    "description": "Sur le modèle Sparring de Metal Boxe, la construction se lit d’abord au niveau de la manchette haute et du pouce attaché. Le rembourrage utilise une mousse injectée Ergo 90, tandis que l’aération porte la désignation WindTec. La galerie permet d’examiner les deux faces du gant et le détail de sa manchette, pour comparer sa forme à celle des autres modèles de boxe. Le poids exact de la déclinaison sera précisé avant l’ouverture des ventes. Vous disposez donc ici des caractéristiques de construction du modèle Sparring, sans qu’un poids non confirmé serve de base à votre sélection.",
+    "sizes": [],
+    "specs": {
+      "Modèle": "Sparring",
+      "Rembourrage": "Mousse injectée Ergo 90",
+      "Manchette": "Haute",
+      "Pouce": "Attaché",
+      "Aération": "WindTec"
+    },
+    "images": [
+      {
+        "src": "/products/gants-boxe-sparring-metal-boxe-1-960.webp",
+        "small": "/products/gants-boxe-sparring-metal-boxe-1-480.webp",
+        "width": 960,
+        "height": 960,
+        "alt": "Gants de boxe Sparring Metal Boxe"
+      },
+      {
+        "src": "/products/gants-boxe-sparring-metal-boxe-2-960.webp",
+        "small": "/products/gants-boxe-sparring-metal-boxe-2-480.webp",
+        "width": 960,
+        "height": 960,
+        "alt": "Gants de boxe Sparring Metal Boxe — vue de détail"
+      },
+      {
+        "src": "/products/gants-boxe-sparring-metal-boxe-3-960.webp",
+        "small": "/products/gants-boxe-sparring-metal-boxe-3-480.webp",
+        "width": 960,
+        "height": 960,
+        "alt": "Gants de boxe Sparring Metal Boxe — vue de détail"
+      }
+    ],
+    "notes": [
+      "Le poids de la déclinaison sera précisé avant l’ouverture des ventes."
+    ],
+    "audience": "adulte",
+    "status": "upcoming",
+    "sourceRef": "MBGAN010N14",
+    "dateAdded": "2026-09-09",
+    "care": "",
+    "use": "Avant de retenir ce modèle pour une séance avec partenaire, attendez la confirmation de son poids et faites vérifier son adéquation avec les consignes de votre encadrant."
+  },
+  {
+    "id": "mat-ergo90-14",
+    "slug": "gants-boxe-ergo-90-metal-boxe-14-oz",
+    "name": "Gants de boxe ERGO 90 Metal Boxe — 14 oz",
+    "brand": "Metal Boxe",
+    "category": "gants-de-boxe",
+    "price": 2490,
+    "short": "Le modèle ERGO 90 en 14 oz, avec enveloppe en PU et fermeture auto-agrippante.",
+    "description": "L’ERGO 90 de Metal Boxe associe une enveloppe en PU à une mousse injectée anatomique à 90°. Sa fermeture auto-agrippante entoure le poignet et constitue, avec la construction du rembourrage, l’un des détails à examiner lorsque vous comparez les modèles. Cette fiche présente précisément la déclinaison de 14 oz. Contrairement au Blade proposé en trois poids dans le catalogue, aucun choix entre plusieurs poids n’est présenté ici. Les photographies montrent le modèle et ses détails ; les coloris qui seront proposés restent à préciser avant l’ouverture. Retenez donc le modèle, ses matériaux et son poids pour préparer votre comparaison.",
+    "sizes": ["14 oz"],
+    "specs": {
+      "Modèle": "ERGO 90",
+      "Poids source": "14 oz",
+      "Matière extérieure": "PU",
+      "Rembourrage": "Mousse injectée anatomique à 90°",
+      "Fermeture": "Bande auto-agrippante"
+    },
+    "images": [
+      {
+        "src": "/products/gants-boxe-ergo-90-metal-boxe-14-oz-1-960.webp",
+        "small": "/products/gants-boxe-ergo-90-metal-boxe-14-oz-1-480.webp",
+        "width": 960,
+        "height": 960,
+        "alt": "Gants de boxe ERGO 90 Metal Boxe — 14 oz"
+      },
+      {
+        "src": "/products/gants-boxe-ergo-90-metal-boxe-14-oz-2-960.webp",
+        "small": "/products/gants-boxe-ergo-90-metal-boxe-14-oz-2-480.webp",
+        "width": 960,
+        "height": 960,
+        "alt": "Gants de boxe ERGO 90 Metal Boxe — 14 oz — vue de détail"
+      }
+    ],
+    "notes": [
+      "Les photos présentent le modèle. Les coloris proposés seront précisés à l’ouverture."
+    ],
+    "audience": "adulte",
+    "status": "upcoming",
+    "sourceRef": "MBG301K14",
+    "dateAdded": "2026-09-09",
+    "care": "",
+    "use": "Vérifiez que les 14 oz de cette déclinaison correspondent au travail demandé dans votre salle. Comparez aussi la forme du gant et sa fermeture lors de l’essai."
+  },
+  {
+    "id": "mat-shell-mma",
+    "slug": "gants-mma-the-shell-metal-boxe",
+    "name": "Gants MMA The Shell Metal Boxe",
+    "brand": "Metal Boxe",
+    "category": "gants-mma",
+    "price": 1990,
+    "short": "The Shell combine une mousse injectée et une fermeture par bande auto-agrippante et élastique.",
+    "description": "The Shell est le modèle de gants MMA de Metal Boxe présenté dans cette sélection. Sa construction associe un rembourrage en mousse injectée, une protection du pouce et une fermeture combinant une bande auto-agrippante avec un élément élastique. Ces trois détails permettent de comparer la forme et la fermeture du modèle avant de vous intéresser à sa taille. La gamme comporte quatre déclinaisons : S, M, L et XL. Elles sont indiquées en tailles de main, et non comme les choix de poids en onces proposés sur plusieurs gants de boxe du catalogue. Les coloris de la future sélection seront précisés avant l’ouverture.",
+    "sizes": ["S", "M", "L", "XL"],
+    "specs": {
+      "Modèle": "The Shell",
+      "Rembourrage": "Mousse injectée",
+      "Fermeture": "Bande auto-agrippante et élastique",
+      "Pouce": "Protection du pouce mentionnée dans la présentation du modèle",
+      "Tailles source": "S, M, L, XL"
+    },
+    "images": [
+      {
+        "src": "/products/gants-mma-the-shell-metal-boxe-1-960.webp",
+        "small": "/products/gants-mma-the-shell-metal-boxe-1-480.webp",
+        "width": 960,
+        "height": 960,
+        "alt": "Gants MMA The Shell Metal Boxe"
+      }
+    ],
+    "notes": [
+      "Les photos présentent le modèle. Les coloris proposés seront précisés à l’ouverture."
+    ],
+    "audience": "adulte",
+    "status": "upcoming",
+    "sourceRef": "MMG301N",
+    "dateAdded": "2026-09-09",
+    "care": "",
+    "use": "Le modèle est présenté pour le sparring MMA. Faites confirmer son emploi pour le format d’exercice prévu dans votre salle ; une paire de gants MMA ne remplace pas automatiquement les gants de boxe demandés pendant un entraînement."
+  },
+  {
+    "id": "mat-one-enfant",
+    "slug": "gants-boxe-enfant-one-metal-boxe",
+    "name": "Gants de boxe enfant ONE Metal Boxe",
+    "brand": "Metal Boxe",
+    "category": "gants-de-boxe",
+    "price": 1990,
+    "short": "Le modèle ONE pour enfant, présenté en deux déclinaisons : 4 / 7 ans et 8 / 15 ans.",
+    "description": "Les gants ONE sont la gamme enfant de Metal Boxe identifiée par la référence MBGAN002. Leur enveloppe est en PU, leur rembourrage en mousse injectée et leur fermeture repose sur une large bande auto-agrippante. Deux déclinaisons figurent dans le catalogue : « 4 / 7 ans » et « 8 / 15 ans ». Ces repères permettent d’identifier les versions présentées avant de vérifier leur ajustement. La photographie correspond à la version CH ; le visuel de la version JR sera précisé. Cette fiche porte sur les gants ONE seuls : elle se distingue du pack enfant, qui réunit également des mitaines et un porte-clés.",
+    "sizes": ["4 / 7 ans", "8 / 15 ans"],
+    "specs": {
+      "Modèle": "ONE",
+      "Matière extérieure": "PU",
+      "Rembourrage": "Mousse injectée",
+      "Fermeture": "Bande auto-agrippante large",
+      "Déclinaisons source": "4 / 7 ans, 8 / 15 ans"
+    },
+    "images": [
+      {
+        "src": "/products/gants-boxe-enfant-one-metal-boxe-1-960.webp",
+        "small": "/products/gants-boxe-enfant-one-metal-boxe-1-480.webp",
+        "width": 960,
+        "height": 960,
+        "alt": "Gants de boxe enfant ONE Metal Boxe"
+      }
+    ],
+    "notes": [
+      "La photo présente la version CH. Le visuel de la déclinaison JR sera précisé."
+    ],
+    "audience": "enfant",
+    "status": "upcoming",
+    "sourceRef": "MBGAN002",
+    "dateAdded": "2026-09-09",
+    "care": "",
+    "use": "Comparez la déclinaison ONE envisagée avec les indications de l’encadrant. La tranche d’âge aide à repérer une version, mais l’enfant doit aussi pouvoir utiliser les gants avec un ajustement adapté."
+  },
+  {
+    "id": "mat-ensemble-enfants",
+    "slug": "ensemble-boxe-enfant-short-debardeur-metal-boxe",
+    "name": "Ensemble de boxe enfant Metal Boxe — short et débardeur",
+    "brand": "Metal Boxe",
+    "category": "textile-boxe",
+    "price": 2490,
+    "short": "Un ensemble enfant composé d’un short en satin et d’un débardeur, en trois tailles.",
+    "description": "La référence MB6473 de Metal Boxe réunit les deux pièces d’une tenue de boxe anglaise pour enfant : un short et un débardeur. Le short est décrit en satin ; cette indication de matière concerne le short et ne définit pas la composition du débardeur. Trois tailles sont présentées, « 6 / 8 ans », « 8 / 10 ans » et « 10 / 12 ans ». Vous pouvez les comparer à la tenue utilisée pendant les cours. Les photographies présentent l’ensemble ; les coloris proposés seront précisés avant l’ouverture. Les gants et les autres équipements personnels se choisissent séparément.",
+    "sizes": ["6 / 8 ans", "8 / 10 ans", "10 / 12 ans"],
+    "specs": {
+      "Référence": "MB6473",
+      "Composition": "Short en satin, Débardeur",
+      "Tailles source": "6 / 8 ans, 8 / 10 ans, 10 / 12 ans"
+    },
+    "images": [
+      {
+        "src": "/products/ensemble-boxe-enfant-short-debardeur-metal-boxe-1-960.webp",
+        "small": "/products/ensemble-boxe-enfant-short-debardeur-metal-boxe-1-480.webp",
+        "width": 960,
+        "height": 960,
+        "alt": "Ensemble de boxe enfant Metal Boxe — short et débardeur"
+      }
+    ],
+    "notes": [
+      "Les photos présentent le modèle. Les coloris proposés seront précisés à l’ouverture."
+    ],
+    "audience": "enfant",
+    "status": "upcoming",
+    "sourceRef": "MB6473",
+    "dateAdded": "2026-09-09",
+    "care": "",
+    "use": "Cet ensemble est destiné à la boxe anglaise enfant. Vérifiez le choix de la tenue avec le club et comparez les trois déclinaisons avant de retenir une taille."
+  },
+  {
+    "id": "mat-debardeur-training",
+    "slug": "debardeur-metal-boxe-training-tank",
+    "name": "Débardeur Metal Boxe Training Tank",
+    "brand": "Metal Boxe",
+    "category": "textile-boxe",
+    "price": 1890,
+    "short": "Le débardeur Training Tank, avec une coupe libre et des tailles du S au XL.",
+    "description": "Le Training Tank de Metal Boxe est un débardeur d’entraînement à coupe libre. Il est présenté pour les séances de travail au sac et à la corde, avec quatre tailles : S, M, L et XL. Les deux photographies portées montrent la coupe de face et en position de garde, ce qui vous permet d’observer la forme du débardeur dans deux attitudes différentes. Cette référence correspond au haut seul. Elle se distingue de l’ensemble enfant MB6473, qui associe un short et un débardeur ; vous composez ici votre tenue autour d’une pièce séparée.",
+    "sizes": ["S", "M", "L", "XL"],
+    "specs": {
+      "Modèle": "Training Tank",
+      "Coupe": "Coupe libre indiquée par la présentation du modèle",
+      "Tailles source": "S, M, L, XL"
+    },
+    "images": [
+      {
+        "src": "/products/debardeur-metal-boxe-training-tank-1-960.webp",
+        "small": "/products/debardeur-metal-boxe-training-tank-1-480.webp",
+        "width": 960,
+        "height": 960,
+        "alt": "Débardeur Metal Boxe Training Tank"
+      },
+      {
+        "src": "/products/debardeur-metal-boxe-training-tank-2-960.webp",
+        "small": "/products/debardeur-metal-boxe-training-tank-2-480.webp",
+        "width": 960,
+        "height": 960,
+        "alt": "Débardeur Metal Boxe Training Tank — vue de détail"
+      }
+    ],
+    "notes": [],
+    "audience": "adulte",
+    "status": "upcoming",
+    "sourceRef": "MBTANK",
+    "dateAdded": "2026-09-09",
+    "care": "",
+    "use": "Choisissez le Training Tank pour une tenue de travail au sac ou à la corde. Appuyez-vous sur les vues portées et les indications de taille du modèle pour comparer sa coupe."
+  },
+  {
+    "id": "mat-bandes-4m",
+    "slug": "bandes-boxe-metal-boxe-4-m-tricolores",
+    "name": "Bandes de boxe Metal Boxe — 4 m tricolores",
+    "brand": "Metal Boxe",
+    "category": "accessoires-boxe",
+    "price": 690,
+    "short": "Des bandes de 4 m vendues à la paire, en rouge, blanc et bleu.",
+    "description": "Les bandes Metal Boxe MB120BT mesurent 4 mètres et sont présentées à la paire. Leur tissu associe coton et nylon, dans un coloris tricolore rouge, blanc et bleu. Chaque bande possède un passant pour le pouce et une fermeture auto-agrippante : le premier sert de repère à la mise en place, la seconde ferme la bande une fois l’enroulement terminé. La longueur constitue leur différence la plus nette avec la référence MB120T de 2,50 mètres, également présente dans le catalogue. Vous disposez ici de 1,50 mètre supplémentaire par bande, avec les mêmes matières et le même principe de fermeture décrits pour les deux références.",
+    "sizes": ["Rouge / Blanc / Bleu"],
+    "specs": {
+      "Longueur": "4 m",
+      "Matière": "Coton et nylon",
+      "Fermeture": "Bande auto-agrippante",
+      "Détail": "Passant pour le pouce",
+      "Conditionnement": "Paire"
+    },
+    "images": [
+      {
+        "src": "/products/bandes-boxe-metal-boxe-4-m-tricolores-1-960.webp",
+        "small": "/products/bandes-boxe-metal-boxe-4-m-tricolores-1-480.webp",
+        "width": 960,
+        "height": 960,
+        "alt": "Bandes de boxe Metal Boxe — 4 m tricolores"
+      },
+      {
+        "src": "/products/bandes-boxe-metal-boxe-4-m-tricolores-2-960.webp",
+        "small": "/products/bandes-boxe-metal-boxe-4-m-tricolores-2-480.webp",
+        "width": 960,
+        "height": 960,
+        "alt": "Bandes de boxe Metal Boxe — 4 m tricolores — vue de détail"
+      }
+    ],
+    "notes": [
+      "Les photos présentent le modèle. Les coloris proposés seront précisés à l’ouverture."
+    ],
+    "audience": "adulte",
+    "status": "upcoming",
+    "sourceRef": "MB120BT",
+    "dateAdded": "2026-09-09",
+    "care": "",
+    "use": "Comparez les 4 mètres à votre manière de poser les bandes et à l’espace disponible dans vos gants. Faites vérifier la mise en place par votre encadrant si vous apprenez ce geste."
+  },
+  {
+    "id": "mat-bandes-250",
+    "slug": "bandes-boxe-metal-boxe-2-50-m-tricolores",
+    "name": "Bandes de boxe Metal Boxe — 2,50 m tricolores",
+    "brand": "Metal Boxe",
+    "category": "accessoires-boxe",
+    "price": 590,
+    "short": "La référence MB120T en longueur 2,50 m, vendue par paire dans le coloris tricolore.",
+    "description": "La référence MB120T correspond aux bandes de boxe Metal Boxe de 2,50 mètres. Elles sont proposées par paire, en rouge, blanc et bleu, avec un tissu associant coton et nylon. Le passant pour le pouce repère le début de la pose et la bande auto-agrippante assure la fermeture. Pour comparer les longueurs, distinguez bien MB120T de MB120BT : cette seconde référence mesure 4 mètres. Le visuel présenté appartient à la gamme tricolore et ne modifie pas la longueur de ce produit. Vous choisissez ici la version de 2,50 mètres, sans déduire une autre longueur de la photographie.",
+    "sizes": ["Rouge / Blanc / Bleu"],
+    "specs": {
+      "Longueur": "2,50 m",
+      "Matière": "Coton et nylon",
+      "Fermeture": "Bande auto-agrippante",
+      "Détail": "Passant pour le pouce",
+      "Conditionnement": "Paire"
+    },
+    "images": [
+      {
+        "src": "/products/bandes-boxe-metal-boxe-2-50-m-tricolores-1-960.webp",
+        "small": "/products/bandes-boxe-metal-boxe-2-50-m-tricolores-1-480.webp",
+        "width": 960,
+        "height": 960,
+        "alt": "Bandes de boxe Metal Boxe — 2,50 m tricolores"
+      }
+    ],
+    "notes": [
+      "Les photos présentent le modèle. Les coloris proposés seront précisés à l’ouverture.",
+      "Visuel de la gamme tricolore. La longueur de cette référence est de 2,50 m."
+    ],
+    "audience": "adulte",
+    "status": "upcoming",
+    "sourceRef": "MB120T",
+    "dateAdded": "2026-09-09",
+    "care": "",
+    "use": "La longueur de 2,50 mètres est un critère à comparer avec votre bandage habituel. Elle ne désigne pas automatiquement une taille enfant ; vérifiez le résultat avec vos gants et votre encadrant."
+  },
+  {
+    "id": "mat-dents-adulte",
+    "slug": "protege-dents-adulte-metal-boxe-translucide",
+    "name": "Protège-dents adulte Metal Boxe — translucide",
+    "brand": "Metal Boxe",
+    "category": "protections-boxe",
+    "price": 590,
+    "short": "Un protège-dents adulte translucide et thermoformable, fourni avec son boîtier.",
+    "description": "Le protège-dents Metal Boxe MBPRO458SRT se présente dans un format simple pour adulte, avec un aspect translucide. Il est thermoformable : son ajustement passe par le moulage prévu dans la notice du modèle. Un boîtier accompagne cette référence. Ce sont les points à retenir pour le distinguer du protège-dents enfant de la gamme MB459 JR, présenté séparément. Le format adulte ne donne pas à lui seul une procédure de préparation ; consultez les indications propres à ce modèle avant de procéder au moulage.",
+    "sizes": ["Adulte"],
+    "specs": {
+      "Référence": "MBPRO458SRT",
+      "Format source": "Adulte",
+      "Aspect": "Translucide",
+      "Forme": "Simple",
+      "Personnalisation": "Thermoformable",
+      "Accessoire": "Boîtier indiqué dans la présentation du modèle"
+    },
+    "images": [
+      {
+        "src": "/products/protege-dents-adulte-metal-boxe-translucide-1-960.webp",
+        "small": "/products/protege-dents-adulte-metal-boxe-translucide-1-480.webp",
+        "width": 575,
+        "height": 575,
+        "alt": "Protège-dents adulte Metal Boxe — translucide"
+      },
+      {
+        "src": "/products/protege-dents-adulte-metal-boxe-translucide-2-960.webp",
+        "small": "/products/protege-dents-adulte-metal-boxe-translucide-2-480.webp",
+        "width": 500,
+        "height": 500,
+        "alt": "Protège-dents adulte Metal Boxe — translucide — vue de détail"
+      }
+    ],
+    "notes": [],
+    "audience": "adulte",
+    "status": "upcoming",
+    "sourceRef": "MBPRO458SRT",
+    "dateAdded": "2026-09-09",
+    "care": "",
+    "use": "Suivez la notice MBPRO458SRT pour réaliser le moulage. N’appliquez pas une durée ou une température trouvée pour une autre référence de protège-dents."
+  },
+  {
+    "id": "mat-dents-enfant",
+    "slug": "protege-dents-enfant-metal-boxe-gel",
+    "name": "Protège-dents enfant Metal Boxe — gel thermoformable",
+    "brand": "Metal Boxe",
+    "category": "protections-boxe",
+    "price": 1200,
+    "short": "Le protège-dents enfant de la gamme MB459 JR, en gel thermoformable.",
+    "description": "Ce protège-dents enfant appartient à la gamme Metal Boxe MB459 JR. La référence présentée, MB459JRW, utilise un gel thermoformable dont le moulage se réalise à l’eau chaude selon la notice du fabricant. Le format enfant est distinct de la référence adulte MBPRO458SRT du catalogue. Les photographies montrent le modèle ; les coloris proposés seront précisés avant l’ouverture. Pour préparer son utilisation, retenez la référence exacte et consultez sa procédure de moulage, sans transposer les instructions d’un autre protège-dents.",
+    "sizes": ["Enfants"],
+    "specs": {
+      "Référence": "MB459JRW",
+      "Gamme source": "MB459 JR",
+      "Format source": "Enfant",
+      "Matière source": "Gel",
+      "Personnalisation": "Thermoformable à l’eau chaude"
+    },
+    "images": [
+      {
+        "src": "/products/protege-dents-enfant-metal-boxe-gel-1-960.webp",
+        "small": "/products/protege-dents-enfant-metal-boxe-gel-1-480.webp",
+        "width": 960,
+        "height": 960,
+        "alt": "Protège-dents enfant Metal Boxe — gel thermoformable"
+      }
+    ],
+    "notes": [
+      "Les photos présentent le modèle. Les coloris proposés seront précisés à l’ouverture."
+    ],
+    "audience": "enfant",
+    "status": "upcoming",
+    "sourceRef": "MB459JRW",
+    "dateAdded": "2026-09-09",
+    "care": "",
+    "use": "Pour le moulage à l’eau chaude, respectez les étapes et les indications de température de la notice MB459 JR. La fiche ne remplace pas cette procédure propre au produit."
+  },
+  {
+    "id": "mat-tibias-coton",
+    "slug": "protege-tibias-pieds-metal-boxe-coton-blanc",
+    "name": "Protège-tibias pieds Metal Boxe — coton blanc",
+    "brand": "Metal Boxe",
+    "category": "protections-boxe",
+    "price": 1490,
+    "short": "Une protection tibia-pied en coton élastique blanc, avec mousse EVA et serrage auto-agrippant.",
+    "description": "La gamme MB153 de Metal Boxe associe la protection du tibia à une partie qui se prolonge sur le pied. Son extérieur est en coton élastique blanc et son rembourrage en mousse EVA. Une bande auto-agrippante complète le serrage. Ces éléments distinguent sa construction textile et sa couverture tibia-pied lorsque vous comparez les protections du catalogue. Quatre tailles sont présentées : S, M, L et XL. Les photographies permettent d’observer les deux parties du modèle et leur liaison ; elles complètent les informations de taille sans remplacer la vérification de l’ajustement de la protection sur la jambe et le pied.",
+    "sizes": ["S", "M", "L", "XL"],
+    "specs": {
+      "Gamme": "MB153",
+      "Matière": "Coton élastique",
+      "Rembourrage": "Mousse EVA",
+      "Fermeture": "Bande auto-agrippante",
+      "Coloris": "Blanc",
+      "Tailles source": "S, M, L, XL"
+    },
+    "images": [
+      {
+        "src": "/products/protege-tibias-pieds-metal-boxe-coton-blanc-1-960.webp",
+        "small": "/products/protege-tibias-pieds-metal-boxe-coton-blanc-1-480.webp",
+        "width": 960,
+        "height": 960,
+        "alt": "Protège-tibias pieds Metal Boxe — coton blanc"
+      },
+      {
+        "src": "/products/protege-tibias-pieds-metal-boxe-coton-blanc-2-960.webp",
+        "small": "/products/protege-tibias-pieds-metal-boxe-coton-blanc-2-480.webp",
+        "width": 960,
+        "height": 960,
+        "alt": "Protège-tibias pieds Metal Boxe — coton blanc — vue de détail"
+      }
+    ],
+    "notes": [],
+    "audience": "adulte",
+    "status": "upcoming",
+    "sourceRef": "MB153WM",
+    "dateAdded": "2026-09-09",
+    "care": "",
+    "use": "Faites confirmer que ce modèle tibia-pied correspond aux protections demandées pour votre discipline et votre séance. Comparez la taille avec la couverture recherchée sur le tibia et le pied."
+  },
+  {
+    "id": "bench-elion-skintex-130",
+    "slug": "sac-frappe-elion-skintex-130-cm",
+    "name": "Sac de frappe ELION Skintex — 130 cm",
+    "brand": "ELION",
+    "category": "sacs-de-frappe",
+    "price": 19900,
+    "short": "Un sac de 130 cm suspendu par sangles, dans le coloris noir mat et or.",
+    "description": "Ce sac ELION Skintex mesure 130 cm pour un poids annoncé d’environ 45 kg. Le coloris associe noir mat et or. En partie haute, les sangles doublées rejoignent des fixations renforcées ; une fermeture éclair est placée sur le dessus. La hauteur annoncée des sangles à la verticale est de 20 cm, soit 150 cm pour l’ensemble sac et sangles. Une boucle sous le sac permet une fixation inférieure lorsque l’installation le prévoit, et un tourillon accompagne le modèle. Ces détails de suspension sont à examiner avec les dimensions du sac : ils déterminent les informations dont vous avez besoin avant de préparer son emplacement.",
+    "sizes": ["130 cm"],
+    "specs": {
+      "Hauteur du sac": "130 cm",
+      "Poids annoncé": "Environ 45 kg",
+      "Coloris": "Noir mat et or",
+      "Suspension": "Sangles doublées",
+      "Fermeture": "Fermeture éclair supérieure",
+      "Accessoire indiqué": "Tourillon"
+    },
+    "images": [
+      {
+        "src": "/products/sac-frappe-elion-skintex-130-cm-1-960.webp",
+        "small": "/products/sac-frappe-elion-skintex-130-cm-1-480.webp",
+        "width": 960,
+        "height": 960,
+        "alt": "Sac de frappe ELION Skintex — 130 cm"
+      },
+      {
+        "src": "/products/sac-frappe-elion-skintex-130-cm-2-960.webp",
+        "small": "/products/sac-frappe-elion-skintex-130-cm-2-480.webp",
+        "width": 960,
+        "height": 960,
+        "alt": "Sac de frappe ELION Skintex — 130 cm — vue de détail"
+      }
+    ],
+    "notes": [],
+    "audience": "adulte",
+    "status": "upcoming",
+    "sourceRef": "EL41524",
+    "dateAdded": "2026-09-09",
+    "care": "",
+    "use": "Avant toute installation, faites vérifier le support et les fixations pour ce sac d’environ 45 kg. La hauteur de 150 cm correspond au sac avec ses sangles ; prévoyez aussi la place de l’accroche et l’espace nécessaire autour du sac."
+  },
+  {
+    "id": "bench-champboxing-pattes-noir-mat",
+    "slug": "pattes-ours-champboxing-noir-mat",
+    "name": "Pattes d’ours CHAMPBOXING — noir mat",
+    "brand": "CHAMPBOXING",
+    "category": "accessoires-boxe",
+    "price": 3900,
+    "short": "Une paire de pattes d’ours en PU, avec mousse haute densité et coussin au poignet.",
+    "description": "Les pattes d’ours CHAMPBOXING noir mat sont présentées à la paire, dans une taille unique. Leur extérieur en PU recouvre une mousse haute densité. La forme permet de les enfiler comme des gants ; des coutures renforcées et un lacet épais suivent leurs contours. Un coussin supplémentaire est placé au niveau du poignet. Vous pouvez comparer séparément ces détails : la surface de frappe, la construction périphérique et la partie qui reçoit la main de la personne portant les pattes. La référence CH43002 correspond à cette paire noir mat ; aucune autre taille n’est présentée pour ce modèle dans la sélection.",
+    "sizes": ["Taille unique / NOIR/MAT"],
+    "specs": {
+      "Matière extérieure": "PU",
+      "Rembourrage": "Mousse haute densité",
+      "Détail": "Coussin au poignet",
+      "Conditionnement": "Paire",
+      "Taille": "Taille unique",
+      "Coloris": "Noir mat"
+    },
+    "images": [
+      {
+        "src": "/products/pattes-ours-champboxing-noir-mat-1-960.webp",
+        "small": "/products/pattes-ours-champboxing-noir-mat-1-480.webp",
+        "width": 512,
+        "height": 512,
+        "alt": "Pattes d’ours CHAMPBOXING — noir mat"
+      }
+    ],
+    "notes": [],
+    "audience": "adulte",
+    "status": "upcoming",
+    "sourceRef": "CH43002",
+    "dateAdded": "2026-09-09",
+    "care": "",
+    "use": "Cette paire appartient au matériel de frappe tenu à la main. Faites vérifier sa prise en main et son emploi pour les exercices encadrés que vous souhaitez réaliser."
+  },
+  {
+    "id": "bench-elion-corde-thai-bleue",
+    "slug": "corde-sauter-thai-elion-bleue",
+    "name": "Corde à sauter thaï ELION — bleue",
+    "brand": "ELION",
+    "category": "accessoires-boxe",
+    "price": 2900,
+    "short": "Une corde thaï souple, avec roulements à billes et poignées bleues.",
+    "description": "Cette corde à sauter thaï ELION associe une construction souple à des poignées munies de roulements à billes. Elle est décrite comme plus lourde qu’une corde classique : ce caractère fait partie du choix du modèle, sans qu’une masse précise soit donnée ici. La déclinaison présentée est bleue. Son indication de stature concerne les personnes mesurant moins de 1,85 m. Avant de la retenir, comparez donc votre taille à ce repère et le type de corde à votre pratique habituelle. Une longueur réglable n’est pas annoncée pour cette référence.",
+    "sizes": ["BLEU"],
+    "specs": {
+      "Type": "Corde thaï",
+      "Rotation": "Roulements à billes",
+      "Coloris": "Bleu",
+      "Indication de stature de la source": "Moins de 1,85 m"
+    },
+    "images": [
+      {
+        "src": "/products/corde-sauter-thai-elion-bleue-1-960.webp",
+        "small": "/products/corde-sauter-thai-elion-bleue-1-480.webp",
+        "width": 640,
+        "height": 380,
+        "alt": "Corde à sauter thaï ELION — bleue"
+      }
+    ],
+    "notes": [],
+    "audience": "adulte",
+    "status": "upcoming",
+    "sourceRef": "CH71000",
+    "dateAdded": "2026-09-09",
+    "care": "",
+    "use": "Retenez le repère de stature inférieur à 1,85 m pour cette corde thaï. Si vous cherchez une corde légère, tenez compte de sa construction décrite comme plus lourde qu’un modèle classique."
+  },
+  {
+    "id": "bench-manto-miko-noir",
+    "slug": "kimono-jjb-manto-miko-noir",
+    "name": "Kimono de JJB Manto Miko — noir",
+    "brand": "Manto",
+    "category": "arts-martiaux",
+    "price": 11400,
+    "short": "Une veste Pearl Weave de 450 g/m² et un pantalon en coton ripstop de 10 oz.",
+    "description": "Le Manto Miko noir réunit une veste en tissage Pearl Weave de 450 g/m² et un pantalon en coton ripstop de 10 oz. Ces deux indications décrivent des éléments différents du kimono : la veste d’un côté, le tissu du pantalon de l’autre. Le col est renforcé par de la mousse EVA et les motifs rouges contrastent avec le fond noir. La sélection présente les tailles A1, A2 et A2L. Comparez ces déclinaisons à la grille du modèle plutôt qu’à une taille supposée identique chez une autre marque. La ceinture n’est pas incluse ; elle constitue une pièce distincte à prévoir pour votre tenue de JJB.",
+    "sizes": ["A1", "A2", "A2L"],
+    "specs": {
+      "Veste": "Pearl Weave 450 g/m²",
+      "Pantalon": "Coton ripstop 10 oz",
+      "Col": "Mousse EVA renforcée",
+      "Coloris": "Noir",
+      "Ceinture": "Non incluse"
+    },
+    "images": [
+      {
+        "src": "/products/kimono-jjb-manto-miko-noir-1-960.webp",
+        "small": "/products/kimono-jjb-manto-miko-noir-1-480.webp",
+        "width": 768,
+        "height": 768,
+        "alt": "Kimono de JJB Manto Miko — noir"
+      },
+      {
+        "src": "/products/kimono-jjb-manto-miko-noir-2-960.webp",
+        "small": "/products/kimono-jjb-manto-miko-noir-2-480.webp",
+        "width": 960,
+        "height": 1280,
+        "alt": "Kimono de JJB Manto Miko — noir — vue de détail"
+      }
+    ],
+    "notes": [],
+    "audience": "adulte",
+    "status": "upcoming",
+    "sourceRef": "MNG991-BLK",
+    "dateAdded": "2026-09-09",
+    "care": "Lavez le Miko à 30 °C et privilégiez le séchage à l’air libre. Après une séance, faites-le sécher et évitez de le laisser humide dans un sac fermé. Vérifiez également l’étiquette d’entretien de votre exemplaire.",
+    "use": "Ce kimono est destiné au JJB et aux séances de grappling en kimono. Vérifiez l’ajustement et la tenue demandée par votre club ; les caractéristiques présentées n’établissent pas une homologation de compétition."
+  },
+  {
+    "id": "bench-athena-rashguard-court-noir",
+    "slug": "rashguard-femme-athena-fightwear-manches-courtes",
+    "name": "Rashguard femme Athena Fightwear — manches courtes",
+    "brand": "Athena",
+    "category": "textile-boxe",
+    "price": 2754,
+    "short": "Un rashguard à col en V, avec mesh sous les bras et bande en silicone à la base.",
+    "description": "Ce rashguard Athena Fightwear à manches courtes est conçu pour les pratiquantes de MMA, de grappling et de no-gi. Sa coupe ajustée associe un col en V, des empiècements en mesh sous les bras et une bande en silicone à la base du vêtement. Le tissu comprend 85 % de polyester et 15 % d’élasthanne. Ces détails permettent de comparer sa construction avec celle d’un débardeur d’entraînement plus ample : les manches, les empiècements et la finition du bas ne sont pas les mêmes. Le modèle noir est présenté du XS au XXL, avec les tailles S, M, L et XL entre ces deux extrêmes.",
+    "sizes": ["XS", "S", "M", "L", "XL", "XXL"],
+    "specs": {
+      "Composition": "85 % polyester, 15 % élasthanne",
+      "Manches": "Courtes",
+      "Encolure": "Col en V",
+      "Empiècements": "Mesh sous les bras",
+      "Base": "Bande en silicone",
+      "Public présenté": "Femme"
+    },
+    "images": [
+      {
+        "src": "/products/rashguard-femme-athena-fightwear-manches-courtes-1-960.webp",
+        "small": "/products/rashguard-femme-athena-fightwear-manches-courtes-1-480.webp",
+        "width": 960,
+        "height": 960,
+        "alt": "Rashguard femme Athena Fightwear — manches courtes"
+      },
+      {
+        "src": "/products/rashguard-femme-athena-fightwear-manches-courtes-2-960.webp",
+        "small": "/products/rashguard-femme-athena-fightwear-manches-courtes-2-480.webp",
+        "width": 960,
+        "height": 960,
+        "alt": "Rashguard femme Athena Fightwear — manches courtes — vue de détail"
+      }
+    ],
+    "notes": [],
+    "audience": "adulte",
+    "status": "upcoming",
+    "sourceRef": "ATH-ATHRAS02XS",
+    "dateAdded": "2026-09-09",
+    "care": "Lavez ce rashguard à froid, puis laissez-le sécher à l’air libre. Évitez le sèche-linge. Rangez-le propre et sec, à l’abri de l’humidité, et consultez l’étiquette avant le premier lavage.",
+    "use": "Comparez cette coupe ajustée à votre tenue habituelle pour le MMA, le grappling ou le no-gi. Vérifiez les mesures du modèle pour choisir votre taille, en particulier si vous hésitez entre deux déclinaisons."
+  },
+  {
+    "id": "bench-adidas-box-hog-2",
+    "slug": "chaussures-boxe-adidas-box-hog-2-noir-blanc",
+    "name": "Chaussures de boxe Adidas Box Hog 2 — noir et blanc",
+    "brand": "Adidas",
+    "category": "accessoires-boxe",
+    "price": 7499,
+    "short": "Une tige moyenne en mesh et une semelle EVA, pour la boxe anglaise.",
+    "description": "Les Adidas Box Hog 2 sont des chaussures de boxe anglaise à tige moyenne, avec une structure en filet mesh et une semelle EVA annoncée non marquante. La référence FX0561 correspond au modèle noir et blanc présenté dans cette fiche. Les vues de profil permettent d’examiner la hauteur de la tige et la forme de la chaussure avant de comparer les pointures. La sélection va du 36 au 47 1/3, avec les déclinaisons précises affichées dans le sélecteur ; elle ne suppose pas que chaque demi-pointure intermédiaire existe. Pour votre choix, comparez la pointure proposée avec les indications Adidas de ce modèle.",
+    "sizes": [
+      "36",
+      "37 1/3",
+      "38",
+      "39 1/3",
+      "40",
+      "41 1/3",
+      "42",
+      "43 1/3",
+      "44",
+      "45 1/3",
+      "46",
+      "47 1/3"
+    ],
+    "specs": {
+      "Modèle": "Box Hog 2",
+      "Tige": "Moyenne, structure mesh",
+      "Semelle indiquée": "EVA non marquante",
+      "Discipline": "Boxe anglaise",
+      "Coloris": "Noir et blanc"
+    },
+    "images": [
+      {
+        "src": "/products/chaussures-boxe-adidas-box-hog-2-noir-blanc-1-960.webp",
+        "small": "/products/chaussures-boxe-adidas-box-hog-2-noir-blanc-1-480.webp",
+        "width": 960,
+        "height": 960,
+        "alt": "Chaussures de boxe Adidas Box Hog 2 — noir et blanc"
+      },
+      {
+        "src": "/products/chaussures-boxe-adidas-box-hog-2-noir-blanc-2-960.webp",
+        "small": "/products/chaussures-boxe-adidas-box-hog-2-noir-blanc-2-480.webp",
+        "width": 630,
+        "height": 630,
+        "alt": "Chaussures de boxe Adidas Box Hog 2 — noir et blanc — vue de détail"
+      }
+    ],
+    "notes": [],
+    "audience": "adulte",
+    "status": "upcoming",
+    "sourceRef": "FX0561",
+    "dateAdded": "2026-09-09",
+    "care": "Nettoyez les Box Hog 2 avec un chiffon humide, sans lavage en machine. Laissez-les sécher à l’air libre après utilisation et évitez de les conserver dans un sac humide.",
+    "use": "Les Box Hog 2 sont présentées pour la boxe anglaise, à l’entraînement comme en compétition. Vérifiez l’ajustement de la chaussure et les consignes applicables à votre pratique avant de les utiliser."
+  }
+]
