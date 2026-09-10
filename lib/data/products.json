@@ -7,7 +7,7 @@
     "category": "gants-de-boxe",
     "price": 1790,
     "short": "Le contraste noir et blanc du modèle Blade, en trois poids : 10, 12 et 14 oz.",
-    "description": "Le Blade de Metal Boxe se reconnaît à son contraste noir et blanc, qui traverse le dos du gant et se prolonge jusqu’à la fermeture. Sous son enveloppe en PU, le rembourrage est constitué de mousse EVA. La manchette large se ferme avec une bande auto-agrippante ; le modèle comporte également une aération WindTec. Vous pouvez examiner ces éléments sur les deux vues de la galerie avant de comparer les déclinaisons. La gamme présentée comprend trois poids, 10, 12 et 14 oz, dans ce même coloris. C’est cette possibilité de comparer plusieurs poids qui distingue ici le Blade de l’ERGO 90 présenté uniquement en 14 oz.",
+    "description": "Le Blade de Metal Boxe se reconnaît à son contraste noir et blanc, qui traverse le dos du gant et se prolonge jusqu’à la fermeture. Sous son enveloppe en PU, le rembourrage est constitué de mousse EVA. La manchette large se ferme avec une bande auto-agrippante ; le modèle comporte également une aération WindTec. Vous pouvez examiner ces éléments sur les deux vues de la galerie avant de comparer les tailles. La gamme présentée comprend trois poids, 10, 12 et 14 oz, dans ce même coloris. C’est cette possibilité de comparer plusieurs poids qui distingue ici le Blade de l’ERGO 90 présenté uniquement en 14 oz.",
     "sizes": ["10 oz", "12 oz", "14 oz"],
     "specs": {
       "Modèle": "Blade",
@@ -49,11 +49,11 @@
     "category": "gants-de-boxe",
     "price": 2500,
     "short": "Trois éléments réunis : une paire de gants, des mitaines sous-gants et un porte-clés sac de frappe.",
-    "description": "Ce pack de boxe enfant réunit trois éléments précis : une paire de gants, des mitaines à porter sous les gants et un porte-clés représentant un sac de frappe Metal. Le porte-clés est un accessoire miniature ; aucun sac de frappe d’entraînement n’entre dans la composition du pack. Deux déclinaisons sont présentées, « 4 / 7 ans » et « 8 / 15 ans ». Vous pouvez ainsi comparer les éléments réunis avant de choisir une déclinaison. Le contenu décrit ne comprend ni tenue de boxe ni protège-dents : ces équipements font l’objet de références séparées dans le catalogue.",
+    "description": "Ce pack de boxe enfant réunit trois éléments précis : une paire de gants, des mitaines à porter sous les gants et un porte-clés représentant un sac de frappe Metal. Le porte-clés est un accessoire miniature ; aucun sac de frappe d’entraînement n’entre dans la composition du pack. Deux tailles sont présentées, « 4 / 7 ans » et « 8 / 15 ans ». Vous pouvez ainsi comparer les éléments réunis avant de choisir une taille. Le contenu décrit ne comprend ni tenue de boxe ni protège-dents : ces équipements font l’objet de références séparées dans le catalogue.",
     "sizes": ["4 / 7 ans", "8 / 15 ans"],
     "specs": {
       "Composition": "Une paire de gants, Des mitaines sous-gants, Un porte-clés en forme de sac de frappe Metal",
-      "Déclinaisons source": "4 / 7 ans, 8 / 15 ans"
+      "Tailles source": "4 / 7 ans, 8 / 15 ans"
     },
     "images": [
       {
@@ -84,7 +84,7 @@
     "sourceRef": "BC-PACK-ENFANTS",
     "dateAdded": "2026-09-09",
     "care": "",
-    "use": "Présentez la composition du pack à l’encadrant de votre enfant pour identifier les pièces utiles à ses séances. Les tranches d’âge désignent les déclinaisons ; vérifiez aussi l’ajustement des gants."
+    "use": "Présentez la composition du pack à l’encadrant de votre enfant pour identifier les pièces utiles à ses séances. Les tranches d’âge désignent les tailles ; vérifiez aussi l’ajustement des gants."
   },
   {
     "id": "mat-sparring-16",
@@ -94,7 +94,7 @@
     "category": "gants-de-boxe",
     "price": 3490,
     "short": "Une manchette haute et un pouce attaché pour ce modèle Sparring Metal Boxe.",
-    "description": "Sur le modèle Sparring de Metal Boxe, la construction se lit d’abord au niveau de la manchette haute et du pouce attaché. Le rembourrage utilise une mousse injectée Ergo 90, tandis que l’aération porte la désignation WindTec. La galerie permet d’examiner les deux faces du gant et le détail de sa manchette, pour comparer sa forme à celle des autres modèles de boxe. Le poids exact de la déclinaison sera précisé avant l’ouverture des ventes. Vous disposez donc ici des caractéristiques de construction du modèle Sparring, sans qu’un poids non confirmé serve de base à votre sélection.",
+    "description": "Sur le modèle Sparring de Metal Boxe, la construction se lit d’abord au niveau de la manchette haute et du pouce attaché. Le rembourrage utilise une mousse injectée Ergo 90, tandis que l’aération porte la désignation WindTec. La galerie permet d’examiner les deux faces du gant et le détail de sa manchette, pour comparer sa forme à celle des autres modèles de boxe. Le poids exact de la taille sera précisé avant l’ouverture des ventes. Vous disposez donc ici des caractéristiques de construction du modèle Sparring, sans qu’un poids non confirmé serve de base à votre sélection.",
     "sizes": [],
     "specs": {
       "Modèle": "Sparring",
@@ -127,7 +127,7 @@
       }
     ],
     "notes": [
-      "Le poids de la déclinaison sera précisé avant l’ouverture des ventes."
+      "Le poids de la taille sera précisé avant l’ouverture des ventes."
     ],
     "audience": "adulte",
     "status": "upcoming",
@@ -144,7 +144,7 @@
     "category": "gants-de-boxe",
     "price": 2490,
     "short": "Le modèle ERGO 90 en 14 oz, avec enveloppe en PU et fermeture auto-agrippante.",
-    "description": "L’ERGO 90 de Metal Boxe associe une enveloppe en PU à une mousse injectée anatomique à 90°. Sa fermeture auto-agrippante entoure le poignet et constitue, avec la construction du rembourrage, l’un des détails à examiner lorsque vous comparez les modèles. Cette fiche présente précisément la déclinaison de 14 oz. Contrairement au Blade proposé en trois poids dans le catalogue, aucun choix entre plusieurs poids n’est présenté ici. Les photographies montrent le modèle et ses détails ; les coloris qui seront proposés restent à préciser avant l’ouverture. Retenez donc le modèle, ses matériaux et son poids pour préparer votre comparaison.",
+    "description": "L’ERGO 90 de Metal Boxe associe une enveloppe en PU à une mousse injectée anatomique à 90°. Sa fermeture auto-agrippante entoure le poignet et constitue, avec la construction du rembourrage, l’un des détails à examiner lorsque vous comparez les modèles. Cette fiche présente précisément la taille de 14 oz. Contrairement au Blade proposé en trois poids dans le catalogue, aucun choix entre plusieurs poids n’est présenté ici. Les photographies montrent le modèle et ses détails ; les coloris qui seront proposés restent à préciser avant l’ouverture. Retenez donc le modèle, ses matériaux et son poids pour préparer votre comparaison.",
     "sizes": ["14 oz"],
     "specs": {
       "Modèle": "ERGO 90",
@@ -177,7 +177,7 @@
     "sourceRef": "MBG301K14",
     "dateAdded": "2026-09-09",
     "care": "",
-    "use": "Vérifiez que les 14 oz de cette déclinaison correspondent au travail demandé dans votre salle. Comparez aussi la forme du gant et sa fermeture lors de l’essai."
+    "use": "Vérifiez que les 14 oz de cette taille correspondent au travail demandé dans votre salle. Comparez aussi la forme du gant et sa fermeture lors de l’essai."
   },
   {
     "id": "mat-shell-mma",
@@ -187,7 +187,7 @@
     "category": "gants-mma",
     "price": 1990,
     "short": "The Shell combine une mousse injectée et une fermeture par bande auto-agrippante et élastique.",
-    "description": "The Shell est le modèle de gants MMA de Metal Boxe présenté dans cette sélection. Sa construction associe un rembourrage en mousse injectée, une protection du pouce et une fermeture combinant une bande auto-agrippante avec un élément élastique. Ces trois détails permettent de comparer la forme et la fermeture du modèle avant de vous intéresser à sa taille. La gamme comporte quatre déclinaisons : S, M, L et XL. Elles sont indiquées en tailles de main, et non comme les choix de poids en onces proposés sur plusieurs gants de boxe du catalogue. Les coloris de la future sélection seront précisés avant l’ouverture.",
+    "description": "The Shell est le modèle de gants MMA de Metal Boxe présenté dans cette sélection. Sa construction associe un rembourrage en mousse injectée, une protection du pouce et une fermeture combinant une bande auto-agrippante avec un élément élastique. Ces trois détails permettent de comparer la forme et la fermeture du modèle avant de vous intéresser à sa taille. La gamme comporte quatre tailles : S, M, L et XL. Elles sont indiquées en tailles de main, et non comme les choix de poids en onces proposés sur plusieurs gants de boxe du catalogue. Les coloris de la future sélection seront précisés avant l’ouverture.",
     "sizes": ["S", "M", "L", "XL"],
     "specs": {
       "Modèle": "The Shell",
@@ -222,15 +222,15 @@
     "brand": "Metal Boxe",
     "category": "gants-de-boxe",
     "price": 1990,
-    "short": "Le modèle ONE pour enfant, présenté en deux déclinaisons : 4 / 7 ans et 8 / 15 ans.",
-    "description": "Les gants ONE sont la gamme enfant de Metal Boxe identifiée par la référence MBGAN002. Leur enveloppe est en PU, leur rembourrage en mousse injectée et leur fermeture repose sur une large bande auto-agrippante. Deux déclinaisons figurent dans le catalogue : « 4 / 7 ans » et « 8 / 15 ans ». Ces repères permettent d’identifier les versions présentées avant de vérifier leur ajustement. La photographie correspond à la version CH ; le visuel de la version JR sera précisé. Cette fiche porte sur les gants ONE seuls : elle se distingue du pack enfant, qui réunit également des mitaines et un porte-clés.",
+    "short": "Le modèle ONE pour enfant, présenté en deux tailles : 4 / 7 ans et 8 / 15 ans.",
+    "description": "Les gants ONE sont la gamme enfant de Metal Boxe identifiée par la référence MBGAN002. Leur enveloppe est en PU, leur rembourrage en mousse injectée et leur fermeture repose sur une large bande auto-agrippante. Deux tailles figurent dans le catalogue : « 4 / 7 ans » et « 8 / 15 ans ». Ces repères permettent d’identifier les versions présentées avant de vérifier leur ajustement. La photographie correspond à la version CH ; le visuel de la version JR sera précisé. Cette fiche porte sur les gants ONE seuls : elle se distingue du pack enfant, qui réunit également des mitaines et un porte-clés.",
     "sizes": ["4 / 7 ans", "8 / 15 ans"],
     "specs": {
       "Modèle": "ONE",
       "Matière extérieure": "PU",
       "Rembourrage": "Mousse injectée",
       "Fermeture": "Bande auto-agrippante large",
-      "Déclinaisons source": "4 / 7 ans, 8 / 15 ans"
+      "Tailles source": "4 / 7 ans, 8 / 15 ans"
     },
     "images": [
       {
@@ -242,14 +242,14 @@
       }
     ],
     "notes": [
-      "La photo présente la version CH. Le visuel de la déclinaison JR sera précisé."
+      "La photo présente la version CH. Le visuel de la taille JR sera précisé."
     ],
     "audience": "enfant",
     "status": "upcoming",
     "sourceRef": "MBGAN002",
     "dateAdded": "2026-09-09",
     "care": "",
-    "use": "Comparez la déclinaison ONE envisagée avec les indications de l’encadrant. La tranche d’âge aide à repérer une version, mais l’enfant doit aussi pouvoir utiliser les gants avec un ajustement adapté."
+    "use": "Comparez la taille ONE envisagée avec les indications de l’encadrant. La tranche d’âge aide à repérer une version, mais l’enfant doit aussi pouvoir utiliser les gants avec un ajustement adapté."
   },
   {
     "id": "mat-ensemble-enfants",
@@ -283,7 +283,7 @@
     "sourceRef": "MB6473",
     "dateAdded": "2026-09-09",
     "care": "",
-    "use": "Cet ensemble est destiné à la boxe anglaise enfant. Vérifiez le choix de la tenue avec le club et comparez les trois déclinaisons avant de retenir une taille."
+    "use": "Cet ensemble est destiné à la boxe anglaise enfant. Vérifiez le choix de la tenue avec le club et comparez les trois tailles avant de retenir une taille."
   },
   {
     "id": "mat-debardeur-training",
@@ -609,7 +609,7 @@
     "category": "accessoires-boxe",
     "price": 2900,
     "short": "Une corde thaï souple, avec roulements à billes et poignées bleues.",
-    "description": "Cette corde à sauter thaï ELION associe une construction souple à des poignées munies de roulements à billes. Elle est décrite comme plus lourde qu’une corde classique : ce caractère fait partie du choix du modèle, sans qu’une masse précise soit donnée ici. La déclinaison présentée est bleue. Son indication de stature concerne les personnes mesurant moins de 1,85 m. Avant de la retenir, comparez donc votre taille à ce repère et le type de corde à votre pratique habituelle. Une longueur réglable n’est pas annoncée pour cette référence.",
+    "description": "Cette corde à sauter thaï ELION associe une construction souple à des poignées munies de roulements à billes. Elle est décrite comme plus lourde qu’une corde classique : ce caractère fait partie du choix du modèle, sans qu’une masse précise soit donnée ici. La taille présentée est bleue. Son indication de stature concerne les personnes mesurant moins de 1,85 m. Avant de la retenir, comparez donc votre taille à ce repère et le type de corde à votre pratique habituelle. Une longueur réglable n’est pas annoncée pour cette référence.",
     "sizes": ["BLEU"],
     "specs": {
       "Type": "Corde thaï",
@@ -642,7 +642,7 @@
     "category": "arts-martiaux",
     "price": 11400,
     "short": "Une veste Pearl Weave de 450 g/m² et un pantalon en coton ripstop de 10 oz.",
-    "description": "Le Manto Miko noir réunit une veste en tissage Pearl Weave de 450 g/m² et un pantalon en coton ripstop de 10 oz. Ces deux indications décrivent des éléments différents du kimono : la veste d’un côté, le tissu du pantalon de l’autre. Le col est renforcé par de la mousse EVA et les motifs rouges contrastent avec le fond noir. La sélection présente les tailles A1, A2 et A2L. Comparez ces déclinaisons à la grille du modèle plutôt qu’à une taille supposée identique chez une autre marque. La ceinture n’est pas incluse ; elle constitue une pièce distincte à prévoir pour votre tenue de JJB.",
+    "description": "Le Manto Miko noir réunit une veste en tissage Pearl Weave de 450 g/m² et un pantalon en coton ripstop de 10 oz. Ces deux indications décrivent des éléments différents du kimono : la veste d’un côté, le tissu du pantalon de l’autre. Le col est renforcé par de la mousse EVA et les motifs rouges contrastent avec le fond noir. La sélection présente les tailles A1, A2 et A2L. Comparez ces tailles à la grille du modèle plutôt qu’à une taille supposée identique chez une autre marque. La ceinture n’est pas incluse ; elle constitue une pièce distincte à prévoir pour votre tenue de JJB.",
     "sizes": ["A1", "A2", "A2L"],
     "specs": {
       "Veste": "Pearl Weave 450 g/m²",
@@ -715,7 +715,7 @@
     "sourceRef": "ATH-ATHRAS02XS",
     "dateAdded": "2026-09-09",
     "care": "Lavez ce rashguard à froid, puis laissez-le sécher à l’air libre. Évitez le sèche-linge. Rangez-le propre et sec, à l’abri de l’humidité, et consultez l’étiquette avant le premier lavage.",
-    "use": "Comparez cette coupe ajustée à votre tenue habituelle pour le MMA, le grappling ou le no-gi. Vérifiez les mesures du modèle pour choisir votre taille, en particulier si vous hésitez entre deux déclinaisons."
+    "use": "Comparez cette coupe ajustée à votre tenue habituelle pour le MMA, le grappling ou le no-gi. Vérifiez les mesures du modèle pour choisir votre taille, en particulier si vous hésitez entre deux tailles."
   },
   {
     "id": "bench-adidas-box-hog-2",
@@ -725,7 +725,7 @@
     "category": "accessoires-boxe",
     "price": 7499,
     "short": "Une tige moyenne en mesh et une semelle EVA, pour la boxe anglaise.",
-    "description": "Les Adidas Box Hog 2 sont des chaussures de boxe anglaise à tige moyenne, avec une structure en filet mesh et une semelle EVA annoncée non marquante. La référence FX0561 correspond au modèle noir et blanc présenté dans cette fiche. Les vues de profil permettent d’examiner la hauteur de la tige et la forme de la chaussure avant de comparer les pointures. La sélection va du 36 au 47 1/3, avec les déclinaisons précises affichées dans le sélecteur ; elle ne suppose pas que chaque demi-pointure intermédiaire existe. Pour votre choix, comparez la pointure proposée avec les indications Adidas de ce modèle.",
+    "description": "Les Adidas Box Hog 2 sont des chaussures de boxe anglaise à tige moyenne, avec une structure en filet mesh et une semelle EVA annoncée non marquante. La référence FX0561 correspond au modèle noir et blanc présenté dans cette fiche. Les vues de profil permettent d’examiner la hauteur de la tige et la forme de la chaussure avant de comparer les pointures. La sélection va du 36 au 47 1/3, avec les tailles précises affichées dans le sélecteur ; elle ne suppose pas que chaque demi-pointure intermédiaire existe. Pour votre choix, comparez la pointure proposée avec les indications Adidas de ce modèle.",
     "sizes": [
       "36",
       "37 1/3",
