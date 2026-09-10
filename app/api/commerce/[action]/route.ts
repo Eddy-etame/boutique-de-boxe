@@ -1,3 +1,4 @@
+import { clientIp } from '@/lib/request';
 import { db, isAdmin, readCatalog } from '@/lib/database';
 import {
   cartToken,
@@ -148,7 +149,7 @@ export async function POST(request: Request, context: Context) {
     const digest = await crypto.subtle.digest(
       'SHA-256',
       new TextEncoder().encode(
-        `${request.headers.get('cf-connecting-ip') || 'local'}:${bucket}:commerce:${action}`,
+        `${clientIp(request)}:${bucket}:commerce:${action}`,
       ),
     );
     const key = Array.from(new Uint8Array(digest), (b) =>
@@ -156,7 +157,7 @@ export async function POST(request: Request, context: Context) {
     ).join('');
     const hits = await database
       .prepare(
-        'INSERT INTO rate_limits(key,hits,expires) VALUES (?,1,?) ON CONFLICT(key) DO UPDATE SET hits=hits+1 RETURNING hits',
+        'INSERT INTO rate_limits(key,hits,expires) VALUES (?,1,?) ON CONFLICT(key) DO UPDATE SET hits=rate_limits.hits+1 RETURNING hits',
       )
       .bind(key, (bucket + 2) * 3600000)
       .first<number>('hits');
@@ -345,6 +346,9 @@ export async function POST(request: Request, context: Context) {
         ? 'simulated_paid'
         : 'simulated_declined';
     const statements = [
+      // Verrouille la ligne du panier pour la durée de la transaction : deux
+      // validations simultanées du même panier sont sérialisées côté Postgres.
+      database.prepare('SELECT revision FROM carts WHERE id=? FOR UPDATE').bind(token),
       database
         .prepare(
           'INSERT INTO simulation_orders(id,cart_id,idempotency_key,fingerprint,name,email,lines,subtotal,shipping,total,delivery,status,created_at,email_status) SELECT ?,?,?,?,?,?,?,?,?,?,?,?,?,? FROM carts WHERE id=? AND revision=? AND expires_at>?',

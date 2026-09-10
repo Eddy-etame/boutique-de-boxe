@@ -1,47 +1,12 @@
 {
   "version": "7",
-  "dialect": "sqlite",
+  "dialect": "postgresql",
   "entries": [
     {
       "idx": 0,
-      "version": "6",
-      "when": 1788979717634,
-      "tag": "0000_fair_marauders",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1788980777196,
-      "tag": "0001_careful_prima",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1789025942972,
-      "tag": "0002_oval_silver_fox",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "6",
-      "when": 1789034666677,
-      "tag": "0003_known_mysterio",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "6",
-      "when": 1789036340010,
-      "tag": "0004_giant_the_hood",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "6",
-      "when": 1789037674990,
-      "tag": "0005_silky_warlock",
+      "version": "7",
+      "when": 1789047646417,
+      "tag": "0000_slim_masque",
       "breakpoints": true
     }
   ]

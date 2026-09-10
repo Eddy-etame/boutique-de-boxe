@@ -43,3 +43,7 @@ next-env.d.ts
 
 # Safe configuration reference
 !.env.example
+
+# Vercel / Postgres local
+/.vercel
+/.postgres-local/

@@ -31,7 +31,9 @@ export type Product = {
 };
 export const shop = {
   name: 'Boutique de Boxe',
-  origin: 'https://boutique-de-boxe.etame-eddy01.chatgpt.site',
+  origin:
+    process.env.NEXT_PUBLIC_SITE_ORIGIN?.trim().replace(/\/$/, '') ||
+    'https://boutique-de-boxe.com',
   intendedDomain: 'https://boutique-de-boxe.com',
   email: 'boxingcenter31@gmail.com',
   phone: '09 54 14 74 72',

@@ -3,23 +3,27 @@ import type { Product } from './catalog';
 import original from './data/products.json';
 import imported from './data/imported-products.json';
 const products = [...original,...imported] as unknown as Product[];
-import { getChatGPTUser } from '@/app/chatgpt-auth';
+import { getSessionUser, DEV_OWNER_EMAIL } from './auth';
+import { d1Compat, type D1Database } from '@/db';
 export async function runtime() {
-  const { env } = await import('cloudflare:workers');
-  return env as unknown as PayplugEnvironment & { DB: D1Database; ADMIN_EMAIL?: string; RESEND_API_KEY?: string; MAIL_FROM?: string };
+  return process.env as unknown as PayplugEnvironment & {
+    ADMIN_EMAIL?: string;
+    RESEND_API_KEY?: string;
+    MAIL_FROM?: string;
+  };
 }
-export async function db() {
-  return (await runtime()).DB;
+export async function db(): Promise<D1Database> {
+  return d1Compat();
 }
 export async function isAdmin() {
-  const user = await getChatGPTUser();
+  const user = await getSessionUser();
   if (!user) return false;
   const env = await runtime();
   return Boolean(
     (env.ADMIN_EMAIL &&
       user.email.toLowerCase() === env.ADMIN_EMAIL.toLowerCase()) ||
     (process.env.NODE_ENV === 'development' &&
-      user.email === 'seedy@sites.test'),
+      user.email === DEV_OWNER_EMAIL),
   );
 }
 export async function readCatalog(): Promise<Product[]> {

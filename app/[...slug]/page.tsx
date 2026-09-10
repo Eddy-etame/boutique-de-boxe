@@ -27,7 +27,6 @@ import { PayplugReturn } from '@/components/payplug-settings';
 import { CartPage, ReceiptPage } from '@/components/commerce-ui';
 import selection from '@/lib/data/selection.json';
 import ogImages from '@/lib/data/og.json';
-import { chatGPTSignInPath } from '@/app/chatgpt-auth';
 export const dynamic = 'force-dynamic';
 type Props = {
   params: Promise<{ slug: string[] }>;
@@ -261,13 +260,11 @@ export default async function Page({ params, searchParams }: Props) {
               Connectez-vous avec le compte administrateur autorisé de cette
               boutique.
             </p>
-            <a
-              target="_top"
-              href={chatGPTSignInPath('/atelier/')}
-              className="button button-dark"
-            >
-              Se connecter avec ChatGPT ↗
-            </a>
+            <form method="post" action="/api/auth/magic-link" className="atelier-signin">
+              <label htmlFor="owner-email">Adresse e-mail du propriétaire</label>
+              <input id="owner-email" name="email" type="email" required autoComplete="email" />
+              <button type="submit" className="button button-dark">Recevoir le lien de connexion</button>
+            </form>
           </div>
         )}
       </main>

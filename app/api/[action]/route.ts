@@ -4,7 +4,8 @@ import { validateProduct } from '@/lib/product-input';
 
 import { shop } from '@/lib/catalog';
 
-import { getChatGPTUser } from '@/app/chatgpt-auth';
+import { getSessionUser } from '@/lib/auth';
+import { clientIp } from '@/lib/request';
 
 export const dynamic = 'force-dynamic';
 
@@ -91,7 +92,7 @@ async function body(request: Request) {
 }
 
 async function limit(request: Request) {
-  const ip = request.headers.get('cf-connecting-ip') || 'local';
+  const ip = clientIp(request);
 
   const bucket = Math.floor(Date.now() / 3600000);
 
@@ -119,7 +120,7 @@ async function limit(request: Request) {
   const count = await database
 
     .prepare(
-      'INSERT INTO rate_limits (key,hits,expires) VALUES (?,1,?) ON CONFLICT(key) DO UPDATE SET hits=hits+1 RETURNING hits',
+      'INSERT INTO rate_limits (key,hits,expires) VALUES (?,1,?) ON CONFLICT(key) DO UPDATE SET hits=rate_limits.hits+1 RETURNING hits',
     )
 
     .bind(key, (bucket + 2) * 3600000)
@@ -148,7 +149,7 @@ export async function GET(
       database
 
         .prepare(
-          "SELECT a.id,a.email,a.product_id,a.variant,a.created_at,a.unsubscribe_token,COALESCE(o.name,json_extract(c.payload,'$.name')) AS product_name,c.archived AS product_archived FROM alerts a LEFT JOIN catalog_entries c ON c.id=a.product_id LEFT JOIN product_overrides o ON o.product_id=a.product_id ORDER BY a.created_at DESC LIMIT 300",
+          "SELECT a.id,a.email,a.product_id,a.variant,a.created_at,a.unsubscribe_token,COALESCE(o.name,(c.payload::jsonb->>'name')) AS product_name,c.archived AS product_archived FROM alerts a LEFT JOIN catalog_entries c ON c.id=a.product_id LEFT JOIN product_overrides o ON o.product_id=a.product_id ORDER BY a.created_at DESC LIMIT 300",
         )
 
         .all(),
@@ -213,7 +214,7 @@ export async function POST(
       const database = await db();
       const reserved = await database
         .prepare(
-          "SELECT id FROM catalog_entries WHERE archived=1 AND (id=? OR json_extract(payload,'$.slug')=?) LIMIT 1",
+          "SELECT id FROM catalog_entries WHERE archived=1 AND (id=? OR (payload::jsonb->>'slug')=?) LIMIT 1",
         )
         .bind(product.id, product.slug)
         .first();
@@ -332,7 +333,7 @@ export async function POST(
         return response({ error: 'Vérifiez les champs du produit.' }, 400);
 
       if (p.variants?.length && data.priceCents!==p.price) return response({error:'Modifiez les prix de chaque déclinaison dans la fiche complète.'},400);
-      const user = await getChatGPTUser();
+      const user = await getSessionUser();
 
       await (
         await db()

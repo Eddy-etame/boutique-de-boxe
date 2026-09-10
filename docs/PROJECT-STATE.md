@@ -2,6 +2,10 @@
 
 Mise à jour : 10 septembre 2026, après-midi. Cette section décrit le chantier actuel ; les journaux datés plus bas constituent l’historique.
 
+### Portage Vercel + Supabase, 10 septembre fin d’après-midi
+
+L’application a quitté OpenAI Sites / Cloudflare D1 : **Next.js 16 sur Vercel, Postgres Supabase, lien magique Supabase Auth** pour l’atelier. Détail et procédure dans [DEPLOY-VERCEL.md](DEPLOY-VERCEL.md). Contrôles rejoués après portage sur Postgres local : lint, TypeScript, build de production, audit catalogue, 78 + 19 tests unitaires, 16 tests API, 18 contrôles commerce. Le test `test-payplug-sqlite.py` visait les migrations D1 et n’est plus pertinent. Restent à faire par le propriétaire : projet Vercel importé depuis GitHub avec les variables listées, migrations appliquées sur Supabase, URLs de redirection Supabase Auth, domaine.
+
 ### Décisions du propriétaire, 10 septembre après-midi
 
 Panier et paiement simulé demandés par le propriétaire (le brief les excluait). Photos et prix des boutiques sources autorisés ; conserver toutes les photos des produits tarifés. Publier d’abord cette version à 1 055 références, importer le gel à 1 230 ensuite. Crawl Le Coin du Ring repris (un collecteur). E-mails via Inlett, pas Resend. Base de données à migrer vers Supabase, sans wrangler ; périmètre d’hébergement à confirmer. Contrôles rejoués sur cette version : lint, TypeScript, audit catalogue, 78 + 19 + 10 tests, 18 contrôles commerce, 1 088 URL rendues avec métadonnées uniques.

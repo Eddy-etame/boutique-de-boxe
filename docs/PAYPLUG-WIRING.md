@@ -7,7 +7,7 @@
 - Réglages privés dans **Atelier → Réglages PayPlug** : présence des clés, mode, version d’API, URL des retours, éléments manquants et 50 dernières tentatives. Les secrets ne sont jamais renvoyés au navigateur.
 - Adaptateur serveur `lib/payplug.ts`, inspiré des contrôles de box-plus et vérifié contre l’API officielle. Paiement hébergé chez PayPlug : aucun numéro de carte n’est collecté par la boutique.
 - Parcours PayPlug **de test**, réservé à l’administrateur et désactivé par défaut : panier réel du site, coordonnées de test, montant calculé au serveur, redirection vers la page PayPlug et vérification serveur au retour.
-- Table D1 `payment_attempts`, séparée des commandes simulées. Instantané des articles, déclinaisons, prix, coordonnées et montant ; unicité de la tentative et de la version du panier.
+- Table Postgres `payment_attempts`, séparée des commandes simulées. Instantané des articles, déclinaisons, prix, coordonnées et montant ; unicité de la tentative et de la version du panier.
 - Une réponse perdue ne crée pas automatiquement un deuxième paiement. L’atelier permet de rapprocher un identifiant relevé dans le portail PayPlug d’une tentative interrompue.
 - Notification IPN : récupération authentifiée du paiement auprès de PayPlug ; vérification exacte de l’identifiant, du montant en centimes, de l’EUR, du mode test/réel et des métadonnées de liaison à la tentative. Les informations de paiement reçues directement du navigateur ou du corps de notification ne font pas foi.
 - Un retour navigateur, une autorisation seule ou un paiement différé ne déclenchent pas une confirmation de paiement. Les remboursements sont signalés pour vérification ; aucune expédition automatique n’existe.
@@ -22,14 +22,14 @@
 | `PAYPLUG_LIVE_SECRET_KEY` | Vide maintenant | Réservée à une future activation explicite. Sa seule présence n’active rien. |
 | `PAYPLUG_API_VERSION` | `2019-08-06` | Version explicitement prise en charge et testée. Une autre valeur est refusée. |
 | `PAYPLUG_PUBLIC_BASE_URL` | Origine HTTPS exacte de cette boutique | Sert à construire les retours et notifications ; ne vient jamais de l’en-tête Host ou d’une saisie client. |
-| `ADMIN_EMAIL` | Compte propriétaire autorisé déjà configuré sur Sites | Accès à l’atelier et aux tests PayPlug. |
+| `ADMIN_EMAIL` | Adresse du propriétaire, variable Vercel | Accès à l’atelier et aux tests PayPlug. |
 | `RESEND_API_KEY` | À configurer si Resend est retenu | Envoi transactionnel des reçus de simulation ; indépendant de PayPlug. |
 | `MAIL_FROM` | À configurer sur un domaine expéditeur vérifié | Exemple de forme : `Boutique de Boxe <reçus@votre-domaine-verifie.fr>` ; ne pas utiliser cet exemple tel quel. |
-| `DB` | Liaison D1 existante | Stockage des paniers, demandes, commandes simulées et tentatives PayPlug. Ce n’est pas une URL de base à placer dans un secret. |
+| `DATABASE_URL` | Chaîne du pooler Supabase (port 6543) | Stockage des paniers, demandes, commandes simulées et tentatives PayPlug. Ce n’est pas une URL de base à placer dans un secret. |
 
-Le fichier `.env.example` contient des noms et valeurs de référence sans secret. Sur ce projet Cloudflare, les secrets locaux se placent dans **`.dev.vars`**, ignoré par Git ; un fichier `.env` seul ne garantit pas leur disponibilité dans `cloudflare:workers`. Sur OpenAI Sites, utiliser les variables/secrets de l’environnement hébergé. Ne pas mettre de clé dans `NEXT_PUBLIC_*`, dans le catalogue, dans un formulaire ou dans Git. Ne pas modifier les secrets de box-plus.
+Le fichier `.env.example` contient des noms et valeurs de référence sans secret. En local, les secrets se placent dans **`.env.local`**, ignoré par Git ; sur Vercel, dans Settings → Environment Variables (voir DEPLOY-VERCEL.md). Ne pas mettre de clé dans `NEXT_PUBLIC_*`, dans le catalogue, dans un formulaire ou dans Git. Ne pas modifier les secrets de box-plus.
 
-Les origines autorisées dans l’adaptateur sont l’adresse Sites actuelle et `https://boutique-de-boxe.com` / `https://www.boutique-de-boxe.com`. Cette liste est une restriction technique ; elle ne prouve pas que le domaine personnalisé est connecté. Un changement de domaine nécessite de vérifier son contrôle, son HTTPS, puis de mettre à jour la liste et les canonicals ensemble.
+Les origines autorisées dans l’adaptateur sont `NEXT_PUBLIC_SITE_ORIGIN` (si défini) et `https://boutique-de-boxe.com` / `https://www.boutique-de-boxe.com`. Cette liste est une restriction technique ; elle ne prouve pas que le domaine personnalisé est connecté. Un changement de domaine nécessite de vérifier son contrôle, son HTTPS, puis de mettre à jour la liste et les canonicals ensemble.
 
 ## Routes préparées
 
@@ -45,8 +45,8 @@ Les origines autorisées dans l’adaptateur sont l’adresse Sites actuelle et 
 ## Ce qui reste avant un vrai test PayPlug
 
 1. Confirmer le compte marchand Boxing Center à utiliser et fournir sa clé **de test** dans les secrets de cette boutique. Les fonctionnalités et limites du compte restent à vérifier dans le portail.
-2. Fournir une origine HTTPS réellement joignable par PayPlug. **L’aperçu Sites actuel est privé : sa barrière d’accès peut bloquer les IPN.** Il faut un environnement de test dont cette route est publiquement accessible, ou une configuration d’accès compatible vérifiée. Ne pas élargir l’accès au site automatiquement.
-3. Appliquer la migration D1 `0004_giant_the_hood.sql` puis `0005_silky_warlock.sql` via le mécanisme de migration de déploiement, après les migrations précédentes. Elles sont déjà appliquées localement. La seconde conserve un marqueur de remboursement pour empêcher une notification ancienne d’effacer un besoin de vérification. Les migrations sont incluses au build Sites ; vérifier leur application lors du prochain déploiement.
+2. Fournir une origine HTTPS réellement joignable par PayPlug. **Un aperçu Vercel protégé par mot de passe bloquerait les IPN ; utiliser un déploiement dont `/api/payplug/ipn` est public.** Il faut un environnement de test dont cette route est publiquement accessible, ou une configuration d’accès compatible vérifiée. Ne pas élargir l’accès au site automatiquement.
+3. Appliquer les migrations Postgres sur Supabase (`pnpm db:migrate`, voir DEPLOY-VERCEL.md) ; la table `payment_attempts` fait partie de la migration initiale `0000_slim_masque.sql`. La seconde conserve un marqueur de remboursement pour empêcher une notification ancienne d’effacer un besoin de vérification. Les migrations sont incluses au build Sites ; vérifier leur application lors du prochain déploiement.
 4. Renseigner `PAYPLUG_PUBLIC_BASE_URL`, puis passer **explicitement** `COMMERCE_MODE` à `payplug_test` dans cet environnement de test. Vérifier les réglages de l’atelier. Le panier public restera simulé.
 5. Effectuer un test complet avec les cartes de test documentées par PayPlug : succès, refus, annulation du retour, authentification 3-D Secure si présentée, retour avant/après IPN, notification répétée, réponse de création interrompue et rapprochement manuel. Vérifier les états D1 et le portail, ainsi que l’absence de double paiement.
 6. Revenir à `COMMERCE_MODE=simulation` après la recette tant que l’ouverture des ventes n’a pas été demandée.

@@ -36,7 +36,7 @@ const billing = {
 const env = {
   COMMERCE_MODE: 'payplug_test',
   PAYPLUG_TEST_SECRET_KEY: 'sk_test_MOCKKEYONLY',
-  PAYPLUG_PUBLIC_BASE_URL: 'https://boutique-de-boxe.etame-eddy01.chatgpt.site',
+  PAYPLUG_PUBLIC_BASE_URL: 'https://boutique-de-boxe.com',
 };
 const paymentId = 'pay_MockPaymentIdentifier123';
 const pending = () => ({

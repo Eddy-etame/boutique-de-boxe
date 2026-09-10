@@ -690,8 +690,9 @@ function apiHarness({ forceKeyReadRace = false } = {}) {
             intendedDomain: 'https://unit.test.invalid',
           },
         };
-      if (specifier === '@/app/chatgpt-auth')
-        return { getChatGPTUser: async () => null };
+      if (specifier === '@/lib/request') return { clientIp: () => 'unit-test' };
+      if (specifier === '@/lib/auth')
+        return { getSessionUser: async () => null, DEV_OWNER_EMAIL: 'seedy@sites.test' };
       throw new Error(`Unmocked dependency is forbidden: ${specifier}`);
     },
     fetch() {

@@ -1,10 +1,14 @@
 import {
-  sqliteTable,
+  pgTable,
   text,
   integer,
+  bigint,
   uniqueIndex,
-} from 'drizzle-orm/sqlite-core';
-export const alerts = sqliteTable(
+} from 'drizzle-orm/pg-core';
+
+// Colonnes et noms identiques à l’ancien schéma D1 : le code applicatif
+// interroge ces tables en SQL brut via l’adaptateur de db/index.ts.
+export const alerts = pgTable(
   'alerts',
   {
     id: text('id').primaryKey(),
@@ -24,7 +28,7 @@ export const alerts = sqliteTable(
     uniqueIndex('alerts_unsubscribe_token').on(t.unsubscribeToken),
   ],
 );
-export const contacts = sqliteTable('contacts', {
+export const contacts = pgTable('contacts', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
   email: text('email').notNull(),
@@ -34,7 +38,7 @@ export const contacts = sqliteTable('contacts', {
   relayToken: text('relay_token'),
   relayStatus: text('relay_status').notNull().default('pending'),
 });
-export const productOverrides = sqliteTable('product_overrides', {
+export const productOverrides = pgTable('product_overrides', {
   productId: text('product_id').primaryKey(),
   name: text('name').notNull(),
   description: text('description').notNull(),
@@ -44,27 +48,27 @@ export const productOverrides = sqliteTable('product_overrides', {
   updatedAt: text('updated_at').notNull(),
   updatedBy: text('updated_by').notNull(),
 });
-export const rateLimits = sqliteTable('rate_limits', {
+export const rateLimits = pgTable('rate_limits', {
   key: text('key').primaryKey(),
   hits: integer('hits').notNull(),
-  expires: integer('expires').notNull(),
+  expires: bigint('expires', { mode: 'number' }).notNull(),
 });
 
-export const catalogEntries = sqliteTable('catalog_entries', {
+export const catalogEntries = pgTable('catalog_entries', {
   id: text('id').primaryKey(),
   payload: text('payload').notNull(),
   archived: integer('archived').notNull().default(0),
   updatedAt: text('updated_at').notNull(),
 });
 
-export const carts = sqliteTable('carts', {
+export const carts = pgTable('carts', {
   id: text('id').primaryKey(),
   payload: text('payload').notNull(),
   updatedAt: text('updated_at').notNull(),
-  expiresAt: integer('expires_at').notNull(),
+  expiresAt: bigint('expires_at', { mode: 'number' }).notNull(),
   revision: integer('revision').notNull().default(0),
 });
-export const simulationOrders = sqliteTable(
+export const simulationOrders = pgTable(
   'simulation_orders',
   {
     id: text('id').primaryKey(),
@@ -90,7 +94,7 @@ export const simulationOrders = sqliteTable(
   ],
 );
 
-export const paymentAttempts = sqliteTable(
+export const paymentAttempts = pgTable(
   'payment_attempts',
   {
     id: text('id').primaryKey(),
