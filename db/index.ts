@@ -42,9 +42,18 @@ const int8AsNumber = {
 
 declare global {
   var __boutiqueSql: postgres.Sql | undefined;
+  var __boutiqueSqlFailedAt: number | undefined;
+}
+
+/** Après un échec de connexion, on n’essaie plus pendant 30 s : une base morte coûte une tentative, pas une par page. */
+export function rememberFailure() {
+  globalThis.__boutiqueSqlFailedAt = Date.now();
 }
 
 export function sqlClient(): postgres.Sql {
+  if (globalThis.__boutiqueSqlFailedAt && Date.now() - globalThis.__boutiqueSqlFailedAt < 30_000) {
+    throw new Error('Base indisponible (nouvel essai dans quelques secondes).');
+  }
   if (!globalThis.__boutiqueSql) {
     const url = process.env.DATABASE_URL?.trim();
     if (!url) {
@@ -57,7 +66,7 @@ export function sqlClient(): postgres.Sql {
       prepare: false,
       max: 4,
       idle_timeout: 20,
-      connect_timeout: 10,
+      connect_timeout: 4,
       ssl: local ? undefined : 'require',
       types: { int8AsNumber },
     });
@@ -106,7 +115,16 @@ class Statement implements D1PreparedStatement {
   }
 
   private async execute(executor: Executor = this.executor) {
-    return executor.unsafe(this.text, this.params as never[]);
+    try {
+      const rows = await executor.unsafe(this.text, this.params as never[]);
+      globalThis.__boutiqueSqlFailedAt = undefined;
+      return rows;
+    } catch (error) {
+      const code = (error as { code?: string }).code || '';
+      // Connexion impossible ou base sans tables : on mémorise l’échec.
+      if (/ECONN|ETIMEDOUT|ENOTFOUND|EAI_AGAIN|CONNECT_TIMEOUT|42P01|28P01|3D000/.test(code) || /timeout|connect/i.test(String((error as Error).message))) rememberFailure();
+      throw error;
+    }
   }
 
   async first<T = Row>(column?: string): Promise<T | null> {

@@ -2,7 +2,7 @@
    Fichiers statiques et photos : cache d’abord. Pages : réseau d’abord, avec la
    dernière copie en secours, puis la page hors-ligne. Jamais de mise en cache des
    appels API ni des pages privées. */
-const VERSION = 'bdb-v2';
+const VERSION = 'bdb-v3';
 const SHELL = ['/hors-ligne/', '/favicon.svg', '/icons/icon-192.png'];
 
 self.addEventListener('install', (event) => {
@@ -30,7 +30,10 @@ self.addEventListener('fetch', (event) => {
         (hit) =>
           hit ||
           fetch(req).then((res) => {
-            if (res.ok) void caches.open(VERSION).then((c) => c.put(req, res.clone()));
+            if (res.ok) {
+              const copy = res.clone();
+              void caches.open(VERSION).then((c) => c.put(req, copy));
+            }
             return res;
           }),
       ),
@@ -42,7 +45,10 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(req)
         .then((res) => {
-          if (res.ok) void caches.open(VERSION).then((c) => c.put(req, res.clone()));
+          if (res.ok) {
+            const copy = res.clone();
+            void caches.open(VERSION).then((c) => c.put(req, copy));
+          }
           return res;
         })
         .catch(() => caches.match(req).then((hit) => hit || caches.match('/hors-ligne/'))),
