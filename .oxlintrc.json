@@ -55,6 +55,7 @@
     "typescript/no-unnecessary-type-constraint": "error",
     "typescript/no-unsafe-function-type": "error",
     "nextjs/no-img-element": "off",
+    "nextjs/no-html-link-for-pages": "off",
     "jsx-a11y/prefer-tag-over-role": "off"
   }
 }

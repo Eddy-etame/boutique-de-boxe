@@ -1,5 +1,4 @@
 'use client';
-import Link from 'next/link';
 import { useState } from 'react';
 import { ArrowUpRight } from 'lucide-react';
 export function ContactForm() {
@@ -77,9 +76,7 @@ export function ContactForm() {
       </label>
       <p className="form-privacy">
         Vos informations servent à traiter votre demande.{' '}
-        <Link href="/confidentialite/">
-          Lire la politique de confidentialité.
-        </Link>
+        <a href="/confidentialite/">Lire la politique de confidentialité.</a>
       </p>
       <button className="button button-blue" disabled={busy}>
         {busy ? 'Enregistrement…' : 'Envoyer ma demande'}

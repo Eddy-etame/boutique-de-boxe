@@ -1,4 +1,3 @@
-import Link from 'next/link';
 export default function NotFound() {
   return (
     <main id="contenu" className="page-wrap">
@@ -12,9 +11,9 @@ export default function NotFound() {
           Reprenez votre recherche parmi les équipements et les guides du
           catalogue.
         </p>
-        <Link className="button button-dark" href="/materiel-sport-de-combat/">
+        <a className="button button-dark" href="/materiel-sport-de-combat/">
           Retrouver le catalogue ↗
-        </Link>
+        </a>
       </section>
     </main>
   );

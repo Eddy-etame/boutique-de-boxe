@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import type { Metadata } from 'next';
 import { Header, Footer, Motion } from '@/components/shop-shell';
 import { shop, jsonLd } from '@/lib/catalog';
@@ -48,9 +47,9 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <Link href="#contenu" className="skip-link">
+        <a href="#contenu" className="skip-link">
           Aller au contenu
-        </Link>
+        </a>
         <Header />
         {children}
         <Footer />

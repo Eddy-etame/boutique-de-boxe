@@ -1,5 +1,4 @@
 'use client';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { ArrowUpRight, Search, Menu, ArrowRight, X } from 'lucide-react';
@@ -13,7 +12,7 @@ import {
 import { categories, shop, jsonLd } from '@/lib/catalog';
 export function Brand() {
   return (
-    <Link href="/" className="brand" aria-label="Boutique de Boxe, accueil">
+    <a href="/" className="brand" aria-label="Boutique de Boxe, accueil">
       <svg viewBox="0 0 48 48" aria-hidden="true">
         <path d="M4 4h27v10H14v20h20V17h10v27H4z" fill="currentColor" />
         <path d="M35 4h9v9h-9z" fill="var(--blue)" />
@@ -21,7 +20,7 @@ export function Brand() {
       <span>
         BOUTIQUE<span>DE BOXE.</span>
       </span>
-    </Link>
+    </a>
   );
 }
 export function Header() {
@@ -31,28 +30,28 @@ export function Header() {
       <div className="launch-strip">
         <span className="status-dot" />
         LE CATALOGUE S’OUVRE. LES VENTES ARRIVENT.
-        <Link href="/offres-de-lancement/">
+        <a href="/offres-de-lancement/">
           En savoir plus <ArrowUpRight size={13} />
-        </Link>
+        </a>
       </div>
       <header className="site-header">
         <Brand />
         <nav aria-label="Navigation principale" className="desktop-nav">
-          <Link href="/materiel-boxe/">Boxe anglaise</Link>
-          <Link href="/materiel-mma/">MMA</Link>
-          <Link href="/boutique-arts-martiaux/">Arts martiaux</Link>
-          <Link href="/guides/" onClick={() => setMenu(false)}>
+          <a href="/materiel-boxe/">Boxe anglaise</a>
+          <a href="/materiel-mma/">MMA</a>
+          <a href="/boutique-arts-martiaux/">Arts martiaux</a>
+          <a href="/guides/" onClick={() => setMenu(false)}>
             Les guides <ArrowUpRight size={13} />
-          </Link>
+          </a>
         </nav>
         <div className="header-actions">
-          <Link
+          <a
             className="icon-button"
             href="/recherche/"
             aria-label="Rechercher un équipement"
           >
             <Search size={21} />
-          </Link>
+          </a>
           <Dialog open={menu} onOpenChange={setMenu}>
             <DialogTrigger
               className="icon-button menu-trigger"
@@ -74,31 +73,31 @@ export function Header() {
               </button>
               <nav aria-label="Menu mobile">
                 {categories.slice(6, 9).map((c) => (
-                  <Link
+                  <a
                     key={c.slug}
                     href={`/${c.slug}/`}
                     onClick={() => setMenu(false)}
                   >
                     {c.name}
                     <ArrowUpRight />
-                  </Link>
+                  </a>
                 ))}
                 {categories.slice(0, 6).map((c) => (
-                  <Link
+                  <a
                     key={c.slug}
                     href={`/${c.slug}/`}
                     onClick={() => setMenu(false)}
                   >
                     {c.name}
                     <ArrowUpRight />
-                  </Link>
+                  </a>
                 ))}
-                <Link href="/guides/" onClick={() => setMenu(false)}>
+                <a href="/guides/" onClick={() => setMenu(false)}>
                   Les guides <ArrowUpRight />
-                </Link>
-                <Link href="/contact/" onClick={() => setMenu(false)}>
+                </a>
+                <a href="/contact/" onClick={() => setMenu(false)}>
                   Contact <ArrowUpRight />
-                </Link>
+                </a>
               </nav>
             </DialogContent>
           </Dialog>
@@ -119,13 +118,13 @@ export function Footer() {
             <em>SON ÉQUIPEMENT.</em>
           </p>
         </div>
-        <Link
+        <a
           className="round-link"
           href="/materiel-sport-de-combat/"
           aria-label="Explorer tout le matériel"
         >
           <ArrowUpRight size={42} />
-        </Link>
+        </a>
       </div>
       <div className="footer-grid">
         <div>
@@ -138,41 +137,41 @@ export function Footer() {
         <div>
           <h2>Le catalogue</h2>
           {categories.slice(0, 6).map((c) => (
-            <Link key={c.slug} href={`/${c.slug}/`}>
+            <a key={c.slug} href={`/${c.slug}/`}>
               {c.name}
-            </Link>
+            </a>
           ))}
-          <Link href="/nouveautes/">Nouveautés</Link>
+          <a href="/nouveautes/">Nouveautés</a>
         </div>
         <div>
           <h2>Dans votre coin</h2>
-          <Link href="/guides/">Guides d’achat</Link>
-          <Link href="/guide-des-tailles/">Guide des tailles</Link>
-          <Link href="/#preparer">Préparer ma séance</Link>
-          <Link href="/livraison/">Livraison</Link>
-          <Link href="/retours/">Retours</Link>
-          <Link href="/contact/">Contact</Link>
-          <Link href="/offres-de-lancement/">Ouverture de la boutique</Link>
+          <a href="/guides/">Guides d’achat</a>
+          <a href="/guide-des-tailles/">Guide des tailles</a>
+          <a href="/#preparer">Préparer ma séance</a>
+          <a href="/livraison/">Livraison</a>
+          <a href="/retours/">Retours</a>
+          <a href="/contact/">Contact</a>
+          <a href="/offres-de-lancement/">Ouverture de la boutique</a>
         </div>
         <div>
           <h2>La boutique</h2>
-          <Link href="/materiel-boxe/">Boxe anglaise</Link>
-          <Link href="/materiel-mma/">Matériel MMA</Link>
-          <Link href="/boutique-arts-martiaux/">Arts martiaux</Link>
-          <Link href="/materiel-sport-de-combat/">Sports de combat</Link>
-          <Link href="mailto:boxingcenter31@gmail.com" className="email-link">
+          <a href="/materiel-boxe/">Boxe anglaise</a>
+          <a href="/materiel-mma/">Matériel MMA</a>
+          <a href="/boutique-arts-martiaux/">Arts martiaux</a>
+          <a href="/materiel-sport-de-combat/">Sports de combat</a>
+          <a href="mailto:boxingcenter31@gmail.com" className="email-link">
             Nous écrire <ArrowUpRight size={14} />
-          </Link>
+          </a>
         </div>
       </div>
       <div className="footer-bottom">
         <MotionControl />
         <span>© {new Date().getFullYear()} Boutique de Boxe</span>
         <nav aria-label="Informations légales">
-          <Link href="/mentions-legales/">Mentions légales</Link>
-          <Link href="/conditions-generales-de-vente/">CGV</Link>
-          <Link href="/confidentialite/">Confidentialité</Link>
-          <Link href="/atelier/">Administration</Link>
+          <a href="/mentions-legales/">Mentions légales</a>
+          <a href="/conditions-generales-de-vente/">CGV</a>
+          <a href="/confidentialite/">Confidentialité</a>
+          <a href="/atelier/">Administration</a>
         </nav>
       </div>
     </footer>
@@ -224,12 +223,12 @@ export function Breadcrumb({
         }}
       />
       <nav className="breadcrumb" aria-label="Fil d’Ariane">
-        <Link href="/">Accueil</Link>
+        <a href="/">Accueil</a>
         {items.map((x, i) => (
           <span key={i}>
             <span aria-hidden="true">/</span>
             {x.href ? (
-              <Link href={x.href}>{x.label}</Link>
+              <a href={x.href}>{x.label}</a>
             ) : (
               <span aria-current="page">{x.label}</span>
             )}
@@ -249,10 +248,10 @@ export function ArrowLink({
   dark?: boolean;
 }) {
   return (
-    <Link href={href} className={`button ${dark ? 'button-dark' : ''}`}>
+    <a href={href} className={`button ${dark ? 'button-dark' : ''}`}>
       {children}
       <ArrowRight size={18} />
-    </Link>
+    </a>
   );
 }
 

@@ -190,10 +190,11 @@ await check('Forged administrator headers denied', async () =>
 await check('Catalogue add, metadata update, archive', async () => {
   const all = await (await request('catalog')).json();
   const original = all.products[0];
+  const reference = 'qa-reference-' + Date.now();
   const product = {
     ...original,
-    id: 'qa-reference',
-    slug: 'qa-reference',
+    id: reference,
+    slug: reference,
     name: 'Référence de test catalogue',
     short: 'Référence synthétique pour le contrôle local du catalogue.',
   };
@@ -202,10 +203,13 @@ await check('Catalogue add, metadata update, archive', async () => {
       (await request('admin-catalog', { product }, admin)).status,
       201,
     );
-    assert.equal((await fetch(base + '/produits/qa-reference/')).status, 200);
+    assert.equal(
+      (await fetch(base + '/produits/' + reference + '/')).status,
+      200,
+    );
     assert.ok(
       (await (await fetch(base + '/sitemap.xml')).text()).includes(
-        '/produits/qa-reference/',
+        '/produits/' + reference + '/',
       ),
     );
     assert.equal(
@@ -240,7 +244,20 @@ await check('Catalogue add, metadata update, archive', async () => {
       ).status,
       201,
     );
-    const html = await (await fetch(base + '/produits/qa-reference/')).text();
+    assert.equal(
+      (
+        await request('alerts', {
+          email,
+          productId: product.id,
+          variant: '',
+          consent: true,
+        })
+      ).status,
+      201,
+    );
+    const html = await (
+      await fetch(base + '/produits/' + reference + '/')
+    ).text();
     assert.ok(
       html.includes('Description de test mise à jour dans les métadonnées.'),
     );
@@ -250,7 +267,34 @@ await check('Catalogue add, metadata update, archive', async () => {
       200,
     );
   }
-  assert.equal((await fetch(base + '/produits/qa-reference/')).status, 404);
+  assert.equal(
+    (await fetch(base + '/produits/' + reference + '/')).status,
+    404,
+  );
+  assert.equal(
+    (await request('admin-catalog', { product }, admin)).status,
+    409,
+  );
+  assert.equal(
+    (
+      await request(
+        'admin-catalog',
+        { product: { ...product, id: reference + '-other' } },
+        admin,
+      )
+    ).status,
+    409,
+  );
+  const after = await (await request('admin', undefined, admin)).json();
+  const alert = after.alerts.find(
+    (a) => a.email === email && a.product_id === product.id,
+  );
+  assert.equal(alert.product_name, product.name);
+  assert.equal(alert.product_archived, 1);
+  assert.equal(
+    (await request('unsubscribe', { token: alert.unsubscribe_token })).status,
+    200,
+  );
 });
 await check('Rate limit enforced', async () => {
   let status;

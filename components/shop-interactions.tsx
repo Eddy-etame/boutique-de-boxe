@@ -1,5 +1,4 @@
 'use client';
-import Link from 'next/link';
 import { useMemo, useState, useEffect } from 'react';
 import {
   ArrowRight,
@@ -35,7 +34,7 @@ export function ProductCard({
 }) {
   return (
     <article className="product-card">
-      <Link href={`/produits/${p.slug}/`} className="product-image">
+      <a href={`/produits/${p.slug}/`} className="product-image">
         <span className="product-index">
           {String(index + 1).padStart(2, '0')}
         </span>
@@ -52,7 +51,7 @@ export function ProductCard({
         <span className="product-arrow">
           <ArrowUpRight size={20} />
         </span>
-      </Link>
+      </a>
       <div className="product-meta">
         <span>{p.brand}</span>
         <span>
@@ -62,7 +61,7 @@ export function ProductCard({
         </span>
       </div>
       <h3>
-        <Link href={`/produits/${p.slug}/`}>{cleanName(p)}</Link>
+        <a href={`/produits/${p.slug}/`}>{cleanName(p)}</a>
       </h3>
       <div className="price-row">
         <strong>{money(p.price)}</strong>
@@ -122,9 +121,9 @@ export function HeroStage({ product: p }: { product: Product }) {
           <strong>{selected.title}</strong>
           <p>{selected.text}</p>
         </div>
-        <Link href={`/produits/${p.slug}/`} aria-label="Voir les gants Blade">
+        <a href={`/produits/${p.slug}/`} aria-label="Voir les gants Blade">
           <ArrowUpRight />
-        </Link>
+        </a>
       </div>
       <div
         className="stage-controls"
@@ -329,9 +328,9 @@ export function Catalog({
               Voir toute la sélection <ArrowRight size={18} />
             </button>
           ) : (
-            <Link className="button button-dark" href="/guides/">
+            <a className="button button-dark" href="/guides/">
               Consulter les guides <ArrowRight size={18} />
-            </Link>
+            </a>
           )}
         </div>
       )}
@@ -440,7 +439,7 @@ export function SessionChooser({ items }: { items: Product[] }) {
         </div>
         <div className="session-products">
           {results.map((p) => (
-            <Link key={p.id} href={`/produits/${p.slug}/`}>
+            <a key={p.id} href={`/produits/${p.slug}/`}>
               <img
                 src={p.images[0]?.small}
                 width={112}
@@ -456,15 +455,15 @@ export function SessionChooser({ items }: { items: Product[] }) {
                 <span>{money(p.price)} · indicatif</span>
               </div>
               <ArrowUpRight size={18} />
-            </Link>
+            </a>
           ))}
         </div>
-        <Link
+        <a
           className="session-guide"
           href={`/guides/${context === 'enfant' && discipline === 'mma' ? 'debuter-mma' : selected.guide}/`}
         >
           Les repères pour choisir <ArrowRight size={18} />
-        </Link>
+        </a>
       </div>
     </section>
   );
@@ -534,9 +533,9 @@ export function ProductDetails({ product: p }: { product: Product }) {
           <fieldset className="variant-picker">
             <legend>
               Déclinaison présentée{' '}
-              <Link href="/guide-des-tailles/">
+              <a href="/guide-des-tailles/">
                 Comment choisir ? <ArrowUpRight size={13} />
-              </Link>
+              </a>
             </legend>
             {p.sizes.map((s) => (
               <button
@@ -566,10 +565,10 @@ export function ProductDetails({ product: p }: { product: Product }) {
             Aucune commande à ce stade
           </span>
         </div>
-        <Link href="/livraison/" className="inline-link">
+        <a href="/livraison/" className="inline-link">
           Livraison France métropolitaine : conditions indicatives{' '}
           <ArrowUpRight size={15} />
-        </Link>
+        </a>
       </div>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="zoom-dialog" showCloseButton={false}>
@@ -686,7 +685,7 @@ export function AlertForm({
       <label className="consent">
         <input type="checkbox" name="consent" required />
         J’accepte de recevoir l’alerte demandée.{' '}
-        <Link href="/confidentialite/">Confidentialité</Link>
+        <a href="/confidentialite/">Confidentialité</a>
       </label>
       {state && (
         <p role="status" className="form-status">

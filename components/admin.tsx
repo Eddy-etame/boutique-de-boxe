@@ -1,5 +1,4 @@
 'use client';
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { CatalogEditor } from './catalog-editor';
 import type { Product } from '@/lib/catalog';
@@ -119,9 +118,13 @@ export function Admin() {
               ))}
             </select>
           </label>
-          <CatalogEditor key={p.id} product={p} onSaved={refresh} />
+          <CatalogEditor
+            key={'full-' + p.id + '-' + p.updatedAt}
+            product={p}
+            onSaved={refresh}
+          />
           <form
-            key={p.id + '-' + p.name + '-' + p.price}
+            key={'quick-' + p.id + '-' + p.updatedAt}
             onSubmit={async (e) => {
               e.preventDefault();
               setSaved('');
@@ -211,14 +214,14 @@ export function Admin() {
             <button className="button button-blue">
               Enregistrer le produit ↗
             </button>
-            <Link
+            <a
               className="inline-link"
               href={'/produits/' + p.slug + '/'}
               target="_blank"
               rel="noreferrer"
             >
               Voir la fiche publique ↗
-            </Link>
+            </a>
             <p role="status">{saved}</p>
           </form>
         </div>
@@ -242,14 +245,17 @@ export function Admin() {
                     {new Date(row.created_at).toLocaleString('fr-FR')}
                   </span>
                 </div>
-                <Link href={'mailto:' + row.email}>{row.email}</Link>
+                <a href={'mailto:' + row.email}>{row.email}</a>
                 {tab === 'alerts' ? (
                   <>
                     <p>
                       {row.product_id === 'launch'
                         ? 'Ouverture de la boutique'
-                        : data.products.find((p) => p.id === row.product_id)
-                            ?.name}{' '}
+                        : row.product_name ||
+                          data.products.find((p) => p.id === row.product_id)
+                            ?.name ||
+                          'Référence ' + row.product_id}{' '}
+                      {row.product_archived ? '(retirée du catalogue) ' : ''}
                       {row.variant}
                     </p>
                     <label>
@@ -314,9 +320,9 @@ export function Admin() {
               </p>
             </article>
           </div>
-          <Link className="inline-link" href="/sitemap.xml">
+          <a className="inline-link" href="/sitemap.xml">
             Consulter le sitemap ↗
-          </Link>
+          </a>
         </div>
       )}
     </div>

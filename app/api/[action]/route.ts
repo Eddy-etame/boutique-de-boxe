@@ -148,7 +148,7 @@ export async function GET(
       database
 
         .prepare(
-          'SELECT id,email,product_id,variant,created_at,unsubscribe_token FROM alerts ORDER BY created_at DESC LIMIT 300',
+          "SELECT a.id,a.email,a.product_id,a.variant,a.created_at,a.unsubscribe_token,COALESCE(o.name,json_extract(c.payload,'$.name')) AS product_name,c.archived AS product_archived FROM alerts a LEFT JOIN catalog_entries c ON c.id=a.product_id LEFT JOIN product_overrides o ON o.product_id=a.product_id ORDER BY a.created_at DESC LIMIT 300",
         )
 
         .all(),
@@ -210,8 +210,16 @@ export async function POST(
 
       const catalog = await readCatalog();
       const old = catalog.find((p) => p.id === product.id);
+      const database = await db();
+      const reserved = await database
+        .prepare(
+          "SELECT id FROM catalog_entries WHERE archived=1 AND (id=? OR json_extract(payload,'$.slug')=?) LIMIT 1",
+        )
+        .bind(product.id, product.slug)
+        .first();
 
       if (
+        reserved ||
         (old && !data.replace) ||
         catalog.some((p) => p.slug === product.slug && p.id !== product.id) ||
         (old && old.slug !== product.slug)
@@ -226,7 +234,6 @@ export async function POST(
 
       if (old) product.dateAdded = old.dateAdded;
 
-      const database = await db();
       const now = new Date().toISOString();
       await database.batch([
         database

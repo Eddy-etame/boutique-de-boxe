@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { products, categories, Product } from '@/lib/catalog';
 import {
@@ -46,15 +45,15 @@ export default function Home({ items = products }: { items?: Product[] }) {
       </section>
       <div className="discipline-strip">
         <span className="tiny-label">CHOISISSEZ VOTRE TERRAIN</span>
-        <Link href="/materiel-boxe/">
+        <a href="/materiel-boxe/">
           Boxe anglaise <ArrowUpRight />
-        </Link>
-        <Link href="/materiel-mma/">
+        </a>
+        <a href="/materiel-mma/">
           MMA <ArrowUpRight />
-        </Link>
-        <Link href="/boutique-arts-martiaux/">
+        </a>
+        <a href="/boutique-arts-martiaux/">
           Arts martiaux <ArrowUpRight />
-        </Link>
+        </a>
       </div>
       <section className="section-pad selected-section" data-reveal>
         <div className="section-heading">
@@ -72,9 +71,9 @@ export default function Home({ items = products }: { items?: Product[] }) {
               <br />
               Des différences à comprendre avant de choisir.
             </p>
-            <Link className="inline-link" href="/nouveautes/">
+            <a className="inline-link" href="/nouveautes/">
               Toute la sélection <ArrowUpRight size={18} />
-            </Link>
+            </a>
           </div>
         </div>
         <div className="product-grid">
@@ -100,7 +99,7 @@ export default function Home({ items = products }: { items?: Product[] }) {
           {categories.slice(0, 6).map((c, i) => {
             const item = items.find((p) => p.category === c.slug);
             return (
-              <Link href={`/${c.slug}/`} key={c.slug}>
+              <a href={`/${c.slug}/`} key={c.slug}>
                 <span className="category-number">0{i + 1}</span>
                 <h3>{c.name}</h3>
                 <span className="category-teaser">{c.label}</span>
@@ -114,7 +113,7 @@ export default function Home({ items = products }: { items?: Product[] }) {
                   />
                 )}
                 <ArrowUpRight size={25} />
-              </Link>
+              </a>
             );
           })}
         </div>
@@ -153,9 +152,9 @@ export default function Home({ items = products }: { items?: Product[] }) {
           <ArrowLink href="/guides/taille-poids-gants-boxe/">
             Comprendre les onces
           </ArrowLink>
-          <Link className="inline-link" href="/guides/">
+          <a className="inline-link" href="/guides/">
             Tous les guides d’achat <ArrowUpRight size={17} />
-          </Link>
+          </a>
         </div>
       </section>
       <section className="launch-section section-pad">

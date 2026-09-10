@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { guides, type Guide, type Service } from '@/lib/editorial';
 import { categories, shop, jsonLd } from '@/lib/catalog';
 import { Breadcrumb, ArrowLink } from './shop-shell';
@@ -34,7 +33,7 @@ export function GuidesIndex() {
       </section>
       <div className="guides-grid">
         {guides.map((g, i) => (
-          <Link
+          <a
             className="guide-card"
             href={'/guides/' + g.slug + '/'}
             key={g.slug}
@@ -46,7 +45,7 @@ export function GuidesIndex() {
             </div>
             <h2>{g.title}</h2>
             <p>{g.description}</p>
-          </Link>
+          </a>
         ))}
       </div>
     </main>
@@ -73,15 +72,15 @@ export function GuidePage({ guide: g }: { guide: Guide }) {
           <span className="eyebrow">DANS CE GUIDE</span>
           <nav aria-label="Sommaire">
             {g.sections.map((s, i) => (
-              <Link href={'#repere-' + i} key={s.title}>
+              <a href={'#repere-' + i} key={s.title}>
                 <span>0{i + 1}</span>
                 {s.title}
-              </Link>
+              </a>
             ))}
           </nav>
-          <Link href="/guide-des-tailles/" className="inline-link">
+          <a href="/guide-des-tailles/" className="inline-link">
             Le guide des tailles ↗
-          </Link>
+          </a>
         </aside>
         <article>
           {g.sections.map((s, i) => (
@@ -122,9 +121,9 @@ export function GuidePage({ guide: g }: { guide: Guide }) {
             const c = categories.find((x) => x.slug === slug);
             return (
               c && (
-                <Link href={'/' + slug + '/'} key={slug}>
+                <a href={'/' + slug + '/'} key={slug}>
                   {c.name} ↗
-                </Link>
+                </a>
               )
             );
           })}

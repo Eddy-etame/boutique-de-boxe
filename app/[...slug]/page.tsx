@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import {
@@ -159,9 +158,9 @@ export default async function Page({ params, searchParams }: Props) {
         <div className="contact-layout">
           <aside>
             <span className="eyebrow">L’ÉQUIPE BOXING CENTER</span>
-            <Link className="contact-email" href={'mailto:' + shop.email}>
+            <a className="contact-email" href={'mailto:' + shop.email}>
               {shop.email} ↗
-            </Link>
+            </a>
             <p>
               Catalogue national en préparation.
               <br />
@@ -379,9 +378,9 @@ export default async function Page({ params, searchParams }: Props) {
                   .slice(0, 6)
                   .filter((c) => c.slug !== cat.slug)
                   .map((c) => (
-                    <Link key={c.slug} href={'/' + c.slug + '/'}>
+                    <a key={c.slug} href={'/' + c.slug + '/'}>
                       {c.name} ↗
-                    </Link>
+                    </a>
                   ))}
               </div>
             </div>
