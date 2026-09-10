@@ -1,0 +1,378 @@
+/* ---------------------------------------------------------------------------
+   Nouvelle édition — jetons, échelle, mouvement, interrupteur d’édition.
+   Tout ce qui est propre à la nouvelle édition vit sous html[data-edition="nouvelle"].
+   L’interrupteur et la transition sont communs aux deux éditions.
+--------------------------------------------------------------------------- */
+
+:root {
+  --ne-paper: #f4f4f1;
+  --ne-paper-2: #ebebe6;
+  --ne-ink: #18191e;
+  --ne-ink-2: #45464d;
+  --ne-line: #cfd0cc;
+  --ne-blue: #294cfa;
+  --ne-blue-ink: #1f3ac4;
+  --ne-signal: #c9ff2f;
+  --ne-red: #d92a2a;
+  --ne-radius: 0.35rem;
+  --ne-gutter: clamp(16px, 4vw, 56px);
+  --ne-measure: 62ch;
+  --ne-max: 1440px;
+  --ne-ease-out: cubic-bezier(0.22, 0.75, 0.2, 1);
+  --ne-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ne-t1: 120ms;
+  --ne-t2: 240ms;
+  --ne-t3: 480ms;
+  --ne-s1: 8px;
+  --ne-s2: 16px;
+  --ne-s3: 24px;
+  --ne-s4: 40px;
+  --ne-s5: 64px;
+  --ne-s6: 104px;
+  --ne-step-0: 1.0625rem;      /* 17 px */
+  --ne-step-1: 1.3125rem;      /* 21 px */
+  --ne-step-2: 1.75rem;        /* 28 px */
+  --ne-step-3: 2.5rem;         /* 40 px */
+  --ne-step-4: clamp(2.75rem, 5vw, 4rem);
+  --ne-step-5: clamp(4rem, 11vw, 10rem);
+  --ne-label: 0.8125rem;       /* 13 px, minimum absolu */
+}
+
+/* ---- Interrupteur d’édition (commun) ---- */
+.edition-bar {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ne-s2);
+  min-height: 48px;
+  padding: 6px var(--ne-gutter);
+  background: color-mix(in oklab, var(--ne-ink) 92%, transparent);
+  color: var(--ne-paper);
+  font-family: Manrope, Arial, sans-serif;
+  font-size: var(--ne-label);
+  letter-spacing: 0.02em;
+  view-transition-name: edition-bar;
+  backdrop-filter: blur(6px);
+}
+.edition-bar-label { opacity: 0.72; }
+.edition-switch {
+  position: relative;
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--ne-paper) 12%, transparent);
+  isolation: isolate;
+}
+.edition-switch a {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 18px;
+  border-radius: 999px;
+  color: inherit;
+  text-decoration: none;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: color var(--ne-t2) var(--ne-ease-out);
+}
+.edition-switch a[aria-current='true'] { color: var(--ne-ink); }
+.edition-switch a:focus-visible { outline: 2px solid var(--ne-signal); outline-offset: 2px; }
+.edition-thumb {
+  position: absolute;
+  inset: 4px auto 4px 4px;
+  width: calc(50% - 6px);
+  border-radius: 999px;
+  background: var(--ne-signal);
+  transition: transform var(--ne-t3) var(--ne-ease-out);
+}
+.edition-bar[data-edition='nouvelle'] .edition-thumb { transform: translateX(calc(100% + 4px)); }
+
+@view-transition { navigation: auto; }
+
+/* ---- Transition entre éditions (cross-document view transition) ---- */
+html.edition-switch::view-transition-old(root) {
+  animation: ne-edition-out var(--ne-t3) var(--ne-ease-in-out) both;
+}
+html.edition-switch::view-transition-new(root) {
+  animation: ne-edition-in var(--ne-t3) var(--ne-ease-out) both;
+}
+html.edition-switch::view-transition-group(edition-bar),
+html.edition-switch::view-transition-group(hero-object) {
+  animation-duration: var(--ne-t3);
+}
+@keyframes ne-edition-out {
+  to { opacity: 0.4; transform: translateY(-3vh) scale(0.985); filter: saturate(0.6); }
+}
+@keyframes ne-edition-in {
+  from { clip-path: inset(100% 0 0 0); transform: translateY(2vh); }
+  60% { clip-path: inset(0 0 0 0); }
+  to { clip-path: inset(0 0 0 0); transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html.edition-switch::view-transition-old(root),
+  html.edition-switch::view-transition-new(root) {
+    animation: ne-fade 150ms linear both;
+  }
+  .edition-thumb { transition: none; }
+}
+@keyframes ne-fade { from { opacity: 0; } }
+
+/* ---- Base de la nouvelle édition ---- */
+html[data-edition='nouvelle'] {
+  background: var(--ne-paper);
+  color: var(--ne-ink);
+}
+html[data-edition='nouvelle'] body {
+  font-family: Manrope, Arial, sans-serif;
+  font-size: var(--ne-step-0);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+html[data-edition='nouvelle'] .ne {
+  --_pad: var(--ne-gutter);
+  max-width: var(--ne-max);
+  margin-inline: auto;
+  padding-inline: var(--_pad);
+}
+html[data-edition='nouvelle'] :where(h1, h2, h3) {
+  font-family: 'Barlow Condensed', Barlow, Impact, sans-serif;
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  margin: 0;
+}
+html[data-edition='nouvelle'] h1 { font-size: var(--ne-step-5); }
+html[data-edition='nouvelle'] h2 { font-size: var(--ne-step-4); }
+html[data-edition='nouvelle'] h3 { font-size: var(--ne-step-2); }
+html[data-edition='nouvelle'] p { margin: 0; max-width: var(--ne-measure); }
+html[data-edition='nouvelle'] a { color: inherit; }
+html[data-edition='nouvelle'] :focus-visible { outline: 3px solid var(--ne-blue); outline-offset: 3px; }
+html[data-edition='nouvelle'] img { display: block; max-width: 100%; height: auto; }
+html[data-edition='nouvelle'] .ne-label {
+  font-family: Manrope, Arial, sans-serif;
+  font-size: var(--ne-label);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ne-ink-2);
+}
+html[data-edition='nouvelle'] .ne-lead { font-size: var(--ne-step-1); line-height: 1.4; }
+html[data-edition='nouvelle'] .ne-muted { color: var(--ne-ink-2); }
+
+/* Boutons : 44 px minimum, effet nommé par le texte */
+html[data-edition='nouvelle'] .ne-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 22px;
+  border: 2px solid var(--ne-ink);
+  border-radius: 999px;
+  background: var(--ne-ink);
+  color: var(--ne-paper);
+  font: 700 var(--ne-step-0) / 1 Manrope, Arial, sans-serif;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform var(--ne-t2) var(--ne-ease-out), background var(--ne-t2), color var(--ne-t2);
+}
+html[data-edition='nouvelle'] .ne-btn:hover { transform: translateY(-2px); }
+html[data-edition='nouvelle'] .ne-btn:active { transform: translateY(0); }
+html[data-edition='nouvelle'] .ne-btn.is-secondary { background: transparent; color: var(--ne-ink); }
+html[data-edition='nouvelle'] .ne-btn.is-signal { background: var(--ne-signal); border-color: var(--ne-signal); color: var(--ne-ink); }
+html[data-edition='nouvelle'] .ne-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 2px solid var(--ne-line);
+  border-radius: 999px;
+  background: var(--ne-paper);
+  color: var(--ne-ink);
+  font: 600 var(--ne-step-0) / 1 Manrope, Arial, sans-serif;
+  cursor: pointer;
+  transition: border-color var(--ne-t2), background var(--ne-t2), transform var(--ne-t2) var(--ne-ease-out);
+}
+html[data-edition='nouvelle'] .ne-chip[aria-pressed='true'],
+html[data-edition='nouvelle'] .ne-chip[aria-checked='true'] {
+  border-color: var(--ne-ink);
+  background: var(--ne-ink);
+  color: var(--ne-paper);
+}
+html[data-edition='nouvelle'] .ne-chip:hover { transform: translateY(-1px); }
+
+/* Entête */
+html[data-edition='nouvelle'] .ne-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--ne-s3);
+  padding-block: var(--ne-s3);
+  border-bottom: 1px solid var(--ne-line);
+}
+html[data-edition='nouvelle'] .ne-brand {
+  font-family: 'Barlow Condensed', Barlow, Impact, sans-serif;
+  font-weight: 800;
+  font-size: var(--ne-step-2);
+  line-height: 0.9;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+html[data-edition='nouvelle'] .ne-brand small { display: block; font: 600 var(--ne-label) / 1.2 Manrope, sans-serif; letter-spacing: 0.06em; color: var(--ne-ink-2); margin-top: 6px; text-transform: none; }
+html[data-edition='nouvelle'] .ne-nav { display: flex; flex-wrap: wrap; gap: 6px var(--ne-s2); justify-content: center; }
+html[data-edition='nouvelle'] .ne-nav a { padding: 10px 12px; border-radius: 999px; text-decoration: none; font-weight: 600; min-height: 44px; display: inline-flex; align-items: center; white-space: nowrap; }
+html[data-edition='nouvelle'] .ne-nav a:hover { background: var(--ne-paper-2); }
+html[data-edition='nouvelle'] .ne-bag {
+  display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 16px;
+  border: 2px solid var(--ne-ink); border-radius: 999px; text-decoration: none; font-weight: 700;
+}
+html[data-edition='nouvelle'] .ne-bag b { display: inline-grid; place-items: center; min-width: 26px; height: 26px; padding: 0 6px; border-radius: 999px; background: var(--ne-signal); color: var(--ne-ink); font-size: var(--ne-label); }
+
+/* Pied */
+html[data-edition='nouvelle'] .ne-footer { margin-top: var(--ne-s6); padding-block: var(--ne-s5); border-top: 1px solid var(--ne-line); display: grid; gap: var(--ne-s4); grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+html[data-edition='nouvelle'] .ne-footer a { display: block; padding: 6px 0; text-decoration: none; min-height: 40px; }
+html[data-edition='nouvelle'] .ne-footer a:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+/* Sections */
+html[data-edition='nouvelle'] .ne-section { padding-block: var(--ne-s6); }
+html[data-edition='nouvelle'] .ne-section + .ne-section { border-top: 1px solid var(--ne-line); }
+html[data-edition='nouvelle'] .ne-section-head { display: grid; gap: var(--ne-s2); margin-bottom: var(--ne-s4); }
+html[data-edition='nouvelle'] .ne-section-head .ne-lead { max-width: 48ch; }
+
+/* Interrupteur des heros A/B (interne à la nouvelle édition) */
+html[data-edition='nouvelle'] .ne-hero-switch { display: flex; gap: 6px; padding: var(--ne-s2) 0 0; }
+
+/* Hero A — la pièce, à la loupe */
+html[data-edition='nouvelle'] .ne-heroA { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: var(--ne-s4); align-items: center; min-height: 78vh; padding-block: var(--ne-s4) var(--ne-s5); }
+html[data-edition='nouvelle'] .ne-heroA-copy { display: grid; gap: var(--ne-s3); align-content: center; }
+html[data-edition='nouvelle'] .ne-heroA-copy h1 { font-size: var(--ne-step-5); }
+html[data-edition='nouvelle'] .ne-heroA-actions { display: flex; flex-wrap: wrap; gap: var(--ne-s2); }
+html[data-edition='nouvelle'] .ne-object {
+  position: relative; aspect-ratio: 1; border-radius: 24px; background: var(--ne-paper-2); overflow: hidden;
+  touch-action: pan-y; user-select: none;
+}
+html[data-edition='nouvelle'] .ne-object > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; view-transition-name: hero-object; transition: opacity var(--ne-t2) var(--ne-ease-out); }
+html[data-edition='nouvelle'] .ne-object > img[data-hidden='true'] { opacity: 0; }
+html[data-edition='nouvelle'] .ne-loupe {
+  position: absolute; inset: 0; pointer-events: none; opacity: 0;
+  clip-path: circle(0 at var(--x, 50%) var(--y, 50%));
+  transition: clip-path var(--ne-t2) var(--ne-ease-out), opacity var(--ne-t1);
+}
+html[data-edition='nouvelle'] .ne-object.is-looking .ne-loupe { opacity: 1; clip-path: circle(clamp(90px, 18vw, 170px) at var(--x, 50%) var(--y, 50%)); }
+html[data-edition='nouvelle'] .ne-loupe img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.65); transform-origin: var(--x, 50%) var(--y, 50%); }
+html[data-edition='nouvelle'] .ne-loupe-ring { position: absolute; inset: 0; border-radius: 50%; box-shadow: inset 0 0 0 3px var(--ne-signal); clip-path: inherit; }
+html[data-edition='nouvelle'] .ne-mark {
+  position: absolute; transform: translate(-50%, -50%);
+  display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px 0 6px;
+  border: 0; border-radius: 999px; background: color-mix(in oklab, var(--ne-paper) 92%, transparent); color: var(--ne-ink);
+  font: 700 var(--ne-label) / 1 Manrope, sans-serif; letter-spacing: 0.04em; text-transform: uppercase; cursor: pointer;
+  box-shadow: 0 6px 20px rgb(0 0 0 / 0.12); transition: transform var(--ne-t2) var(--ne-ease-out), background var(--ne-t2);
+}
+html[data-edition='nouvelle'] .ne-mark i { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--ne-ink); color: var(--ne-signal); font-style: normal; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; }
+html[data-edition='nouvelle'] .ne-mark[aria-pressed='true'] { background: var(--ne-signal); transform: translate(-50%, -50%) scale(1.04); }
+html[data-edition='nouvelle'] .ne-mark:hover { transform: translate(-50%, -50%) scale(1.04); }
+html[data-edition='nouvelle'] .ne-mark-note { position: absolute; left: var(--ne-s3); right: var(--ne-s3); bottom: var(--ne-s3); padding: var(--ne-s2) var(--ne-s3); border-radius: 14px; background: color-mix(in oklab, var(--ne-ink) 88%, transparent); color: var(--ne-paper); font-size: var(--ne-step-0); line-height: 1.4; }
+html[data-edition='nouvelle'] .ne-views { display: flex; gap: 6px; margin-top: var(--ne-s2); }
+html[data-edition='nouvelle'] .ne-facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ne-s2); }
+html[data-edition='nouvelle'] .ne-fact { padding: var(--ne-s2) 0; border-top: 2px solid var(--ne-ink); }
+html[data-edition='nouvelle'] .ne-fact b { display: block; font-family: 'Barlow Condensed', sans-serif; font-size: var(--ne-step-3); line-height: 1; }
+html[data-edition='nouvelle'] .ne-fact span { display: block; margin-top: 6px; color: var(--ne-ink-2); }
+
+/* Hero B — le vestiaire */
+html[data-edition='nouvelle'] .ne-heroB { display: grid; gap: var(--ne-s4); padding-block: var(--ne-s4) var(--ne-s5); min-height: 78vh; align-content: center; }
+html[data-edition='nouvelle'] .ne-heroB-head { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: var(--ne-s4); align-items: end; }
+html[data-edition='nouvelle'] .ne-choices { display: flex; flex-wrap: wrap; gap: var(--ne-s1); }
+html[data-edition='nouvelle'] .ne-locker { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--ne-s2); }
+html[data-edition='nouvelle'] .ne-piece { position: relative; display: grid; grid-template-rows: auto 1fr; border-radius: 20px; background: var(--ne-paper-2); overflow: hidden; transition: opacity var(--ne-t2); }
+html[data-edition='nouvelle'] .ne-piece.is-owned { opacity: 0.55; }
+html[data-edition='nouvelle'] .ne-piece img { aspect-ratio: 1; object-fit: cover; width: 100%; }
+html[data-edition='nouvelle'] .ne-piece-body { display: grid; gap: 10px; padding: var(--ne-s2) var(--ne-s3) var(--ne-s3); }
+html[data-edition='nouvelle'] .ne-piece-body h3 { font-family: Manrope, sans-serif; text-transform: none; font-size: var(--ne-step-1); font-weight: 700; letter-spacing: 0; line-height: 1.2; }
+html[data-edition='nouvelle'] .ne-piece-body h3 a { text-decoration: none; }
+html[data-edition='nouvelle'] .ne-piece-body p { font-size: var(--ne-step-0); color: var(--ne-ink-2); }
+html[data-edition='nouvelle'] .ne-own { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; font-weight: 600; cursor: pointer; }
+html[data-edition='nouvelle'] .ne-own input { width: 22px; height: 22px; accent-color: var(--ne-ink); }
+html[data-edition='nouvelle'] .ne-total { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--ne-s2) var(--ne-s3); padding: var(--ne-s3); border-radius: 20px; background: var(--ne-ink); color: var(--ne-paper); }
+html[data-edition='nouvelle'] .ne-total b { font-family: 'Barlow Condensed', sans-serif; font-size: var(--ne-step-3); line-height: 1; }
+html[data-edition='nouvelle'] .ne-total .ne-btn { margin-left: auto; background: var(--ne-signal); border-color: var(--ne-signal); color: var(--ne-ink); }
+
+/* Index des familles */
+html[data-edition='nouvelle'] .ne-families { display: grid; border-top: 2px solid var(--ne-ink); }
+html[data-edition='nouvelle'] .ne-family { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--ne-s3); padding: var(--ne-s3) 0; border-bottom: 1px solid var(--ne-line); text-decoration: none; }
+html[data-edition='nouvelle'] .ne-family-name { display: flex; align-items: baseline; gap: var(--ne-s2); flex-wrap: wrap; }
+html[data-edition='nouvelle'] .ne-family-name strong { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: var(--ne-step-3); line-height: 1; text-transform: uppercase; }
+html[data-edition='nouvelle'] .ne-family-name span { color: var(--ne-ink-2); font-weight: 600; }
+html[data-edition='nouvelle'] .ne-strip { display: flex; gap: 8px; width: min(46vw, 520px); overflow: hidden; mask-image: linear-gradient(90deg, #000 80%, transparent); }
+html[data-edition='nouvelle'] .ne-strip img { width: 72px; height: 72px; border-radius: 12px; object-fit: cover; background: var(--ne-paper-2); flex: none; transition: transform var(--ne-t3) var(--ne-ease-out); }
+html[data-edition='nouvelle'] .ne-family:hover .ne-strip img { transform: translateX(-24px); }
+html[data-edition='nouvelle'] .ne-family:hover .ne-family-name strong { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 6px; }
+
+/* Carnet et ouverture des ventes */
+html[data-edition='nouvelle'] .ne-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--ne-s2); }
+html[data-edition='nouvelle'] .ne-card { display: grid; gap: 10px; padding: var(--ne-s3); border-radius: 20px; background: var(--ne-paper-2); text-decoration: none; min-height: 180px; transition: transform var(--ne-t2) var(--ne-ease-out); }
+html[data-edition='nouvelle'] .ne-card:hover { transform: translateY(-3px); }
+html[data-edition='nouvelle'] .ne-card h3 { font-family: Manrope, sans-serif; text-transform: none; letter-spacing: 0; font-size: var(--ne-step-1); font-weight: 700; line-height: 1.2; }
+html[data-edition='nouvelle'] .ne-sales { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--ne-s4); align-items: center; padding: var(--ne-s5) var(--ne-s4); border-radius: 28px; background: var(--ne-ink); color: var(--ne-paper); }
+html[data-edition='nouvelle'] .ne-sales h2 { font-size: var(--ne-step-4); }
+html[data-edition='nouvelle'] .ne-sales form { display: grid; gap: var(--ne-s2); }
+html[data-edition='nouvelle'] .ne-sales input[type='email'] { min-height: 52px; padding: 0 18px; border-radius: 12px; border: 2px solid transparent; font: 600 var(--ne-step-0) Manrope, sans-serif; }
+html[data-edition='nouvelle'] .ne-sales label { display: flex; gap: 10px; align-items: flex-start; font-size: var(--ne-label); line-height: 1.4; opacity: 0.85; }
+html[data-edition='nouvelle'] .ne-sales input[type='checkbox'] { width: 20px; height: 20px; flex: none; margin-top: 2px; }
+
+/* Grille produits (catégorie) */
+html[data-edition='nouvelle'] .ne-rail { display: grid; gap: var(--ne-s3); padding: var(--ne-s3); border-radius: 24px; background: var(--ne-paper-2); }
+html[data-edition='nouvelle'] .ne-question { display: grid; gap: 10px; }
+html[data-edition='nouvelle'] .ne-question .ne-label { color: var(--ne-ink); }
+html[data-edition='nouvelle'] .ne-options { display: flex; flex-wrap: wrap; gap: 8px; }
+html[data-edition='nouvelle'] .ne-sentence { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: var(--ne-step-3); line-height: 1; text-transform: uppercase; }
+html[data-edition='nouvelle'] .ne-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: var(--ne-s3) var(--ne-s2); }
+html[data-edition='nouvelle'] .ne-product { display: grid; gap: 10px; text-decoration: none; }
+html[data-edition='nouvelle'] .ne-product img { aspect-ratio: 1; object-fit: cover; width: 100%; border-radius: 18px; background: var(--ne-paper-2); transition: transform var(--ne-t3) var(--ne-ease-out); }
+html[data-edition='nouvelle'] .ne-product:hover img { transform: scale(1.02); }
+html[data-edition='nouvelle'] .ne-product h3 { font-family: Manrope, sans-serif; text-transform: none; letter-spacing: 0; font-size: var(--ne-step-0); font-weight: 700; line-height: 1.3; }
+html[data-edition='nouvelle'] .ne-product .ne-price { font-weight: 700; }
+html[data-edition='nouvelle'] .ne-product .ne-sizes { color: var(--ne-ink-2); font-size: var(--ne-label); font-weight: 600; }
+
+/* Fiche produit */
+html[data-edition='nouvelle'] .ne-pdp { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: var(--ne-s5); align-items: start; padding-block: var(--ne-s4); }
+html[data-edition='nouvelle'] .ne-pdp-media { position: sticky; top: 64px; display: grid; gap: var(--ne-s2); }
+html[data-edition='nouvelle'] .ne-pdp-media img { border-radius: 22px; background: var(--ne-paper-2); }
+html[data-edition='nouvelle'] .ne-pdp-thumbs { display: flex; gap: 8px; }
+html[data-edition='nouvelle'] .ne-pdp-thumbs button { padding: 0; border: 2px solid transparent; border-radius: 12px; background: none; cursor: pointer; }
+html[data-edition='nouvelle'] .ne-pdp-thumbs button[aria-pressed='true'] { border-color: var(--ne-ink); }
+html[data-edition='nouvelle'] .ne-pdp-thumbs img { width: 72px; height: 72px; object-fit: cover; border-radius: 10px; }
+html[data-edition='nouvelle'] .ne-pdp-body { display: grid; gap: var(--ne-s3); }
+html[data-edition='nouvelle'] .ne-pdp-body h1 { font-family: Manrope, sans-serif; text-transform: none; letter-spacing: -0.01em; font-size: var(--ne-step-3); line-height: 1.1; }
+html[data-edition='nouvelle'] .ne-pdp-price { display: flex; align-items: baseline; gap: var(--ne-s2); }
+html[data-edition='nouvelle'] .ne-pdp-price b { font-family: 'Barlow Condensed', sans-serif; font-size: var(--ne-step-4); line-height: 1; }
+html[data-edition='nouvelle'] .ne-table { width: 100%; border-collapse: collapse; }
+html[data-edition='nouvelle'] .ne-table th, html[data-edition='nouvelle'] .ne-table td { padding: 12px 0; border-top: 1px solid var(--ne-line); text-align: left; vertical-align: top; }
+html[data-edition='nouvelle'] .ne-table th { width: 38%; color: var(--ne-ink-2); font-weight: 600; }
+html[data-edition='nouvelle'] .ne-check { display: flex; gap: 12px; align-items: flex-start; padding: var(--ne-s2) var(--ne-s3); border-radius: 16px; background: var(--ne-paper-2); font-weight: 600; cursor: pointer; }
+html[data-edition='nouvelle'] .ne-check input { width: 22px; height: 22px; margin-top: 2px; accent-color: var(--ne-ink); }
+
+/* Écrans étroits : la même expérience, réorganisée */
+@media (max-width: 900px) {
+  html[data-edition='nouvelle'] .ne-header { grid-template-columns: 1fr auto; }
+  html[data-edition='nouvelle'] .ne-nav { grid-column: 1 / -1; justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
+  html[data-edition='nouvelle'] .ne-heroA, html[data-edition='nouvelle'] .ne-heroB-head, html[data-edition='nouvelle'] .ne-sales, html[data-edition='nouvelle'] .ne-pdp { grid-template-columns: 1fr; }
+  html[data-edition='nouvelle'] .ne-heroA { min-height: 0; }
+  html[data-edition='nouvelle'] .ne-strip { width: 40vw; }
+  html[data-edition='nouvelle'] .ne-family { grid-template-columns: 1fr; }
+  html[data-edition='nouvelle'] .ne-pdp-media { position: static; }
+  .edition-bar-label { display: none; }
+  .edition-switch { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-edition='nouvelle'] * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}

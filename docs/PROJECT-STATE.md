@@ -2,6 +2,10 @@
 
 Mise à jour : 10 septembre 2026, après-midi. Cette section décrit le chantier actuel ; les journaux datés plus bas constituent l’historique.
 
+### Deux éditions sous un interrupteur, 10 septembre soir
+
+L’édition actuelle reste intacte. Une **nouvelle édition** vit à côté, dans le même dépôt, derrière l’interrupteur fixé en haut de chaque page (cookie `edition`, route `/api/edition`, transition de vue entre documents). Elle couvre l’accueil (deux heros comparables en direct : « La pièce, à la loupe » et « Votre liste »), les pages catégorie (trois questions, phrase-réponse dans l’URL) et les fiches produit (objet en grand, tailles en mots, case « vérifié avec mon entraîneur »). Les guides, services, panier et contact s’affichent dans la nouvelle coquille avec leur contenu actuel. Textes : `lib/next/copy/*.ts`, voix du guide `.research/style-guide-voix.md` (« vous », moins de quinze mots, aucun mot de chantier, aucune supposition de club). Corps 17 px, étiquettes 13 px minimum, cibles 44 px. Contrat de fusion et +1 : `.research/fusion-contract-2026-09-10.md`. Édition par défaut : actuelle, tant que le propriétaire n’a pas tranché.
+
 ### Portage Vercel + Supabase, 10 septembre fin d’après-midi
 
 L’application a quitté OpenAI Sites / Cloudflare D1 : **Next.js 16 sur Vercel, Postgres Supabase, lien magique Supabase Auth** pour l’atelier. Détail et procédure dans [DEPLOY-VERCEL.md](DEPLOY-VERCEL.md). Contrôles rejoués après portage sur Postgres local : lint, TypeScript, build de production, audit catalogue, 78 + 19 tests unitaires, 16 tests API, 18 contrôles commerce. Le test `test-payplug-sqlite.py` visait les migrations D1 et n’est plus pertinent. Restent à faire par le propriétaire : projet Vercel importé depuis GitHub avec les variables listées, migrations appliquées sur Supabase, URLs de redirection Supabase Auth, domaine.

@@ -781,12 +781,15 @@ export function ProductDetails({ product: p }: { product: Product }) {
   );
 }
 
+export type AlertFormLabels = { field?: string; consent?: string; submit?: string; placeholder?: string };
 export function AlertForm({
   productId = 'launch',
   variant = '',
+  labels = {},
 }: {
   productId?: string;
   variant?: string;
+  labels?: AlertFormLabels;
 }) {
   const [email, setEmail] = useState('');
   const [state, setState] = useState('');
@@ -841,7 +844,7 @@ export function AlertForm({
         </p>
       </noscript>
       <label htmlFor={`alert-${productId}`}>
-        Recevoir une alerte de disponibilité
+        {labels.field ?? 'Recevoir une alerte de disponibilité'}
       </label>
       <div className="alert-input">
         <input
@@ -852,16 +855,16 @@ export function AlertForm({
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           maxLength={254}
-          placeholder="Votre adresse e-mail"
+          placeholder={labels.placeholder ?? 'Votre adresse e-mail'}
           autoComplete="email"
         />
-        <button disabled={busy} aria-label="M’inscrire à l’alerte">
+        <button disabled={busy} aria-label={labels.submit ?? 'M’inscrire à l’alerte'}>
           {busy ? '…' : <ArrowRight size={20} />}
         </button>
       </div>
       <label className="consent">
         <input type="checkbox" name="consent" required />
-        J’accepte de recevoir l’alerte demandée.{' '}
+        {labels.consent ?? 'J’accepte de recevoir l’alerte demandée.'}{' '}
         <a href="/confidentialite/">Confidentialité</a>
       </label>
       {state && (

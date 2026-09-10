@@ -9,6 +9,9 @@ import {
   jsonLd,
 } from '@/lib/catalog';
 import { readCatalog, isAdmin } from '@/lib/database';
+import { getEdition } from '@/lib/edition';
+import { NextCategory } from '@/components/next/category';
+import { NextProduct } from '@/components/next/product';
 import { guides, services } from '@/lib/editorial';
 import { Breadcrumb, ArrowLink } from '@/components/shop-shell';
 import {
@@ -289,6 +292,8 @@ export default async function Page({ params, searchParams }: Props) {
           x.audience === p.audience,
       )
       .slice(0, 4);
+    if ((await getEdition()) === 'nouvelle')
+      return <NextProduct product={p} related={related} />;
     const contextKey = (await searchParams).seance;
     const session = selection.sessions.find((s) => s.key === contextKey);
     const reason = session?.products.find((r) => r.id === p.id);
@@ -398,6 +403,10 @@ export default async function Page({ params, searchParams }: Props) {
     );
   }
   const cat = categoryFor(path);
+  if (cat && (await getEdition()) === 'nouvelle')
+    return (
+      <NextCategory category={cat} products={getCategoryProducts(cat, products)} />
+    );
   if (cat || path === 'nouveautes' || path === 'recherche') {
     const data = cat
       ? getCategoryProducts(cat, products)

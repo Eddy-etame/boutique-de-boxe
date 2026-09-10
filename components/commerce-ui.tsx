@@ -200,12 +200,15 @@ export function CartLink() {
   );
 }
 
+export type AddToCartLabels = { add?: string; adding?: string; choose?: string; note?: string; check?: string };
 export function AddToCart({
   product,
   variant = '',
+  labels = {},
 }: {
   product: Product;
   variant?: string;
+  labels?: AddToCartLabels;
 }) {
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState('');
@@ -253,17 +256,17 @@ export function AddToCart({
         onClick={add}
         aria-describedby={helpId}
       >
-        {busy ? 'Ajout en cours…' : 'Ajouter au panier d’essai'}
+        {busy ? (labels.adding ?? 'Ajout en cours…') : (labels.add ?? 'Ajouter au panier d’essai')}
         <Plus size={19} aria-hidden="true" />
       </button>
       <p id={helpId} className="commerce-caption">
         {!valid
-          ? 'Sélectionnez une déclinaison au-dessus pour ajouter ce modèle.'
-          : 'Parcours de démonstration. Aucun débit ni expédition.'}
+          ? (labels.choose ?? 'Sélectionnez une déclinaison au-dessus pour ajouter ce modèle.')
+          : (labels.note ?? 'Parcours de démonstration. Aucun débit ni expédition.')}
       </p>
       {error && (
         <p role="alert" className="commerce-error">
-          {error} <a href="/panier/">Vérifier le panier</a>
+          {error} <a href="/panier/">{labels.check ?? 'Vérifier le panier'}</a>
         </p>
       )}
       <div className="cart-added" role="status" aria-live="polite">
