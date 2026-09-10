@@ -10,7 +10,7 @@ export const homeCopy: HomeCopy = {
     marks: { closure: 'La fermeture', palm: 'La paume', weight: 'Le poids' },
     notes: {
       closure: 'La fermeture est une bande auto-agrippante large.',
-      palm: 'La paume est rembourrée de mousse EVA.',
+      palm: 'La paume est rembourrée de mousse EVA. La photo de près montre la version blanc et or.',
       weight: 'Vous choisissez le poids : 10, 12 ou 14 oz.',
     },
     noMacro: 'Nous n’avons pas encore de photo de ce détail.',
