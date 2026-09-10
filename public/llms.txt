@@ -1,19 +1,42 @@
 # Boutique de Boxe
-> Catalogue national de matériel de boxe et sports de combat édité par SAS BOXING CENTER.
 
-## État du service
-Catalogue en préparation. Toutes les références sont « Bientôt disponible ». Les prix sont indicatifs. Aucun paiement, commande, précommande ou stock commercial n'est proposé. Une inscription à une alerte ne réserve pas de produit.
+> Boutique en ligne française de matériel de boxe, de MMA et de sports de combat : gants, bandes, protections, textile, sacs de frappe, chaussures, équipement d’entraînement et sacs de sport. 1 055 modèles, avec leurs tailles réelles et leurs prix prévus. Livraison dans toute la France à l’ouverture des ventes.
 
-## Pages de référence
-- [Catalogue complet](https://boutique-de-boxe.com/materiel-sport-de-combat/)
-- [Boxe anglaise](https://boutique-de-boxe.com/materiel-boxe/)
-- [MMA](https://boutique-de-boxe.com/materiel-mma/)
-- [Arts martiaux](https://boutique-de-boxe.com/boutique-arts-martiaux/)
-- [Guides d'achat](https://boutique-de-boxe.com/guides/)
-- [Mentions légales](https://boutique-de-boxe.com/mentions-legales/)
-- [Contact](https://boutique-de-boxe.com/contact/)
+## État du service (10 septembre 2026)
+- Les ventes ne sont pas encore ouvertes. Chaque modèle affiche « En vente bientôt » et son prix prévu à l’ouverture.
+- Le visiteur peut essayer la commande jusqu’au reçu, sans payer : aucun montant n’est débité, rien n’est expédié, rien n’est réservé.
+- Un visiteur peut laisser son e-mail pour être prévenu à l’ouverture des ventes. Cela ne réserve aucun modèle.
+- Éditeur : SAS BOXING CENTER. Contact : boxingcenter31@gmail.com, 09 54 14 74 72.
 
-## Éditeur
-SAS BOXING CENTER, SIREN 821817889. Siège : 12 rue de Fenouillet, 31200 Toulouse, France. Contact : boxingcenter31@gmail.com.
-Le siège de l'éditeur ne constitue pas une promesse de point de retrait. Les conditions de livraison restent indicatives avant ouverture.
+## Familles de produits (nombre de modèles)
+- [Gants de boxe](https://boutique-de-boxe.com/gants-de-boxe/) : 186 modèles, du 4 au 20 oz, à velcro ou à lacets.
+- [Gants MMA](https://boutique-de-boxe.com/gants-mma/) : 20 modèles, doigts libres, tailles junior à adulte.
+- [Protections de boxe](https://boutique-de-boxe.com/protections-boxe/) : 131 modèles, casques, protège-dents, protège-tibias, coquilles.
+- [Textile de boxe](https://boutique-de-boxe.com/textile-boxe/) : 345 modèles, shorts, t-shirts, rashguards, sweats.
+- [Accessoires de boxe](https://boutique-de-boxe.com/accessoires-boxe/) : 115 modèles, bandes de 2,50 m et 4 m, cordes, pattes d’ours.
+- [Sacs de frappe](https://boutique-de-boxe.com/sacs-de-frappe/) : 74 modèles, sacs, poires de vitesse, punching-balls.
+- [Chaussures de boxe et de lutte](https://boutique-de-boxe.com/chaussures-boxe/) : 59 modèles, pointures du 31 au 49.
+- [Équipement d’entraînement](https://boutique-de-boxe.com/equipement-entrainement/) : 60 modèles, pattes d’ours, paos, cordes à sauter, élastiques.
+- [Sacs de sport](https://boutique-de-boxe.com/sacs-de-sport/) : 32 modèles.
+- Pages d’entrée par discipline : [Boxe anglaise](https://boutique-de-boxe.com/materiel-boxe/), [MMA](https://boutique-de-boxe.com/materiel-mma/), [Arts martiaux](https://boutique-de-boxe.com/boutique-arts-martiaux/), [Tout le catalogue](https://boutique-de-boxe.com/materiel-sport-de-combat/).
 
+## Guides d’achat (réponses courtes, sourcées)
+- [Comment choisir ses gants de boxe ?](https://boutique-de-boxe.com/guides/choisir-gants-boxe/) — usage (sac, technique, partenaire), coupe, fermeture, budget.
+- [Gants de boxe : comprendre les tailles 10, 12, 14 et 16 oz](https://boutique-de-boxe.com/guides/taille-poids-gants-boxe/) — les onces sont le poids du gant, pas la taille de la main.
+- [Comment choisir ses gants MMA ?](https://boutique-de-boxe.com/guides/choisir-gants-mma/) — usage annoncé, paume, pouce, guide de tailles de la marque.
+- [Quel équipement pour débuter la boxe anglaise ?](https://boutique-de-boxe.com/guides/debuter-boxe/) — gants et bandes d’abord, le reste ensuite.
+- [Quel matériel pour commencer le MMA ?](https://boutique-de-boxe.com/guides/debuter-mma/) — frappe, sol, protections, tenue.
+- [Quelles protections choisir pour les sports de combat ?](https://boutique-de-boxe.com/guides/choisir-protections/) — protège-dents, casque, protège-tibias, coquille.
+- [Gants de boxe et gants MMA : quelles différences ?](https://boutique-de-boxe.com/guides/difference-gants-boxe-mma/)
+- [Matériel de boxe pour enfant](https://boutique-de-boxe.com/guides/equipement-enfant/) — tranches d’âge, essayage, protège-dents.
+- [Équipement de boxe et de combat pour femme](https://boutique-de-boxe.com/guides/equipement-femme/) — coupe, brassière, poids selon l’entraînement.
+- [Guide des tailles](https://boutique-de-boxe.com/guide-des-tailles/)
+
+## Livraison et conditions (prévues, à confirmer à l’ouverture)
+- Point relais : 6,90 €, offert dès 69 € d’achats. Domicile : 8,90 €. Matériel lourd : tarif spécifique.
+- [Livraison](https://boutique-de-boxe.com/livraison/) · [Retours](https://boutique-de-boxe.com/retours/) · [Conditions](https://boutique-de-boxe.com/conditions-generales-de-vente/) · [Confidentialité](https://boutique-de-boxe.com/confidentialite/) · [Mentions légales](https://boutique-de-boxe.com/mentions-legales/)
+
+## Données pour les moteurs et assistants
+- Chaque fiche produit publie un schéma Product (nom, marque, photos, tailles) sans offre commerciale tant que la vente n’est pas ouverte.
+- Chaque guide publie un schéma Article et une FAQ.
+- Plan du site : https://boutique-de-boxe.com/sitemap.xml

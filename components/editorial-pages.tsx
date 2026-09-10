@@ -241,6 +241,22 @@ export async function GuidePage({ guide: g }: { guide: Guide }) {
           }),
         }}
       />
+      {g.faq?.length ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: jsonLd({
+              '@context': 'https://schema.org',
+              '@type': 'FAQPage',
+              mainEntity: g.faq.map((f) => ({
+                '@type': 'Question',
+                name: f.question,
+                acceptedAnswer: { '@type': 'Answer', text: f.answer },
+              })),
+            }),
+          }}
+        />
+      ) : null}
     </main>
   );
 }

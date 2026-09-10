@@ -7,6 +7,7 @@ import {
   categories,
   shop,
   jsonLd,
+  money,
 } from '@/lib/catalog';
 import { readCatalog, isAdmin } from '@/lib/database';
 import { guides, services } from '@/lib/editorial';
@@ -110,18 +111,33 @@ export async function generateMetadata({
       { url: string; width: number; height: number; alt: string }
     >
   )['/' + path + '/'];
-  const description =
+  const trimmed = (s: string, max: number) =>
+    s.length <= max ? s : s.slice(0, max - 1).replace(/[\s,;:·—-]+\S*$/, '').trim() + '…';
+  const describe = (p: NonNullable<typeof product>) => {
+    const family = categoryFor(p.category)?.name.toLowerCase();
+    const brand = p.brand && !/pr[ée]ciser/i.test(p.brand) && !p.name.toLowerCase().includes(p.brand.toLowerCase()) ? ' ' + p.brand : '';
+    const parts = [p.name + brand + (family ? ', ' + family : '') + '.'];
+    const sizes = p.sizes.filter((s) => s.length <= 14 && s.toLowerCase() !== p.name.toLowerCase());
+    if (sizes.length > 1) parts.push('Tailles : ' + sizes.slice(0, 4).join(', ') + (sizes.length > 4 ? '…' : '') + '.');
+    parts.push('Prix prévu à l’ouverture : ' + money(p.price) + '.');
+    parts.push('Livraison dans toute la France.');
+    return parts.join(' ');
+  };
+  const rawDescription =
     (product
-      ? product.seoDescription ||
-        (product.name + '. ' + product.short).slice(0, 295)
+      ? product.seoDescription && product.seoDescription.length >= 80
+        ? product.seoDescription
+        : describe(product)
       : undefined) ||
     cat?.description ||
     guide?.description ||
     service?.description ||
     special[path]?.[1] ||
     'Cette page n’existe pas.';
+  const description = trimmed(rawDescription, 158);
+  const seoTitle = pageTitle.length > 41 ? { absolute: trimmed(pageTitle, 60) } : pageTitle;
   return {
-    title: pageTitle,
+    title: seoTitle,
     description,
     alternates: { canonical },
     openGraph: {
@@ -421,6 +437,27 @@ export default async function Page({ params, searchParams }: Props) {
             },
           ]}
         />
+        {path !== 'recherche' && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: jsonLd({
+                '@context': 'https://schema.org',
+                '@type': 'ItemList',
+                name: cat?.name || (path === 'nouveautes' ? 'Nouveautés' : 'Recherche'),
+                numberOfItems: data.length,
+                itemListElement: data
+                  .slice((currentPage - 1) * 36, currentPage * 36)
+                  .map((x, i) => ({
+                    '@type': 'ListItem',
+                    position: (currentPage - 1) * 36 + i + 1,
+                    name: x.name,
+                    url: shop.origin + '/produits/' + x.slug + '/',
+                  })),
+              }),
+            }}
+          />
+        )}
         <section className="page-heading">
           <div>
             <span className="eyebrow">

@@ -6,6 +6,8 @@ import './shop.css';
 import './refinement.css';
 import './commerce.css';
 import './motion.css';
+import './scale.css';
+import type { Viewport } from 'next';
 
 
 export const metadata: Metadata = {
@@ -31,7 +33,16 @@ export const metadata: Metadata = {
       },
     ],
   },
-  icons: { icon: '/favicon.svg' },
+  icons: { icon: '/favicon.svg', apple: '/icons/apple-touch-icon.png' },
+  manifest: '/manifest.webmanifest',
+  twitter: { card: 'summary_large_image' },
+  appleWebApp: { capable: true, title: 'Boutique de Boxe', statusBarStyle: 'default' },
+};
+export const viewport: Viewport = {
+  themeColor: '#18191e',
+  colorScheme: 'light',
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export default function RootLayout({
@@ -45,6 +56,13 @@ export default function RootLayout({
         <link
           rel="preload"
           href="/fonts/barlow-condensed-extrabold.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="/fonts/manrope-variable.woff2"
           as="font"
           type="font/woff2"
           crossOrigin="anonymous"
@@ -67,6 +85,11 @@ export default function RootLayout({
               name: shop.name,
               url: shop.origin,
               inLanguage: 'fr-FR',
+              potentialAction: {
+                '@type': 'SearchAction',
+                target: { '@type': 'EntryPoint', urlTemplate: shop.origin + '/recherche/?q={search_term_string}' },
+                'query-input': 'required name=search_term_string',
+              },
             }),
           }}
         />

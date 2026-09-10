@@ -194,8 +194,17 @@ export function Motion() {
       { threshold: 0.08 },
     );
     document
+      .querySelectorAll(
+        'main > section:not(.workbench-hero):not(.page-heading):not(.session-bench), main .product-card, main .guide-card, main .equipment-rows > a, main .kit-piece, footer',
+      )
+      .forEach((e) => {
+        if (!e.hasAttribute('data-reveal')) e.setAttribute('data-reveal', '');
+      });
+    document
       .querySelectorAll('[data-reveal]')
       .forEach((e) => observer.observe(e));
+    if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator)
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
     let chosen: HTMLImageElement | null = null;
     const onClick = (e: MouseEvent) => {
       const link = (e.target as Element | null)?.closest?.(

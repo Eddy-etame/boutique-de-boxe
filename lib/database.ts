@@ -29,9 +29,11 @@ export async function isAdmin() {
 const KEEP_UPPER = new Set(['MMA', 'JJB', 'BJJ', 'UFC', 'FFB', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'K1', 'PU', 'EVA', 'BS', 'WB', 'WBC', 'IBF', 'WBO', 'ONE']);
 /** Noms de flux fournisseurs (capitales, codes) rendus lisibles ; les 19 fiches d’origine ne bougent pas. */
 const cap = (w: string) => w.charAt(0).toUpperCase() + w.slice(1);
+const STOP = new Set(['de', 'du', 'des', 'le', 'la', 'les', 'et', 'en', 'pour', 'avec', 'sans', 'à', 'au', 'aux']);
 function caseWord(w: string, first: boolean): string {
   const bare = w.replace(/[^A-Za-zÀ-ÿ0-9]/g, '');
   if (!bare) return w;
+  if (!first && STOP.has(bare.toLowerCase())) return w.toLowerCase();
   if (KEEP_UPPER.has(bare.toUpperCase())) return w.toUpperCase();
   const shouty = /^[A-ZÀ-Ý0-9/&.'’-]+$/.test(w) && /[A-ZÀ-Ý]{3,}/.test(w) && !/\d/.test(w);
   if (!shouty) return first ? cap(w) : w;
