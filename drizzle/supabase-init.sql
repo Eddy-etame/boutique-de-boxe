@@ -1,4 +1,4 @@
--- Boutique de Boxe — schéma complet à coller dans Supabase → SQL Editor → Run.
+-- Boutique de Boxe — schéma complet à coller dans Supabase > SQL Editor > Run.
 -- Idempotent : peut être rejoué sans casser une base déjà initialisée.
 
 CREATE TABLE IF NOT EXISTS "alerts" (
@@ -106,7 +106,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS "alerts_unsubscribe_token" ON "alerts" USING b
 CREATE UNIQUE INDEX IF NOT EXISTS "payplug_cart_request" ON "payment_attempts" USING btree ("cart_id","request_key");
 CREATE UNIQUE INDEX IF NOT EXISTS "payplug_cart_revision" ON "payment_attempts" USING btree ("cart_id","cart_revision");
 CREATE UNIQUE INDEX IF NOT EXISTS "orders_cart_idempotency" ON "simulation_orders" USING btree ("cart_id","idempotency_key");
--- Les tables ne sont lues que par le serveur (connexion Postgres). Verrouillage de l’API publique Supabase.
+-- Les tables ne sont lues que par le serveur (connexion Postgres). Verrouillage de l'API publique Supabase.
 ALTER TABLE "alerts" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "contacts" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "product_overrides" ENABLE ROW LEVEL SECURITY;

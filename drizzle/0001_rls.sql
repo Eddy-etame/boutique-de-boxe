@@ -1,4 +1,4 @@
--- Les tables ne sont lues que par le serveur (connexion Postgres). Verrouillage de l’API publique Supabase.
+-- Les tables ne sont lues que par le serveur (connexion Postgres). Verrouillage de l'API publique Supabase.
 ALTER TABLE "alerts" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "contacts" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "product_overrides" ENABLE ROW LEVEL SECURITY;
