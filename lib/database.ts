@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import type { PayplugEnvironment } from './payplug';
 import type { Product } from './catalog';
 import original from './data/products.json';
@@ -56,7 +57,8 @@ export function humanName(name: string, brand: string): string {
   n = n.split(' ').map((w, i) => (w === marker ? brandDisplay : caseWord(w, i === 0))).join(' ');
   return n.replace(/\s{2,}/g, ' ').trim();
 }
-export async function readCatalog(): Promise<Product[]> {
+/** Une seule lecture par requête : les métadonnées et la page partagent le résultat. */
+export const readCatalog = cache(async function readCatalogOnce(): Promise<Product[]> {
   try {
     const database = await db();
     const [entries, overrides] = await Promise.all([
@@ -105,4 +107,4 @@ export async function readCatalog(): Promise<Product[]> {
       p.id.startsWith('bs-') || p.id.startsWith('lcd') ? { ...p, name: humanName(p.name, p.brand) } : p,
     );
   }
-}
+});
