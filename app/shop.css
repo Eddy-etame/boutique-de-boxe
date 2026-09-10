@@ -3094,8 +3094,12 @@ html[data-motion='reduce'] .button:hover {
 }
 .zoom-photo.is-zoomed {
   width: 200%;
-  height: 200%;
+  height: auto;
+  min-height: 100%;
   cursor: zoom-out;
+}
+.zoom-dialog .zoom-photo.is-zoomed img {
+  height: auto;
 }
 .zoom-close {
   z-index: 2;
