@@ -5,10 +5,8 @@ import './globals.css';
 import './shop.css';
 import './refinement.css';
 import './commerce.css';
-import './next.css';
-import { getEdition } from '@/lib/edition';
-import { EditionToggle } from '@/components/next/edition-toggle';
-import { NextHeader, NextFooter } from '@/components/next/shell';
+import './motion.css';
+
 
 export const metadata: Metadata = {
   metadataBase: new URL(shop.origin),
@@ -36,14 +34,13 @@ export const metadata: Metadata = {
   icons: { icon: '/favicon.svg' },
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const edition = await getEdition();
   return (
-    <html lang="fr" data-edition={edition}>
+    <html lang="fr">
       <head>
         <link
           rel="preload"
@@ -57,11 +54,10 @@ export default async function RootLayout({
         <a href="#contenu" className="skip-link">
           Aller au contenu
         </a>
-        {edition === 'nouvelle' && <EditionToggle edition={edition} />}
-        {edition === 'nouvelle' ? <NextHeader /> : <Header />}
+        <Header />
         {children}
-        {edition === 'nouvelle' ? <NextFooter /> : <Footer />}
-        {edition === 'actuelle' && <Motion />}
+        <Footer />
+        <Motion />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

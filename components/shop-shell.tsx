@@ -196,7 +196,26 @@ export function Motion() {
     document
       .querySelectorAll('[data-reveal]')
       .forEach((e) => observer.observe(e));
-    return () => observer.disconnect();
+    let chosen: HTMLImageElement | null = null;
+    const onClick = (e: MouseEvent) => {
+      const link = (e.target as Element | null)?.closest?.(
+        '.product-card a, .kit-picture a, .session-products a',
+      );
+      if (!link) return;
+      const card = link.closest('.product-card, .kit-piece') ?? link;
+      chosen = card.querySelector('img');
+    };
+    const onSwap = (e: Event) => {
+      const swap = e as Event & { viewTransition?: unknown };
+      if (swap.viewTransition && chosen) chosen.style.viewTransitionName = 'product-hero';
+    };
+    document.addEventListener('click', onClick);
+    window.addEventListener('pageswap', onSwap);
+    return () => {
+      observer.disconnect();
+      document.removeEventListener('click', onClick);
+      window.removeEventListener('pageswap', onSwap);
+    };
   }, [pathname]);
   return null;
 }

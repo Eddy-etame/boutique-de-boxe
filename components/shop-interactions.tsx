@@ -30,6 +30,7 @@ import {
   cleanName,
   categories,
   variantPrice,
+  categoryFor,
 } from '@/lib/catalog';
 import { AddToCart } from './commerce-ui';
 import selection from '@/lib/data/selection.json';
@@ -47,7 +48,9 @@ export function ProductCard({
         <span className="product-index">
           {String(index + 1).padStart(2, '0')}
         </span>
-        <span className="product-status">Catalogue</span>
+        <span className="product-status">
+          {p.audience === 'enfant' ? 'Enfant' : (categoryFor(p.category)?.name ?? 'Catalogue')}
+        </span>
         <img
           src={p.images[0]?.small}
           srcSet={`${p.images[0]?.small} 480w, ${p.images[0]?.src} 960w`}
@@ -114,6 +117,7 @@ export function HeroStage({ product: p }: { product: Product }) {
       </div>
       <div className="inspector-photo">
         <img
+          key={image.src + view}
           src={image.src}
           width={image.width}
           height={image.height}
@@ -133,7 +137,7 @@ export function HeroStage({ product: p }: { product: Product }) {
         </span>
       </div>
       <div className="inspection-caption" aria-live="polite">
-        <div>
+        <div key={view}>
           <span>{fact[0]}</span>
           <p>{fact[1]}</p>
         </div>
@@ -466,7 +470,7 @@ export function SessionChooser({ items }: { items: Product[] }) {
   const remaining = results.filter((r) => !owned.includes(r.id));
   const total = remaining.reduce((sum, r) => sum + r.product.price, 0);
   return (
-    <section className="session-bench" id="preparer">
+    <section className="session-bench" id="preparer" data-reveal>
       <header className="bench-heading">
         <div>
           <span className="eyebrow">LE SAC DE SÉANCE</span>

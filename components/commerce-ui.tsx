@@ -181,6 +181,18 @@ function useCart() {
 export function CartLink() {
   const { cart, error } = useCart();
   const count = cart?.items.reduce((total, item) => total + item.quantity, 0);
+  const badge = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    const onAdded = () => {
+      const el = badge.current;
+      if (!el) return;
+      el.setAttribute('data-bump', 'true');
+      const t = setTimeout(() => el.setAttribute('data-bump', 'false'), 500);
+      return () => clearTimeout(t);
+    };
+    window.addEventListener('boutique:cart-added', onAdded);
+    return () => window.removeEventListener('boutique:cart-added', onAdded);
+  }, []);
   return (
     <a
       className="cart-link"
@@ -193,7 +205,7 @@ export function CartLink() {
     >
       <ShoppingBag size={19} aria-hidden="true" />
       <span>Panier</span>
-      <span className="cart-count" aria-hidden="true">
+      <span ref={badge} className="cart-count" aria-hidden="true" data-bump="false">
         {count ?? (error ? '—' : '…')}
       </span>
     </a>
@@ -233,6 +245,7 @@ export function AddToCart({
       setStatus(
         `${product.name}${variant ? ` · ${variant}` : ''} ajouté au panier.`,
       );
+      window.dispatchEvent(new Event('boutique:cart-added'));
     } catch (e) {
       const failure = e as ApiFailure;
       setError(

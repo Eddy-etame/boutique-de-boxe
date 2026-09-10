@@ -145,7 +145,7 @@ export default function Home({ items }: { items: Product[] }) {
             })}
         </div>
       </section>
-      <section className="ounce-editorial">
+      <section className="ounce-editorial" data-reveal>
         <div className="ounce-illustration" aria-hidden="true">
           <span>UNITÉ DE POIDS / ONCE</span>
           <div>
@@ -180,7 +180,7 @@ export default function Home({ items }: { items: Product[] }) {
           </a>
         </div>
       </section>
-      <section className="opening-note section-pad">
+      <section className="opening-note section-pad" data-reveal>
         <div>
           <span className="eyebrow">OUVERTURE DES VENTES</span>
           <h2>

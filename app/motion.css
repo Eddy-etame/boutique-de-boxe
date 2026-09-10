@@ -1,0 +1,134 @@
+/* ---------------------------------------------------------------------------
+   Mouvement qui renseigne. Chaque animation dit un état : arrivée, choix,
+   ajout, passage vers la fiche. Rien de décoratif. Le bloc
+   prefers-reduced-motion de shop.css neutralise tout ; les transitions de vue
+   sont neutralisées ici.
+--------------------------------------------------------------------------- */
+
+:root {
+  --m-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --m-fast: 0.35s;
+  --m-base: 0.55s;
+  --m-slow: 0.8s;
+}
+
+/* Hero : la lecture arrive dans l’ordre, la pièce se pose ensuite. */
+@keyframes m-arrive {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes m-settle {
+  from { opacity: 0; transform: translateY(18px) scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+.workbench-copy > * { animation: m-arrive var(--m-slow) var(--m-ease) both; }
+.workbench-copy > *:nth-child(1) { animation-delay: 0.04s; }
+.workbench-copy > *:nth-child(2) { animation-delay: 0.12s; }
+.workbench-copy > *:nth-child(3) { animation-delay: 0.22s; }
+.workbench-copy > *:nth-child(4) { animation-delay: 0.3s; }
+.workbench-copy > *:nth-child(5) { animation-delay: 0.36s; }
+.equipment-inspector { animation: m-settle 0.9s var(--m-ease) both; animation-delay: 0.18s; }
+.bench-signature { animation: m-arrive var(--m-slow) var(--m-ease) both; animation-delay: 0.5s; }
+
+/* Révélations : le parent existe déjà (.in-view), les enfants suivent en cascade. */
+.in-view > .editorial-heading > * { animation: m-arrive var(--m-base) var(--m-ease) both; }
+.in-view > .editorial-heading > *:nth-child(2) { animation-delay: 0.08s; }
+.in-view .product-grid > .product-card { animation: m-arrive var(--m-base) var(--m-ease) both; }
+.in-view .product-grid > .product-card:nth-child(1) { animation-delay: 0.05s; }
+.in-view .product-grid > .product-card:nth-child(2) { animation-delay: 0.11s; }
+.in-view .product-grid > .product-card:nth-child(3) { animation-delay: 0.17s; }
+.in-view .product-grid > .product-card:nth-child(4) { animation-delay: 0.23s; }
+.in-view .product-grid > .product-card:nth-child(5) { animation-delay: 0.29s; }
+.in-view .product-grid > .product-card:nth-child(6) { animation-delay: 0.35s; }
+.in-view .product-grid > .product-card:nth-child(7) { animation-delay: 0.41s; }
+.in-view .product-grid > .product-card:nth-child(8) { animation-delay: 0.47s; }
+.in-view .equipment-rows > a { animation: m-arrive var(--m-base) var(--m-ease) both; }
+.in-view .equipment-rows > a:nth-child(1) { animation-delay: 0.04s; }
+.in-view .equipment-rows > a:nth-child(2) { animation-delay: 0.09s; }
+.in-view .equipment-rows > a:nth-child(3) { animation-delay: 0.14s; }
+.in-view .equipment-rows > a:nth-child(4) { animation-delay: 0.19s; }
+.in-view .equipment-rows > a:nth-child(5) { animation-delay: 0.24s; }
+.in-view .equipment-rows > a:nth-child(6) { animation-delay: 0.29s; }
+.in-view .equipment-rows > a:nth-child(7) { animation-delay: 0.34s; }
+.in-view .equipment-rows > a:nth-child(8) { animation-delay: 0.39s; }
+.in-view .equipment-rows > a:nth-child(9) { animation-delay: 0.44s; }
+.in-view .kit-grid > .kit-piece { animation: m-arrive var(--m-base) var(--m-ease) both; }
+.in-view .kit-grid > .kit-piece:nth-child(2) { animation-delay: 0.08s; }
+.in-view .kit-grid > .kit-piece:nth-child(3) { animation-delay: 0.16s; }
+
+/* Index des familles : le trait se dessine sous la ligne survolée. */
+.equipment-rows > a { position: relative; }
+.equipment-rows > a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--m-base) var(--m-ease);
+}
+.equipment-rows > a:hover::after,
+.equipment-rows > a:focus-visible::after { transform: scaleX(1); }
+
+/* Inspecteur : chaque vue se pose, le repère arrive, le contrôle actif se souligne. */
+.inspector-photo img { animation: m-settle var(--m-base) var(--m-ease) both; }
+.inspection-pin { animation: m-arrive var(--m-fast) var(--m-ease) both; animation-delay: 0.15s; }
+.inspection-caption > div { animation: m-arrive var(--m-fast) var(--m-ease) both; }
+.inspection-controls button { position: relative; }
+.inspection-controls button::after {
+  content: '';
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 3px;
+  height: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s var(--m-ease);
+}
+.inspection-controls button[aria-pressed='true']::after { transform: scaleX(1); }
+
+/* Boutons : l’appui se sent, la flèche indique la direction. */
+.button svg { transition: transform var(--m-fast) var(--m-ease); }
+.button:hover svg { transform: translate(2px, -2px); }
+.button:active { transform: translateY(1px); }
+.inline-link svg { transition: transform var(--m-fast) var(--m-ease); }
+.inline-link:hover svg { transform: translate(2px, -2px); }
+
+/* Panier : le compteur rebondit quand un modèle entre. */
+@keyframes m-bump {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+.cart-count[data-bump='true'] { animation: m-bump 0.45s var(--m-ease); }
+
+/* Sac de séance : la sélection se recompose sur place. */
+.kit-piece { transition: opacity var(--m-fast) var(--m-ease), transform var(--m-fast) var(--m-ease); }
+.kit-piece.is-owned { transform: scale(0.985); }
+
+/* Passage carte → fiche : la photo continue, le reste arrive. */
+@view-transition { navigation: auto; }
+.gallery-main > img { view-transition-name: product-hero; }
+::view-transition-group(product-hero) {
+  animation-duration: var(--m-base);
+  animation-timing-function: var(--m-ease);
+}
+::view-transition-old(product-hero),
+::view-transition-new(product-hero) {
+  height: 100%;
+  object-fit: contain;
+  mix-blend-mode: normal;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) { animation: none !important; }
+  .equipment-rows > a::after,
+  .inspection-controls button::after { transition: none; }
+}
