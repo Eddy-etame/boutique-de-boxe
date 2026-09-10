@@ -98,7 +98,11 @@ export async function readCatalog(): Promise<Product[]> {
         : p;
     });
   } catch (error) {
-    console.error('Catalogue storage unavailable', error instanceof Error ? error.name : 'StorageError');
-    throw new Error('Le catalogue est temporairement indisponible. Réessayez dans quelques instants.');
+    // Base injoignable ou non migrée : le catalogue des fichiers reste lisible.
+    // Panier, alertes, demandes et atelier répondent 503 tant que la base manque.
+    console.error('Catalogue storage unavailable, serving the file catalogue', error instanceof Error ? error.name : 'StorageError');
+    return products.map((p) =>
+      p.id.startsWith('bs-') || p.id.startsWith('lcd') ? { ...p, name: humanName(p.name, p.brand) } : p,
+    );
   }
 }
