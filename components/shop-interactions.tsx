@@ -1,5 +1,6 @@
 'use client';
-import { useMemo, useState, useEffect } from 'react';
+import { pageWindow } from '@/lib/pagination';
+import { useMemo, useState, useEffect, useSyncExternalStore } from 'react';
 import {
   ArrowRight,
   ArrowUpRight,
@@ -23,7 +24,15 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { matchesSearch, registerCatalogTools } from '@/lib/catalog-tools';
-import { Product, money, cleanName, categories } from '@/lib/catalog';
+import {
+  Product,
+  money,
+  cleanName,
+  categories,
+  variantPrice,
+} from '@/lib/catalog';
+import { AddToCart } from './commerce-ui';
+import selection from '@/lib/data/selection.json';
 
 export function ProductCard({
   product: p,
@@ -38,7 +47,7 @@ export function ProductCard({
         <span className="product-index">
           {String(index + 1).padStart(2, '0')}
         </span>
-        <span className="product-status">Bientôt disponible</span>
+        <span className="product-status">Catalogue</span>
         <img
           src={p.images[0]?.small}
           srcSet={`${p.images[0]?.small} 480w, ${p.images[0]?.src} 960w`}
@@ -64,7 +73,10 @@ export function ProductCard({
         <a href={`/produits/${p.slug}/`}>{cleanName(p)}</a>
       </h3>
       <div className="price-row">
-        <strong>{money(p.price)}</strong>
+        <strong>
+          {p.variants?.some((v) => v.price !== p.price) ? 'Dès ' : ''}
+          {money(p.price)}
+        </strong>
         <span>prix indicatif</span>
       </div>
     </article>
@@ -72,72 +84,76 @@ export function ProductCard({
 }
 
 export function HeroStage({ product: p }: { product: Product }) {
-  const [feature, setFeature] = useState(0);
-  const details = [
-    {
-      title: 'Le maintien',
-      text: 'Une manchette large. Une fermeture auto-agrippante.',
-      image: 0,
-    },
-    {
-      title: 'La construction',
-      text: 'Une enveloppe en PU. Un rembourrage en mousse EVA.',
-      image: 1,
-    },
-    {
-      title: 'Le poids',
-      text: '10, 12 ou 14 oz : le choix dépend de votre pratique.',
-      image: 0,
-    },
-  ];
-  const selected = details[feature];
+  const [view, setView] = useState(0);
+  const curated = p.images[0].src.includes(
+    'gants-boxe-blade-metal-boxe-noir-blanc-1',
+  );
+  const controls = curated
+    ? ['La paire', 'La manchette', 'L’autre face']
+    : ['La pièce', 'Le détail', 'Les vues'];
+  const image = view === 2 ? p.images[1] || p.images[0] : p.images[0];
+  const fact =
+    view === 1 && curated
+      ? ['Fermeture', p.specs['Fermeture'] || 'À examiner sur la photo']
+      : view === 2
+        ? ['À regarder', 'La forme de la paume, les coutures et la fermeture.']
+        : [
+            'Déclinaisons présentées',
+            p.sizes.join(' / ') || 'Consulter la fiche',
+          ];
   return (
-    <div className={`hero-stage stage-${feature}`}>
-      <div className="stage-top">
-        <span>FOCUS / METAL BOXE</span>
-        <span>MODÈLE BLADE</span>
-      </div>
-      <div className="stage-image">
-        <span className="stage-letter" aria-hidden="true">
-          B.
+    <div
+      className="equipment-inspector"
+      data-inspection={view === 1 && curated ? 'closure' : 'whole'}
+    >
+      <div className="inspector-index">
+        <span>
+          {p.brand} / {p.sourceRef}
         </span>
+        <span>ÉTUDE D’UNE PIÈCE</span>
+      </div>
+      <div className="inspector-photo">
         <img
-          key={selected.image}
-          src={p.images[selected.image]?.src || p.images[0].src}
-          width={960}
-          height={960}
-          alt={selected.image ? p.images[1]?.alt : p.images[0].alt}
+          src={image.src}
+          width={image.width}
+          height={image.height}
+          alt={image.alt}
           fetchPriority="high"
         />
-        <span className="stage-weight">
-          10—14<span>oz</span>
+        {view === 1 && curated && (
+          <div className="inspection-pin">
+            <i />
+            La manchette
+          </div>
+        )}
+        <span className="inspection-coordinate" aria-hidden="true">
+          {view === 1
+            ? 'DÉTAIL / 01'
+            : 'VUE / ' + String(view === 2 ? 2 : 1).padStart(2, '0')}
         </span>
       </div>
-      <div className="stage-detail" aria-live="polite">
-        <span className="crosshair" aria-hidden="true">
-          +
-        </span>
+      <div className="inspection-caption" aria-live="polite">
         <div>
-          <strong>{selected.title}</strong>
-          <p>{selected.text}</p>
+          <span>{fact[0]}</span>
+          <p>{fact[1]}</p>
         </div>
-        <a href={`/produits/${p.slug}/`} aria-label="Voir les gants Blade">
-          <ArrowUpRight />
+        <a href={'/produits/' + p.slug + '/'} aria-label={'Examiner ' + p.name}>
+          <ArrowUpRight size={24} />
         </a>
       </div>
       <div
-        className="stage-controls"
+        className="inspection-controls"
         role="group"
-        aria-label="Explorer les caractéristiques du gant"
+        aria-label="Observer le produit"
       >
-        {details.map((d, i) => (
+        {controls.map((label, i) => (
           <button
-            key={d.title}
-            aria-pressed={feature === i}
-            onClick={() => setFeature(i)}
+            key={label}
+            aria-pressed={view === i}
+            onClick={() => setView(i)}
           >
-            <span>0{i + 1}</span>
-            {d.title}
+            <span>{String(i + 1).padStart(2, '0')}</span>
+            {label}
           </button>
         ))}
       </div>
@@ -149,10 +165,12 @@ export function Catalog({
   items,
   initialQuery = '',
   showFamilies = false,
+  initialPage = 1,
 }: {
   items: Product[];
   initialQuery?: string;
   showFamilies?: boolean;
+  initialPage?: number;
 }) {
   const [query, setQuery] = useState(initialQuery);
   const [sort, setSort] = useState('selection');
@@ -161,6 +179,8 @@ export function Catalog({
   const [family, setFamily] = useState('all');
   const [budget, setBudget] = useState('all');
   const [filters, setFilters] = useState(false);
+  const [page, setPage] = useState(initialPage);
+
   const brands = [...new Set(items.map((p) => p.brand))];
   const sizes = [...new Set(items.flatMap((p) => p.sizes))];
   const result = useMemo(() => {
@@ -186,6 +206,7 @@ export function Catalog({
     () =>
       registerCatalogTools(items, (q) => {
         setQuery(q);
+        setPage(1);
         setBrand('all');
         setSize('all');
         setFamily('all');
@@ -202,7 +223,13 @@ export function Catalog({
     return (
       <label className="filter-field">
         <span>{label}</span>
-        <Select value={value} onValueChange={(v) => set(String(v))}>
+        <Select
+          value={value}
+          onValueChange={(v) => {
+            set(String(v));
+            setPage(1);
+          }}
+        >
           <SelectTrigger aria-label={label}>
             <SelectValue>
               {options.find((o) => o.value === value)?.label}
@@ -227,7 +254,10 @@ export function Catalog({
           <span className="sr-only">Rechercher dans le catalogue</span>
           <input
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setPage(1);
+            }}
             placeholder="Un modèle, une marque, un équipement…"
             type="search"
           />
@@ -279,6 +309,7 @@ export function Catalog({
         <button
           className="text-button"
           onClick={() => {
+            setPage(1);
             setSize('all');
             setBrand('all');
             setFamily('all');
@@ -296,11 +327,47 @@ export function Catalog({
         <span>CATALOGUE EN PRÉPARATION</span>
       </div>
       {result.length ? (
-        <div className="product-grid">
-          {result.map((p, i) => (
-            <ProductCard key={p.id} product={p} index={i} />
-          ))}
-        </div>
+        <>
+          <div className="product-grid">
+            {result
+              .slice(
+                (Math.min(page, Math.max(1, Math.ceil(result.length / 36))) -
+                  1) *
+                  36,
+                Math.min(page, Math.max(1, Math.ceil(result.length / 36))) * 36,
+              )
+              .map((p, i) => (
+                <ProductCard key={p.id} product={p} index={i} />
+              ))}
+          </div>
+          {result.length > 36 && (
+            <nav className="catalog-pagination" aria-label="Pages du catalogue">
+              {pageWindow(page, Math.ceil(result.length / 36)).map(
+                (n, i, visible) => (
+                  <span key={n}>
+                    {i > 0 && n - visible[i - 1] > 1 && (
+                      <span aria-hidden="true">…</span>
+                    )}
+                    <a
+                      href={'?page=' + n}
+                      aria-label={'Page ' + n}
+                      aria-current={page === n ? 'page' : undefined}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPage(n);
+                        document
+                          .querySelector('.catalog-toolbar')
+                          ?.scrollIntoView({ block: 'start' });
+                      }}
+                    >
+                      {n}
+                    </a>
+                  </span>
+                ),
+              )}
+            </nav>
+          )}
+        </>
       ) : (
         <div className="empty-state">
           <Search size={35} />
@@ -319,6 +386,7 @@ export function Catalog({
               className="button button-dark"
               onClick={() => {
                 setQuery('');
+                setPage(1);
                 setSize('all');
                 setBrand('all');
                 setFamily('all');
@@ -338,65 +406,82 @@ export function Catalog({
   );
 }
 
-export function SessionChooser({ items }: { items: Product[] }) {
-  const [discipline, setDiscipline] = useState('boxe');
-  const [context, setContext] = useState('premiere');
-  const config: Record<
-    string,
-    { name: string; text: string; families: string[]; guide: string }
-  > = {
-    premiere: {
-      name: 'Première séance',
-      text: 'Commencez par les consignes de votre salle : le matériel prêté varie. Regardez ensuite les gants, la tenue et les accessoires personnels à prévoir.',
-      families:
-        discipline === 'mma'
-          ? ['gants-mma', 'protections-boxe', 'textile-boxe']
-          : ['gants-de-boxe', 'accessoires-boxe', 'textile-boxe'],
-      guide: discipline === 'mma' ? 'debuter-mma' : 'debuter-boxe',
-    },
-    technique: {
-      name: 'Travail technique',
-      text: 'Identifiez les exercices de la séance. Le type de gant, son poids et les protections demandées se valident avec votre encadrant avant de choisir.',
-      families:
-        discipline === 'mma'
-          ? ['gants-mma', 'protections-boxe']
-          : ['gants-de-boxe', 'accessoires-boxe'],
-      guide: discipline === 'mma' ? 'choisir-gants-mma' : 'choisir-gants-boxe',
-    },
-    enfant: {
-      name: 'Équipement enfant',
-      text: 'L’âge indiqué sur un modèle est un repère de gamme. L’ajustement réel, les consignes du club et la déclinaison photographiée restent les points à vérifier.',
-      families: ['gants-de-boxe', 'protections-boxe', 'textile-boxe'],
-      guide: 'equipement-enfant',
-    },
+function sessionSnapshot() {
+  try {
+    return sessionStorage.getItem('boutique-session') || '';
+  } catch {
+    return '';
+  }
+}
+function subscribeSession(callback: () => void) {
+  window.addEventListener('boutique:session', callback);
+  window.addEventListener('storage', callback);
+  return () => {
+    window.removeEventListener('boutique:session', callback);
+    window.removeEventListener('storage', callback);
   };
-  const selected = config[context];
-  const candidates = items.filter(
-    (p) =>
-      p.id !== 'mat-sparring-16' &&
-      (context === 'enfant'
-        ? p.audience === 'enfant'
-        : p.audience !== 'enfant'),
+}
+export function SessionChooser({ items }: { items: Product[] }) {
+  const stored = useSyncExternalStore(
+    subscribeSession,
+    sessionSnapshot,
+    () => '',
   );
-  const results =
-    context === 'enfant' && discipline === 'mma'
-      ? []
-      : (selected.families
-          .map((f) => candidates.find((p) => p.category === f))
-          .filter(Boolean) as Product[]);
+  const { discipline, context, owned } = useMemo(() => {
+    try {
+      const data = JSON.parse(stored);
+      return {
+        discipline: ['boxe', 'mma'].includes(data.discipline)
+          ? data.discipline
+          : 'boxe',
+        context: ['premiere', 'technique', 'enfant'].includes(data.context)
+          ? data.context
+          : 'premiere',
+        owned: Array.isArray(data.owned)
+          ? (data.owned.filter(
+              (v: unknown) => typeof v === 'string',
+            ) as string[])
+          : [],
+      };
+    } catch {
+      return { discipline: 'boxe', context: 'premiere', owned: [] as string[] };
+    }
+  }, [stored]);
+  function saveSession(d: string, c: string, o: string[]) {
+    try {
+      sessionStorage.setItem(
+        'boutique-session',
+        JSON.stringify({ discipline: d, context: c, owned: o }),
+      );
+      window.dispatchEvent(new Event('boutique:session'));
+    } catch {}
+  }
+  const selected = selection.sessions.find(
+    (s) => s.key === `${discipline}:${context}`,
+  )!;
+  const results = selected.products.flatMap((r) => {
+    const product = items.find((p) => p.id === r.id);
+    return product ? [{ ...r, product }] : [];
+  });
+  const remaining = results.filter((r) => !owned.includes(r.id));
+  const total = remaining.reduce((sum, r) => sum + r.product.price, 0);
   return (
-    <section className="session-section" id="preparer">
-      <div className="session-copy">
-        <span className="eyebrow">02 / DANS VOTRE COIN</span>
-        <h2>
-          VOTRE SÉANCE.
-          <br />
-          <em>VOTRE SÉLECTION.</em>
-        </h2>
+    <section className="session-bench" id="preparer">
+      <header className="bench-heading">
+        <div>
+          <span className="eyebrow">LE SAC DE SÉANCE</span>
+          <h2>
+            Ce que vous avez.
+            <br />
+            <em>Ce qu’il vous manque.</em>
+          </h2>
+        </div>
         <p>
-          Une pratique, un contexte : les pièces à regarder changent. Prenez un
-          point de départ.
+          Le matériel prêté varie d’une salle à l’autre. Partez de votre cours,
+          puis cochez les pièces que vous avez déjà.
         </p>
+      </header>
+      <div className="bench-controls">
         <fieldset className="segmented">
           <legend className="sr-only">Votre discipline</legend>
           {[
@@ -407,62 +492,118 @@ export function SessionChooser({ items }: { items: Product[] }) {
               type="button"
               key={value}
               aria-pressed={discipline === value}
-              onClick={() => setDiscipline(value)}
+              onClick={() => saveSession(value, context, owned)}
             >
               {label}
             </button>
           ))}
         </fieldset>
-        <div className="session-options" role="group" aria-label="Votre séance">
-          {Object.entries(config).map(([key, c], i) => (
+        <div className="bench-context" role="group" aria-label="Votre séance">
+          {[
+            ['premiere', 'Premier cours'],
+            ['technique', 'Travail technique'],
+            ['enfant', 'Enfant'],
+          ].map(([value, label]) => (
             <button
-              key={key}
-              onClick={() => setContext(key)}
-              aria-pressed={context === key}
+              key={value}
+              type="button"
+              aria-pressed={context === value}
+              onClick={() => saveSession(discipline, value, owned)}
             >
-              <span>0{i + 1}</span>
-              {c.name}
-              <ArrowUpRight size={19} />
+              {label}
             </button>
           ))}
         </div>
       </div>
-      <div className="session-results" aria-live="polite">
-        <div className="session-reason">
-          <span className="tiny-label">LE POINT DE DÉPART</span>
-          <h3>{selected.name}</h3>
-          <p>
-            {context === 'enfant' && discipline === 'mma'
-              ? 'La sélection enfant présentée concerne la boxe. Pour le MMA, demandez au club les modèles et protections adaptés au cours : nous ne présentons pas encore de référence enfant vérifiée pour cette pratique.'
-              : selected.text}
-          </p>
+      <div className="bench-feedback" aria-live="polite">
+        <strong>{selected.name}</strong>
+        <span>
+          {results.length
+            ? `${remaining.length} pièce${remaining.length > 1 ? 's' : ''} à examiner · ${money(total)} indicatifs`
+            : 'Liste du club à confirmer'}
+        </span>
+      </div>
+      <p className="bench-explanation">{selected.text}</p>
+      <div className="kit-grid" key={selected.key}>
+        {results.map(({ product: p, ...r }, i) => (
+          <article
+            className={'kit-piece ' + (owned.includes(p.id) ? 'is-owned' : '')}
+            key={p.id}
+          >
+            <div className="kit-picture">
+              <span className="tiny-label">
+                {String(i + 1).padStart(2, '0')} / {r.label}
+              </span>
+              <a
+                href={
+                  '/produits/' +
+                  p.slug +
+                  '/?seance=' +
+                  encodeURIComponent(selected.key)
+                }
+              >
+                <img
+                  src={p.images[0].small}
+                  alt={p.images[0].alt}
+                  width={480}
+                  height={480}
+                  loading="lazy"
+                />
+              </a>
+              <label className="owned-control">
+                <input
+                  type="checkbox"
+                  checked={owned.includes(p.id)}
+                  onChange={(e) => {
+                    const next = e.target.checked
+                      ? [...owned, p.id]
+                      : owned.filter((id) => id !== p.id);
+                    saveSession(discipline, context, next);
+                  }}
+                />
+                <span>Déjà dans mon sac</span>
+              </label>
+            </div>
+            <div className="kit-note">
+              <a
+                href={
+                  '/produits/' +
+                  p.slug +
+                  '/?seance=' +
+                  encodeURIComponent(selected.key)
+                }
+              >
+                <h3>
+                  {cleanName(p)} <ArrowUpRight size={18} />
+                </h3>
+              </a>
+              <p>{r.reason}</p>
+              <details>
+                <summary>À vérifier pour mon cours</summary>
+                <p>{r.condition}</p>
+              </details>
+              <strong>
+                {money(p.price)} <small>indicatif</small>
+              </strong>
+            </div>
+          </article>
+        ))}
+      </div>
+      {!results.length && (
+        <div className="kit-empty">
+          <p>Aucune substitution automatique par un modèle adulte.</p>
+          <a href="/contact/" className="button">
+            Transmettre la liste du club <ArrowUpRight size={18} />
+          </a>
         </div>
-        <div className="session-products">
-          {results.map((p) => (
-            <a key={p.id} href={`/produits/${p.slug}/`}>
-              <img
-                src={p.images[0]?.small}
-                width={112}
-                height={112}
-                alt={p.name}
-                loading="lazy"
-              />
-              <div>
-                <span>
-                  {categories.find((c) => c.slug === p.category)?.name}
-                </span>
-                <h4>{cleanName(p)}</h4>
-                <span>{money(p.price)} · indicatif</span>
-              </div>
-              <ArrowUpRight size={18} />
-            </a>
-          ))}
-        </div>
-        <a
-          className="session-guide"
-          href={`/guides/${context === 'enfant' && discipline === 'mma' ? 'debuter-mma' : selected.guide}/`}
-        >
-          Les repères pour choisir <ArrowRight size={18} />
+      )}
+      <div className="bench-footer">
+        <p>
+          Une sélection à examiner avec votre encadrant. Aucun lot imposé,
+          aucune taille choisie à votre place.
+        </p>
+        <a href={'/guides/' + selected.guide + '/'} className="inline-link">
+          Les repères pour cette séance <ArrowRight size={18} />
         </a>
       </div>
     </section>
@@ -471,7 +612,7 @@ export function SessionChooser({ items }: { items: Product[] }) {
 
 export function ProductDetails({ product: p }: { product: Product }) {
   const [image, setImage] = useState(0);
-  const [size, setSize] = useState(p.sizes[0] || '');
+  const [size, setSize] = useState(p.sizes.length === 1 ? p.sizes[0] : '');
   const [open, setOpen] = useState(false);
   const [zoom, setZoom] = useState(false);
   return (
@@ -522,7 +663,12 @@ export function ProductDetails({ product: p }: { product: Product }) {
         <h1>{cleanName(p)}</h1>
         <p className="product-lead">{p.short}</p>
         <div className="detail-price">
-          <strong>{money(p.price)}</strong>
+          <strong>
+            {!size && p.variants?.some((v) => v.price !== p.price)
+              ? 'Dès '
+              : ''}
+            {money(variantPrice(p, size))}
+          </strong>
           <span>Prix indicatif · vente à venir</span>
         </div>
         <div className="availability">
@@ -537,16 +683,43 @@ export function ProductDetails({ product: p }: { product: Product }) {
                 Comment choisir ? <ArrowUpRight size={13} />
               </a>
             </legend>
-            {p.sizes.map((s) => (
-              <button
-                type="button"
-                key={s}
-                aria-pressed={size === s}
-                onClick={() => setSize(s)}
+            {p.sizes.length === 1 ? (
+              <p className="variant-single">
+                {p.sizes[0] === p.name
+                  ? 'Référence présentée sur cette fiche'
+                  : p.sizes[0]}
+              </p>
+            ) : p.sizes.length > 12 ? (
+              <Select
+                value={size}
+                onValueChange={(value) => setSize(value || '')}
               >
-                {s}
-              </button>
-            ))}
+                <SelectTrigger
+                  aria-label="Choisir une déclinaison"
+                  className="product-variant-select"
+                >
+                  <SelectValue placeholder="Choisir une déclinaison" />
+                </SelectTrigger>
+                <SelectContent>
+                  {p.sizes.map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {s} · {money(variantPrice(p, s))}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              p.sizes.map((s) => (
+                <button
+                  type="button"
+                  key={s}
+                  aria-pressed={size === s}
+                  onClick={() => setSize(s)}
+                >
+                  {s}
+                </button>
+              ))
+            )}
           </fieldset>
         )}
         <div className="detail-notes">
@@ -554,7 +727,11 @@ export function ProductDetails({ product: p }: { product: Product }) {
             <p key={n}>{n}</p>
           ))}
         </div>
-        <AlertForm productId={p.id} variant={size} />
+        <AddToCart key={p.id + size} product={p} variant={size} />
+        <details className="product-alert-disclosure">
+          <summary>Être averti de l’ouverture des ventes</summary>
+          <AlertForm productId={p.id} variant={size} />
+        </details>
         <div className="detail-assurances">
           <span>
             <Check size={15} />
@@ -562,7 +739,7 @@ export function ProductDetails({ product: p }: { product: Product }) {
           </span>
           <span>
             <Check size={15} />
-            Aucune commande à ce stade
+            Paiement d’essai sans débit
           </span>
         </div>
         <a href="/livraison/" className="inline-link">

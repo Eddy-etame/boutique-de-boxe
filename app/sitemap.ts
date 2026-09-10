@@ -22,6 +22,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/contact/',
   ].map((path) => ({
     url: shop.origin + path,
-    lastModified: dates.get(path) || '2026-09-09',
+    ...(dates.has(path) ? {lastModified:dates.get(path)} : path.startsWith('/guides') || path==='/' ? {lastModified:'2026-09-10'} : {}),
   }));
 }

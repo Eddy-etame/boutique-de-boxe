@@ -59,7 +59,7 @@ async function body(request: Request) {
 
     length += value.byteLength;
 
-    if (length > 16000) {
+    if (length > (new URL(request.url).pathname.endsWith('/admin-catalog') ? 100000 : 16000)) {
       await reader.cancel();
 
       throw new Error('Demande trop volumineuse.');
@@ -156,7 +156,7 @@ export async function GET(
       database
 
         .prepare(
-          'SELECT id,name,email,message,created_at FROM contacts ORDER BY created_at DESC LIMIT 300',
+          'SELECT id,name,email,message,created_at,relay_status FROM contacts ORDER BY created_at DESC LIMIT 300',
         )
 
         .all(),
@@ -323,7 +323,7 @@ export async function POST(
         data.description.length > 8000 ||
         !Number.isInteger(data.priceCents) ||
         data.priceCents < 0 ||
-        data.priceCents > 1000000 ||
+        data.priceCents > 5000000 ||
         !Number.isInteger(data.internalStock) ||
         data.internalStock < 0 ||
         data.internalStock > 100000 ||
@@ -331,6 +331,7 @@ export async function POST(
       )
         return response({ error: 'Vérifiez les champs du produit.' }, 400);
 
+      if (p.variants?.length && data.priceCents!==p.price) return response({error:'Modifiez les prix de chaque déclinaison dans la fiche complète.'},400);
       const user = await getChatGPTUser();
 
       await (
@@ -357,7 +358,7 @@ export async function POST(
       return response({ ok: true });
     }
 
-    if (!['alerts', 'contact', 'unsubscribe'].includes(action))
+    if (!['alerts', 'contact', 'contact-relay', 'unsubscribe'].includes(action))
       return response({ error: 'Ressource introuvable.' }, 404);
 
     if (!(await limit(request)))
@@ -368,6 +369,12 @@ export async function POST(
         },
         429,
       );
+
+    if (action === 'contact-relay') {
+      if (typeof data.id !== 'string' || typeof data.token !== 'string' || !/^[0-9a-f-]{36}$/.test(data.id) || !/^[0-9a-f-]{36}$/.test(data.token) || !['accepted_client','failed','unconfirmed'].includes(data.state)) return response({error:'Demande invalide.'},400);
+      await (await db()).prepare("UPDATE contacts SET relay_status=? WHERE id=? AND relay_token=? AND relay_status='unconfirmed'").bind(data.state,data.id,data.token).run();
+      return response({ok:true});
+    }
 
     if (action === 'unsubscribe') {
       if (typeof data.token !== 'string' || !/^[0-9a-f-]{36}$/.test(data.token))
@@ -452,23 +459,23 @@ export async function POST(
         400,
       );
 
-    await (
-      await db()
-    )
-
-      .prepare(
-        'INSERT INTO contacts (id,name,email,message,created_at) VALUES (?,?,?,?,?)',
-      )
-
-      .bind(
-        crypto.randomUUID(),
-        data.name.trim(),
-        email,
-        data.message.trim(),
-        new Date().toISOString(),
-      )
-
-      .run();
+    const database = await db();
+    if (data.requestKey && (typeof data.requestKey !== 'string' || !/^[0-9a-f-]{36}$/.test(data.requestKey))) return response({error:'Demande invalide.'},400);
+    const previous = data.requestKey ? await database.prepare('SELECT id,name,email,message,relay_token,relay_status FROM contacts WHERE request_key=?').bind(data.requestKey).first<{id:string;name:string;email:string;message:string;relay_token:string;relay_status:string}>() : null;
+    if (previous) {
+      if (previous.name !== data.name.trim() || previous.email !== email || previous.message !== data.message.trim()) return response({error:'Cette demande a déjà été utilisée.'},409);
+      return response({ok:true,id:previous.id,relayToken:previous.relay_token,relayStatus:previous.relay_status});
+    }
+    const id = crypto.randomUUID();
+    const relayToken = crypto.randomUUID();
+    await database.prepare('INSERT INTO contacts(id,name,email,message,created_at,request_key,relay_token,relay_status) VALUES (?,?,?,?,?,?,?,?) ON CONFLICT(request_key) DO NOTHING').bind(id,data.name.trim(),email,data.message.trim(),new Date().toISOString(),data.requestKey || null,relayToken,data.requestKey?'unconfirmed':'pending').run();
+    if (data.requestKey) {
+      const winner = await database.prepare('SELECT id,name,email,message,relay_token,relay_status FROM contacts WHERE request_key=?').bind(data.requestKey).first<{id:string;name:string;email:string;message:string;relay_token:string;relay_status:string}>();
+      if(winner && winner.id!==id) {
+        if(winner.name!==data.name.trim()||winner.email!==email||winner.message!==data.message.trim()) return response({error:'Cette demande a déjà été utilisée.'},409);
+        return response({ok:true,id:winner.id,relayToken:winner.relay_token,relayStatus:winner.relay_status});
+      }
+    }
 
     return request.headers
       .get('content-type')
@@ -480,7 +487,7 @@ export async function POST(
             'Cache-Control': 'no-store',
           },
         })
-      : response({ ok: true }, 201);
+      : response({ ok: true, id, relayToken, relayStatus: 'pending' }, 201);
   } catch (error) {
     if (error instanceof SyntaxError)
       return response({ error: 'Demande illisible. Réessayez.' }, 400);

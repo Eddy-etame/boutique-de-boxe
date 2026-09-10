@@ -1,50 +1,64 @@
-import { ArrowUpRight } from 'lucide-react';
-import { products, categories, Product } from '@/lib/catalog';
+import { ArrowUpRight, ArrowDown } from 'lucide-react';
+import { categories, type Product } from '@/lib/catalog';
 import {
   HeroStage,
   ProductCard,
   SessionChooser,
   AlertForm,
 } from './shop-interactions';
-import { ArrowLink } from './shop-shell';
-export default function Home({ items = products }: { items?: Product[] }) {
+import { EquipmentCompare } from './equipment-compare';
+import selection from '@/lib/data/selection.json';
+export default function Home({ items }: { items: Product[] }) {
   const hero = items.find((p) => p.id === 'mat-blade-gold') || items[0];
   const featured = [
-    'mat-blade-gold',
     'mat-shell-mma',
+    'bench-manto-miko-noir',
+    'bench-athena-rashguard-court-noir',
     'mat-bandes-4m',
-    'mat-ergo90-14',
-  ]
-    .map((id) => items.find((p) => p.id === id))
-    .filter(Boolean) as Product[];
+  ].flatMap((id) => {
+    const p = items.find((p) => p.id === id);
+    return p ? [p] : [];
+  });
   return (
-    <main id="contenu">
-      <section className="hero">
-        <div className="hero-copy">
-          <div className="eyebrow">
-            <span className="line-mark" />
+    <main id="contenu" className="store-home">
+      <section className="workbench-hero">
+        <div className="workbench-copy">
+          <span className="eyebrow">
+            <i className="tape-mark" />
             MATÉRIEL DE BOXE & SPORTS DE COMBAT
-          </div>
+          </span>
           <h1>
-            ÉQUIPEZ
+            AVANT
             <br />
-            VOTRE <br />
-            <em>GESTE.</em>
+            LE PREMIER
+            <br />
+            <em>COUP.</em>
           </h1>
-          <div className="hero-bottom">
+          <div className="workbench-intro">
+            <span className="workbench-rule" />
             <p>
-              Boxe anglaise, MMA, arts martiaux. Le bon équipement commence par
-              les bonnes questions.
+              Une paire à enfiler.
+              <br />
+              Une fermeture à ajuster.
+              <br />
+              Le matériel se choisit dans le détail.
             </p>
-            <ArrowLink href="/materiel-sport-de-combat/" dark>
-              Explorer le catalogue
-            </ArrowLink>
           </div>
+          <a href="/materiel-sport-de-combat/" className="button button-dark">
+            Tout l’équipement <ArrowUpRight size={20} />
+          </a>
+          <a className="bench-jump" href="#preparer">
+            Préparer mon sac de séance <ArrowDown size={16} />
+          </a>
         </div>
-        <HeroStage product={hero} />
+        {hero && <HeroStage product={hero} />}
+        <div className="bench-signature">
+          <span>BOUTIQUE DE BOXE / LE MATÉRIEL, REGARDÉ DE PRÈS.</span>
+          <span>{items.length} RÉFÉRENCES À EXPLORER</span>
+        </div>
       </section>
-      <div className="discipline-strip">
-        <span className="tiny-label">CHOISISSEZ VOTRE TERRAIN</span>
+      <nav className="practice-index" aria-label="Entrer par la pratique">
+        <span>VOTRE TERRAIN</span>
         <a href="/materiel-boxe/">
           Boxe anglaise <ArrowUpRight />
         </a>
@@ -54,121 +68,129 @@ export default function Home({ items = products }: { items?: Product[] }) {
         <a href="/boutique-arts-martiaux/">
           Arts martiaux <ArrowUpRight />
         </a>
-      </div>
-      <section className="section-pad selected-section" data-reveal>
-        <div className="section-heading">
+      </nav>
+      <section className="field-selection section-pad" data-reveal>
+        <header className="editorial-heading">
           <div>
-            <span className="eyebrow">01 / LE MATÉRIEL, DANS LE DÉTAIL</span>
+            <span className="eyebrow">DE LA GARDE AU TAPIS</span>
             <h2>
-              LES PIÈCES
+              Les gestes changent.
               <br />
-              <em>DU COMBAT.</em>
+              Les pièces aussi.
             </h2>
           </div>
-          <div>
-            <p>
-              La fermeture d’un gant. La longueur d’une bande.
-              <br />
-              Des différences à comprendre avant de choisir.
-            </p>
-            <a className="inline-link" href="/nouveautes/">
-              Toute la sélection <ArrowUpRight size={18} />
-            </a>
-          </div>
-        </div>
+          <p>
+            Un gant fermé, une paume ouverte, un kimono ou un rashguard :
+            commencez par reconnaître ce que votre séance demande.
+          </p>
+        </header>
         <div className="product-grid">
           {featured.map((p, i) => (
             <ProductCard key={p.id} product={p} index={i} />
           ))}
         </div>
+        <a className="inline-link" href="/nouveautes/">
+          Voir les dernières références <ArrowUpRight size={18} />
+        </a>
       </section>
-      <SessionChooser items={items} />
-      <section className="category-section section-pad" data-reveal>
-        <div className="section-heading">
+      <SessionChooser
+        items={items.filter((p) =>
+          selection.sessions.some((s) => s.products.some((r) => r.id === p.id)),
+        )}
+      />
+      <EquipmentCompare
+        items={items
+          .filter(
+            (p) => p.category === 'gants-de-boxe' && p.audience === 'adulte',
+          )
+          .slice(0, 16)}
+      />
+      <section className="equipment-index section-pad" data-reveal>
+        <header className="editorial-heading">
           <div>
-            <span className="eyebrow">03 / CHAQUE PIÈCE A SON RÔLE</span>
-            <h2>
-              ENTREZ PAR
-              <br />
-              <em>L’ÉQUIPEMENT.</em>
-            </h2>
+            <span className="eyebrow">L’INDEX DU MATÉRIEL</span>
+            <h2>Une pièce manque ?</h2>
           </div>
-          <span className="section-number">06</span>
-        </div>
-        <div className="category-list">
-          {categories.slice(0, 6).map((c, i) => {
-            const item = items.find((p) => p.category === c.slug);
-            return (
-              <a href={`/${c.slug}/`} key={c.slug}>
-                <span className="category-number">0{i + 1}</span>
-                <h3>{c.name}</h3>
-                <span className="category-teaser">{c.label}</span>
-                {item && (
-                  <img
-                    src={item.images[0]?.small}
-                    alt=""
-                    width={90}
-                    height={90}
-                    loading="lazy"
-                  />
-                )}
-                <ArrowUpRight size={25} />
-              </a>
-            );
-          })}
+          <a href="/materiel-sport-de-combat/" className="inline-link">
+            Toutes les références <ArrowUpRight size={18} />
+          </a>
+        </header>
+        <div className="equipment-rows">
+          {categories
+            .filter((c) => c.families.length === 1 && c.families[0] === c.slug)
+            .map((c, i) => {
+              const p = items.find((p) => p.category === c.slug);
+              const count = items.filter((p) => p.category === c.slug).length;
+              return (
+                <a key={c.slug} href={'/' + c.slug + '/'}>
+                  <span className="equipment-row-number">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  {p && (
+                    <img
+                      src={p.images[0].small}
+                      width={100}
+                      height={100}
+                      alt=""
+                      loading="lazy"
+                    />
+                  )}
+                  <h3>{c.name}</h3>
+                  <span className="equipment-row-count">
+                    {count} référence{count > 1 ? 's' : ''}
+                  </span>
+                  <ArrowUpRight size={25} />
+                </a>
+              );
+            })}
         </div>
       </section>
-      <section className="guides-feature">
-        <div className="guides-art" aria-hidden="true">
-          <div className="oz-line">
-            <span>10</span>
-            <span>12</span>
-            <span>14</span>
-            <span>16</span>
+      <section className="ounce-editorial">
+        <div className="ounce-illustration" aria-hidden="true">
+          <span>UNITÉ DE POIDS / ONCE</span>
+          <div>
+            <b>14</b>
+            <i>oz</i>
           </div>
-          <div className="oz-big">oz.</div>
-          <div className="oz-caption">
+          <span>
             LE POIDS DU GANT.
             <br />
-            PAS LA TAILLE DE VOTRE MAIN.
-          </div>
+            PAS LE VOLUME DE VOTRE MAIN.
+          </span>
         </div>
-        <div className="guides-feature-copy">
-          <span className="eyebrow">04 / CHOISIR, ÇA S’APPREND</span>
+        <div className="ounce-copy">
+          <span className="eyebrow">LE CARNET / POIDS & AJUSTEMENT</span>
           <h2>
-            QUELQUES GRAMMES.
+            Le chiffre ne dit
             <br />
-            <em>
-              DE VRAIES
-              <br />
-              QUESTIONS.
-            </em>
+            pas tout.
           </h2>
           <p>
-            10, 12, 14 ou 16 oz ? L’once indique un poids. Le choix dépend aussi
-            de l’usage, du modèle et des consignes de votre salle. On remet les
-            repères dans le bon ordre.
+            Deux gants de 14 oz peuvent chausser différemment. Le poids se lit
+            sur l’étiquette. La coupe s’essaie, avec vos bandes.
           </p>
-          <ArrowLink href="/guides/taille-poids-gants-boxe/">
-            Comprendre les onces
-          </ArrowLink>
+          <a
+            className="button button-dark"
+            href="/guides/taille-poids-gants-boxe/"
+          >
+            Comprendre les onces <ArrowUpRight size={18} />
+          </a>
           <a className="inline-link" href="/guides/">
-            Tous les guides d’achat <ArrowUpRight size={17} />
+            Ouvrir le carnet des guides <ArrowUpRight size={17} />
           </a>
         </div>
       </section>
-      <section className="launch-section section-pad">
+      <section className="opening-note section-pad">
         <div>
-          <span className="eyebrow">LA SUITE SE PRÉPARE</span>
+          <span className="eyebrow">LES VENTES SE PRÉPARENT</span>
           <h2>
-            PRENEZ PLACE
+            Gardez une place
             <br />
-            <em>DANS NOTRE COIN.</em>
+            dans votre sac.
           </h2>
           <p>
-            Le catalogue se construit avant l’ouverture des ventes.
-            <br />
-            Recevez une alerte lorsque la boutique sera prête.
+            Explorez le catalogue et essayez le parcours jusqu’au reçu. Aucun
+            paiement réel. L’alerte vous préviendra de l’ouverture des ventes.
           </p>
         </div>
         <AlertForm />

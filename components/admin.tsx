@@ -1,6 +1,9 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { CatalogEditor } from './catalog-editor';
+import { OrdersAdmin } from './commerce-ui';
+import { PayplugSettings } from './payplug-settings';
+import { CatalogueImports } from './catalogue-imports';
 import type { Product } from '@/lib/catalog';
 type RecordRow = Record<string, string | number>;
 type AdminData = {
@@ -43,7 +46,7 @@ export function Admin() {
   if (error) return <p role="alert">{error}</p>;
   if (!data) return <p role="status">Chargement des demandes…</p>;
   const p = data.products.find((p) => p.id === selected) || data.products[0];
-  const override = data.overrides.find((o) => o.product_id === p.id);
+  const override = data.overrides.find((o) => o.product_id === p?.id);
   async function remove(kind: string, id: string) {
     if (
       !window.confirm('Supprimer définitivement cette demande et ses données ?')
@@ -84,6 +87,9 @@ export function Admin() {
       >
         {[
           ['products', 'Produits'],
+          ['orders', 'Commandes d’essai'],
+          ['payments', 'Réglages PayPlug'],
+          ['imports', 'Imports du catalogue'],
           ['alerts', 'Alertes'],
           ['contacts', 'Contacts'],
           ['seo', 'Suivi SEO'],
@@ -100,7 +106,17 @@ export function Admin() {
           </button>
         ))}
       </div>
-      {tab === 'products' && (
+      {tab === 'orders' && <OrdersAdmin />}
+      {tab === 'payments' && <PayplugSettings />}
+      {tab === 'imports' && (
+        <CatalogueImports
+          sources={[
+            { value: 'Boxing-Shop', label: 'Boxing-Shop' },
+            { value: 'Le Coin du Ring', label: 'Le Coin du Ring' },
+          ]}
+        />
+      )}
+      {tab === 'products' && p && (
         <div className="admin-editor">
           <label>
             Référence
@@ -179,7 +195,7 @@ export function Admin() {
                   type="number"
                   step=".01"
                   min="0"
-                  max="10000"
+                  max="50000"
                   required
                   defaultValue={p.price / 100}
                 />
@@ -273,7 +289,23 @@ export function Admin() {
                     </label>
                   </>
                 ) : (
-                  <p className="message-text">{row.message}</p>
+                  <>
+                    <p className="message-text">{row.message}</p>
+                    <small>
+                      Relais Inlett :{' '}
+                      {(
+                        {
+                          accepted_client:
+                            'demande acceptée par Inlett ; livraison e-mail non vérifiée',
+                          failed: 'refusé, demande conservée ici',
+                          unconfirmed:
+                            'résultat non confirmé ; vérifier Inlett avant tout renvoi',
+                          pending:
+                            'demande conservée ici, sans relais navigateur',
+                        } as Record<string, string>
+                      )[String(row.relay_status)] || 'à vérifier'}
+                    </small>
+                  </>
                 )}
                 <button
                   className="text-button"

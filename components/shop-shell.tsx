@@ -10,6 +10,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { categories, shop, jsonLd } from '@/lib/catalog';
+import { CartLink } from './commerce-ui';
 export function Brand() {
   return (
     <a href="/" className="brand" aria-label="Boutique de Boxe, accueil">
@@ -29,7 +30,7 @@ export function Header() {
     <>
       <div className="launch-strip">
         <span className="status-dot" />
-        LE CATALOGUE S’OUVRE. LES VENTES ARRIVENT.
+        CATALOGUE OUVERT · PAIEMENT SIMULÉ · AUCUN DÉBIT
         <a href="/offres-de-lancement/">
           En savoir plus <ArrowUpRight size={13} />
         </a>
@@ -44,7 +45,7 @@ export function Header() {
             Les guides <ArrowUpRight size={13} />
           </a>
         </nav>
-        <div className="header-actions">
+        <div className="header-actions"><CartLink />
           <a
             className="icon-button"
             href="/recherche/"

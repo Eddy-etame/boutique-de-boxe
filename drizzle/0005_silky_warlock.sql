@@ -1,0 +1,1 @@
+ALTER TABLE `payment_attempts` ADD `refunded_cents` integer DEFAULT 0 NOT NULL;

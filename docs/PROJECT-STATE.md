@@ -1,3 +1,52 @@
+# État actuel — Boutique de Boxe
+
+Mise à jour : 10 septembre 2026, après-midi. Cette section décrit le chantier actuel ; les journaux datés plus bas constituent l’historique.
+
+### Décisions du propriétaire, 10 septembre après-midi
+
+Panier et paiement simulé demandés par le propriétaire (le brief les excluait). Photos et prix des boutiques sources autorisés ; conserver toutes les photos des produits tarifés. Publier d’abord cette version à 1 055 références, importer le gel à 1 230 ensuite. Crawl Le Coin du Ring repris (un collecteur). E-mails via Inlett, pas Resend. Base de données à migrer vers Supabase, sans wrangler ; périmètre d’hébergement à confirmer. Contrôles rejoués sur cette version : lint, TypeScript, audit catalogue, 78 + 19 + 10 tests, 18 contrôles commerce, 1 088 URL rendues avec métadonnées uniques.
+
+## Version en cours de validation
+
+Le panier public reste en **simulation**. Aucun paiement réel ni expédition n’est activé. Le raccordement PayPlug est préparé et verrouillé ; les variables et étapes restantes figurent dans [PAYPLUG-WIRING.md](PAYPLUG-WIRING.md).
+
+### Réalisé dans le code
+
+- Nouvelle présentation de l’accueil centrée sur l’objet et la préparation de séance : inspection du gant, six sélections explicites boxe/MMA, pièces déjà possédées déduites du sac, comparaison de caractéristiques et passage vers les fiches avec contexte.
+- Guides enrichis par des décisions propres à chaque sujet, photographies réelles et sources. Trois familles ajoutées : chaussures de boxe/lutte, équipement d’entraînement et sacs de sport. Pagination serveur à 36 produits, liens par page et rejet des numéros invalides.
+- **1 055 références** intégrées : 19 précédentes et 1 036 importées, dont 910 Boxing-Shop et 126 Le Coin du Ring. **3 754 déclinaisons tarifées**. Les 13 articles physiques du dépôt box-plus étaient déjà inclus parmi les 19 ; les abonnements et essais n’ont pas été transformés en articles d’équipement.
+- Source box-plus mise à jour par `git pull --ff-only` avant extraction, jusqu’au commit `75aff7597f07592a4f18a21d8b88199803135622`. Aucun secret repris.
+- Registre privé de **1 436 relevés** avec provenance, anomalies, état de publication et recherche. Les textes sources bruts restent hors de l’application ; descriptions publiques rédigées à partir des faits. Les prix ou variantes ambigus restent à examiner.
+- Photos principales locales WebP aux dimensions contrôlées, galeries source conservées. **1 088 cartes de partage distinctes** (1 055 produits et 33 pages), 1200 × 630, vérifiées sans erreur de texte ou de génération. Les vues secondaires distantes ne sont pas toutes optimisées ou vérifiées localement.
+- Panier D1 avec cookie HttpOnly, choix de déclinaison, quantités, calcul serveur, protection contre écrasement concurrent et rotation des sessions expirées. Paiement simulé approuvé/refusé, tentative réutilisable sans double commande, reçu privé imprimable/téléchargeable.
+- Envoi du reçu préparé via Resend, statuts honnêtes et protection contre doubles envois. **Fournisseur et domaine expéditeur non configurés ; aucune livraison d’e-mail vérifiée.**
+- Formulaire raccordé au contrat Inlett fourni : sauvegarde D1, preuve de travail dans un Worker, déduplication, gestion des réponses incertaines et annulation des tâches à la fermeture. Le statut du relais est visible dans les contacts privés ; aucun envoi réel de test n’a été effectué.
+- PayPlug : réglages privés, parcours hébergé de test réservé à l’administrateur, retour serveur, IPN vérifiée par récupération authentifiée du paiement, association stricte aux montants/tentatives, rapprochement manuel, conservation des remboursements à vérifier. Le mode par défaut est simulation ; la clé réelle seule ne peut pas ouvrir les encaissements.
+- Migrations D1 0002 à 0005 préparées et appliquées localement. L’hôte devra les appliquer lors de la publication de cette version.
+- GitHub relié à `Eddy-etame/boutique-de-boxe` ; `origin` pointe vers GitHub, `sites` vers le dépôt d’hébergement. Le dépôt applicatif se trouve dans `site/`.
+
+### Vérifications effectuées
+
+- Build et lint réussis avant le dernier gel des données ; nouvelle validation finale en cours.
+- Contrat du catalogue : 1 055 produits, 3 754 déclinaisons, aucune erreur du validateur utilisé par l’éditeur et le panier.
+- API locale existante : 16 contrôles réussis. Panier/commande simulée : 18 contrôles réussis ; contrôle complémentaire de la rotation des sessions et des prix par déclinaison à effectuer après la dernière correction.
+- Inlett : 43 tests isolés réussis, zéro TODO. PayPlug : 19 tests de l’adaptateur et 35 tests d’orchestration/interface réussis. SQLite : 10 tests sur les migrations et la requête réelle de règlement/remboursement, réussis. Tous ces tests PayPlug/Inlett utilisent des réponses fictives ; aucun paiement ou e-mail externe.
+- Les tests reproductibles se trouvent dans `scripts/`. `test-commerce.mjs --email-disabled` nécessite un serveur local dont le service e-mail est désactivé. `test-payplug-sqlite.py` utilise une base éphémère en mémoire.
+- Le contrôle visuel final, l’audit HTTP de toutes les pages et la publication de cette révision restent à terminer ; ne pas assimiler les anciens contrôles hébergés à la validation de cette nouvelle version.
+
+### Ce qui reste ouvert
+
+1. Terminer le contrôle visuel bureau/mobile du nouveau parcours, l’audit SEO rendu et la publication privée. L’hébergement actuellement publié est encore la version antérieure tant que la publication n’est pas confirmée ci-dessous.
+2. Terminer la collecte du Coin du Ring : 2 420 URL produits ont été découvertes, mais l’ensemble n’est pas encore importé. Son délai public de collecte est respecté ; les packs à plusieurs groupes d’options doivent conserver leur véritable logique avant publication. Les pages Boxing-Shop (1 060) sont collectées ; certaines exigent encore une revue de contenu ou de variantes. DragonSports répond 403 aux accès publics essayés et n’a pas été contourné. **La demande de reprise de tous les catalogues sources n’est donc pas achevée.**
+3. Configurer le fournisseur d’e-mail et un domaine d’expédition, puis vérifier un reçu sur une boîte autorisée. Inlett ne remplace pas un service de reçus détaillés documenté.
+4. Configurer puis tester PayPlug seulement lorsque le propriétaire le demande. L’aperçu actuel reste privé (un propriétaire, aucun groupe ou invité externe lors de la vérification) : il faut vérifier l’accès des serveurs PayPlug à l’IPN avant toute recette distante.
+5. Finaliser la gestion éditoriale et des médias dans le backoffice, les statuts de traitement/export des demandes et une mesure d’audience adaptée. Les produits, imports, demandes, simulations et réglages de paiement disposent déjà d’interfaces ; cela ne constitue pas encore la gestion de toutes les pages/médias prévue au brief.
+6. Domaine `boutique-de-boxe.com`, propriété Search Console et indexation à confirmer par le propriétaire. Les canonicals utilisent l’origine Sites réellement disponible. Aucun trafic, classement, Core Web Vitals terrain ou résultat d’indexation n’est inventé.
+
+Aucun score « Baffled Bar 100 % » ou affirmation « impossible de faire mieux » n’est justifié tant que ces points et la revue visuelle finale restent ouverts.
+
+---
+
 # Passation — Boutique de Boxe
 
 Dossier opérationnel mis à jour le 10 septembre 2026. Voir la section Validation finale pour les derniers contrôles et le déploiement. Les demandes de contact, adresses des inscrits et tokens privés ne doivent pas être copiés dans ce document.
@@ -134,3 +183,55 @@ Sources de reprise : decisions.md, open-questions.md, legal-facts.md, seo-eviden
 Le projet exécutable est `site/`. Installer avec `pnpm install`, puis `pnpm dev` ; l’administration locale utilise le compte de test Sites après clic sur le lien de connexion. `pnpm lint`, `pnpm exec tsc --noEmit`, `pnpm build` assurent les contrôles de source. Les scripts `node scripts/test-api.mjs` et `node scripts/audit-seo.mjs` ciblent le serveur local sur 3000 ; ne pas lancer le test de mutation contre la production.
 
 Les migrations sont dans `drizzle/`. Les bases locale et hébergée sont distinctes. Les secrets de production se configurent dans Sites, jamais dans Git. `.openai/hosting.json` conserve uniquement l’identifiant Site et le nom logique DB.
+
+
+## Passe critique demandée après livraison — 10 septembre 2026
+
+Ce verdict remplace toute lecture de « livrée » comme « Baffled Bar atteinte ». Le catalogue est publié et utilisable ; une refonte ciblée et des fonctions d’exploitation restent à réaliser. Ce tour est un audit, sans modification applicative ni nouveau déploiement.
+
+### Estimation honnête
+
+Les chiffres suivants sont des estimations de pilotage, pas des mesures de qualité automatiques ni des résultats Google : environ **70 % de couverture opérationnelle de la phase 1** (fourchette 65–75 %) ; environ **20 % de la Baffled Bar**. Cette seconde note est un jugement exigeant sur la singularité et la finition : la structure existe, mais la mise en scène, la motion, les détails éditoriaux et la preuve de performance restent insuffisants.
+
+| Chantier | Avancement estimé | Acquis | Écart restant |
+|---|---:|---|---|
+| Catalogue et parcours de base | 85–90 % | 19 produits, 9 guides, recherche/filtres, fiches, alertes et contact persistés | Assortiment limité, curation par séance et relations entre produits trop mécaniques |
+| Préparation SEO technique | 80–85 % | URLs, titres/descriptions uniques, canonical, sitemap, schémas, maillage | OG incomplet, URL image structurée externe erronée, fraîcheur des hubs, tests à élargir |
+| Utilité et singularité éditoriales | Environ 70 % | Informations produit sourcées en registre et textes originaux | Répétitions, peu de preuves visibles, guides trop textuels, critères de choix insuffisamment illustrés |
+| Backoffice permettant de tout piloter | 55–65 % | Éditeur produits et boîte de demandes | Pages/guides/catégories, médiathèque, brouillons, traitement des demandes, tableaux réels |
+| Analytics réellement raccordés | 0 % | Choix Search Console confié au client ; structure de relevé dans la passation | Collecte de visites/événements, tableau et import/connexion GSC absents |
+| Domaine public/indexation | Non achevé | Aperçu privé opérationnel | Raccordement et ouverture publique, puis indexation et mesure réelle |
+
+La note du backoffice concerne le nouveau sens « tout gérer », plus large que la seule ligne produits/prix/stock du PDF. Les paiements, commandes, factures, transporteurs et stocks fournisseurs sont explicitement reportés à la phase 2 (PDF p.13). La V2 comparative reste annulée.
+
+### Constats par regard critique
+
+- **Hater / originalité.** Le grand titre condensé noir/bleu, les rectangles gris, les numéros décoratifs et les flèches se répètent. Le résultat reste compatible avec un modèle de boutique premium pour beaucoup d’autres produits. Des phrases comme « Quelques grammes. De vraies questions. » et « La précision commence ici. » sonnent trop fabriquées. Les photos sont réelles ; le problème est la composition et la cadence éditoriale, pas une prétendue détection d’images IA.
+- **Direction artistique.** Accueil parcouru intégralement sur bureau 1440×1000 : hiérarchie lisible, mais peu de changements d’échelle ou de mise en scène après le hero. Les trois contrôles du hero changent une photo/un texte ; aucune inspection reliée visuellement au détail évoqué. Sources : components/home.tsx:22–180 ; components/shop-interactions.tsx:81–148.
+- **Motion.** Le mouvement principal est un fondu/déplacement vertical de 22 px en 0,75 s et un fondu d’arrivée ; quelques survols complètent le tout. Il manque une orchestration qui aide à inspecter, choisir et comparer le matériel. Sources : app/shop.css:1382–1405 ; components/shop-shell.tsx:180–199. La navigation serveur fonctionne, mais aucune transition visuelle de page spécifique n’est construite.
+- **Visiteur mobile.** Le guide /guides/debuter-mma/ a été inspecté sur téléphone simulé : pas de débordement horizontal (largeur de contenu et document égales à 375 px dans ce panneau). Les longs blocs restent lisibles mais manquent d’illustrations et de résumés utiles. Sur l’accueil, les résultats du choix de séance viennent longtemps après les commandes ; le changement de sélection n’est pas immédiatement visible à l’écran.
+- **Pratiquant / coach.** « Dans votre coin » est un point de départ utile, mais la sélection prend le premier produit dans chaque famille admissible. Le parcours MMA première séance conserve le débardeur Training : sa pertinence n’est pas établie par une règle de compatibilité détaillée. Le mécanisme n’atteint pas encore le +1 revendiqué. Sources : components/shop-interactions.tsx:351–386. Les guides n’affichent pas les liens de preuve présents dans les données et n’ont pas de relecture experte attestée.
+- **Google et aperçus de partage.** Les fondamentaux sont en place, mais les dix catégories réutilisent exactement leur introduction dans « Comment choisir ? » (app/[...slug]/page.tsx:353,363). Les catégories/guides n’émettent pas d’image OG dans les réponses vérifiées localement (même fichier:88–106). Une URL image HTTPS acceptée dans l’admin devient malformée dans Product JSON-LD à cause de shop.origin + i.src (:306). Les dates des URLs hors produits restent fixées au 9 septembre (app/sitemap.ts:8–25). Le mot « sous-gants » apparaît dans la description de la catégorie accessoires sans référence autonome correspondante (lib/catalog.ts:112).
+- **Gérant / exploitation.** Il existe un éditeur de références et une boîte de réception, pas un CMS complet. Pas de téléversement d’image, de statut brouillon, de gestion éditoriale, de traitement/recherche/export des demandes, d’envoi et d’historique d’e-mails. L’onglet SEO explique la mesure mais n’affiche aucune collecte réelle. De plus, une erreur de base renvoie silencieusement le catalogue initial et peut réafficher des produits retirés (lib/database.ts:62–64) : il faut une politique de dégradation explicite.
+
+### Preuves et limites de ce tour
+
+Relecture complète des 15 pages du brief par le second auditeur ; audit du code SEO et des réponses locales de catégories/guides par un auditeur indépendant ; accueil parcouru de haut en bas dans le navigateur hébergé ; guide débuter MMA choisi hors du dernier chantier visuel et parcouru ; contrôle mobile ; choix MMA réellement cliqué. Aucun nouvel avertissement ou erreur console observé pendant ce parcours. Les 16 tests API et le build restent les preuves du tour de livraison, pas des tests prétendument rejoués ici. Aucun classement, trafic, vitesse 4G, test sur appareil peu puissant ou Core Web Vitals terrain n’est déduit de ces observations.
+
+Corrections déjà livrées au tour précédent : navigation native après défaut Vinext, synchronisation des deux éditeurs, réservation des identités archivées, libellés d’alertes retirées, cadrage du zoom. Les nouveaux constats ci-dessus restent ouverts ; ils ne sont pas présentés comme corrigés.
+
+### Direction recommandée pour dépasser le modèle actuel
+
+**Le matériel préparé pour la séance.** Garder la rigueur du catalogue, reconstruire l’expérience autour des objets réels et du choix : présentation de pièces avec échelle et texture, annotations attachées à une fermeture ou une zone montrée, comparaisons de caractéristiques vérifiées, sélections explicitement éditées par contexte, repères de choix dessinés dans les guides. Chaque sous-page doit apporter une décision propre plutôt qu’un bloc introductif répété.
+
+Motion : transitions brèves et tendues pour sélectionner ; déplacements qui relient la commande au résultat ; inspection plus lente pour lire une matière ; progression au scroll réservée aux moments explicatifs. À tester avec mouvement réduit et sur téléphone. Ajouter des effets seuls ne corrige ni la curation ni le texte.
+
+Référence supplémentaire observée ce tour : https://teenage.engineering/products/ep-133 — narration et vue matérielle de l’objet, inspectées dans le navigateur et dans la page source le 10 septembre. Les dimensions du panneau de cette référence étaient celles de bureau ; aucune validation mobile/performance ni certification S ne lui est attribuée. On explore cette couche d’explication du produit ; ses photos, sa campagne Muhammad Ali et son apparence ne sont pas à reprendre. L’URL On /explore a redirigé vers /shop dans la lecture Web ; elle n’est pas retenue comme nouvelle preuve de motion.
+
+Ordre recommandé : corriger les défauts de vérité/SEO/stock dégradé ; renforcer la direction artistique, la curation et les interactions de choix ; valider la nouvelle expérience ; puis compléter le backoffice et raccorder la mesure. La condition du client (« si plus aucune amélioration significative ») n’est pas atteinte aujourd’hui.
+
+### Backoffice et analytics de l’étape suivante
+
+Un seul espace de travail : produits/déclinaisons, médias, catégories, guides/pages, demandes/alertes, référencement et tableau de mesure. Prévoir brouillon/aperçu/publication, récupération des retraits, statuts de traitement, recherche/export, envois avec consentement et historique. Les fonctionnalités commerciales de phase 2 restent séparées.
+
+Mesurer les vues de fiches, usages de recherche/filtres, passages guide→produit, alertes réellement enregistrées et contacts réellement enregistrés. Distinguer les visites du site des impressions/clics/requêtes Search Console. Le choix d’un fournisseur, ses accès et les éventuelles règles de consentement devront être résolus à ce moment ; aucun service n’est déclaré raccordé dans ce tour.

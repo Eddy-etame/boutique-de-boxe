@@ -1,8 +1,12 @@
-import { products, type Product } from './catalog';
+import type { PayplugEnvironment } from './payplug';
+import type { Product } from './catalog';
+import original from './data/products.json';
+import imported from './data/imported-products.json';
+const products = [...original,...imported] as unknown as Product[];
 import { getChatGPTUser } from '@/app/chatgpt-auth';
 export async function runtime() {
   const { env } = await import('cloudflare:workers');
-  return env as unknown as { DB: D1Database; ADMIN_EMAIL?: string };
+  return env as unknown as PayplugEnvironment & { DB: D1Database; ADMIN_EMAIL?: string; RESEND_API_KEY?: string; MAIL_FROM?: string };
 }
 export async function db() {
   return (await runtime()).DB;
@@ -59,7 +63,8 @@ export async function readCatalog(): Promise<Product[]> {
           }
         : p;
     });
-  } catch {
-    return products;
+  } catch (error) {
+    console.error('Catalogue storage unavailable', error instanceof Error ? error.name : 'StorageError');
+    throw new Error('Le catalogue est temporairement indisponible. Réessayez dans quelques instants.');
   }
 }

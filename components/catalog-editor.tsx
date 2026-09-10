@@ -69,11 +69,14 @@ export function CatalogEditor({
                 .map((s) => s.trim())
                 .filter(Boolean),
               specs,
+              variants: product?.variants?.length ? get('variants').split('\n').filter(Boolean).map(line=>{const [label,price]=line.split('|').map(v=>v.trim());const old=product.variants!.find(v=>v.label===label);if(!old)throw new Error('Conservez le libellé exact de chaque déclinaison tarifée.');return {...old,price:Math.round(Number(price.replace(',','.'))*100)};}) : undefined,
               care: get('care'),
               use: get('use'),
               notes: get('notes').split('\n').filter(Boolean),
               images: imageLines.map((line, i) => ({
                 src: line,
+                width:product?.images[i]?.width,
+                height:product?.images[i]?.height,
                 small:
                   product?.images[i]?.src === line
                     ? product.images[i].small
@@ -105,6 +108,7 @@ export function CatalogEditor({
           }
         }}
       >
+        {product?.variants?.length ? <label>Prix de chaque déclinaison (libellé | euros)<textarea name="variants" rows={Math.min(12,product.variants.length)} defaultValue={product.variants.map(v=>v.label+' | '+(v.price/100).toFixed(2)).join('\n')}/><small>Le prix de départ doit être le plus petit tarif ci-dessus. Conservez les libellés exacts.</small></label> : null}
         <div className="admin-fields">
           <label>
             Identifiant interne
@@ -147,6 +151,7 @@ export function CatalogEditor({
             defaultValue={product?.name}
           />
         </label>
+        {product?.variants?.length ? <label>Prix de chaque déclinaison (libellé | euros)<textarea name="variants" rows={Math.min(12,product.variants.length)} defaultValue={product.variants.map(v=>v.label+' | '+(v.price/100).toFixed(2)).join('\n')}/><small>Le prix de départ doit être le plus petit tarif ci-dessus. Conservez les libellés exacts.</small></label> : null}
         <div className="admin-fields">
           <label>
             Marque
@@ -177,6 +182,7 @@ export function CatalogEditor({
             </select>
           </label>
         </div>
+        {product?.variants?.length ? <label>Prix de chaque déclinaison (libellé | euros)<textarea name="variants" rows={Math.min(12,product.variants.length)} defaultValue={product.variants.map(v=>v.label+' | '+(v.price/100).toFixed(2)).join('\n')}/><small>Le prix de départ doit être le plus petit tarif ci-dessus. Conservez les libellés exacts.</small></label> : null}
         <div className="admin-fields">
           <label>
             Prix indicatif (€)
@@ -185,7 +191,7 @@ export function CatalogEditor({
               required
               type="number"
               min="0"
-              max="10000"
+              max="50000"
               step=".01"
               defaultValue={product ? product.price / 100 : undefined}
             />
@@ -204,7 +210,7 @@ export function CatalogEditor({
           <textarea
             name="short"
             required
-            minLength={20}
+            minLength={8}
             maxLength={300}
             defaultValue={product?.short}
             rows={2}

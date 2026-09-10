@@ -1,4 +1,3 @@
-import seed from './data/products.json';
 export type Product = {
   id: string;
   slug: string;
@@ -25,8 +24,11 @@ export type Product = {
   sourceRef: string;
   dateAdded: string;
   updatedAt?: string;
+  seoDescription?: string;
+  sourceUrl?: string;
+  disciplines?: string[];
+  variants?: { id:string; reference:string; label:string; attributes:Record<string,string>; price:number; imageUrl?:string }[];
 };
-export const products = seed as unknown as Product[];
 export const shop = {
   name: 'Boutique de Boxe',
   origin: 'https://boutique-de-boxe.etame-eddy01.chatgpt.site',
@@ -39,6 +41,7 @@ export const shop = {
   address: '12 rue de Fenouillet, 31200 Toulouse',
   director: 'Sébastien DUTILH',
 };
+export const variantPrice = (p:Product, label:string) => p.variants?.find(v=>v.label===label)?.price ?? p.price;
 export const money = (cents: number) =>
   new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(
     cents / 100,
@@ -109,7 +112,7 @@ export const categories: Category[] = [
     intro:
       'Les bandes et les accessoires prennent leur place avant la première reprise. Comparez les longueurs, préparez vos affaires et retrouvez les gestes d’entretien qui permettent de repartir avec un équipement propre et sec.',
     description:
-      'Bandes de boxe, sous-gants, cordes à sauter et accessoires d’entraînement : explorez le matériel pour préparer votre séance.',
+      'Bandes de boxe, cordes à sauter, pattes d’ours et accessoires d’entraînement : explorez le matériel pour préparer votre séance.',
     families: ['accessoires-boxe'],
     guide: 'debuter-boxe',
     number: '05',
@@ -140,6 +143,9 @@ export const categories: Category[] = [
       'accessoires-boxe',
       'textile-boxe',
       'sacs-de-frappe',
+      'chaussures-boxe',
+      'equipement-entrainement',
+      'sacs-de-sport',
     ],
     guide: 'debuter-boxe',
     number: '01',
@@ -180,10 +186,14 @@ export const categories: Category[] = [
     guide: 'debuter-boxe',
     number: '00',
   },
+
+  {slug:'chaussures-boxe',name:'Chaussures de boxe et de lutte',label:'La pointure, puis les appuis.',intro:'Chaussures de boxe ou de lutte : comparez les modèles, les pointures réellement présentées et la construction de leur semelle. Les règles de votre salle déterminent les chaussures admises sur le sol ou le tapis.',description:'Chaussures de boxe et de lutte : modèles, pointures, maintien et semelles. Comparez les caractéristiques du catalogue Boutique de Boxe.',families:['chaussures-boxe'],guide:'guide-des-tailles',number:'07'},
+  {slug:'equipement-entrainement',name:'Équipement d’entraînement',label:'Le matériel de la séance.',intro:'Pattes d’ours, paos, cibles et matériel de préparation physique : distinguéz les pièces que vous portez de celles qui équipent la salle. Les dimensions, la prise en main et l’installation se lisent modèle par modèle.',description:'Équipement d’entraînement pour la boxe et les sports de combat : pattes d’ours, paos, cibles et préparation physique. Fiches et caractéristiques.',families:['equipement-entrainement'],guide:'debuter-boxe',number:'08'},
+  {slug:'sacs-de-sport',name:'Sacs de sport',label:'Préparez le trajet jusqu’à la salle.',intro:'Sac à dos, sac de sport ou modèle convertible : partez des pièces à transporter, puis comparez le volume, les ouvertures et les modes de portage décrits sur chaque fiche.',description:'Sacs de sport pour votre équipement de boxe : formats, volumes, compartiments et modes de portage. Découvrez les modèles du catalogue.',families:['sacs-de-sport'],guide:'debuter-boxe',number:'09'},
 ];
 export const categoryFor = (slug: string) =>
   categories.find((c) => c.slug === slug);
-export const getCategoryProducts = (c: Category, all: Product[] = products) =>
+export const getCategoryProducts = (c: Category, all: Product[]) =>
   c.families.length ? all.filter((p) => c.families.includes(p.category)) : all;
 export function cleanName(p: Product) {
   return p.name

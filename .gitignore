@@ -40,3 +40,6 @@ next-env.d.ts
 /.openai/local-wrangler.json
 /.dev.vars
 *.tsbuildinfo
+
+# Safe configuration reference
+!.env.example

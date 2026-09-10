@@ -17,7 +17,7 @@ export const services: Record<string, Service> = {
       {
         title: 'Votre matériel, jusqu’à votre porte.',
         paragraphs: [
-          'Le catalogue est en préparation. Aucun produit ne peut encore être commandé : les tarifs ci-dessous sont des repères envisagés pour l’ouverture, à confirmer avant tout achat.',
+          'Le catalogue est en préparation. Le panier permet de simuler une commande sans débit ni expédition. Les tarifs ci-dessous sont des repères envisagés pour l’ouverture, à confirmer avant tout achat.',
         ],
       },
       {
@@ -49,7 +49,7 @@ export const services: Record<string, Service> = {
       {
         title: 'Les ventes ne sont pas encore ouvertes.',
         paragraphs: [
-          'Le site présente aujourd’hui un catalogue. Il n’enregistre aucune commande, aucun paiement et aucune réservation de stock. Il n’y a donc pas de procédure de retour liée à un achat sur ce site à ce stade.',
+          'Le site propose un catalogue et des commandes d’essai. Les simulations sont enregistrées, sans paiement réel, réservation de stock ni expédition. Leur reçu est un récapitulatif de test ; il ne constitue pas une facture ou une preuve d’achat. Aucun retour de produit ne découle de ce parcours.',
         ],
       },
       {
@@ -113,7 +113,7 @@ export const services: Record<string, Service> = {
       {
         title: 'Un catalogue avant l’ouverture.',
         paragraphs: [
-          'Le site permet de consulter des produits, de lire des guides, de contacter l’éditeur et de demander une alerte de disponibilité. Aucun parcours de paiement ou de commande n’est actif. Une alerte ne constitue ni une commande, ni une précommande, ni une réservation.',
+          'Le site permet de consulter des produits, de lire des guides, de contacter l’éditeur et de demander une alerte de disponibilité. Un panier et un paiement simulé permettent d’essayer le parcours jusqu’au reçu. Aucun moyen de paiement réel n’est demandé, aucun produit n’est réservé et aucune expédition n’est déclenchée. Une alerte ne constitue ni une commande, ni une précommande, ni une réservation.',
         ],
       },
       {
@@ -158,6 +158,14 @@ export const services: Record<string, Service> = {
         title: 'Destinataires et conservation',
         paragraphs: [
           'L’équipe autorisée de Boxing Center peut consulter les demandes. L’hébergement et le stockage reposent sur OpenAI Sites et Cloudflare. Des traitements peuvent avoir lieu hors de l’Union européenne dans le cadre des garanties contractuelles des prestataires. Les demandes sont conservées pendant leur traitement, puis revues et supprimées lorsqu’elles ne sont plus nécessaires. Les inscriptions aux alertes sont supprimées en cas de retrait du consentement.',
+        ],
+      },
+      {
+        title: 'Panier et commandes d’essai',
+        paragraphs: [
+          'Le panier utilise un cookie technique de 30 jours. Il contient un identifiant aléatoire ; les produits et quantités sont conservés côté serveur. La préparation de séance mémorise uniquement vos choix dans l’onglet en cours.',
+          'Lors d’une simulation, vos nom et e-mail, les lignes du panier, le montant et le résultat du test sont enregistrés pour produire le reçu et diagnostiquer le parcours. Aucun numéro de carte n’est collecté. Vous pouvez demander la suppression de ces données à Boxing Center.',
+          'Le formulaire peut transmettre votre demande à Inlett après son enregistrement dans la boutique. L’envoi du reçu par e-mail utilise un service transactionnel seulement après configuration ; son état apparaît sur le reçu. Une demande enregistrée ou acceptée par un prestataire ne garantit pas la livraison de l’e-mail.',
         ],
       },
       {

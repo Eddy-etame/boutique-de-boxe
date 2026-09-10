@@ -30,6 +30,9 @@ export const contacts = sqliteTable('contacts', {
   email: text('email').notNull(),
   message: text('message').notNull(),
   createdAt: text('created_at').notNull(),
+  requestKey: text('request_key').unique(),
+  relayToken: text('relay_token'),
+  relayStatus: text('relay_status').notNull().default('pending'),
 });
 export const productOverrides = sqliteTable('product_overrides', {
   productId: text('product_id').primaryKey(),
@@ -53,3 +56,68 @@ export const catalogEntries = sqliteTable('catalog_entries', {
   archived: integer('archived').notNull().default(0),
   updatedAt: text('updated_at').notNull(),
 });
+
+export const carts = sqliteTable('carts', {
+  id: text('id').primaryKey(),
+  payload: text('payload').notNull(),
+  updatedAt: text('updated_at').notNull(),
+  expiresAt: integer('expires_at').notNull(),
+  revision: integer('revision').notNull().default(0),
+});
+export const simulationOrders = sqliteTable(
+  'simulation_orders',
+  {
+    id: text('id').primaryKey(),
+    cartId: text('cart_id').notNull(),
+    idempotencyKey: text('idempotency_key').notNull(),
+    fingerprint: text('fingerprint').notNull(),
+    name: text('name').notNull(),
+    email: text('email').notNull(),
+    lines: text('lines').notNull(),
+    subtotal: integer('subtotal').notNull(),
+    shipping: integer('shipping').notNull(),
+    total: integer('total').notNull(),
+    delivery: text('delivery').notNull(),
+    status: text('status').notNull(),
+    createdAt: text('created_at').notNull(),
+    emailStatus: text('email_status').notNull().default('pending'),
+    emailAttempts: integer('email_attempts').notNull().default(0),
+    emailError: text('email_error'),
+    emailClaimedAt: text('email_claimed_at'),
+  },
+  (t) => [
+    uniqueIndex('orders_cart_idempotency').on(t.cartId, t.idempotencyKey),
+  ],
+);
+
+export const paymentAttempts = sqliteTable(
+  'payment_attempts',
+  {
+    id: text('id').primaryKey(),
+    cartId: text('cart_id').notNull(),
+    requestKey: text('request_key').notNull(),
+    fingerprint: text('fingerprint').notNull(),
+    cartRevision: integer('cart_revision').notNull(),
+    mode: text('mode').notNull(),
+    name: text('name').notNull(),
+    email: text('email').notNull(),
+    billing: text('billing').notNull(),
+    lines: text('lines').notNull(),
+    subtotal: integer('subtotal').notNull(),
+    shipping: integer('shipping').notNull(),
+    total: integer('total').notNull(),
+    delivery: text('delivery').notNull(),
+    providerId: text('provider_id').unique(),
+    paymentUrl: text('payment_url'),
+    status: text('status').notNull(),
+    error: text('error'),
+    createdAt: text('created_at').notNull(),
+    updatedAt: text('updated_at').notNull(),
+    paidAt: text('paid_at'),
+    refundedCents: integer('refunded_cents').notNull().default(0),
+  },
+  (t) => [
+    uniqueIndex('payplug_cart_request').on(t.cartId, t.requestKey),
+    uniqueIndex('payplug_cart_revision').on(t.cartId, t.cartRevision),
+  ],
+);

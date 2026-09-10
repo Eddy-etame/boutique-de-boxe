@@ -1,0 +1,732 @@
+{
+  "version": "2026-09-10",
+  "scope": "Draft derived from the existing 19 product records and nine guide texts. No new technical claim, certification or coach review is asserted.",
+  "implementationNotes": [
+    "Use these criteria beneath the category introduction instead of repeating the introduction.",
+    "SourceSection and editorialNote are internal evidence; do not render them as customer-facing copy.",
+    "A visualPattern is a composition suggestion. Use actual product photos; do not fabricate cutaways, dimensions or illustrated product features.",
+    "Curated session results are equipment to examine, not mandatory kits, medical advice or automatically selected cart variants.",
+    "Filter exact product IDs against the active catalogue; hide archived references without substituting the first item in a family.",
+    "Keep source links and the existing qualifications alongside the fuller guide. These short decision points do not replace the product notice."
+  ],
+  "categories": [
+    {
+      "slug": "gants-de-boxe",
+      "choiceHeading": "Trois vérifications avant de retenir une paire",
+      "visualPattern": "model-comparison",
+      "choiceCriteria": [
+        {
+          "label": "Le poids disponible",
+          "explanation": "Le Blade est présenté en 10, 12 et 14 oz ; l’ERGO 90, en 14 oz. Le poids de la référence Sparring reste à confirmer : gardez cette différence dans votre comparaison.",
+          "productIds": [
+            "mat-blade-gold",
+            "mat-ergo90-14",
+            "mat-sparring-16"
+          ]
+        },
+        {
+          "label": "La main, avec les bandes",
+          "explanation": "Essayez les deux gants avec votre bandage habituel. Vérifiez la place du pouce, des doigts et le réglage du poignet ; les onces ne décrivent pas le volume intérieur.",
+          "productIds": [
+            "mat-blade-gold",
+            "mat-bandes-4m"
+          ]
+        },
+        {
+          "label": "Le cours auquel ils serviront",
+          "explanation": "Pour le sac, les pattes d’ours ou une opposition, faites préciser le modèle et le poids admis. Le nom d’une gamme ne suffit pas à valider tous ces usages.",
+          "productIds": []
+        }
+      ]
+    },
+    {
+      "slug": "gants-mma",
+      "choiceHeading": "Regardez aussi l’intérieur de la main",
+      "visualPattern": "palm-and-closure-detail",
+      "choiceCriteria": [
+        {
+          "label": "Paume, doigts, pouce",
+          "explanation": "Ouvrez puis refermez les mains à l’essai. Examinez les ouvertures et les coutures entre les doigts, ainsi que la place du pouce ; la vue du dessus ne montre pas tout.",
+          "productIds": [
+            "mat-shell-mma"
+          ]
+        },
+        {
+          "label": "Quatre tailles de main",
+          "explanation": "The Shell est présenté du S au XL. Ces lettres ne se déduisent pas du poids en onces de vos gants de boxe : utilisez les mesures propres au modèle.",
+          "productIds": [
+            "mat-shell-mma"
+          ]
+        },
+        {
+          "label": "Un usage à faire préciser",
+          "explanation": "The Shell est présenté pour le sparring MMA. Vérifiez qu’il correspond à l’exercice prévu ; un cours de frappe peut demander des gants de boxe.",
+          "productIds": [
+            "mat-shell-mma"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "protections-boxe",
+      "choiceHeading": "Chaque pièce se règle séparément",
+      "visualPattern": "two-equipment-checks",
+      "choiceCriteria": [
+        {
+          "label": "Protège-dents : la référence avant le moulage",
+          "explanation": "Le modèle adulte MBPRO458SRT et le modèle enfant MB459 JR ont chacun leur notice. Ne transposez pas les temps ou températures de l’un à l’autre.",
+          "productIds": [
+            "mat-dents-adulte",
+            "mat-dents-enfant"
+          ]
+        },
+        {
+          "label": "Tibia-pied : deux zones à ajuster",
+          "explanation": "Le MB153 couvre le tibia et se prolonge sur le pied. Comparez sa taille S à XL, la position des deux parties et leur tenue pendant quelques mouvements sans contact.",
+          "productIds": [
+            "mat-tibias-coton"
+          ]
+        },
+        {
+          "label": "La liste change avec le cours",
+          "explanation": "Identifiez le type de contact et les règles de la discipline. Un équipement accepté pour une séance ne constitue pas une validation pour toutes les compétitions.",
+          "productIds": []
+        }
+      ]
+    },
+    {
+      "slug": "textile-boxe",
+      "choiceHeading": "Une tenue de boxe ou un haut pour le tapis ?",
+      "visualPattern": "fit-comparison",
+      "choiceCriteria": [
+        {
+          "label": "Coupe libre",
+          "explanation": "Le Training Tank est un débardeur seul, présenté pour le travail au sac et à la corde. Ses deux vues portées permettent d’observer la coupe de face et en garde.",
+          "productIds": [
+            "mat-debardeur-training"
+          ]
+        },
+        {
+          "label": "Coupe ajustée",
+          "explanation": "Le rashguard Athena est un modèle femme pour le MMA, le grappling et le no-gi, du XS au XXL. Examinez ses manches courtes, ses empiècements et sa finition en bas de vêtement.",
+          "productIds": [
+            "bench-athena-rashguard-court-noir"
+          ]
+        },
+        {
+          "label": "Deux pièces pour l’enfant",
+          "explanation": "L’ensemble MB6473 réunit short et débardeur. Les tranches d’âge vont de 6 / 8 ans à 10 / 12 ans ; la mention satin concerne le short, pas la composition de toute la tenue.",
+          "productIds": [
+            "mat-ensemble-enfants"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "accessoires-boxe",
+      "choiceHeading": "Le détail qui change votre préparation",
+      "visualPattern": "length-and-use-reference-strip",
+      "choiceCriteria": [
+        {
+          "label": "2,50 m ou 4 m",
+          "explanation": "Les deux références de bandes se distinguent par 1,50 m de longueur. Comparez le résultat de votre bandage dans les gants ; 2,50 m ne signifie pas automatiquement enfant.",
+          "productIds": [
+            "mat-bandes-250",
+            "mat-bandes-4m"
+          ]
+        },
+        {
+          "label": "Une corde avec un repère de stature",
+          "explanation": "La corde thaï ELION bleue est annoncée pour les personnes de moins de 1,85 m et décrite comme plus lourde qu’une corde classique. Une longueur réglable n’est pas annoncée.",
+          "productIds": [
+            "bench-elion-corde-thai-bleue"
+          ]
+        },
+        {
+          "label": "Pour celui qui tient la cible",
+          "explanation": "Les pattes d’ours CHAMPBOXING se choisissent aussi par leur prise en main. La paire est présentée en taille unique, avec un coussin supplémentaire au poignet.",
+          "productIds": [
+            "bench-champboxing-pattes-noir-mat"
+          ]
+        },
+        {
+          "label": "La pointure précise",
+          "explanation": "Les Box Hog 2 vont du 36 au 47 1/3 dans les déclinaisons affichées. Vérifiez la mesure Adidas du modèle et les chaussures admises dans votre salle.",
+          "productIds": [
+            "bench-adidas-box-hog-2"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "sacs-de-frappe",
+      "choiceHeading": "Mesurez l’installation avant le sac",
+      "visualPattern": "dimension-led-product-sheet",
+      "choiceCriteria": [
+        {
+          "label": "130 cm de sac ; 150 cm avec les sangles",
+          "explanation": "Pour l’ELION Skintex présenté, les sangles à la verticale ajoutent 20 cm. L’accroche et l’espace nécessaire autour du sac s’ajoutent à cet encombrement.",
+          "productIds": [
+            "bench-elion-skintex-130"
+          ]
+        },
+        {
+          "label": "Environ 45 kg à suspendre",
+          "explanation": "Faites vérifier le support et les fixations avant l’installation. La présence d’un tourillon ne dispense pas de cette vérification.",
+          "productIds": [
+            "bench-elion-skintex-130"
+          ]
+        },
+        {
+          "label": "Une boucle sous le sac",
+          "explanation": "Le modèle comporte une boucle pour une fixation inférieure lorsque l’installation le prévoit. Examinez cet élément avec le système d’accroche, l’emplacement et les exercices envisagés.",
+          "productIds": [
+            "bench-elion-skintex-130"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "materiel-boxe",
+      "choiceHeading": "Répartissez le matériel entre trois moments",
+      "visualPattern": "session-sequence",
+      "choiceCriteria": [
+        {
+          "label": "Avant la reprise",
+          "explanation": "Préparez les bandes et les gants que vous utiliserez ensemble. Validez leur ajustement et le poids demandé avant de compléter le reste du sac.",
+          "productIds": [
+            "mat-bandes-4m",
+            "mat-blade-gold"
+          ]
+        },
+        {
+          "label": "Pendant l’exercice",
+          "explanation": "Une paire de pattes d’ours sert au travail tenu à la main ; un sac de frappe demande une installation. Séparez votre équipement personnel du matériel déjà fourni par le club.",
+          "productIds": [
+            "bench-champboxing-pattes-noir-mat",
+            "bench-elion-skintex-130"
+          ]
+        },
+        {
+          "label": "À la sortie de la salle",
+          "explanation": "Ouvrez les gants et sortez le textile utilisé du sac. Le nettoyage se décide pièce par pièce, avec la notice du modèle.",
+          "productIds": [
+            "mat-debardeur-training"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "materiel-mma",
+      "choiceHeading": "Quelle partie du programme préparez-vous ?",
+      "visualPattern": "three-training-branches",
+      "choiceCriteria": [
+        {
+          "label": "Frappes debout",
+          "explanation": "Un cours de MMA peut demander des gants de boxe pour cette partie. Faites préciser la paire attendue avant de choisir uniquement dans les gants à doigts ouverts.",
+          "productIds": []
+        },
+        {
+          "label": "Frappes et saisies",
+          "explanation": "Lorsque des gants MMA sont demandés, comparez la paume, le pouce, la fermeture et l’usage du modèle. The Shell est présenté ici en S, M, L et XL.",
+          "productIds": [
+            "mat-shell-mma"
+          ]
+        },
+        {
+          "label": "Grappling et no-gi",
+          "explanation": "La tenue doit correspondre aux mouvements et aux règles du tapis. Athena est une option de rashguard femme ; un cours sans frappes ne crée pas, à lui seul, un besoin de gants.",
+          "productIds": [
+            "bench-athena-rashguard-court-noir"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "boutique-arts-martiaux",
+      "choiceHeading": "Pour le JJB en kimono, lisez les deux pièces",
+      "visualPattern": "gi-construction-pair",
+      "choiceCriteria": [
+        {
+          "label": "La veste : 450 g/m²",
+          "explanation": "Le Manto Miko noir présente une veste Pearl Weave de 450 g/m² et un col renforcé par de la mousse EVA. Cette densité décrit le tissu de la veste.",
+          "productIds": [
+            "bench-manto-miko-noir"
+          ]
+        },
+        {
+          "label": "Le pantalon : ripstop 10 oz",
+          "explanation": "Le pantalon du même ensemble est en coton ripstop de 10 oz. Cette indication concerne son tissu et ne remplace pas la grille de tailles A1, A2 et A2L.",
+          "productIds": [
+            "bench-manto-miko-noir"
+          ]
+        },
+        {
+          "label": "La ceinture se prévoit séparément",
+          "explanation": "Elle n’est pas incluse avec ce kimono. Vérifiez la tenue demandée par le club et, pour une rencontre, son règlement ; la fiche n’annonce pas d’homologation de compétition.",
+          "productIds": [
+            "bench-manto-miko-noir"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "materiel-sport-de-combat",
+      "choiceHeading": "Choisissez votre entrée dans le catalogue",
+      "visualPattern": "three-purpose-navigation",
+      "choiceCriteria": [
+        {
+          "label": "Je remplace une pièce",
+          "explanation": "Relevez la référence, la taille et l’usage de votre matériel actuel. Comparez ensuite la fermeture, la coupe ou la construction du nouveau modèle au lieu de vous fier à sa couleur.",
+          "productIds": [],
+          "href": "/gants-de-boxe/"
+        },
+        {
+          "label": "Je commence une discipline",
+          "explanation": "Demandez la liste du premier cours et le matériel prêté. Boxe anglaise, MMA et JJB en kimono ont des besoins différents ; commencez par le parcours qui correspond à votre séance.",
+          "productIds": [],
+          "href": "/guides/debuter-boxe/"
+        },
+        {
+          "label": "J’équipe un espace de travail",
+          "explanation": "Pour les cibles et le matériel suspendu, examinez aussi la personne qui tient l’équipement, les fixations et la place disponible. Ce choix dépasse le contenu d’un sac personnel.",
+          "productIds": [
+            "bench-champboxing-pattes-noir-mat",
+            "bench-elion-skintex-130"
+          ],
+          "href": "/sacs-de-frappe/"
+        }
+      ]
+    },
+    {
+      "slug": "chaussures-boxe",
+      "choiceHeading": "Trois repères pour vos appuis.",
+      "choiceCriteria": [
+        {
+          "label": "Sol et pratique",
+          "explanation": "Vérifiez si le modèle est prévu pour la boxe ou la lutte, puis les chaussures admises dans votre salle."
+        },
+        {
+          "label": "Pointure",
+          "explanation": "Consultez les pointures de la référence et essayez-la avec vos chaussettes de séance. Une pointure identique ne garantit pas la même coupe selon la marque."
+        },
+        {
+          "label": "Construction",
+          "explanation": "Comparez la hauteur de tige, le laçage et la semelle lorsqu’ils sont décrits. Une photo seule ne permet pas de promettre une adhérence particulière."
+        }
+      ]
+    },
+    {
+      "slug": "equipement-entrainement",
+      "choiceHeading": "Du matériel adapté à l’exercice.",
+      "choiceCriteria": [
+        {
+          "label": "Travail seul ou à deux",
+          "explanation": "Une cible tenue par un partenaire, un outil de préparation physique et du matériel à fixer répondent à des exercices différents."
+        },
+        {
+          "label": "Dimensions et prise en main",
+          "explanation": "Lisez les dimensions, les poignées et le rembourrage indiqués sur la fiche. Confirmez les exigences de votre entraîneur avant l’achat."
+        },
+        {
+          "label": "Installation",
+          "explanation": "Vérifiez l’espace et la fixation nécessaires pour les pièces destinées à la salle. Une fixation absente de la fiche n’est pas considérée comme fournie."
+        }
+      ]
+    },
+    {
+      "slug": "sacs-de-sport",
+      "choiceHeading": "Partir de ce que vous emportez.",
+      "choiceCriteria": [
+        {
+          "label": "Volume utile",
+          "explanation": "Listez gants, protections, tenue et affaires de douche, puis comparez les dimensions ou le volume effectivement indiqués."
+        },
+        {
+          "label": "Compartiments",
+          "explanation": "Vérifiez les ouvertures et compartiments décrits pour la référence. La présence d’une poche ne permet pas de supposer qu’elle est ventilée ou étanche."
+        },
+        {
+          "label": "Portage",
+          "explanation": "Sac à dos, bandoulière ou poignées : choisissez selon votre trajet et le poids de votre équipement."
+        }
+      ]
+    }
+  ],
+  "guides": [
+    {
+      "slug": "choisir-gants-boxe",
+      "imageProductId": "mat-blade-gold",
+      "visualPattern": "three-points-around-glove",
+      "briefAnswer": "Décrivez la séance, vérifiez le poids demandé, puis essayez le modèle avec vos bandes. La coupe et la fermeture se contrôlent ensemble ; ni le matériau extérieur ni le prix ne suffisent à choisir une paire.",
+      "decisionPoints": [
+        {
+          "label": "Sac, cibles ou partenaire",
+          "explanation": "Notez les exercices prévus et les paires acceptées par votre club.",
+          "sourceSection": "Commencez par décrire votre semaine d’entraînement"
+        },
+        {
+          "label": "Le pouce et les doigts",
+          "explanation": "Enfilez les deux gants avec vos bandes, puis fermez doucement le poing.",
+          "sourceSection": "Essayez le gant avec les bandes que vous porterez"
+        },
+        {
+          "label": "Le geste de fermeture",
+          "explanation": "Vérifiez que vous pouvez régler la paire dans les conditions de votre cours.",
+          "sourceSection": "Examinez la fermeture et la finition"
+        }
+      ]
+    },
+    {
+      "slug": "taille-poids-gants-boxe",
+      "imageProductId": "mat-ergo90-14",
+      "visualPattern": "ounces-versus-fit",
+      "briefAnswer": "10, 12, 14 ou 16 oz indiquent le poids du gant. Ils ne donnent pas sa pointure intérieure. Reliez les onces aux consignes du cours, puis vérifiez séparément la coupe du modèle avec vos bandes.",
+      "decisionPoints": [
+        {
+          "label": "Le chiffre : un poids",
+          "explanation": "Une indication en oz ne convertit pas une main en taille S, M ou L.",
+          "sourceSection": "Ce que le chiffre permet de comparer"
+        },
+        {
+          "label": "La séance : une consigne",
+          "explanation": "Reprenez le poids demandé par l’encadrant ; une valeur trouvée en ligne ne vaut pas pour toutes les pratiques.",
+          "sourceSection": "10 ou 12 oz, 14 ou 16 oz : posez la question de l’usage"
+        },
+        {
+          "label": "Le modèle : un essai",
+          "explanation": "Comparez la coupe de deux références du poids retenu, puis notez celle qui convient.",
+          "sourceSection": "Faites un essai qui ressemble à votre entraînement"
+        }
+      ],
+      "editorialNote": "A 16 oz label in the explanatory visual is not a catalogue availability claim. The Sparring product's weight remains unconfirmed."
+    },
+    {
+      "slug": "choisir-gants-mma",
+      "imageProductId": "mat-shell-mma",
+      "visualPattern": "open-hand-inspection",
+      "briefAnswer": "Pour des gants MMA, commencez par le format du cours : technique, sparring ou compétition. Examinez ensuite les ouvertures de la main, le pouce et la fermeture, puis utilisez le guide de taille de la référence exacte.",
+      "decisionPoints": [
+        {
+          "label": "Le format d’entraînement",
+          "explanation": "Faites préciser les gants attendus pour le cours ; une séance de frappe peut demander des gants de boxe.",
+          "sourceSection": "Identifiez le type de séance avant le modèle"
+        },
+        {
+          "label": "Les zones de contact",
+          "explanation": "Ouvrez et refermez les mains pour repérer une couture gênante ou une boucle qui tire.",
+          "sourceSection": "Vérifiez la paume, les doigts et le pouce"
+        },
+        {
+          "label": "La sangle en mouvement",
+          "explanation": "Vérifiez sa tenue après quelques gestes simples, sans la resserrer continuellement.",
+          "sourceSection": "Utilisez le guide de mesure de la référence choisie"
+        }
+      ]
+    },
+    {
+      "slug": "debuter-boxe",
+      "imageProductId": "mat-bandes-4m",
+      "comparisonProductIds": [
+        "mat-blade-gold",
+        "mat-bandes-4m",
+        "mat-debardeur-training"
+      ],
+      "visualPattern": "before-first-class-packing-list",
+      "briefAnswer": "Avant votre premier cours de boxe anglaise, demandez ce que le club prête et ce que vous devez apporter. Préparez la tenue et les éléments personnels demandés ; vous pourrez compléter le matériel quand vos séances se préciseront.",
+      "decisionPoints": [
+        {
+          "label": "Avant de commander",
+          "explanation": "Demandez quels gants peuvent être prêtés et quelles protections sont nécessaires à la séance d’essai.",
+          "sourceSection": "Avant la séance d’essai, demandez ce qui est fourni"
+        },
+        {
+          "label": "Dans votre sac",
+          "explanation": "Rassemblez le matériel confirmé, une tenue autorisée, une gourde et une serviette.",
+          "sourceSection": "Préparez un sac facile à vérifier"
+        },
+        {
+          "label": "À acheter plus tard",
+          "explanation": "Attendez d’avoir un usage précis et un emplacement vérifié avant d’envisager un sac de frappe chez vous.",
+          "sourceSection": "Attendez d’avoir un usage avant d’acheter un sac de frappe"
+        }
+      ]
+    },
+    {
+      "slug": "debuter-mma",
+      "imageProductId": "mat-shell-mma",
+      "visualPattern": "training-week-branches",
+      "briefAnswer": "Préparez votre équipement MMA par type de séance. Frappes debout, grappling et travail mixte peuvent demander des gants, des protections et des tenues différents. Faites confirmer la liste du cours avant de composer votre panier.",
+      "decisionPoints": [
+        {
+          "label": "Frappes debout",
+          "explanation": "Demandez si la séance réclame des gants de boxe plutôt que des gants MMA.",
+          "sourceSection": "Ne choisissez pas les gants sur leur apparence seule"
+        },
+        {
+          "label": "Travail au sol",
+          "explanation": "Vérifiez la tenue et les règles du tapis concernant poches, fermetures et pièces rigides.",
+          "sourceSection": "Choisissez une tenue pour bouger au sol comme debout"
+        },
+        {
+          "label": "Séance mixte",
+          "explanation": "Faites préciser les protections et les paires prévues pour les changements de phase.",
+          "sourceSection": "Demandez la liste par séance"
+        }
+      ]
+    },
+    {
+      "slug": "choisir-protections",
+      "imageProductId": "mat-tibias-coton",
+      "comparisonProductIds": [
+        "mat-dents-adulte",
+        "mat-tibias-coton"
+      ],
+      "visualPattern": "fit-notice-condition-checks",
+      "briefAnswer": "La protection se choisit pour la discipline et le type de contact, puis s’ajuste individuellement. Pour le protège-dents, suivez la notice exacte ; pour les pièces à sangles, observez leur tenue en mouvement et leur état avant le cours.",
+      "decisionPoints": [
+        {
+          "label": "La notice du protège-dents",
+          "explanation": "Le moulage suit les temps et températures du modèle, sans reprendre ceux d’une autre référence.",
+          "sourceSection": "Le protège-dents : un équipement personnel à ajuster"
+        },
+        {
+          "label": "La tenue des attaches",
+          "explanation": "Faites quelques mouvements sans contact : une protection qui tourne demande une nouvelle vérification.",
+          "sourceSection": "Casque et protège-tibias : vérifiez la tenue en mouvement"
+        },
+        {
+          "label": "L’état avant l’exercice",
+          "explanation": "Inspectez sangles, coutures et surfaces en contact avec le partenaire ; une date d’achat récente ne remplace pas ce contrôle.",
+          "sourceSection": "Contrôlez aussi les fermetures et les zones abîmées"
+        }
+      ]
+    },
+    {
+      "slug": "difference-gants-boxe-mma",
+      "imageProductId": "mat-shell-mma",
+      "comparisonProductIds": [
+        "mat-blade-gold",
+        "mat-shell-mma"
+      ],
+      "visualPattern": "side-by-side-boxing-mma",
+      "briefAnswer": "Les gants de boxe rassemblent les doigts dans une enveloppe rembourrée ; les gants MMA conservent des ouvertures pour les saisies. Le choix dépend de l’exercice. Un même pratiquant peut utiliser les deux familles dans des séances différentes.",
+      "decisionPoints": [
+        {
+          "label": "Frapper : main enveloppée",
+          "explanation": "Examinez la coupe et le poids du gant de boxe demandé pour les exercices de frappe.",
+          "sourceSection": "La forme suit les mouvements attendus"
+        },
+        {
+          "label": "Saisir : doigts dégagés",
+          "explanation": "Sur le gant MMA, comparez les ouvertures, le pouce et l’usage annoncé du modèle exact.",
+          "sourceSection": "La forme suit les mouvements attendus"
+        },
+        {
+          "label": "Changer de phase",
+          "explanation": "Le programme du cours peut demander deux paires ; les poids seuls ne permettent pas de choisir entre les deux familles.",
+          "sourceSection": "Un pratiquant de MMA peut utiliser plusieurs types de gants"
+        }
+      ]
+    },
+    {
+      "slug": "equipement-enfant",
+      "imageProductId": "mat-one-enfant",
+      "comparisonProductIds": [
+        "mat-one-enfant",
+        "mat-dents-enfant",
+        "mat-ensemble-enfants"
+      ],
+      "visualPattern": "parent-child-fitting-checklist",
+      "briefAnswer": "Pour les premiers cours de boxe d’un enfant, partez de la liste du club et faites essayer les deux gants. L’âge indiqué aide à repérer une version ; il ne remplace pas l’ajustement, qui doit être revérifié lorsque l’enfant grandit ou change de cours.",
+      "decisionPoints": [
+        {
+          "label": "Écouter ce qui gêne",
+          "explanation": "Demandez à l’enfant de montrer un doigt comprimé, un pouce mal placé ou une main qui glisse.",
+          "sourceSection": "Essayez les gants au lieu de choisir uniquement par âge"
+        },
+        {
+          "label": "Identifier ses affaires",
+          "explanation": "Marquez le matériel et préparez une liste courte pour le sac ; privilégiez ce qui est demandé au cours.",
+          "sourceSection": "Facilitez l’autonomie sans multiplier les accessoires"
+        },
+        {
+          "label": "Refaire l’essai",
+          "explanation": "Une nouvelle saison, la croissance ou un changement de cours sont des occasions de revoir taille et état avec l’encadrant.",
+          "sourceSection": "Refaites un contrôle lorsqu’un élément change"
+        }
+      ]
+    },
+    {
+      "slug": "equipement-femme",
+      "imageProductId": "bench-athena-rashguard-court-noir",
+      "visualPattern": "fit-in-motion",
+      "briefAnswer": "Composez l’équipement autour des exercices et de votre ajustement réel. Pour les gants, distinguez les onces du volume intérieur ; pour le textile, vérifiez la taille et la stabilité en mouvement. Vous pouvez associer plusieurs gammes si leurs pièces vous conviennent.",
+      "decisionPoints": [
+        {
+          "label": "La main, pas une étiquette",
+          "explanation": "Une main fine peut demander une autre coupe sans changer le poids de gant requis par le cours.",
+          "sourceSection": "Pour les gants, distinguez poids et volume intérieur"
+        },
+        {
+          "label": "Le haut quand vous bougez",
+          "explanation": "Levez les bras et changez de position pour vérifier les coutures, la stabilité et les ajustements nécessaires.",
+          "sourceSection": "Testez le textile en mouvement, pas seulement devant le miroir"
+        },
+        {
+          "label": "Chaque pièce pour son usage",
+          "explanation": "Comparez le contenu d’un ensemble avant de choisir : l’assortiment des couleurs ne détermine pas vos besoins.",
+          "sourceSection": "Faites passer vos besoins avant le pack assorti"
+        }
+      ],
+      "editorialNote": "The Athena photograph illustrates the rashguard cut only; it must not be used as an illustration of a sports bra, which is not in this catalogue snapshot."
+    }
+  ],
+  "sessions": [
+    {
+      "key": "boxe:premiere",
+      "discipline": "boxe",
+      "context": "premiere",
+      "name": "Préparer le premier cours de boxe",
+      "text": "Après avoir demandé ce qui est prêté par la salle, regardez la paire de gants, le bandage et la tenue que vous utiliserez ensemble.",
+      "guide": "debuter-boxe",
+      "products": [
+        {
+          "id": "mat-blade-gold",
+          "label": "La paire à essayer",
+          "reason": "Le Blade propose trois poids documentés, 10, 12 et 14 oz. Comparez-les aux consignes du cours, puis vérifiez la coupe avec vos bandes.",
+          "condition": "Poids et modèle à faire valider pour le cours ; aucune déclinaison présélectionnée."
+        },
+        {
+          "id": "mat-bandes-4m",
+          "label": "Le bandage à préparer",
+          "reason": "La longueur de 4 m, le passant de pouce et la fermeture sont documentés. Comparez le bandage obtenu à l’espace disponible dans les gants.",
+          "condition": "Longueur et pose à vérifier ; la version 2,50 m reste une alternative à examiner."
+        },
+        {
+          "id": "mat-debardeur-training",
+          "label": "Le haut pour le sac et la corde",
+          "reason": "Le Training Tank est présenté pour ces exercices. Les vues portées montrent sa coupe libre de face et en garde.",
+          "condition": "Option de tenue, selon les vêtements déjà possédés et admis au club."
+        }
+      ]
+    },
+    {
+      "key": "boxe:technique",
+      "discipline": "boxe",
+      "context": "technique",
+      "name": "Préparer le travail aux cibles",
+      "text": "Pensez aux deux côtés de l’exercice : le pratiquant qui frappe et la personne qui tient les pattes d’ours. Une référence de gant ne suffit pas à définir la séance.",
+      "guide": "choisir-gants-boxe",
+      "products": [
+        {
+          "id": "bench-champboxing-pattes-noir-mat",
+          "label": "La cible tenue en main",
+          "reason": "La paire CHAMPBOXING comporte une construction en PU, une mousse haute densité et un coussin au poignet. Sa prise en main est un critère de choix pour la personne qui la porte.",
+          "condition": "Pour des exercices encadrés aux pattes d’ours ; matériel parfois fourni par le club."
+        },
+        {
+          "id": "mat-ergo90-14",
+          "label": "Une déclinaison de 14 oz à comparer",
+          "reason": "L’ERGO 90 présenté est précisément en 14 oz. Il offre un point de comparaison avec un Blade de même poids, notamment sur la forme et la fermeture.",
+          "condition": "À examiner seulement si ce poids et ce modèle correspondent aux consignes de l’exercice."
+        }
+      ],
+      "editorialNote": "Do not call ERGO 90 intrinsically better for technique; this selection offers a documented 14 oz comparison, not a performance ranking."
+    },
+    {
+      "key": "boxe:enfant",
+      "discipline": "boxe",
+      "context": "enfant",
+      "name": "Les affaires du jeune boxeur",
+      "text": "Séparez les gants, l’équipement personnel et la tenue. Les tranches d’âge repèrent les versions ; l’enfant doit aussi essayer les pièces et pouvoir signaler ce qui le gêne.",
+      "guide": "equipement-enfant",
+      "products": [
+        {
+          "id": "mat-one-enfant",
+          "label": "Les gants seuls",
+          "reason": "ONE est la gamme enfant MBGAN002, distincte du pack avec mitaines. Deux repères sont présentés : 4 / 7 ans et 8 / 15 ans.",
+          "condition": "Ajustement à vérifier ; la photo montre la version CH et ne confirme pas le visuel JR."
+        },
+        {
+          "id": "mat-dents-enfant",
+          "label": "Une pièce personnelle",
+          "reason": "Le MB459 JR est la référence enfant de protège-dents. Conservez sa notice pour son moulage et son utilisation.",
+          "condition": "Si demandé par le club ; appliquer la notice de cette référence, avec avis professionnel en cas de question liée à la dentition."
+        },
+        {
+          "id": "mat-ensemble-enfants",
+          "label": "Short et débardeur",
+          "reason": "L’ensemble MB6473 regroupe les deux pièces d’une tenue de boxe anglaise enfant, avec trois tranches de taille présentées.",
+          "condition": "Vérifier la tenue admise par le club et la taille actuelle de l’enfant."
+        }
+      ]
+    },
+    {
+      "key": "mma:premiere",
+      "discipline": "mma",
+      "context": "premiere",
+      "name": "Commencer par la liste du cours MMA",
+      "text": "Frappe, grappling ou séance mixte : faites préciser le programme. Ces deux références se regardent seulement si elles correspondent au matériel demandé.",
+      "guide": "debuter-mma",
+      "products": [
+        {
+          "id": "mat-shell-mma",
+          "label": "Si des gants MMA sont demandés",
+          "reason": "The Shell est présenté pour le sparring MMA, avec protection du pouce, fermeture auto-agrippante et élément élastique. Les tailles vont du S au XL.",
+          "condition": "Modèle adulte à faire valider pour le cours ; peut ne pas être la paire demandée en frappe debout."
+        },
+        {
+          "id": "mat-dents-adulte",
+          "label": "Le protège-dents personnel",
+          "reason": "La référence adulte MBPRO458SRT est thermoformable et accompagnée d’un boîtier. Son ajustement suit sa propre notice.",
+          "condition": "Si demandé pour la séance ; aucune instruction universelle de moulage."
+        }
+      ],
+      "optionalProducts": [
+        {
+          "id": "bench-athena-rashguard-court-noir",
+          "label": "Une option de coupe femme",
+          "reason": "Le rashguard Athena est documenté pour le MMA, le grappling et le no-gi, du XS au XXL.",
+          "condition": "À proposer comme option explicite aux personnes qui recherchent cette coupe ; jamais comme textile universel par défaut."
+        }
+      ]
+    },
+    {
+      "key": "mma:technique",
+      "discipline": "mma",
+      "context": "technique",
+      "name": "Vérifier les changements de phase",
+      "text": "Lorsque les exercices alternent frappe et saisie, vérifiez ce qui est demandé aux mains et aux jambes. L’ajustement doit être examiné dans les mouvements prévus.",
+      "guide": "choisir-gants-mma",
+      "products": [
+        {
+          "id": "mat-shell-mma",
+          "label": "Paume, doigts et fermeture",
+          "reason": "Le modèle The Shell fournit des points précis à examiner : rembourrage injecté, pouce protégé, élément élastique et sangle auto-agrippante.",
+          "condition": "L’encadrant doit valider l’usage du modèle pour la séance ; pas de recommandation de compétition."
+        },
+        {
+          "id": "mat-tibias-coton",
+          "label": "Une construction tibia-pied à examiner",
+          "reason": "Le MB153 associe coton élastique, mousse EVA et serrage auto-agrippant, en S à XL. Comparez sa couverture et sa tenue sur la jambe et le pied.",
+          "condition": "Présenté comme candidat à faire valider, pas comme protection MMA universelle ; son usage dépend des contacts et déplacements prévus."
+        }
+      ]
+    },
+    {
+      "key": "mma:enfant",
+      "discipline": "mma",
+      "context": "enfant",
+      "name": "Faire préciser le matériel du cours jeune",
+      "text": "Nous ne présentons pas encore de gants MMA enfant dont l’usage soit vérifié. Les gants de boxe junior et les modèles MMA adultes ne permettent pas de combler cette absence. Demandez au club les références prévues pour ce cours.",
+      "guide": "debuter-mma",
+      "products": [],
+      "emptyAction": {
+        "label": "Transmettre la liste du club",
+        "href": "/contact/"
+      },
+      "editorialNote": "Keep a useful, truthful empty state. Never substitute adult The Shell, ONE boxing gloves or a generically child-tagged product to populate this result."
+    }
+  ]
+}

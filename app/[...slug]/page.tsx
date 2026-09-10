@@ -1,3 +1,4 @@
+import { catalogPage } from '@/lib/pagination';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import {
@@ -22,13 +23,20 @@ import {
 } from '@/components/editorial-pages';
 import { ContactForm, Unsubscribe } from '@/components/contact-form';
 import { Admin } from '@/components/admin';
+import { PayplugReturn } from '@/components/payplug-settings';
+import { CartPage, ReceiptPage } from '@/components/commerce-ui';
+import selection from '@/lib/data/selection.json';
+import ogImages from '@/lib/data/og.json';
 import { chatGPTSignInPath } from '@/app/chatgpt-auth';
 export const dynamic = 'force-dynamic';
 type Props = {
   params: Promise<{ slug: string[] }>;
   searchParams: Promise<Record<string, string | undefined>>;
 };
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+  searchParams,
+}: Props): Promise<Metadata> {
   const { slug } = await params;
   const path = slug.join('/');
   const products = await readCatalog();
@@ -61,6 +69,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       'Demande enregistrée',
       'Confirmation de votre demande auprès de Boutique de Boxe.',
     ],
+    'paiement-retour': [
+      'Retour du paiement de test',
+      'Vérification privée du statut PayPlug.',
+    ],
+    panier: [
+      'Votre panier d’essai',
+      'Préparez votre équipement et testez le parcours de commande sans débit.',
+    ],
+    recu: [
+      'Votre reçu de simulation',
+      'Reçu privé de votre commande d’essai. Aucun paiement réel.',
+    ],
     atelier: ['Administration', 'Gestion privée du catalogue et des demandes.'],
     desinscription: [
       'Désinscription des alertes',
@@ -74,40 +94,68 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     service?.title ||
     special[path]?.[0] ||
     'Page introuvable';
+  const paginated = Boolean(cat || path === 'nouveautes');
+  const page = paginated
+    ? catalogPage(
+        (await searchParams).page,
+        cat ? getCategoryProducts(cat, products).length : products.length,
+      )
+    : 1;
+  if (page === null) notFound();
+  const canonical =
+    '/' + path + '/' + (paginated && page > 1 ? '?page=' + page : '');
+  const pageTitle = title + (paginated && page > 1 ? ' — Page ' + page : '');
+  const og = (
+    ogImages as Record<
+      string,
+      { url: string; width: number; height: number; alt: string }
+    >
+  )['/' + path + '/'];
   const description =
-    product?.short ||
+    (product
+      ? product.seoDescription ||
+        (product.name + '. ' + product.short).slice(0, 295)
+      : undefined) ||
     cat?.description ||
     guide?.description ||
     service?.description ||
     special[path]?.[1] ||
     'Cette page n’existe pas.';
   return {
-    title,
+    title: pageTitle,
     description,
-    alternates: { canonical: '/' + path + '/' },
+    alternates: { canonical },
     openGraph: {
-      title,
+      title: pageTitle,
       description,
-      url: '/' + path + '/',
+      url: canonical,
       siteName: shop.name,
       locale: 'fr_FR',
       type: guide ? 'article' : 'website',
-      ...(product
-        ? {
-            images: [
-              {
-                url: product.images[0].src,
-                width: 960,
-                height: 960,
-                alt: product.name,
-              },
-            ],
-          }
-        : {}),
+      ...(og
+        ? { images: [og] }
+        : product
+          ? {
+              images: [
+                {
+                  url: product.images[0].src,
+                  width: 960,
+                  height: 960,
+                  alt: product.name,
+                },
+              ],
+            }
+          : {}),
     },
-    ...(['atelier', 'recherche', 'desinscription', 'confirmation'].includes(
-      path,
-    )
+    ...([
+      'paiement-retour',
+      'panier',
+      'recu',
+      'atelier',
+      'recherche',
+      'desinscription',
+      'confirmation',
+    ].includes(path)
       ? { robots: { index: false, follow: path === 'recherche' } }
       : {}),
   };
@@ -115,6 +163,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function Page({ params, searchParams }: Props) {
   const { slug } = await params;
   const path = slug.join('/');
+  if (path === 'paiement-retour')
+    return (
+      <main id="contenu" className="page-wrap">
+        <PayplugReturn id={(await searchParams).id || ''} />
+      </main>
+    );
+  if (path === 'panier')
+    return (
+      <main id="contenu" className="page-wrap">
+        <CartPage />
+      </main>
+    );
+  if (path === 'recu')
+    return (
+      <main id="contenu" className="page-wrap">
+        <ReceiptPage id={(await searchParams).id || ''} />
+      </main>
+    );
   if (path === 'confirmation')
     return (
       <main id="contenu" className="page-wrap">
@@ -164,7 +230,7 @@ export default async function Page({ params, searchParams }: Props) {
             <p>
               Catalogue national en préparation.
               <br />
-              Aucune commande n’est encore ouverte.
+              Le panier et le paiement sont accessibles en simulation.
             </p>
             <div className="contact-mark" aria-hidden="true">
               ON EST
@@ -218,15 +284,17 @@ export default async function Page({ params, searchParams }: Props) {
     if (!p) notFound();
     const cat =
       categoryFor(p.category) || categoryFor('boutique-arts-martiaux')!;
-    const related = [
-      ...products.filter((x) => x.id !== p.id && x.category === p.category),
-      ...products.filter(
+    const related = products
+      .filter(
         (x) =>
           x.id !== p.id &&
-          x.category !== p.category &&
+          x.category === p.category &&
           x.audience === p.audience,
-      ),
-    ].slice(0, 4);
+      )
+      .slice(0, 4);
+    const contextKey = (await searchParams).seance;
+    const session = selection.sessions.find((s) => s.key === contextKey);
+    const reason = session?.products.find((r) => r.id === p.id);
     return (
       <main id="contenu" className="page-wrap">
         <Breadcrumb
@@ -235,6 +303,14 @@ export default async function Page({ params, searchParams }: Props) {
             { label: p.name },
           ]}
         />
+        {reason && (
+          <aside className="product-context">
+            <span className="eyebrow">DANS VOTRE SAC DE SÉANCE</span>
+            <strong>{session!.name}</strong>
+            <p>{reason.reason}</p>
+            <a href="/#preparer">Revoir ma préparation ↗</a>
+          </aside>
+        )}
         <ProductDetails product={p} />
         <section className="spec-section">
           <div>
@@ -247,11 +323,16 @@ export default async function Page({ params, searchParams }: Props) {
                 <p>{p.use}</p>
               </>
             )}
-            <h2>Après la séance.</h2>
-            <p>
-              {p.care ||
-                'Suivez les indications d’entretien du fabricant. Vérifiez l’état et l’ajustement du modèle avant chaque utilisation.'}
-            </p>
+            {p.care ? (
+              <>
+                <h2>Après la séance.</h2>
+                <p>{p.care}</p>
+              </>
+            ) : (
+              <p className="care-note">
+                Entretien : consultez la notice de cette référence.
+              </p>
+            )}
             <ArrowLink
               href={
                 cat.guide === 'guide-des-tailles'
@@ -287,14 +368,16 @@ export default async function Page({ params, searchParams }: Props) {
             </table>
           </div>
         </section>
-        <section className="related-section">
-          <h2>À regarder aussi.</h2>
-          <div className="product-grid">
-            {related.map((x, i) => (
-              <ProductCard key={x.id} product={x} index={i} />
-            ))}
-          </div>
-        </section>
+        {related.length > 0 && (
+          <section className="related-section">
+            <h2>Comparer dans la même famille.</h2>
+            <div className="product-grid">
+              {related.map((x, i) => (
+                <ProductCard key={x.id} product={x} index={i} />
+              ))}
+            </div>
+          </section>
+        )}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -303,9 +386,11 @@ export default async function Page({ params, searchParams }: Props) {
               '@type': 'Product',
               name: p.name,
               description: p.short,
-              image: p.images.map((i) => shop.origin + i.src),
+              image: p.images.map((i) => new URL(i.src, shop.origin).href),
               sku: p.sourceRef,
-              ...(p.brand !== 'Sélection Boutique de Boxe'
+              ...(!['Sélection Boutique de Boxe', 'Marque à préciser'].includes(
+                p.brand,
+              )
                 ? { brand: { '@type': 'Brand', name: p.brand } }
                 : {}),
               url: shop.origin + '/produits/' + p.slug + '/',
@@ -322,6 +407,8 @@ export default async function Page({ params, searchParams }: Props) {
       : path === 'nouveautes'
         ? [...products].reverse()
         : products;
+    const currentPage = catalogPage((await searchParams).page, data.length);
+    if (currentPage === null) notFound();
     return (
       <main id="contenu" className="page-wrap">
         <Breadcrumb
@@ -355,12 +442,36 @@ export default async function Page({ params, searchParams }: Props) {
             </p>
           </div>
         </section>
-        <Catalog items={data} showFamilies={!cat || cat.families.length > 1} />
+        <Catalog
+          items={data.map((p) => ({
+            ...p,
+            description: p.description.slice(0, 180),
+            use: undefined,
+            care: undefined,
+            specs: {},
+            notes: [],
+            images: p.images.slice(0, 1),
+          }))}
+          initialPage={currentPage}
+          showFamilies={!cat || cat.families.length > 1}
+        />
         {cat && (
           <section className="spec-section">
             <div>
-              <h2>Comment choisir ?</h2>
-              <p>{cat.intro}</p>
+              <h2>
+                {selection.categories.find((c) => c.slug === cat.slug)
+                  ?.choiceHeading || 'Les critères à examiner.'}
+              </h2>
+              <div className="choice-criteria">
+                {selection.categories
+                  .find((c) => c.slug === cat.slug)
+                  ?.choiceCriteria.map((c) => (
+                    <div key={c.label}>
+                      <h3>{c.label}</h3>
+                      <p>{c.explanation}</p>
+                    </div>
+                  ))}
+              </div>
               <ArrowLink
                 href={
                   cat.guide === 'guide-des-tailles'

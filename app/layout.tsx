@@ -3,6 +3,8 @@ import { Header, Footer, Motion } from '@/components/shop-shell';
 import { shop, jsonLd } from '@/lib/catalog';
 import './globals.css';
 import './shop.css';
+import './refinement.css';
+import './commerce.css';
 
 export const metadata: Metadata = {
   metadataBase: new URL(shop.origin),
@@ -20,10 +22,10 @@ export const metadata: Metadata = {
     url: shop.origin,
     images: [
       {
-        url: '/products/gants-boxe-blade-metal-boxe-noir-blanc-1-960.webp',
-        width: 960,
-        height: 960,
-        alt: 'Gants de boxe Blade Metal Boxe — Boutique de Boxe',
+        url: '/og/home.png',
+        width: 1200,
+        height: 630,
+        alt: 'Le matériel préparé pour la séance — Boutique de Boxe',
       },
     ],
   },
