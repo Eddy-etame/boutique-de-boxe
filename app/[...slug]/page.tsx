@@ -76,8 +76,8 @@ export async function generateMetadata({
       'Vérification privée du statut PayPlug.',
     ],
     panier: [
-      'Votre panier d’essai',
-      'Préparez votre équipement et testez le parcours de commande sans débit.',
+      'Votre panier',
+      'Essayez la commande jusqu’au reçu, sans payer.',
     ],
     recu: [
       'Votre reçu de simulation',
@@ -187,7 +187,7 @@ export default async function Page({ params, searchParams }: Props) {
     return (
       <main id="contenu" className="page-wrap">
         <section className="not-found">
-          <span className="eyebrow">DANS VOTRE COIN</span>
+          <span className="eyebrow">CONTACT</span>
           <h1>Demande enregistrée.</h1>
           <p>
             Votre demande a été enregistrée pour être traitée par l’équipe
@@ -211,35 +211,35 @@ export default async function Page({ params, searchParams }: Props) {
         <Breadcrumb items={[{ label: 'Contact' }]} />
         <section className="page-heading">
           <div>
-            <span className="eyebrow">DANS VOTRE COIN / CONTACT</span>
+            <span className="eyebrow">CONTACT</span>
             <h1>
-              Parlons
+              Une question
               <br />
-              équipement.
+              sur un modèle ?
             </h1>
           </div>
           <p>
-            Un doute sur un modèle, une taille à éclaircir, une question sur la
-            boutique. Donnez-nous les détails utiles.
+            Une taille, un poids, un délai : écrivez-nous, nous répondons par
+            e-mail.
           </p>
         </section>
         <div className="contact-layout">
           <aside>
-            <span className="eyebrow">L’ÉQUIPE BOXING CENTER</span>
+            <span className="eyebrow">NOUS ÉCRIRE</span>
             <a className="contact-email" href={'mailto:' + shop.email}>
               {shop.email} ↗
             </a>
             <p>
-              Catalogue national en préparation.
+              Les ventes ouvrent bientôt.
               <br />
-              Le panier et le paiement sont accessibles en simulation.
+              Vous pouvez déjà essayer la commande, sans payer.
             </p>
             <div className="contact-mark" aria-hidden="true">
-              ON EST
+              BOUTIQUE
               <br />
-              DANS
+              DE
               <br />
-              <em>VOTRE COIN.</em>
+              <em>BOXE.</em>
             </div>
           </aside>
           <ContactForm />
@@ -284,6 +284,9 @@ export default async function Page({ params, searchParams }: Props) {
     if (!p) notFound();
     const cat =
       categoryFor(p.category) || categoryFor('boutique-arts-martiaux')!;
+    const score = (x: (typeof products)[number]) =>
+      (x.brand === p.brand ? 2 : 0) +
+      ((x.disciplines || []).some((d) => (p.disciplines || []).includes(d)) ? 1 : 0);
     const related = products
       .filter(
         (x) =>
@@ -291,6 +294,7 @@ export default async function Page({ params, searchParams }: Props) {
           x.category === p.category &&
           x.audience === p.audience,
       )
+      .sort((a, b) => score(b) - score(a))
       .slice(0, 4);
     if ((await getEdition()) === 'nouvelle')
       return <NextProduct product={p} related={related} />;
@@ -316,25 +320,25 @@ export default async function Page({ params, searchParams }: Props) {
         <ProductDetails product={p} />
         <section className="spec-section">
           <div>
-            <span className="eyebrow">LE MODÈLE DANS LE DÉTAIL</span>
-            <h2>Comprendre la pièce.</h2>
-            <p>{p.description}</p>
+            <span className="eyebrow">LE MODÈLE</span>
+            {p.description.trim() !== p.name.trim() && (
+              <>
+                <h2>En détail.</h2>
+                <p>{p.description}</p>
+              </>
+            )}
             {p.use && (
               <>
-                <h2>Dans votre séance.</h2>
+                <h2>À l’usage.</h2>
                 <p>{p.use}</p>
               </>
             )}
             {p.care ? (
               <>
-                <h2>Après la séance.</h2>
+                <h2>Entretien.</h2>
                 <p>{p.care}</p>
               </>
-            ) : (
-              <p className="care-note">
-                Entretien : consultez la notice de cette référence.
-              </p>
-            )}
+            ) : null}
             <ArrowLink
               href={
                 cat.guide === 'guide-des-tailles'
@@ -364,7 +368,7 @@ export default async function Page({ params, searchParams }: Props) {
                 ))}
                 <tr>
                   <th scope="row">Disponibilité</th>
-                  <td>Bientôt disponible</td>
+                  <td>En vente bientôt</td>
                 </tr>
               </tbody>
             </table>
@@ -372,7 +376,7 @@ export default async function Page({ params, searchParams }: Props) {
         </section>
         {related.length > 0 && (
           <section className="related-section">
-            <h2>Comparer dans la même famille.</h2>
+            <h2>Modèles proches.</h2>
             <div className="product-grid">
               {related.map((x, i) => (
                 <ProductCard key={x.id} product={x} index={i} />
@@ -434,17 +438,17 @@ export default async function Page({ params, searchParams }: Props) {
             <h1>
               {cat?.name ||
                 (path === 'recherche'
-                  ? 'Trouvez votre équipement.'
-                  : 'Les nouveautés.')}
+                  ? 'Rechercher'
+                  : 'Les nouveautés')}
             </h1>
           </div>
           <div>
             <div className="label">
-              {cat?.label || 'Les références dans le détail.'}
+              {cat?.label || 'Tous les modèles.'}
             </div>
             <p>
               {cat?.intro ||
-                'Explorez les modèles présentés dans notre catalogue. Les prix sont indicatifs et toutes les références sont en préparation avant ouverture des ventes.'}
+                'Tous les modèles du catalogue, avec leurs tailles et leurs prix prévus à l’ouverture des ventes.'}
             </p>
           </div>
         </section>

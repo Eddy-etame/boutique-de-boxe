@@ -587,27 +587,27 @@
       "key": "boxe:premiere",
       "discipline": "boxe",
       "context": "premiere",
-      "name": "Préparer le premier cours de boxe",
-      "text": "Après avoir demandé ce qui est prêté par la salle, regardez la paire de gants, le bandage et la tenue que vous utiliserez ensemble.",
+      "name": "Commencer la boxe",
+      "text": "Trois modèles à regarder pour un premier cours : des gants, des bandes et un haut.",
       "guide": "debuter-boxe",
       "products": [
         {
           "id": "mat-blade-gold",
-          "label": "La paire à essayer",
-          "reason": "Le Blade propose trois poids documentés, 10, 12 et 14 oz. Comparez-les aux consignes du cours, puis vérifiez la coupe avec vos bandes.",
-          "condition": "Poids et modèle à faire valider pour le cours ; aucune déclinaison présélectionnée."
+          "label": "Les gants",
+          "reason": "Trois poids au choix : 10, 12 ou 14 oz. Essayez-les avec vos bandes avant de choisir le poids.",
+          "condition": "Le poids se choisit selon votre entraînement. Aucune taille n’est présélectionnée."
         },
         {
           "id": "mat-bandes-4m",
-          "label": "Le bandage à préparer",
-          "reason": "La longueur de 4 m, le passant de pouce et la fermeture sont documentés. Comparez le bandage obtenu à l’espace disponible dans les gants.",
-          "condition": "Longueur et pose à vérifier ; la version 2,50 m reste une alternative à examiner."
+          "label": "Les bandes",
+          "reason": "Quatre mètres, avec un passant pour le pouce. Elles protègent vos mains sous les gants.",
+          "condition": "La version 2,50 m existe aussi."
         },
         {
           "id": "mat-debardeur-training",
-          "label": "Le haut pour le sac et la corde",
-          "reason": "Le Training Tank est présenté pour ces exercices. Les vues portées montrent sa coupe libre de face et en garde.",
-          "condition": "Option de tenue, selon les vêtements déjà possédés et admis au club."
+          "label": "Le haut",
+          "reason": "Une coupe ample pour le sac et la corde. Vos bras restent libres.",
+          "condition": "Selon la tenue que vous avez déjà."
         }
       ]
     },
@@ -615,21 +615,21 @@
       "key": "boxe:technique",
       "discipline": "boxe",
       "context": "technique",
-      "name": "Préparer le travail aux cibles",
-      "text": "Pensez aux deux côtés de l’exercice : le pratiquant qui frappe et la personne qui tient les pattes d’ours. Une référence de gant ne suffit pas à définir la séance.",
+      "name": "Travailler la technique",
+      "text": "Le matériel du travail aux pattes d’ours : ce que vous portez, et ce que votre partenaire tient.",
       "guide": "choisir-gants-boxe",
       "products": [
         {
           "id": "bench-champboxing-pattes-noir-mat",
-          "label": "La cible tenue en main",
-          "reason": "La paire CHAMPBOXING comporte une construction en PU, une mousse haute densité et un coussin au poignet. Sa prise en main est un critère de choix pour la personne qui la porte.",
-          "condition": "Pour des exercices encadrés aux pattes d’ours ; matériel parfois fourni par le club."
+          "label": "Les pattes d’ours",
+          "reason": "Elles se tiennent en main pendant que l’autre frappe. Mousse dense et coussin au poignet.",
+          "condition": "Pour la personne qui tient les cibles."
         },
         {
           "id": "mat-ergo90-14",
-          "label": "Une déclinaison de 14 oz à comparer",
-          "reason": "L’ERGO 90 présenté est précisément en 14 oz. Il offre un point de comparaison avec un Blade de même poids, notamment sur la forme et la fermeture.",
-          "condition": "À examiner seulement si ce poids et ce modèle correspondent aux consignes de l’exercice."
+          "label": "Des gants de 14 oz",
+          "reason": "Un seul poids, 14 oz, pour comparer avec le Blade. La forme et la fermeture changent.",
+          "condition": "Un seul poids : 14 oz."
         }
       ],
       "editorialNote": "Do not call ERGO 90 intrinsically better for technique; this selection offers a documented 14 oz comparison, not a performance ranking."
@@ -638,27 +638,27 @@
       "key": "boxe:enfant",
       "discipline": "boxe",
       "context": "enfant",
-      "name": "Les affaires du jeune boxeur",
-      "text": "Séparez les gants, l’équipement personnel et la tenue. Les tranches d’âge repèrent les versions ; l’enfant doit aussi essayer les pièces et pouvoir signaler ce qui le gêne.",
+      "name": "Équiper un enfant",
+      "text": "Gants, protège-dents et tenue pour un enfant qui commence la boxe.",
       "guide": "equipement-enfant",
       "products": [
         {
           "id": "mat-one-enfant",
-          "label": "Les gants seuls",
-          "reason": "ONE est la gamme enfant MBGAN002, distincte du pack avec mitaines. Deux repères sont présentés : 4 / 7 ans et 8 / 15 ans.",
-          "condition": "Ajustement à vérifier ; la photo montre la version CH et ne confirme pas le visuel JR."
+          "label": "Les gants enfant",
+          "reason": "Deux tranches d’âge : 4 à 7 ans, 8 à 15 ans. Faites-les essayer à l’enfant.",
+          "condition": "À essayer sur l’enfant."
         },
         {
           "id": "mat-dents-enfant",
-          "label": "Une pièce personnelle",
-          "reason": "Le MB459 JR est la référence enfant de protège-dents. Conservez sa notice pour son moulage et son utilisation.",
-          "condition": "Si demandé par le club ; appliquer la notice de cette référence, avec avis professionnel en cas de question liée à la dentition."
+          "label": "Le protège-dents",
+          "reason": "Un modèle enfant, à mouler dans l’eau chaude. Gardez la notice pour le moulage.",
+          "condition": "À mouler en suivant la notice."
         },
         {
           "id": "mat-ensemble-enfants",
-          "label": "Short et débardeur",
-          "reason": "L’ensemble MB6473 regroupe les deux pièces d’une tenue de boxe anglaise enfant, avec trois tranches de taille présentées.",
-          "condition": "Vérifier la tenue admise par le club et la taille actuelle de l’enfant."
+          "label": "Le short et le haut",
+          "reason": "Une tenue de boxe pour enfant, en trois tailles.",
+          "condition": "Trois tailles."
         }
       ]
     },
@@ -666,21 +666,21 @@
       "key": "mma:premiere",
       "discipline": "mma",
       "context": "premiere",
-      "name": "Commencer par la liste du cours MMA",
-      "text": "Frappe, grappling ou séance mixte : faites préciser le programme. Ces deux références se regardent seulement si elles correspondent au matériel demandé.",
+      "name": "Commencer le MMA",
+      "text": "Des gants MMA et un protège-dents : le minimum pour un premier cours.",
       "guide": "debuter-mma",
       "products": [
         {
           "id": "mat-shell-mma",
-          "label": "Si des gants MMA sont demandés",
-          "reason": "The Shell est présenté pour le sparring MMA, avec protection du pouce, fermeture auto-agrippante et élément élastique. Les tailles vont du S au XL.",
-          "condition": "Modèle adulte à faire valider pour le cours ; peut ne pas être la paire demandée en frappe debout."
+          "label": "Les gants MMA",
+          "reason": "Des gants de sparring MMA, du S au XL. Le pouce est protégé, la fermeture est à bande.",
+          "condition": "Tailles du S au XL."
         },
         {
           "id": "mat-dents-adulte",
-          "label": "Le protège-dents personnel",
-          "reason": "La référence adulte MBPRO458SRT est thermoformable et accompagnée d’un boîtier. Son ajustement suit sa propre notice.",
-          "condition": "Si demandé pour la séance ; aucune instruction universelle de moulage."
+          "label": "Le protège-dents",
+          "reason": "À mouler dans l’eau chaude, livré avec un boîtier. Suivez sa notice.",
+          "condition": "À mouler en suivant la notice."
         }
       ],
       "optionalProducts": [
@@ -696,21 +696,21 @@
       "key": "mma:technique",
       "discipline": "mma",
       "context": "technique",
-      "name": "Vérifier les changements de phase",
-      "text": "Lorsque les exercices alternent frappe et saisie, vérifiez ce qui est demandé aux mains et aux jambes. L’ajustement doit être examiné dans les mouvements prévus.",
+      "name": "Frappe et sol",
+      "text": "Les gants et les protège-tibias qui servent debout comme au sol.",
       "guide": "choisir-gants-mma",
       "products": [
         {
           "id": "mat-shell-mma",
-          "label": "Paume, doigts et fermeture",
-          "reason": "Le modèle The Shell fournit des points précis à examiner : rembourrage injecté, pouce protégé, élément élastique et sangle auto-agrippante.",
-          "condition": "L’encadrant doit valider l’usage du modèle pour la séance ; pas de recommandation de compétition."
+          "label": "Les gants MMA",
+          "reason": "Regardez la paume, le pouce et la sangle. Ils servent debout comme au sol.",
+          "condition": "Tailles du S au XL."
         },
         {
           "id": "mat-tibias-coton",
-          "label": "Une construction tibia-pied à examiner",
-          "reason": "Le MB153 associe coton élastique, mousse EVA et serrage auto-agrippant, en S à XL. Comparez sa couverture et sa tenue sur la jambe et le pied.",
-          "condition": "Présenté comme candidat à faire valider, pas comme protection MMA universelle ; son usage dépend des contacts et déplacements prévus."
+          "label": "Les protège-tibias",
+          "reason": "Coton élastique et mousse EVA, du S au XL. Ils couvrent le tibia et le pied.",
+          "condition": "Tailles du S au XL."
         }
       ]
     },
@@ -718,8 +718,8 @@
       "key": "mma:enfant",
       "discipline": "mma",
       "context": "enfant",
-      "name": "Faire préciser le matériel du cours jeune",
-      "text": "Nous ne présentons pas encore de gants MMA enfant dont l’usage soit vérifié. Les gants de boxe junior et les modèles MMA adultes ne permettent pas de combler cette absence. Demandez au club les références prévues pour ce cours.",
+      "name": "Un enfant en MMA",
+      "text": "Nous n’avons pas encore de modèle enfant vérifié pour le MMA.",
       "guide": "debuter-mma",
       "products": [],
       "emptyAction": {

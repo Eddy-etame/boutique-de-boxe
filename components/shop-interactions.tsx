@@ -66,7 +66,7 @@ export function ProductCard({
         <span>
           {p.sizes.length
             ? p.sizes.slice(0, 4).join(' / ')
-            : 'Déclinaison à venir'}
+            : 'Tailles à venir'}
         </span>
       </div>
       <h3>
@@ -77,7 +77,7 @@ export function ProductCard({
           {p.variants?.some((v) => v.price !== p.price) ? 'Dès ' : ''}
           {money(p.price)}
         </strong>
-        <span>prix indicatif</span>
+        <span>prix prévu</span>
       </div>
     </article>
   );
@@ -90,16 +90,16 @@ export function HeroStage({ product: p }: { product: Product }) {
   );
   const controls = curated
     ? ['La paire', 'La manchette', 'L’autre face']
-    : ['La pièce', 'Le détail', 'Les vues'];
+    : ['Le modèle', 'Le détail', 'Les vues'];
   const image = view === 2 ? p.images[1] || p.images[0] : p.images[0];
   const fact =
     view === 1 && curated
-      ? ['Fermeture', p.specs['Fermeture'] || 'À examiner sur la photo']
+      ? ['Fermeture', p.specs['Fermeture'] || 'Voir la photo']
       : view === 2
         ? ['À regarder', 'La forme de la paume, les coutures et la fermeture.']
         : [
-            'Déclinaisons présentées',
-            p.sizes.join(' / ') || 'Consulter la fiche',
+            'Tailles',
+            p.sizes.join(' / ') || 'Voir la fiche',
           ];
   return (
     <div
@@ -110,7 +110,7 @@ export function HeroStage({ product: p }: { product: Product }) {
         <span>
           {p.brand} / {p.sourceRef}
         </span>
-        <span>ÉTUDE D’UNE PIÈCE</span>
+        <span>LE MODÈLE EN DÉTAIL</span>
       </div>
       <div className="inspector-photo">
         <img
@@ -286,11 +286,11 @@ export function Catalog({
           { value: 'all', label: 'Toutes les marques' },
           ...brands.map((v) => ({ value: v, label: v })),
         ])}
-        {picker('Taille / déclinaison', size, setSize, [
-          { value: 'all', label: 'Toutes les déclinaisons' },
+        {picker('Taille', size, setSize, [
+          { value: 'all', label: 'Toutes les tailles' },
           ...sizes.map((v) => ({ value: v, label: v })),
         ])}
-        {picker('Budget indicatif', budget, setBudget, [
+        {picker('Budget', budget, setBudget, [
           { value: 'all', label: 'Tous les prix' },
           { value: '25', label: 'Jusqu’à 25 €' },
           { value: '50', label: 'Jusqu’à 50 €' },
@@ -322,9 +322,9 @@ export function Catalog({
       </div>
       <div className="catalog-count" aria-live="polite">
         <span>
-          {result.length} {result.length === 1 ? 'référence' : 'références'}
+          {result.length} {result.length === 1 ? 'modèle' : 'modèles'}
         </span>
-        <span>CATALOGUE EN PRÉPARATION</span>
+        <span>EN VENTE BIENTÔT</span>
       </div>
       {result.length ? (
         <>
@@ -373,13 +373,13 @@ export function Catalog({
           <Search size={35} />
           <h3>
             {items.length
-              ? 'Aucune référence ne correspond.'
-              : 'La sélection de cette famille se prépare.'}
+              ? 'Aucun modèle ne correspond.'
+              : 'Cette famille arrive bientôt.'}
           </h3>
           <p>
             {items.length
               ? 'Essayez un autre terme ou retirez un filtre.'
-              : 'Retrouvez les critères de choix dans nos guides et explorez les équipements déjà présentés.'}
+              : 'En attendant, lisez les guides d’achat ou regardez les autres familles.'}
           </p>
           {items.length ? (
             <button
@@ -477,8 +477,8 @@ export function SessionChooser({ items }: { items: Product[] }) {
           </h2>
         </div>
         <p>
-          Le matériel prêté varie d’une salle à l’autre. Partez de votre cours,
-          puis cochez les pièces que vous avez déjà.
+          Choisissez votre discipline et votre situation. Cochez ce que vous
+          avez déjà : le total suit.
         </p>
       </header>
       <div className="bench-controls">
@@ -500,9 +500,9 @@ export function SessionChooser({ items }: { items: Product[] }) {
         </fieldset>
         <div className="bench-context" role="group" aria-label="Votre séance">
           {[
-            ['premiere', 'Premier cours'],
-            ['technique', 'Travail technique'],
-            ['enfant', 'Enfant'],
+            ['premiere', 'Je commence'],
+            ['technique', 'Je m’entraîne déjà'],
+            ['enfant', 'Pour un enfant'],
           ].map(([value, label]) => (
             <button
               key={value}
@@ -519,8 +519,8 @@ export function SessionChooser({ items }: { items: Product[] }) {
         <strong>{selected.name}</strong>
         <span>
           {results.length
-            ? `${remaining.length} pièce${remaining.length > 1 ? 's' : ''} à examiner · ${money(total)} indicatifs`
-            : 'Liste du club à confirmer'}
+            ? `${remaining.length} modèle${remaining.length > 1 ? 's' : ''} à regarder · ${money(total)} prévus`
+            : 'Pas encore de modèle vérifié'}
         </span>
       </div>
       <p className="bench-explanation">{selected.text}</p>
@@ -561,7 +561,7 @@ export function SessionChooser({ items }: { items: Product[] }) {
                     saveSession(discipline, context, next);
                   }}
                 />
-                <span>Déjà dans mon sac</span>
+                <span>Je l’ai déjà</span>
               </label>
             </div>
             <div className="kit-note">
@@ -579,11 +579,11 @@ export function SessionChooser({ items }: { items: Product[] }) {
               </a>
               <p>{r.reason}</p>
               <details>
-                <summary>À vérifier pour mon cours</summary>
+                <summary>À vérifier avant d’acheter</summary>
                 <p>{r.condition}</p>
               </details>
               <strong>
-                {money(p.price)} <small>indicatif</small>
+                {money(p.price)} <small>prix prévu</small>
               </strong>
             </div>
           </article>
@@ -591,19 +591,18 @@ export function SessionChooser({ items }: { items: Product[] }) {
       </div>
       {!results.length && (
         <div className="kit-empty">
-          <p>Aucune substitution automatique par un modèle adulte.</p>
+          <p>Pas encore de modèle enfant vérifié pour cette discipline.</p>
           <a href="/contact/" className="button">
-            Transmettre la liste du club <ArrowUpRight size={18} />
+            Nous écrire <ArrowUpRight size={18} />
           </a>
         </div>
       )}
       <div className="bench-footer">
         <p>
-          Une sélection à examiner avec votre encadrant. Aucun lot imposé,
-          aucune taille choisie à votre place.
+          Aucun lot imposé. Vous choisissez chaque taille.
         </p>
         <a href={'/guides/' + selected.guide + '/'} className="inline-link">
-          Les repères pour cette séance <ArrowRight size={18} />
+          Lire le guide <ArrowRight size={18} />
         </a>
       </div>
     </section>
@@ -669,16 +668,16 @@ export function ProductDetails({ product: p }: { product: Product }) {
               : ''}
             {money(variantPrice(p, size))}
           </strong>
-          <span>Prix indicatif · vente à venir</span>
+          <span>Prix prévu à l’ouverture des ventes</span>
         </div>
         <div className="availability">
           <span className="status-dot" />
-          Bientôt disponible
+          En vente bientôt
         </div>
         {p.sizes.length > 0 && (
           <fieldset className="variant-picker">
             <legend>
-              Déclinaison présentée{' '}
+              Taille{' '}
               <a href="/guide-des-tailles/">
                 Comment choisir ? <ArrowUpRight size={13} />
               </a>
@@ -686,7 +685,7 @@ export function ProductDetails({ product: p }: { product: Product }) {
             {p.sizes.length === 1 ? (
               <p className="variant-single">
                 {p.sizes[0] === p.name
-                  ? 'Référence présentée sur cette fiche'
+                  ? 'Taille unique'
                   : p.sizes[0]}
               </p>
             ) : p.sizes.length > 12 ? (
@@ -695,10 +694,10 @@ export function ProductDetails({ product: p }: { product: Product }) {
                 onValueChange={(value) => setSize(value || '')}
               >
                 <SelectTrigger
-                  aria-label="Choisir une déclinaison"
+                  aria-label="Choisir une taille"
                   className="product-variant-select"
                 >
-                  <SelectValue placeholder="Choisir une déclinaison" />
+                  <SelectValue placeholder="Choisir une taille" />
                 </SelectTrigger>
                 <SelectContent>
                   {p.sizes.map((s) => (
@@ -739,11 +738,11 @@ export function ProductDetails({ product: p }: { product: Product }) {
           </span>
           <span>
             <Check size={15} />
-            Paiement d’essai sans débit
+            Commande d’essai, sans paiement
           </span>
         </div>
         <a href="/livraison/" className="inline-link">
-          Livraison France métropolitaine : conditions indicatives{' '}
+          Livraison en France : tarifs prévus à l’ouverture{' '}
           <ArrowUpRight size={15} />
         </a>
       </div>
@@ -821,7 +820,7 @@ export function AlertForm({
               data.error || 'L’inscription n’a pas pu être enregistrée.',
             );
           setState(
-            'Votre inscription est enregistrée. Aucun produit n’est réservé. Vous pouvez retirer votre demande à tout moment.',
+            'C’est noté. Vous recevrez un e-mail à l’ouverture des ventes. Vous pouvez vous désinscrire à tout moment.',
           );
           setEmail('');
         } catch (err) {
@@ -839,12 +838,12 @@ export function AlertForm({
       <input type="hidden" name="variant" value="" />
       <noscript>
         <p>
-          Cette alerte concerne le modèle, toutes déclinaisons. Pour une demande
-          précise, contactez-nous par e-mail.
+          Cette alerte concerne le modèle, toutes tailles. Pour une demande
+          précise, écrivez-nous.
         </p>
       </noscript>
       <label htmlFor={`alert-${productId}`}>
-        {labels.field ?? 'Recevoir une alerte de disponibilité'}
+        {labels.field ?? 'Prévenez-moi à l’ouverture des ventes'}
       </label>
       <div className="alert-input">
         <input
@@ -864,7 +863,7 @@ export function AlertForm({
       </div>
       <label className="consent">
         <input type="checkbox" name="consent" required />
-        {labels.consent ?? 'J’accepte de recevoir l’alerte demandée.'}{' '}
+        {labels.consent ?? 'J’accepte de recevoir un e-mail à l’ouverture.'}{' '}
         <a href="/confidentialite/">Confidentialité</a>
       </label>
       {state && (

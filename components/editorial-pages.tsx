@@ -24,14 +24,14 @@ export async function GuidesIndex() {
         <div>
           <span className="eyebrow">LE CARNET / CONSEILS MATÉRIEL</span>
           <h1>
-            Bien choisir.
+            Les guides
             <br />
-            Mieux pratiquer.
+            d’achat.
           </h1>
         </div>
         <p>
-          Les questions concrètes à poser avant de s’équiper. Neuf guides pour
-          comprendre les modèles, leur usage et les détails qui comptent.
+          Neuf guides pour choisir la bonne taille, le bon poids et le bon
+          modèle avant d’acheter.
         </p>
       </section>
       <div className="guides-grid">
@@ -171,12 +171,11 @@ export async function GuidePage({ guide: g }: { guide: Guide }) {
           ))}
           <section className="guide-sources">
             <span className="eyebrow">COMMENT CE GUIDE EST PRÉPARÉ</span>
-            <h2>Les références consultées.</h2>
+            <h2>Les sources.</h2>
             <p>
-              Ces repères s’appuient sur les documents ci-dessous et les fiches
-              du catalogue. Ils ne constituent pas une validation de votre
-              équipement par un entraîneur. Les consignes de votre salle et la
-              notice du modèle restent à vérifier.
+              Ces repères viennent des documents ci-dessous et des fiches du
+              catalogue. Ils ne remplacent pas l’avis de votre entraîneur ni la
+              notice du modèle.
             </p>
             <ul>
               {g.sources.map((source) => (

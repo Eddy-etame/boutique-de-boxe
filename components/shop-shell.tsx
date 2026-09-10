@@ -30,7 +30,7 @@ export function Header() {
     <>
       <div className="launch-strip">
         <span className="status-dot" />
-        CATALOGUE OUVERT · PAIEMENT SIMULÉ · AUCUN DÉBIT
+        OUVERTURE DES VENTES BIENTÔT · COMMANDE D’ESSAI SANS PAIEMENT
         <a href="/offres-de-lancement/">
           En savoir plus <ArrowUpRight size={13} />
         </a>
@@ -61,9 +61,9 @@ export function Header() {
               <Menu size={23} />
             </DialogTrigger>
             <DialogContent className="mobile-menu" showCloseButton={false}>
-              <DialogTitle>Dans votre coin.</DialogTitle>
+              <DialogTitle>Le menu</DialogTitle>
               <DialogDescription>
-                Équipements, pratiques et conseils.
+                Matériel, disciplines et guides.
               </DialogDescription>
               <button
                 className="icon-button menu-close"
@@ -112,11 +112,11 @@ export function Footer() {
     <footer className="site-footer">
       <div className="footer-top">
         <div>
-          <span className="eyebrow">L’ÉQUIPEMENT. LE GESTE. LA SUITE.</span>
+          <span className="eyebrow">BOUTIQUE DE BOXE</span>
           <p>
-            À CHAQUE PRATIQUE,
+            LIVRAISON DANS
             <br />
-            <em>SON ÉQUIPEMENT.</em>
+            <em>TOUTE LA FRANCE.</em>
           </p>
         </div>
         <a
@@ -131,8 +131,9 @@ export function Footer() {
         <div>
           <Brand />
           <p className="footer-blurb">
-            Le matériel de boxe et de sports de combat, regardé dans le détail.
-            Un catalogue en préparation pour les pratiquants de toute la France.
+            Gants, protections, textile et sacs pour la boxe, le MMA et les
+            sports de combat. Livraison dans toute la France à l’ouverture des
+            ventes.
           </p>
         </div>
         <div>

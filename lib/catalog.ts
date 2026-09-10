@@ -62,11 +62,10 @@ export const categories: Category[] = [
   {
     slug: 'gants-de-boxe',
     name: 'Gants de boxe',
-    label: 'La précision commence ici.',
-    intro:
-      'Un gant se choisit d’abord pour ce que vous allez en faire. Travail au sac, exercices techniques, entraînement avec partenaire : comparez le modèle, sa fermeture et son poids, puis validez votre choix avec votre encadrant.',
+    label: 'Gants de boxe, du 4 au 20 oz.',
+    intro: 'Choisissez d’abord l’usage : sac, technique ou partenaire. Comparez ensuite le poids, la fermeture et la matière. Les tailles enfant sont indiquées sur chaque fiche.',
     description:
-      'Découvrez les gants de boxe Metal Boxe : Blade, ERGO 90, Sparring et ONE enfant. Comparez les modèles, les poids et les prix indicatifs.',
+      'Découvrez les gants de boxe Metal Boxe : Blade, ERGO 90, Sparring et ONE enfant. Comparez les modèles, les poids et les prix prévus à l’ouverture.',
     families: ['gants-de-boxe'],
     guide: 'choisir-gants-boxe',
     number: '01',
@@ -74,9 +73,8 @@ export const categories: Category[] = [
   {
     slug: 'gants-mma',
     name: 'Gants MMA',
-    label: 'Le geste reste libre.',
-    intro:
-      'Des doigts libres pour saisir, une forme adaptée à une pratique précise. Les gants MMA se distinguent par leur construction et leur usage : comparez-les sans les confondre avec une paire destinée à la boxe anglaise.',
+    label: 'Doigts libres, paume ouverte.',
+    intro: 'Les gants MMA laissent les doigts libres pour saisir. Regardez l’usage annoncé, le pouce, la paume et le guide de tailles de la marque.',
     description:
       'Explorez les gants MMA, leur fermeture et leurs tailles. Découvrez le modèle The Shell Metal Boxe et nos conseils pour préparer votre équipement.',
     families: ['gants-mma'],
@@ -86,11 +84,10 @@ export const categories: Category[] = [
   {
     slug: 'protections-boxe',
     name: 'Protections de boxe',
-    label: 'Les détails avant l’impact.',
-    intro:
-      'Protège-dents, protection tibias-pieds : le choix commence par l’ajustement et les règles de votre discipline. Examinez chaque produit et ses consignes d’utilisation avec la même attention que vos gants.',
+    label: 'Casques, protège-dents, tibias, coquilles.',
+    intro: 'Chaque protection a ses propres tailles et ses propres réglages. Vérifiez l’ajustement et suivez la notice du fabricant.',
     description:
-      'Protège-dents adulte et enfant, protège-tibias pieds : comparez les protections de boxe et sports de combat, tailles et prix indicatifs.',
+      'Protège-dents adulte et enfant, protège-tibias pieds : comparez les protections de boxe et sports de combat, tailles et prix prévus.',
     families: ['protections-boxe'],
     guide: 'choisir-protections',
     number: '03',
@@ -98,11 +95,10 @@ export const categories: Category[] = [
   {
     slug: 'textile-boxe',
     name: 'Textile de boxe',
-    label: 'De l’espace pour bouger.',
-    intro:
-      'Un débardeur, un short ou une tenue complète : cherchez une coupe qui accompagne vos déplacements. Consultez les tailles présentées pour chaque modèle plutôt qu’un équivalent supposé entre marques.',
+    label: 'Shorts, t-shirts, rashguards.',
+    intro: 'Suivez le guide de tailles de la marque, pas une équivalence entre marques. Chaque fiche indique les tailles réellement disponibles.',
     description:
-      'Découvrez le textile de boxe : débardeurs, ensembles enfant, shorts et vêtements d’entraînement. Modèles, tailles et prix indicatifs.',
+      'Découvrez le textile de boxe : débardeurs, ensembles enfant, shorts et vêtements d’entraînement. Modèles, tailles et prix prévus à l’ouverture.',
     families: ['textile-boxe'],
     guide: 'guide-des-tailles',
     number: '04',
@@ -110,9 +106,8 @@ export const categories: Category[] = [
   {
     slug: 'accessoires-boxe',
     name: 'Accessoires de boxe',
-    label: 'Le rituel de préparation.',
-    intro:
-      'Les bandes et les accessoires prennent leur place avant la première reprise. Comparez les longueurs, préparez vos affaires et retrouvez les gestes d’entretien qui permettent de repartir avec un équipement propre et sec.',
+    label: 'Bandes, cordes, pattes d’ours.',
+    intro: 'Les bandes se choisissent par longueur, 2,50 m ou 4 m. Cordes à sauter, pattes d’ours et accessoires d’entraînement complètent la liste.',
     description:
       'Bandes de boxe, cordes à sauter, pattes d’ours et accessoires d’entraînement : explorez le matériel pour préparer votre séance.',
     families: ['accessoires-boxe'],
@@ -122,9 +117,8 @@ export const categories: Category[] = [
   {
     slug: 'sacs-de-frappe',
     name: 'Sacs de frappe',
-    label: 'Votre espace. Votre rythme.',
-    intro:
-      'Avant de choisir un sac de frappe, identifiez l’espace, le support et les usages prévus. Le poids, les dimensions et le système de fixation sont des critères de choix ; ils se vérifient sur chaque référence.',
+    label: 'Sacs, poires, punching-balls.',
+    intro: 'Avant d’acheter, mesurez l’espace et le support. Le poids, la longueur et la fixation sont indiqués sur chaque fiche.',
     description:
       'Préparez le choix de votre sac de frappe : installation, dimensions, usages et sélection de matériel de frappe pour la boxe.',
     families: ['sacs-de-frappe'],
@@ -134,9 +128,8 @@ export const categories: Category[] = [
   {
     slug: 'materiel-boxe',
     name: 'Matériel de boxe anglaise',
-    label: 'Construisez votre équipement.',
-    intro:
-      'Gants, bandes, protections, textile et matériel de frappe : rassemblez les pièces utiles à votre pratique. Le catalogue de matériel de boxe relie chaque produit aux questions concrètes que vous vous posez avant de choisir.',
+    label: 'Tout pour la boxe anglaise.',
+    intro: 'Gants, bandes, protections, textile et sacs de frappe : tout le matériel de boxe anglaise, avec les tailles et les prix prévus.',
     description:
       'Matériel de boxe anglaise : gants, bandes, protections, tenues et sacs de frappe. Explorez le catalogue et les guides d’achat Boutique de Boxe.',
     families: [
@@ -155,9 +148,8 @@ export const categories: Category[] = [
   {
     slug: 'materiel-mma',
     name: 'Matériel MMA',
-    label: 'De la frappe à la saisie.',
-    intro:
-      'Le MMA associe plusieurs situations d’entraînement. Retrouvez les gants MMA, les protections et les tenues adaptés à ces différents moments, avec des conseils pour distinguer les usages et les règles de votre salle.',
+    label: 'Tout pour le MMA.',
+    intro: 'Gants MMA, protections, rashguards et shorts : tout le matériel de MMA, pour la frappe comme pour le sol.',
     description:
       'Équipement et matériel MMA : gants, protections, rashguards et accessoires. Comparez les références et préparez votre première séance.',
     families: ['gants-mma', 'protections-boxe', 'textile-boxe'],
@@ -167,9 +159,8 @@ export const categories: Category[] = [
   {
     slug: 'boutique-arts-martiaux',
     name: 'Matériel d’arts martiaux',
-    label: 'Chaque discipline a ses codes.',
-    intro:
-      'JJB, grappling, pratique en kimono ou sans kimono : le vêtement et les protections se choisissent selon la séance. Identifiez d’abord les consignes de votre discipline, puis les caractéristiques de chaque équipement.',
+    label: 'Kimonos, ceintures, protections.',
+    intro: 'Kimonos de JJB de A0 à A4, ceintures et protections. Chaque discipline a ses tailles : suivez le guide de la marque.',
     description:
       'Boutique arts martiaux : équipements JJB et grappling, kimonos et protections. Préparez vos choix avec des conseils par pratique.',
     families: ['arts-martiaux', 'protections-boxe'],
@@ -179,9 +170,8 @@ export const categories: Category[] = [
   {
     slug: 'materiel-sport-de-combat',
     name: 'Matériel de sports de combat',
-    label: 'Trouvez votre point de départ.',
-    intro:
-      'Boxe anglaise, MMA, arts martiaux : partez de votre pratique ou de la pièce qui manque à votre équipement. Pratiquants, coachs et clubs disposent ici d’une lecture commune des produits, avec leurs différences utiles.',
+    label: 'Tout le catalogue.',
+    intro: 'Boxe, MMA et arts martiaux réunis : cherchez un modèle, une marque ou un type de matériel.',
     description:
       'Matériel de sports de combat en France : boxe, MMA, arts martiaux, protections, textile et accessoires. Découvrez le catalogue et les guides.',
     families: [],
@@ -189,9 +179,9 @@ export const categories: Category[] = [
     number: '00',
   },
 
-  {slug:'chaussures-boxe',name:'Chaussures de boxe et de lutte',label:'La pointure, puis les appuis.',intro:'Chaussures de boxe ou de lutte : comparez les modèles, les pointures réellement présentées et la construction de leur semelle. Les règles de votre salle déterminent les chaussures admises sur le sol ou le tapis.',description:'Chaussures de boxe et de lutte : modèles, pointures, maintien et semelles. Comparez les caractéristiques du catalogue Boutique de Boxe.',families:['chaussures-boxe'],guide:'guide-des-tailles',number:'07'},
-  {slug:'equipement-entrainement',name:'Équipement d’entraînement',label:'Le matériel de la séance.',intro:'Pattes d’ours, paos, cibles et matériel de préparation physique : distinguéz les pièces que vous portez de celles qui équipent la salle. Les dimensions, la prise en main et l’installation se lisent modèle par modèle.',description:'Équipement d’entraînement pour la boxe et les sports de combat : pattes d’ours, paos, cibles et préparation physique. Fiches et caractéristiques.',families:['equipement-entrainement'],guide:'debuter-boxe',number:'08'},
-  {slug:'sacs-de-sport',name:'Sacs de sport',label:'Préparez le trajet jusqu’à la salle.',intro:'Sac à dos, sac de sport ou modèle convertible : partez des pièces à transporter, puis comparez le volume, les ouvertures et les modes de portage décrits sur chaque fiche.',description:'Sacs de sport pour votre équipement de boxe : formats, volumes, compartiments et modes de portage. Découvrez les modèles du catalogue.',families:['sacs-de-sport'],guide:'debuter-boxe',number:'09'},
+  {slug:'chaussures-boxe',name:'Chaussures de boxe et de lutte',label: 'Chaussures de boxe et de lutte.',intro: 'Pointures du 31 au 49 selon les modèles. Comparez la semelle et la tenue de la cheville sur chaque fiche.',description:'Chaussures de boxe et de lutte : modèles, pointures, maintien et semelles. Comparez les caractéristiques du catalogue Boutique de Boxe.',families:['chaussures-boxe'],guide:'guide-des-tailles',number:'07'},
+  {slug:'equipement-entrainement',name:'Équipement d’entraînement',label: 'Pattes d’ours, paos, cordes.',intro: 'Le matériel qui se tient en main ou qui équipe l’espace d’entraînement : pattes d’ours, paos, cordes à sauter, élastiques.',description:'Équipement d’entraînement pour la boxe et les sports de combat : pattes d’ours, paos, cibles et préparation physique. Fiches et caractéristiques.',families:['equipement-entrainement'],guide:'debuter-boxe',number:'08'},
+  {slug:'sacs-de-sport',name:'Sacs de sport',label: 'Pour transporter tout le reste.',intro: 'Sac à dos, sac de sport ou convertible : comparez le volume, les ouvertures et le portage sur chaque fiche.',description:'Sacs de sport pour votre équipement de boxe : formats, volumes, compartiments et modes de portage. Découvrez les modèles du catalogue.',families:['sacs-de-sport'],guide:'debuter-boxe',number:'09'},
 ];
 export const categoryFor = (slug: string) =>
   categories.find((c) => c.slug === slug);

@@ -28,24 +28,24 @@ export default function Home({ items }: { items: Product[] }) {
             MATÉRIEL DE BOXE & SPORTS DE COMBAT
           </span>
           <h1>
-            AVANT
+            TOUT
             <br />
-            LE PREMIER
+            POUR LA BOXE
             <br />
-            <em>COUP.</em>
+            <em>ET LE MMA.</em>
           </h1>
           <div className="workbench-intro">
             <span className="workbench-rule" />
             <p>
-              Une paire à enfiler.
+              {items.length.toLocaleString('fr-FR')} modèles : gants, bandes, protections, textile, sacs.
               <br />
-              Une fermeture à ajuster.
+              Les vraies tailles, les vrais détails.
               <br />
-              Le matériel se choisit dans le détail.
+              Prix prévus à l’ouverture des ventes.
             </p>
           </div>
           <a href="/materiel-sport-de-combat/" className="button button-dark">
-            Tout l’équipement <ArrowUpRight size={20} />
+            Voir tout le matériel <ArrowUpRight size={20} />
           </a>
           <a className="bench-jump" href="#preparer">
             Préparer mon sac de séance <ArrowDown size={16} />
@@ -53,12 +53,12 @@ export default function Home({ items }: { items: Product[] }) {
         </div>
         {hero && <HeroStage product={hero} />}
         <div className="bench-signature">
-          <span>BOUTIQUE DE BOXE / LE MATÉRIEL, REGARDÉ DE PRÈS.</span>
-          <span>{items.length} RÉFÉRENCES À EXPLORER</span>
+          <span>BOUTIQUE DE BOXE / GANTS, PROTECTIONS, TEXTILE, SACS.</span>
+          <span>{items.length} MODÈLES</span>
         </div>
       </section>
       <nav className="practice-index" aria-label="Entrer par la pratique">
-        <span>VOTRE TERRAIN</span>
+        <span>PAR DISCIPLINE</span>
         <a href="/materiel-boxe/">
           Boxe anglaise <ArrowUpRight />
         </a>
@@ -72,16 +72,16 @@ export default function Home({ items }: { items: Product[] }) {
       <section className="field-selection section-pad" data-reveal>
         <header className="editorial-heading">
           <div>
-            <span className="eyebrow">DE LA GARDE AU TAPIS</span>
+            <span className="eyebrow">QUATRE ACHATS FRÉQUENTS</span>
             <h2>
-              Les gestes changent.
+              Par où commencer ?
               <br />
-              Les pièces aussi.
+              Par ces quatre-là.
             </h2>
           </div>
           <p>
-            Un gant fermé, une paume ouverte, un kimono ou un rashguard :
-            commencez par reconnaître ce que votre séance demande.
+            Des gants MMA, un kimono, un rashguard et des bandes : quatre
+            modèles souvent achetés en premier, avec leurs tailles et leurs prix.
           </p>
         </header>
         <div className="product-grid">
@@ -90,7 +90,7 @@ export default function Home({ items }: { items: Product[] }) {
           ))}
         </div>
         <a className="inline-link" href="/nouveautes/">
-          Voir les dernières références <ArrowUpRight size={18} />
+          Voir les nouveautés <ArrowUpRight size={18} />
         </a>
       </section>
       <SessionChooser
@@ -108,11 +108,11 @@ export default function Home({ items }: { items: Product[] }) {
       <section className="equipment-index section-pad" data-reveal>
         <header className="editorial-heading">
           <div>
-            <span className="eyebrow">L’INDEX DU MATÉRIEL</span>
-            <h2>Une pièce manque ?</h2>
+            <span className="eyebrow">PAR TYPE</span>
+            <h2>Tout le catalogue, par type.</h2>
           </div>
           <a href="/materiel-sport-de-combat/" className="inline-link">
-            Toutes les références <ArrowUpRight size={18} />
+            Tout voir <ArrowUpRight size={18} />
           </a>
         </header>
         <div className="equipment-rows">
@@ -137,7 +137,7 @@ export default function Home({ items }: { items: Product[] }) {
                   )}
                   <h3>{c.name}</h3>
                   <span className="equipment-row-count">
-                    {count} référence{count > 1 ? 's' : ''}
+                    {count} modèle{count > 1 ? 's' : ''}
                   </span>
                   <ArrowUpRight size={25} />
                 </a>
@@ -153,21 +153,21 @@ export default function Home({ items }: { items: Product[] }) {
             <i>oz</i>
           </div>
           <span>
-            LE POIDS DU GANT.
+            LE POIDS DU GANT,
             <br />
-            PAS LE VOLUME DE VOTRE MAIN.
+            PAS LA TAILLE DE LA MAIN.
           </span>
         </div>
         <div className="ounce-copy">
-          <span className="eyebrow">LE CARNET / POIDS & AJUSTEMENT</span>
+          <span className="eyebrow">GUIDE / POIDS ET TAILLE</span>
           <h2>
-            Le chiffre ne dit
+            14 oz, ça veut
             <br />
-            pas tout.
+            dire quoi ?
           </h2>
           <p>
-            Deux gants de 14 oz peuvent chausser différemment. Le poids se lit
-            sur l’étiquette. La coupe s’essaie, avec vos bandes.
+            Le poids se lit sur l’étiquette. La coupe, elle, s’essaie avec vos
+            bandes : deux gants de 14 oz ne chaussent pas pareil.
           </p>
           <a
             className="button button-dark"
@@ -176,21 +176,21 @@ export default function Home({ items }: { items: Product[] }) {
             Comprendre les onces <ArrowUpRight size={18} />
           </a>
           <a className="inline-link" href="/guides/">
-            Ouvrir le carnet des guides <ArrowUpRight size={17} />
+            Tous les guides d’achat <ArrowUpRight size={17} />
           </a>
         </div>
       </section>
       <section className="opening-note section-pad">
         <div>
-          <span className="eyebrow">LES VENTES SE PRÉPARENT</span>
+          <span className="eyebrow">OUVERTURE DES VENTES</span>
           <h2>
-            Gardez une place
+            Soyez prévenu
             <br />
-            dans votre sac.
+            le jour J.
           </h2>
           <p>
-            Explorez le catalogue et essayez le parcours jusqu’au reçu. Aucun
-            paiement réel. L’alerte vous préviendra de l’ouverture des ventes.
+            Vous pouvez déjà essayer la commande, sans payer. Laissez votre
+            e-mail : nous vous écrivons le jour de l’ouverture.
           </p>
         </div>
         <AlertForm />

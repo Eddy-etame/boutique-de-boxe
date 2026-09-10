@@ -121,7 +121,7 @@ summary:focus-visible {
   justify-content: center;
   gap: 9px;
   padding: 9px 24px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.1em;
 }
@@ -130,7 +130,7 @@ summary:focus-visible {
   display: flex;
   align-items: center;
   gap: 7px;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0;
   color: #cbd0e0;
 }
@@ -223,7 +223,7 @@ summary:focus-visible {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 750;
   letter-spacing: 0.12em;
   line-height: 1.5;
@@ -323,7 +323,7 @@ summary:focus-visible {
   left: 24px;
   right: 24px;
   z-index: 3;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 750;
   letter-spacing: 0.1em;
 }
@@ -383,7 +383,7 @@ summary:focus-visible {
   font-size: 14px;
 }
 .stage-detail p {
-  font-size: 12px;
+  font-size: 13px;
   color: #535861;
   max-width: 285px;
   margin-top: 3px;
@@ -421,7 +421,7 @@ summary:focus-visible {
   align-items: center;
   gap: 12px;
   padding: 16px 20px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 650;
   transition:
     background 0.2s,
@@ -431,7 +431,7 @@ summary:focus-visible {
   border-right: 0;
 }
 .stage-controls button span {
-  font-size: 10px;
+  font-size: 12px;
   opacity: 0.6;
 }
 .stage-controls button[aria-pressed='true'] {
@@ -525,14 +525,14 @@ summary:focus-visible {
   top: 13px;
   left: 13px;
   z-index: 2;
-  font-size: 10px;
+  font-size: 12px;
   color: #727780;
 }
 .product-status {
   position: absolute;
   right: 10px;
   top: 12px;
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.02em;
   background: var(--paper);
   padding: 3px 7px;
@@ -562,7 +562,7 @@ summary:focus-visible {
   justify-content: space-between;
   gap: 10px;
   margin: 15px 0 7px;
-  font-size: 10px;
+  font-size: 12px;
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.035em;
@@ -588,7 +588,7 @@ summary:focus-visible {
   font-size: 14px;
 }
 .price-row > span {
-  font-size: 10px;
+  font-size: 12px;
   color: var(--muted);
 }
 .session-section {
@@ -629,7 +629,7 @@ summary:focus-visible {
   color: #bfc2ce;
   border: 0;
   padding: 9px 16px;
-  font-size: 12px;
+  font-size: 13px;
 }
 .segmented button[aria-pressed='true'] {
   background: #f4f4f1;
@@ -652,7 +652,7 @@ summary:focus-visible {
   font-size: 15px;
 }
 .session-options button span {
-  font-size: 10px;
+  font-size: 12px;
 }
 .session-options button svg {
   margin-left: auto;
@@ -681,7 +681,7 @@ summary:focus-visible {
   margin-top: 12px;
 }
 .session-reason p {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--muted);
   margin-top: 10px;
   line-height: 1.75;
@@ -704,12 +704,12 @@ summary:focus-visible {
   background: #e8e8e4;
 }
 .session-products h4 {
-  font-size: 12px;
+  font-size: 13px;
   margin: 4px 0;
   font-weight: 750;
 }
 .session-products a > div > span {
-  font-size: 9px;
+  font-size: 11px;
   color: var(--muted);
 }
 .session-products a > svg {
@@ -720,7 +720,7 @@ summary:focus-visible {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 12px;
+  font-size: 13px;
   border-top: 1px solid var(--ink);
   padding-top: 18px;
   margin-top: 8px;
@@ -747,7 +747,7 @@ summary:focus-visible {
     color 0.3s;
 }
 .category-number {
-  font-size: 10px;
+  font-size: 12px;
   color: var(--muted);
 }
 .category-list h3 {
@@ -757,7 +757,7 @@ summary:focus-visible {
   line-height: 1;
 }
 .category-teaser {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--muted);
   margin-left: auto;
 }
@@ -805,7 +805,7 @@ summary:focus-visible {
   text-align: center;
 }
 .oz-caption {
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.06em;
   position: absolute;
   bottom: 34px;
@@ -830,10 +830,10 @@ summary:focus-visible {
   line-height: 1.8;
 }
 .guides-feature .button {
-  font-size: 12px;
+  font-size: 13px;
 }
 .guides-feature .inline-link {
-  font-size: 11px;
+  font-size: 12px;
 }
 .launch-section {
   display: grid;
@@ -881,7 +881,7 @@ summary:focus-visible {
 }
 .consent {
   display: block;
-  font-size: 10px;
+  font-size: 12px;
   color: var(--muted);
   margin-top: 13px;
   line-height: 1.8;
@@ -897,7 +897,7 @@ summary:focus-visible {
   text-decoration: underline;
 }
 .form-status {
-  font-size: 12px;
+  font-size: 13px;
   padding: 12px 0;
   color: var(--blue);
 }
@@ -946,14 +946,14 @@ summary:focus-visible {
 }
 .footer-grid h2 {
   font-family: Manrope;
-  font-size: 11px;
+  font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   margin: 0 0 20px;
 }
 .footer-grid > div > a:not(.brand) {
   display: block;
-  font-size: 11px;
+  font-size: 12px;
   margin: 10px 0;
   color: #55595d;
 }
@@ -961,7 +961,7 @@ summary:focus-visible {
   color: var(--blue);
 }
 .footer-blurb {
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.8;
   color: #666b6c;
   max-width: 235px;
@@ -979,7 +979,7 @@ summary:focus-visible {
   justify-content: space-between;
   padding-top: 20px;
   border-top: 1px solid #bdbfba;
-  font-size: 10px;
+  font-size: 12px;
   color: #656963;
 }
 .footer-bottom nav {
@@ -990,7 +990,7 @@ summary:focus-visible {
   display: flex;
   align-items: center;
   gap: 9px;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--muted);
   padding: 27px 0;
   flex-wrap: wrap;
@@ -1061,7 +1061,7 @@ summary:focus-visible {
   background: none;
   border: 1px solid var(--line);
   padding: 0 15px;
-  font-size: 12px;
+  font-size: 13px;
 }
 .filter-field {
   display: flex;
@@ -1070,7 +1070,7 @@ summary:focus-visible {
   min-width: 165px;
 }
 .filter-field > span {
-  font-size: 9px;
+  font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--muted);
@@ -1079,7 +1079,7 @@ summary:focus-visible {
   min-height: 43px;
   width: 100%;
   background: transparent;
-  font-size: 12px;
+  font-size: 13px;
   border-radius: 0;
 }
 .filter-panel {
@@ -1096,17 +1096,17 @@ summary:focus-visible {
   background: none;
   border: 0;
   text-decoration: underline;
-  font-size: 12px;
+  font-size: 13px;
   min-height: 40px;
 }
 .catalog-count {
   display: flex;
   justify-content: space-between;
-  font-size: 11px;
+  font-size: 12px;
   padding: 25px 0;
 }
 .catalog-count > span:last-child {
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.08em;
   color: var(--muted);
 }
@@ -1145,7 +1145,7 @@ summary:focus-visible {
   z-index: 2;
   top: 20px;
   left: 20px;
-  font-size: 9px;
+  font-size: 11px;
 }
 .gallery-main > img {
   width: 100%;
@@ -1209,14 +1209,14 @@ summary:focus-visible {
   letter-spacing: -0.04em;
 }
 .detail-price span {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--muted);
 }
 .availability {
   display: flex;
   align-items: center;
   gap: 9px;
-  font-size: 12px;
+  font-size: 13px;
   margin-top: 15px;
   color: #414b80;
 }
@@ -1226,7 +1226,7 @@ summary:focus-visible {
   padding: 0;
 }
 .variant-picker legend {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   width: 100%;
   margin-bottom: 12px;
@@ -1236,7 +1236,7 @@ summary:focus-visible {
   display: flex;
   align-items: center;
   gap: 3px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 400;
   text-decoration: underline;
 }
@@ -1251,7 +1251,7 @@ summary:focus-visible {
   background: transparent;
   border: 1px solid #c9ccc5;
   padding: 7px 12px;
-  font-size: 12px;
+  font-size: 13px;
 }
 .variant-picker button[aria-pressed='true'] {
   border-color: var(--ink);
@@ -1259,7 +1259,7 @@ summary:focus-visible {
   color: white;
 }
 .detail-notes p {
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.7;
   color: var(--muted);
   margin-top: 8px;
@@ -1273,7 +1273,7 @@ summary:focus-visible {
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
-  font-size: 10px;
+  font-size: 12px;
   color: var(--muted);
   margin-top: 20px;
 }
@@ -1283,7 +1283,7 @@ summary:focus-visible {
   align-items: center;
 }
 .product-information > .inline-link {
-  font-size: 10px;
+  font-size: 12px;
   margin-top: 17px;
 }
 .zoom-dialog {
@@ -1306,7 +1306,7 @@ summary:focus-visible {
   color: white;
   border: 0;
   z-index: 2;
-  font-size: 12px;
+  font-size: 13px;
 }
 .spec-section {
   display: grid;
@@ -1329,7 +1329,7 @@ summary:focus-visible {
 .spec-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12px;
+  font-size: 13px;
 }
 .spec-table th,
 .spec-table td {
@@ -1428,10 +1428,10 @@ summary:focus-visible {
   }
   .desktop-nav {
     gap: 21px;
-    font-size: 12px;
+    font-size: 13px;
   }
   .hero-bottom p {
-    font-size: 12px;
+    font-size: 13px;
   }
   .stage-controls button {
     padding: 14px 11px;
@@ -1480,7 +1480,7 @@ summary:focus-visible {
     font-size: 14.3vw;
   }
   .hero .eyebrow {
-    font-size: 8px;
+    font-size: 11px;
     letter-spacing: 0.04em;
     gap: 5px;
   }
@@ -1491,18 +1491,18 @@ summary:focus-visible {
     padding-top: 27px;
   }
   .hero-bottom .button {
-    font-size: 11px;
+    font-size: 12px;
     padding: 12px;
     gap: 12px;
   }
   .hero-bottom p {
-    font-size: 11px;
+    font-size: 12px;
   }
   .stage-top {
     top: 17px;
     left: 13px;
     right: 13px;
-    font-size: 7px;
+    font-size: 11px;
   }
   .stage-image {
     min-height: 300px;
@@ -1523,10 +1523,10 @@ summary:focus-visible {
     min-height: 101px;
   }
   .stage-detail strong {
-    font-size: 12px;
+    font-size: 13px;
   }
   .stage-detail p {
-    font-size: 10px;
+    font-size: 12px;
   }
   .stage-detail a {
     width: 28px;
@@ -1539,7 +1539,7 @@ summary:focus-visible {
     flex-direction: column;
     gap: 4px;
     padding: 10px 5px;
-    font-size: 9px;
+    font-size: 11px;
   }
   .discipline-strip {
     gap: 22px;
@@ -1550,14 +1550,14 @@ summary:focus-visible {
   .discipline-strip > a {
     flex: 1;
     justify-content: space-between;
-    font-size: 12px;
+    font-size: 13px;
     gap: 5px;
   }
   .section-heading h2 {
     font-size: 65px;
   }
   .section-heading p {
-    font-size: 12px !important;
+    font-size: 13px !important;
   }
   .section-heading {
     gap: 30px;
@@ -1578,14 +1578,14 @@ summary:focus-visible {
     font-size: 47px;
   }
   .session-copy > p {
-    font-size: 12px;
+    font-size: 13px;
   }
   .session-products img {
     width: 53px;
     height: 65px;
   }
   .session-products h4 {
-    font-size: 10px;
+    font-size: 12px;
   }
   .session-products > a {
     gap: 8px;
@@ -1594,14 +1594,14 @@ summary:focus-visible {
     font-size: 20px;
   }
   .session-reason p {
-    font-size: 11px;
+    font-size: 12px;
   }
   .segmented button {
-    font-size: 10px;
+    font-size: 12px;
     padding: 9px 10px;
   }
   .session-options button {
-    font-size: 12px;
+    font-size: 13px;
     gap: 15px;
   }
   .guides-feature-copy {
@@ -1611,7 +1611,7 @@ summary:focus-visible {
     font-size: 43px;
   }
   .guides-feature p {
-    font-size: 12px;
+    font-size: 13px;
   }
   .guides-art {
     min-height: 525px;
@@ -1625,7 +1625,7 @@ summary:focus-visible {
   }
   .oz-caption {
     left: 24px;
-    font-size: 9px;
+    font-size: 11px;
   }
   .launch-section h2 {
     font-size: 52px;
@@ -1648,7 +1648,7 @@ summary:focus-visible {
     font-size: 65px;
   }
   .page-heading p {
-    font-size: 12px;
+    font-size: 13px;
   }
   .product-detail {
     gap: 5%;
@@ -1657,17 +1657,17 @@ summary:focus-visible {
     font-size: 46px;
   }
   .product-lead {
-    font-size: 12px;
+    font-size: 13px;
   }
   .detail-price {
     flex-direction: column;
     gap: 0;
   }
   .product-information .eyebrow {
-    font-size: 9px;
+    font-size: 11px;
   }
   .product-information .alert-form > label {
-    font-size: 11px;
+    font-size: 12px;
   }
   .spec-section {
     gap: 5%;
@@ -1675,13 +1675,13 @@ summary:focus-visible {
 }
 @media (max-width: 540px) {
   .launch-strip {
-    font-size: 8px;
+    font-size: 11px;
     padding: 9px 10px;
     gap: 6px;
     letter-spacing: 0.06em;
   }
   .launch-strip a {
-    font-size: 8px;
+    font-size: 11px;
     margin-left: 8px;
     gap: 3px;
   }
@@ -1702,7 +1702,7 @@ summary:focus-visible {
     gap: 22px;
   }
   .hero .eyebrow {
-    font-size: 9px;
+    font-size: 11px;
   }
   .hero h1 {
     font-size: 26vw;
@@ -1726,11 +1726,11 @@ summary:focus-visible {
     gap: 12px;
   }
   .hero-bottom p {
-    font-size: 10px;
+    font-size: 12px;
     max-width: 172px;
   }
   .hero-bottom .button {
-    font-size: 10px;
+    font-size: 12px;
     padding: 10px 12px;
     min-height: 43px;
     gap: 10px;
@@ -1742,7 +1742,7 @@ summary:focus-visible {
     min-height: 425px;
   }
   .stage-top {
-    font-size: 9px;
+    font-size: 11px;
     left: 18px;
     right: 18px;
   }
@@ -1765,10 +1765,10 @@ summary:focus-visible {
     min-height: 78px;
   }
   .stage-detail strong {
-    font-size: 12px;
+    font-size: 13px;
   }
   .stage-detail p {
-    font-size: 10px;
+    font-size: 12px;
     max-width: 230px;
   }
   .stage-controls button {
@@ -1776,7 +1776,7 @@ summary:focus-visible {
     justify-content: center;
     gap: 8px;
     padding: 13px 7px;
-    font-size: 9px;
+    font-size: 11px;
   }
   .discipline-strip {
     margin: 0 5%;
@@ -1784,7 +1784,7 @@ summary:focus-visible {
     padding: 21px 0;
   }
   .discipline-strip > a {
-    font-size: 10px;
+    font-size: 12px;
   }
   .discipline-strip svg {
     width: 14px;
@@ -1803,14 +1803,14 @@ summary:focus-visible {
     margin-top: 16px;
   }
   .section-heading .eyebrow {
-    font-size: 9px;
+    font-size: 11px;
   }
   .section-heading p {
-    font-size: 12px !important;
+    font-size: 13px !important;
   }
   .section-heading .inline-link {
     margin-top: 10px;
-    font-size: 11px;
+    font-size: 12px;
   }
   .product-grid {
     gap: 26px 13px;
@@ -1819,13 +1819,13 @@ summary:focus-visible {
     aspect-ratio: 0.87;
   }
   .product-status {
-    font-size: 7px;
+    font-size: 11px;
     right: 6px;
     top: 10px;
     padding: 3px 5px;
   }
   .product-index {
-    font-size: 8px;
+    font-size: 11px;
     left: 8px;
     top: 12px;
   }
@@ -1842,7 +1842,7 @@ summary:focus-visible {
     width: 16px;
   }
   .product-meta {
-    font-size: 8px;
+    font-size: 11px;
     margin-top: 11px;
     flex-wrap: wrap;
     gap: 3px;
@@ -1852,7 +1852,7 @@ summary:focus-visible {
     text-align: left;
   }
   .product-card h3 {
-    font-size: 12px;
+    font-size: 13px;
     line-height: 1.5;
   }
   .price-row {
@@ -1860,10 +1860,10 @@ summary:focus-visible {
     margin-top: 6px;
   }
   .price-row strong {
-    font-size: 12px;
+    font-size: 13px;
   }
   .price-row > span {
-    font-size: 8px;
+    font-size: 11px;
   }
   .session-section {
     grid-template-columns: 1fr;
@@ -1874,7 +1874,7 @@ summary:focus-visible {
     font-size: 60px;
   }
   .session-copy .eyebrow {
-    font-size: 9px;
+    font-size: 11px;
   }
   .session-copy > p {
     max-width: 330px;
@@ -1883,7 +1883,7 @@ summary:focus-visible {
     font-size: 14px;
   }
   .segmented button {
-    font-size: 11px;
+    font-size: 12px;
   }
   .session-results {
     padding: 23px;
@@ -1895,16 +1895,16 @@ summary:focus-visible {
     height: 72px;
   }
   .session-products h4 {
-    font-size: 12px;
+    font-size: 13px;
   }
   .session-products > a {
     gap: 13px;
   }
   .session-reason p {
-    font-size: 12px;
+    font-size: 13px;
   }
   .session-guide {
-    font-size: 12px;
+    font-size: 13px;
   }
   .section-number {
     position: absolute;
@@ -1927,7 +1927,7 @@ summary:focus-visible {
     width: 20px;
   }
   .category-number {
-    font-size: 9px;
+    font-size: 11px;
   }
   .guides-feature {
     grid-template-columns: 1fr;
@@ -1948,7 +1948,7 @@ summary:focus-visible {
   .oz-caption {
     bottom: 27px;
     left: 28px;
-    font-size: 9px;
+    font-size: 11px;
   }
   .guides-feature-copy {
     padding: 43px 7%;
@@ -1961,7 +1961,7 @@ summary:focus-visible {
     max-width: 360px;
   }
   .guides-feature .eyebrow {
-    font-size: 9px;
+    font-size: 11px;
   }
   .launch-section {
     grid-template-columns: 1fr;
@@ -1971,7 +1971,7 @@ summary:focus-visible {
     font-size: 57px;
   }
   .launch-section > div > p {
-    font-size: 12px;
+    font-size: 13px;
   }
   .alert-form {
     max-width: 100%;
@@ -1985,7 +1985,7 @@ summary:focus-visible {
     font-size: 49px;
   }
   .footer-top .eyebrow {
-    font-size: 8px;
+    font-size: 11px;
   }
   .round-link {
     width: 51px;
@@ -2004,18 +2004,18 @@ summary:focus-visible {
   }
   .footer-blurb {
     max-width: 330px;
-    font-size: 11px;
+    font-size: 12px;
     margin-top: 15px;
   }
   .footer-grid h2 {
-    font-size: 10px;
+    font-size: 12px;
     margin-bottom: 16px;
   }
   .footer-grid > div > a:not(.brand) {
-    font-size: 11px;
+    font-size: 12px;
   }
   .footer-bottom {
-    font-size: 9px;
+    font-size: 11px;
   }
   .footer-bottom nav {
     gap: 13px;
@@ -2025,7 +2025,7 @@ summary:focus-visible {
     padding: 0 5% 55px;
   }
   .breadcrumb {
-    font-size: 9px;
+    font-size: 11px;
     padding: 22px 0;
     gap: 6px;
   }
@@ -2045,7 +2045,7 @@ summary:focus-visible {
     margin-bottom: 7px;
   }
   .page-heading p {
-    font-size: 12px;
+    font-size: 13px;
     line-height: 1.85;
   }
   .catalog-toolbar {
@@ -2057,13 +2057,13 @@ summary:focus-visible {
     flex: 1 1 100%;
   }
   .search-field input {
-    font-size: 12px;
+    font-size: 13px;
   }
   .catalog-toolbar > .filter-field {
     flex: 1;
   }
   .filter-toggle {
-    font-size: 11px;
+    font-size: 12px;
     gap: 7px;
     padding: 0 12px;
   }
@@ -2079,7 +2079,7 @@ summary:focus-visible {
     padding: 20px 0;
   }
   .catalog-count > span:last-child {
-    font-size: 7px;
+    font-size: 11px;
   }
   .product-detail {
     grid-template-columns: 1fr;
@@ -2104,19 +2104,19 @@ summary:focus-visible {
     font-size: 28px;
   }
   .detail-price span {
-    font-size: 10px;
+    font-size: 12px;
   }
   .product-information .alert-form > label {
     font-size: 13px;
   }
   .detail-notes p {
-    font-size: 11px;
-  }
-  .variant-picker legend {
     font-size: 12px;
   }
+  .variant-picker legend {
+    font-size: 13px;
+  }
   .product-information > .inline-link {
-    font-size: 10px;
+    font-size: 12px;
   }
   .spec-section {
     grid-template-columns: 1fr;
@@ -2139,7 +2139,7 @@ summary:focus-visible {
     font-size: 20px;
   }
   .empty-state p {
-    font-size: 12px;
+    font-size: 13px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -2210,7 +2210,7 @@ summary:focus-visible {
   transition: transform 0.3s;
 }
 .guide-cover > span {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.08em;
 }
@@ -2267,7 +2267,7 @@ summary:focus-visible {
 }
 .article-layout aside nav a span {
   color: var(--blue);
-  font-size: 12px;
+  font-size: 13px;
   padding-top: 2px;
 }
 .article-layout article section {
@@ -2292,7 +2292,7 @@ summary:focus-visible {
 }
 .article-layout .section-number {
   font-family: Manrope, sans-serif;
-  font-size: 12px;
+  font-size: 13px;
   position: static;
   color: var(--blue);
   display: block;
@@ -2511,7 +2511,7 @@ summary:focus-visible {
   white-space: pre-wrap;
 }
 .admin-inbox input {
-  font-size: 12px;
+  font-size: 13px;
 }
 .admin-seo h2 {
   font-size: 48px;
@@ -2532,11 +2532,11 @@ summary:focus-visible {
 /* Readability holds at every breakpoint. */
 .launch-strip,
 .launch-strip a {
-  font-size: 12px;
+  font-size: 13px;
 }
 .eyebrow,
 .tiny-label {
-  font-size: 12px !important;
+  font-size: 13px !important;
   letter-spacing: 0.07em;
 }
 .desktop-nav {
@@ -2558,7 +2558,7 @@ summary:focus-visible {
   font-size: 14px;
 }
 .stage-top {
-  font-size: 11px;
+  font-size: 12px;
 }
 .stage-detail strong {
   font-size: 15px;
@@ -2571,10 +2571,10 @@ summary:focus-visible {
 }
 .product-status,
 .product-index {
-  font-size: 11px;
+  font-size: 12px;
 }
 .product-meta {
-  font-size: 12px;
+  font-size: 13px;
 }
 .product-card h3 {
   font-size: 17px;
@@ -2584,13 +2584,13 @@ summary:focus-visible {
   font-size: 16px;
 }
 .price-row > span {
-  font-size: 12px;
+  font-size: 13px;
 }
 .session-products h4 {
   font-size: 15px;
 }
 .session-products > a > div > span {
-  font-size: 12px;
+  font-size: 13px;
 }
 .session-reason p {
   font-size: 15px;
@@ -2621,17 +2621,17 @@ summary:focus-visible {
   font-size: 14px;
 }
 .footer-bottom {
-  font-size: 12px;
+  font-size: 13px;
 }
 .footer-grid > div:last-child {
   display: block;
 }
 .breadcrumb {
-  font-size: 12px;
+  font-size: 13px;
 }
 .filter-field > span,
 .catalog-count > span:last-child {
-  font-size: 12px;
+  font-size: 13px;
 }
 .search-field input {
   font-size: 16px;
@@ -2640,7 +2640,7 @@ summary:focus-visible {
   font-size: 14px;
 }
 .product-information .eyebrow {
-  font-size: 12px;
+  font-size: 13px;
 }
 .product-information .alert-form > label {
   font-size: 15px;
@@ -2664,7 +2664,7 @@ summary:focus-visible {
   font-size: 13px;
 }
 .category-number {
-  font-size: 12px;
+  font-size: 13px;
 }
 @media (max-width: 1100px) and (min-width: 541px) {
   .hero {
@@ -2677,7 +2677,7 @@ summary:focus-visible {
     max-width: 220px;
   }
   .stage-controls button {
-    font-size: 11px;
+    font-size: 12px;
   }
   .footer-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -2710,14 +2710,14 @@ summary:focus-visible {
 }
 @media (max-width: 540px) {
   .launch-strip {
-    font-size: 9px;
+    font-size: 11px;
     letter-spacing: 0.015em;
   }
   .launch-strip a {
-    font-size: 10px;
+    font-size: 12px;
   }
   .hero .eyebrow {
-    font-size: 10px !important;
+    font-size: 12px !important;
   }
   .hero-bottom {
     flex-direction: column;
@@ -2739,41 +2739,41 @@ summary:focus-visible {
     font-size: 26vw;
   }
   .stage-top {
-    font-size: 11px;
+    font-size: 12px;
   }
   .stage-detail {
     min-height: 102px;
   }
   .stage-controls button {
-    font-size: 12px;
+    font-size: 13px;
     gap: 6px;
   }
   .stage-controls button > span {
-    font-size: 10px;
+    font-size: 12px;
   }
   .discipline-strip {
     gap: 12px;
   }
   .discipline-strip > a {
-    font-size: 12px;
+    font-size: 13px;
   }
   .section-heading .eyebrow,
   .session-copy .eyebrow {
-    font-size: 11px !important;
+    font-size: 12px !important;
   }
   .section-heading p {
     font-size: 15px !important;
   }
   .product-status {
-    font-size: 9px;
+    font-size: 11px;
     top: 9px;
     padding: 3px 5px;
   }
   .product-index {
-    font-size: 10px;
+    font-size: 12px;
   }
   .product-meta {
-    font-size: 11px;
+    font-size: 12px;
     line-height: 1.6;
   }
   .product-card h3 {
@@ -2787,7 +2787,7 @@ summary:focus-visible {
     font-size: 15px;
   }
   .price-row > span {
-    font-size: 11px;
+    font-size: 12px;
   }
   .session-copy > p {
     font-size: 16px !important;
@@ -2821,7 +2821,7 @@ summary:focus-visible {
     width: 45px;
   }
   .guides-feature .eyebrow {
-    font-size: 11px !important;
+    font-size: 12px !important;
   }
   .guides-feature p {
     font-size: 16px !important;
@@ -2830,7 +2830,7 @@ summary:focus-visible {
     font-size: 16px !important;
   }
   .footer-top .eyebrow {
-    font-size: 10px !important;
+    font-size: 12px !important;
   }
   .footer-grid {
     gap: 30px 18px;
@@ -2848,7 +2848,7 @@ summary:focus-visible {
     font-size: 16px !important;
   }
   .breadcrumb {
-    font-size: 11px;
+    font-size: 12px;
     flex-wrap: wrap;
     line-height: 1.6;
   }
@@ -2889,7 +2889,7 @@ summary:focus-visible {
     gap: 0 18px;
   }
   .article-layout aside nav a {
-    font-size: 12px;
+    font-size: 13px;
   }
   .article-layout article h2,
   .service-layout h2 {
@@ -2913,7 +2913,7 @@ summary:focus-visible {
     font-size: 38px;
   }
   .guide-cover > span {
-    font-size: 9px;
+    font-size: 11px;
     letter-spacing: 0.025em;
   }
   .guide-card h2 {
@@ -2947,7 +2947,7 @@ summary:focus-visible {
     font-size: 45px;
   }
   .admin-stats span {
-    font-size: 12px;
+    font-size: 13px;
   }
   .admin-tabs {
     gap: 0;
@@ -3056,7 +3056,7 @@ summary:focus-visible {
   min-width: 160px;
 }
 .motion-control {
-  font-size: 12px;
+  font-size: 13px;
   text-decoration: underline;
   text-underline-offset: 4px;
 }

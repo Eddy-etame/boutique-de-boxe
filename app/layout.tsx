@@ -57,7 +57,7 @@ export default async function RootLayout({
         <a href="#contenu" className="skip-link">
           Aller au contenu
         </a>
-        <EditionToggle edition={edition} />
+        {edition === 'nouvelle' && <EditionToggle edition={edition} />}
         {edition === 'nouvelle' ? <NextHeader /> : <Header />}
         {children}
         {edition === 'nouvelle' ? <NextFooter /> : <Footer />}

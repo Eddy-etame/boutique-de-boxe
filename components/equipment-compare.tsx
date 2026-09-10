@@ -38,30 +38,30 @@ export function EquipmentCompare({ items }: { items: Product[] }) {
       label: 'Rembourrage',
       values: pair.map((p) => value(p, /rembourrage|mousse/i)),
     },
-    { label: 'Prix indicatif', values: pair.map((p) => money(p.price)) },
+    { label: 'Prix prévu', values: pair.map((p) => money(p.price)) },
   ];
   return (
     <section className="comparison-section section-pad" id="comparer">
       <header className="editorial-heading">
         <div>
-          <span className="eyebrow">DEUX PAIRES SUR LA TABLE</span>
+          <span className="eyebrow">COMPARER DEUX GANTS</span>
           <h2>
-            Comparez les faits.
+            Deux gants,
             <br />
-            <em>Essayez la coupe.</em>
+            <em>côte à côte.</em>
           </h2>
         </div>
         <p>
-          Le prix et l’apparence ne disent pas comment un gant chausse. Posez
-          les caractéristiques côte à côte avant l’essai.
+          Choisissez deux modèles : poids, matière, fermeture et prix
+          s’alignent ligne par ligne.
         </p>
       </header>
       <div className="comparison-table">
         <div className="comparison-intro">
           <span className="tiny-label">GANTS DE BOXE ADULTE</span>
-          <p>Changez un modèle pour examiner ce qui diffère.</p>
+          <p>Changez un modèle pour voir ce qui change.</p>
           <a className="inline-link" href="/guides/choisir-gants-boxe/">
-            Ce qu’il faut essayer ↗
+            Comment choisir ↗
           </a>
         </div>
         {pair.map((p, i) => (
@@ -99,7 +99,7 @@ export function EquipmentCompare({ items }: { items: Product[] }) {
                 loading="lazy"
               />
               <span>
-                Examiner la fiche <ArrowUpRight size={16} />
+                Voir la fiche <ArrowUpRight size={16} />
               </span>
             </a>
           </div>
@@ -120,8 +120,8 @@ export function EquipmentCompare({ items }: { items: Product[] }) {
         ))}
       </div>
       <p className="comparison-footnote">
-        Les lignes marquées indiquent une différence de fiche, pas un classement
-        de performance. Le modèle et le poids se valident avec votre salle.
+        Une ligne en couleur : les deux gants diffèrent sur ce point. Le poids
+        se choisit selon votre entraînement.
       </p>
     </section>
   );

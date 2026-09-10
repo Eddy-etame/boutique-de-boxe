@@ -231,7 +231,7 @@ export function AddToCart({
         quantity: 1,
       });
       setStatus(
-        `${product.name}${variant ? ` · ${variant}` : ''} ajouté au panier d’essai.`,
+        `${product.name}${variant ? ` · ${variant}` : ''} ajouté au panier.`,
       );
     } catch (e) {
       const failure = e as ApiFailure;
@@ -256,13 +256,13 @@ export function AddToCart({
         onClick={add}
         aria-describedby={helpId}
       >
-        {busy ? (labels.adding ?? 'Ajout en cours…') : (labels.add ?? 'Ajouter au panier d’essai')}
+        {busy ? (labels.adding ?? 'Ajout en cours…') : (labels.add ?? 'Ajouter au panier')}
         <Plus size={19} aria-hidden="true" />
       </button>
       <p id={helpId} className="commerce-caption">
         {!valid
-          ? (labels.choose ?? 'Sélectionnez une déclinaison au-dessus pour ajouter ce modèle.')
-          : (labels.note ?? 'Parcours de démonstration. Aucun débit ni expédition.')}
+          ? (labels.choose ?? 'Choisissez une taille pour ajouter ce modèle.')
+          : (labels.note ?? 'Commande d’essai : rien n’est payé ni envoyé.')}
       </p>
       {error && (
         <p role="alert" className="commerce-error">
@@ -584,7 +584,7 @@ export function CartPage() {
       <Steps current={step} />
       <noscript>
         <p>
-          Le panier d’essai nécessite JavaScript. Vous pouvez continuer à
+          Le panier nécessite JavaScript. Vous pouvez continuer à
           consulter <a href={CATALOGUE}>tous les équipements</a> et leurs
           caractéristiques.
         </p>
@@ -705,7 +705,7 @@ export function CartPage() {
                             {line.name}
                           </a>
                           <p>
-                            {line.variant || 'Sans déclinaison'}{' '}
+                            {line.variant || 'Taille unique'}{' '}
                             <span aria-hidden="true">·</span>{' '}
                             {money(line.price)} / unité
                           </p>
@@ -950,9 +950,9 @@ export function CartPage() {
 
             <aside
               className="cart-summary"
-              aria-label="Récapitulatif du panier d’essai"
+              aria-label="Récapitulatif du panier"
             >
-              <p className="eyebrow">La fiche de séance</p>
+              <p className="eyebrow">Votre commande</p>
               <h2>Votre récapitulatif.</h2>
               {step === 2 && (
                 <ul className="checkout-mini-lines">
@@ -987,8 +987,8 @@ export function CartPage() {
                 </div>
               </dl>
               <p className="commerce-caption">
-                Prix indicatifs en euros. Le montant sera à nouveau vérifié à la
-                validation.
+                Prix prévus à l’ouverture des ventes. Le montant est vérifié à
+                la validation.
               </p>
               {step === 1 ? (
                 <button
@@ -1221,7 +1221,7 @@ export function ReceiptPage({ id }: { id: string }) {
                     <td>
                       <strong>{line.name}</strong>
                       <span>
-                        {line.variant || 'Sans déclinaison'} · {line.quantity} ×{' '}
+                        {line.variant || 'Taille unique'} · {line.quantity} ×{' '}
                         {money(line.price)}
                       </span>
                     </td>
@@ -1260,8 +1260,8 @@ export function ReceiptPage({ id }: { id: string }) {
             <footer className="receipt-fineprint">
               <p>
                 Ce document n’est ni une facture ni une preuve d’achat. Les prix
-                et frais de livraison sont indicatifs. Aucun article n’est
-                réservé ou expédié.
+                et frais de livraison sont ceux prévus à l’ouverture. Aucun
+                article n’est réservé ni expédié.
               </p>
               <p>
                 Référence complète : <span>{order.id}</span>

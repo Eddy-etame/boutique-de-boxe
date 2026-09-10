@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { readCatalog } from '@/lib/database';
-import { categories, shop } from '@/lib/catalog';
+import { categories, getCategoryProducts, shop } from '@/lib/catalog';
 import { guides, services } from '@/lib/editorial';
 export const dynamic = 'force-dynamic';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -11,6 +11,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       p.updatedAt || p.dateAdded,
     ]),
   );
+  for (const c of categories) {
+    const newest = getCategoryProducts(c, products)
+      .map((p) => p.updatedAt || p.dateAdded)
+      .filter(Boolean)
+      .sort()
+      .at(-1);
+    if (newest) dates.set('/' + c.slug + '/', newest);
+  }
   return [
     '/',
     ...categories.map((c) => '/' + c.slug + '/'),
