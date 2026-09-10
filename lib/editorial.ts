@@ -93,13 +93,13 @@ export const services: Record<string, Service> = {
       {
         title: 'Contenus et photographies',
         paragraphs: [
-          'Les marques et noms de produits appartiennent à leurs titulaires respectifs. Les photographies représentent les modèles présentés ; les précisions de déclinaison figurent sur leurs fiches. Pour signaler une erreur ou exercer un droit sur un contenu, contactez l’éditeur en précisant la page concernée.',
+          'Les marques et noms de produits appartiennent à leurs titulaires respectifs. Les photographies représentent les modèles présentés ; les précisions de taille figurent sur leurs fiches. Pour signaler une erreur ou exercer un droit sur un contenu, contactez l’éditeur en précisant la page concernée.',
         ],
       },
       {
         title: 'Catalogue en préparation',
         paragraphs: [
-          'Les références et prix indicatifs sont présentés pour préparer l’ouverture des ventes. Leur publication ne constitue pas une offre permettant de passer commande.',
+          'Les références et prix prévus à l’ouverture sont présentés pour préparer l’ouverture des ventes. Leur publication ne constitue pas une offre permettant de passer commande.',
         ],
       },
     ],
@@ -107,7 +107,7 @@ export const services: Record<string, Service> = {
   'conditions-generales-de-vente': {
     title: 'Conditions de la boutique',
     description:
-      'Le fonctionnement actuel du catalogue Boutique de Boxe : prix indicatifs, alertes et préparation des futures conditions de vente.',
+      'Le fonctionnement actuel du catalogue Boutique de Boxe : prix prévus à l’ouverture, alertes et préparation des futures conditions de vente.',
     eyebrow: 'LES CONDITIONS / PHASE CATALOGUE',
     sections: [
       {
@@ -151,7 +151,7 @@ export const services: Record<string, Service> = {
       {
         title: 'Contacts et alertes',
         paragraphs: [
-          'Le formulaire de contact collecte votre nom, votre e-mail et votre message afin de répondre à votre demande, sur la base de l’intérêt légitime de l’éditeur à traiter les sollicitations reçues. L’alerte collecte votre e-mail, le produit et éventuellement la déclinaison demandée, sur la base de votre consentement. Ces données ne sont pas vendues.',
+          'Le formulaire de contact collecte votre nom, votre e-mail et votre message afin de répondre à votre demande, sur la base de l’intérêt légitime de l’éditeur à traiter les sollicitations reçues. L’alerte collecte votre e-mail, le produit et éventuellement la taille demandée, sur la base de votre consentement. Ces données ne sont pas vendues.',
         ],
       },
       {
@@ -223,7 +223,7 @@ export const services: Record<string, Service> = {
       {
         title: 'Le catalogue prend sa place.',
         paragraphs: [
-          'Les modèles sont présentés avec leurs caractéristiques, leurs photos et leurs prix indicatifs. Vous pouvez déjà comparer les équipements et préparer vos questions.',
+          'Les modèles sont présentés avec leurs caractéristiques, leurs photos et leurs prix prévus à l’ouverture. Vous pouvez déjà comparer les équipements et préparer vos questions.',
         ],
       },
       {

@@ -135,7 +135,7 @@ export async function generateMetadata({
     special[path]?.[1] ||
     'Cette page n’existe pas.';
   const description = trimmed(rawDescription, 158);
-  const seoTitle = pageTitle.length > 41 ? { absolute: trimmed(pageTitle, 60) } : pageTitle;
+  const seoTitle = pageTitle.length > 41 ? { absolute: pageTitle } : pageTitle;
   return {
     title: seoTitle,
     description,
