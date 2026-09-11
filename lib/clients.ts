@@ -13,6 +13,10 @@ type OrderRow = {
   email: string;
   phone: string | null;
   optin: number | null;
+  address1: string | null;
+  address2: string | null;
+  postcode: string | null;
+  city: string | null;
   lines: string;
   subtotal: number;
   shipping: number;
@@ -31,6 +35,8 @@ export async function ensureBuyerColumns() {
   const database = await db();
   await database.prepare("ALTER TABLE simulation_orders ADD COLUMN IF NOT EXISTS phone text DEFAULT '' NOT NULL").run();
   await database.prepare('ALTER TABLE simulation_orders ADD COLUMN IF NOT EXISTS optin integer DEFAULT 0 NOT NULL').run();
+  for (const column of ['address1', 'address2', 'postcode', 'city'])
+    await database.prepare(`ALTER TABLE simulation_orders ADD COLUMN IF NOT EXISTS ${column} text DEFAULT '' NOT NULL`).run();
   await database.prepare('CREATE INDEX IF NOT EXISTS orders_email ON simulation_orders (email)').run();
   await database.prepare('CREATE INDEX IF NOT EXISTS orders_created ON simulation_orders (created_at)').run();
   columnsReady = true;
@@ -43,7 +49,7 @@ async function orders(days: number): Promise<OrderRow[]> {
   const essais = (
     await database
       .prepare(
-        'SELECT id,name,email,phone,optin,lines,subtotal,shipping,total,delivery,status,created_at FROM simulation_orders WHERE created_at>=? ORDER BY created_at DESC LIMIT 5000',
+        'SELECT id,name,email,phone,optin,address1,address2,postcode,city,lines,subtotal,shipping,total,delivery,status,created_at FROM simulation_orders WHERE created_at>=? ORDER BY created_at DESC LIMIT 5000',
       )
       .bind(since)
       .all<Omit<OrderRow, 'source'>>()
@@ -51,11 +57,17 @@ async function orders(days: number): Promise<OrderRow[]> {
   const payplug = (
     await database
       .prepare(
-        "SELECT id,name,email,lines,subtotal,shipping,total,delivery,status,created_at FROM payment_attempts WHERE status='paid' AND created_at>=? ORDER BY created_at DESC LIMIT 5000",
+        "SELECT id,name,email,billing,lines,subtotal,shipping,total,delivery,status,created_at FROM payment_attempts WHERE status='paid' AND created_at>=? ORDER BY created_at DESC LIMIT 5000",
       )
       .bind(since)
-      .all<Omit<OrderRow, 'source' | 'phone' | 'optin'>>()
-  ).results.map((o) => ({ ...o, phone: '', optin: 0, source: 'payplug' as const, status: 'paid' }));
+      .all<Omit<OrderRow, 'source' | 'phone' | 'optin' | 'address1' | 'address2' | 'postcode' | 'city'> & { billing: string }>()
+  ).results.map((o) => {
+    // L’adresse de facturation PayPlug sert d’adresse de livraison faute de mieux.
+    let b: Record<string, unknown> = {};
+    try { b = JSON.parse(o.billing || '{}'); } catch { /* facturation illisible */ }
+    const str = (v: unknown) => (typeof v === 'string' ? v : '');
+    return { ...o, phone: str(b.mobile_phone_number), optin: 0, address1: str(b.address1), address2: str(b.address2), postcode: str(b.postcode), city: str(b.city), source: 'payplug' as const, status: 'paid' };
+  });
   return [...essais, ...payplug].sort((a, b) => (a.created_at < b.created_at ? 1 : -1));
 }
 
@@ -82,17 +94,19 @@ export async function clientsReport(days: number) {
   // Clients : une ligne par adresse e-mail, avec ses commandes et ce qu’elle a acheté.
   const clients = new Map<
     string,
-    { name: string; email: string; phone: string; optin: boolean; orders: number; approved: number; declined: number; total: number; first: string; last: string; items: string[]; sources: Set<string> }
+    { name: string; email: string; phone: string; optin: boolean; address: string; orders: number; approved: number; declined: number; total: number; first: string; last: string; items: string[]; sources: Set<string> }
   >();
   for (const o of rows) {
     const key = o.email.toLowerCase();
-    const c = clients.get(key) || { name: o.name, email: key, phone: '', optin: false, orders: 0, approved: 0, declined: 0, total: 0, first: o.created_at, last: o.created_at, items: [], sources: new Set<string>() };
+    const c = clients.get(key) || { name: o.name, email: key, phone: '', optin: false, address: '', orders: 0, approved: 0, declined: 0, total: 0, first: o.created_at, last: o.created_at, items: [], sources: new Set<string>() };
     c.orders++;
     if (approved(o)) {
       c.approved++;
       c.total += o.total;
     } else c.declined++;
     if (o.phone && !c.phone) c.phone = o.phone;
+    const address = [o.address1, o.address2, [o.postcode, o.city].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+    if (address && (!c.address || o.created_at >= c.last)) c.address = address;
     if (o.optin) c.optin = true;
     if (o.created_at < c.first) c.first = o.created_at;
     if (o.created_at > c.last) {
@@ -177,7 +191,7 @@ export async function clientsReport(days: number) {
     brands: [...byBrand.entries()].map(([name, v]) => ({ name, ...v })).sort((a, b) => b.revenue - a.revenue).slice(0, 15),
     deliveries: [...byDelivery.entries()].map(([mode, n]) => ({ mode, n })),
     funnel,
-    recent: rows.slice(0, 50).map((o) => ({ id: o.id, name: o.name, email: o.email, total: o.total, status: o.status, source: o.source, createdAt: o.created_at, items: parseLines(o).map((l) => nameOf(l.productId, l.name) + (l.variant ? ' · ' + l.variant : '') + ' × ' + l.quantity) })),
+    recent: rows.slice(0, 50).map((o) => ({ id: o.id, name: o.name, email: o.email, phone: o.phone || '', address: [o.address1, o.address2, [o.postcode, o.city].filter(Boolean).join(' ')].filter(Boolean).join(', '), delivery: o.delivery, total: o.total, status: o.status, source: o.source, createdAt: o.created_at, items: parseLines(o).map((l) => nameOf(l.productId, l.name) + (l.variant ? ' · ' + l.variant : '') + ' × ' + l.quantity) })),
   };
 }
 
@@ -192,13 +206,13 @@ export async function clientsCsv(kind: 'clients' | 'ventes', days: number) {
   const r = await clientsReport(days);
   const lines: string[] = [];
   if (kind === 'clients') {
-    lines.push(['Nom', 'E-mail', 'Téléphone', 'Accord e-mail', 'Commandes', 'Approuvées', 'Refusées', 'Total (€)', 'Première commande', 'Dernière commande', 'Modèles', 'Origine'].join(';'));
+    lines.push(['Nom', 'E-mail', 'Téléphone', 'Adresse', 'Accord e-mail', 'Commandes', 'Approuvées', 'Refusées', 'Total (€)', 'Première commande', 'Dernière commande', 'Modèles', 'Origine'].join(';'));
     for (const c of r.clients)
-      lines.push([c.name, c.email, c.phone, c.optin ? 'oui' : 'non', c.orders, c.approved, c.declined, euros(c.total), c.first.slice(0, 10), c.last.slice(0, 10), c.items.join(' | '), c.sources.join(' | ')].map(cell).join(';'));
+      lines.push([c.name, c.email, c.phone, c.address, c.optin ? 'oui' : 'non', c.orders, c.approved, c.declined, euros(c.total), c.first.slice(0, 10), c.last.slice(0, 10), c.items.join(' | '), c.sources.join(' | ')].map(cell).join(';'));
   } else {
-    lines.push(['Date', 'Référence', 'Client', 'E-mail', 'Statut', 'Origine', 'Total (€)', 'Articles'].join(';'));
+    lines.push(['Date', 'Référence', 'Client', 'E-mail', 'Téléphone', 'Adresse', 'Livraison', 'Statut', 'Origine', 'Total (€)', 'Articles'].join(';'));
     for (const o of r.recent)
-      lines.push([o.createdAt.slice(0, 19).replace('T', ' '), o.id, o.name, o.email, o.status, o.source, euros(o.total), o.items.join(' | ')].map(cell).join(';'));
+      lines.push([o.createdAt.slice(0, 19).replace('T', ' '), o.id, o.name, o.email, o.phone, o.address, o.delivery, o.status, o.source, euros(o.total), o.items.join(' | ')].map(cell).join(';'));
   }
   return '\ufeff' + lines.join('\r\n') + '\r\n';
 }

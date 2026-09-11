@@ -398,12 +398,13 @@ await check('Checkout stores phone and opt-in, clients report and CSV expose the
   const cart = await (await request('commerce/cart', undefined, jar)).json();
   r = await request('commerce/checkout', {
     idempotencyKey: crypto.randomUUID(), name: 'Client QA', email: buyer, phone: '06 12 34 56 78', optin: true,
+    address1: '12 rue du Ring', address2: 'Bât. B', postcode: '31000', city: 'Toulouse',
     delivery: 'home', paymentOutcome: 'approved', consent: true, quotedTotal: cart.subtotal + 890, quotedRevision: cart.revision, website: '',
   }, jar);
   assert.equal(r.status, 201, 'checkout ' + r.status + ' ' + (await r.text()));
   const report = await (await request('commerce/admin-clients?days=7', undefined, admin)).json();
   const c = report.clients.find((x) => x.email === buyer);
-  assert.ok(c && c.optin === true && c.phone === '06 12 34 56 78' && c.approved === 1, JSON.stringify(c));
+  assert.ok(c && c.optin === true && c.phone === '06 12 34 56 78' && c.approved === 1 && c.address === '12 rue du Ring, Bât. B, 31000 Toulouse', JSON.stringify(c));
   assert.ok(report.totals.approved >= 1 && report.products.length >= 1);
   const csv = await request('commerce/admin-export?kind=clients&days=7', undefined, admin);
   assert.equal(csv.status, 200);
@@ -411,7 +412,7 @@ await check('Checkout stores phone and opt-in, clients report and CSV expose the
   const bytes = new Uint8Array(await csv.arrayBuffer());
   assert.deepEqual(Array.from(bytes.slice(0, 3)), [0xef, 0xbb, 0xbf], 'BOM for Excel');
   const text = new TextDecoder().decode(bytes);
-  assert.ok(text.startsWith('Nom;E-mail;') && text.includes(buyer) && text.includes('06 12 34 56 78'));
+  assert.ok(text.startsWith('Nom;E-mail;T') && text.includes(buyer) && text.includes('06 12 34 56 78') && text.includes('31000 Toulouse'));
 });
 await check('Clients report and export denied to visitors', async () => {
   assert.equal((await request('commerce/admin-clients')).status, 403);
@@ -425,9 +426,16 @@ await check('Checkout rejects a malformed phone', async () => {
   const cart = await (await request('commerce/cart', undefined, jar)).json();
   r = await request('commerce/checkout', {
     idempotencyKey: crypto.randomUUID(), name: 'Client QA', email: buyer, phone: 'call me <script>', optin: 'yes',
+    address1: '12 rue du Ring', postcode: '31000', city: 'Toulouse',
     delivery: 'home', paymentOutcome: 'approved', consent: true, quotedTotal: cart.subtotal + 890, quotedRevision: cart.revision, website: '',
   }, jar);
   assert.equal(r.status, 400);
+  r = await request('commerce/checkout', {
+    idempotencyKey: crypto.randomUUID(), name: 'Client QA', email: buyer, phone: '', optin: false,
+    address1: '12 rue du Ring', postcode: '3100', city: 'Toulouse',
+    delivery: 'home', paymentOutcome: 'approved', consent: true, quotedTotal: cart.subtotal + 890, quotedRevision: cart.revision, website: '',
+  }, jar);
+  assert.equal(r.status, 400, 'postcode must be five digits');
 });
 console.log(
   JSON.stringify({ passed: results.length, date: new Date().toISOString() }),

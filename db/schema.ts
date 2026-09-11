@@ -91,6 +91,10 @@ export const simulationOrders = pgTable(
     emailClaimedAt: text('email_claimed_at'),
     phone: text('phone').notNull().default(''),
     optin: integer('optin').notNull().default(0),
+    address1: text('address1').notNull().default(''),
+    address2: text('address2').notNull().default(''),
+    postcode: text('postcode').notNull().default(''),
+    city: text('city').notNull().default(''),
   },
   (t) => [
     uniqueIndex('orders_cart_idempotency').on(t.cartId, t.idempotencyKey),

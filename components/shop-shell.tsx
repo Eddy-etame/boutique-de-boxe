@@ -1,5 +1,6 @@
 'use client';
 import { usePathname } from 'next/navigation';
+import { QUERY_MAP } from '@/lib/seo-copy';
 import { CookiesButton } from './consent-tracker';
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { ArrowUpRight, Search, Menu, ArrowRight, X } from 'lucide-react';
@@ -167,6 +168,15 @@ export function Footer() {
           </a>
         </div>
       </div>
+      {/* Recherches fréquentes : les requêtes du brief, en toutes lettres, vers leur page, sur chaque page du site. */}
+      <nav className="footer-queries" aria-label="Recherches fréquentes">
+        <span>Recherches fréquentes</span>
+        {QUERY_MAP.map((q) => (
+          <a key={q.query} href={q.path}>
+            {q.query}
+          </a>
+        ))}
+      </nav>
       <div className="footer-bottom">
         <MotionControl />
         <span>© {new Date().getFullYear()} Boutique de Boxe</span>

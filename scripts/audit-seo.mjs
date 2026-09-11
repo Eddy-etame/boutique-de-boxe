@@ -138,6 +138,30 @@ for (const v of ['/vignette/x/home.png', '/vignette/c/gants-de-boxe.png', '/vign
   assert.equal(r.status, 200, 'vignette ' + v);
   assert.match(r.headers.get('content-type') || '', /image\/png/, 'vignette png ' + v);
 }
+// Mots-cles prioritaires du brief : chaque requete a sa page, et la page la porte dans le titre, le H1 ou l'accroche,
+// la description, le texte visible (au moins deux fois) et le graphe ; l'accueil y mene par un lien.
+const fold = (t) => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
+const queryMapRaw = (await (await fetch(base + '/api/mcp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', id: 2, method: 'tools/call', params: { name: 'get_query_map', arguments: {} } }) })).json()).result;
+const queryMap = (queryMapRaw?.structuredContent?.queries || queryMapRaw?.structuredContent || JSON.parse(queryMapRaw?.content?.[0]?.text || '[]')).map((e) => ({ query: e.query, path: e.path || new URL(e.url).pathname }));
+assert.ok(queryMap.length >= 18, 'carte des requetes du brief');
+const homeHtml = await (await fetch(base + '/')).text();
+const homeAnchors = [...homeHtml.matchAll(/<a [^>]*href="(\/[^"]*)"[^>]*>([\s\S]*?)<\/a>/g)].map((m) => ({ href: m[1], text: fold(m[2].replace(/<[^>]+>/g, ' ')) }));
+const briefReport = [];
+for (const { query, path } of queryMap) {
+  const html = await (await fetch(base + path)).text();
+  const q = fold(query);
+  const title = fold(html.match(/<title>([^<]+)<\/title>/)?.[1]);
+  const description = fold(html.match(/<meta name="description" content="([^"]+)"/)?.[1]);
+  const h1 = fold(html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)?.[1]?.replace(/<[^>]+>/g, ' '));
+  const eyebrow = fold((html.match(/class="eyebrow"[^>]*>([^<]+)</) || [])[1]);
+  const visible = fold(html.replace(/<script[\s\S]*?<\/script>/g, ' ').replace(/<style[\s\S]*?<\/style>/g, ' ').replace(/<[^>]+>/g, ' '));
+  const occurrences = visible.split(q).length - 1;
+  const graph = fold([...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => m[1]).join(' '));
+  const linked = homeAnchors.some((a) => a.href === path && (a.text.includes(q) || q.includes(a.text) && a.text.length > 3)) || homeAnchors.some((a) => a.href === path);
+  const checks = { title: title.includes(q), heading: h1.includes(q) || eyebrow.includes(q), description: description.includes(q), visible: occurrences >= 2, graph: graph.includes(q), linked };
+  briefReport.push({ query, path, occurrences, ...checks });
+  for (const [name, ok] of Object.entries(checks)) assert.ok(ok, `mot-cle du brief « ${query} » : ${name} manque sur ${path}`);
+}
 const robots = await (await fetch(base + '/robots.txt')).text();
 assert.match(robots, /Sitemap:/);
 assert.ok(!robots.includes('Disallow: /\n'));
@@ -159,6 +183,7 @@ writeFileSync(
       uniqueTitles: titles.size,
       uniqueDescriptions: descriptions.size,
       seo: 'passed',
+      briefKeywords: briefReport,
       pagesDetail: reports,
     },
     null,

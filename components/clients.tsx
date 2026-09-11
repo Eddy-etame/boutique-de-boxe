@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 
 /** Clients et ventes : qui achète, quoi, combien, et l’export CSV pour le suivi. */
-type Client = { name: string; email: string; phone: string; optin: boolean; orders: number; approved: number; declined: number; total: number; first: string; last: string; items: string[]; sources: string[] };
+type Client = { name: string; email: string; phone: string; optin: boolean; address: string; orders: number; approved: number; declined: number; total: number; first: string; last: string; items: string[]; sources: string[] };
 type Report = {
   days: number;
   totals: { clients: number; optin: number; withPhone: number; orders: number; approved: number; declined: number; revenue: number; averageBasket: number; repeatClients: number };
@@ -126,7 +126,7 @@ export function Clients() {
               {clients.map((c) => (
                 <tr key={c.email}>
                   <td><strong>{c.name}</strong><br /><small>{c.sources.map((s) => (s === 'payplug' ? 'PayPlug test' : 'essai')).join(', ')}</small></td>
-                  <td><a href={`mailto:${c.email}`}>{c.email}</a>{c.phone && <><br /><a href={`tel:${c.phone}`}>{c.phone}</a></>}</td>
+                  <td><a href={`mailto:${c.email}`}>{c.email}</a>{c.phone && <><br /><a href={`tel:${c.phone}`}>{c.phone}</a></>}{c.address && <><br /><small>{c.address}</small></>}</td>
                   <td>{c.optin ? 'oui' : 'non'}</td>
                   <td>{fr(c.approved)}{c.declined ? ` (+${c.declined} refusée${c.declined > 1 ? 's' : ''})` : ''}</td>
                   <td>{euros(c.total)}</td>

@@ -63,3 +63,16 @@ Chaque requête a sa page canonique dans `QUERY_MAP` (`lib/seo-copy.ts`), publi�
 ## Comment les moteurs de réponse lisent le site
 
 ChatGPT (index Bing + OAI-SearchBot), Perplexity (PerplexityBot), Gemini et les aperçus IA de Google (index Google, Google-Extended), Claude (index Brave + ClaudeBot) partagent les mêmes leviers : une page canonique par requête, une réponse directe en tête de page, des faits datés et attribués, un graphe d’entités sans ambiguïté, des fichiers agents lisibles. Le site les sert tous : `QUERY_MAP` donne la page et la réponse citable ; le graphe ancre l’entité ; `hreflang` x-default dit que la page vaut pour toute la France et au-delà ; Bing et IndexNow sont servis comme Google. Reste à faire côté propriétaire : Search Console et Bing Webmaster Tools sur le domaine final, un profil d’établissement Google, des profils sociaux dans `SAME_AS`.
+
+## Première position sur les mots-clés du brief : ce qui est fait, ce qui reste
+
+Ce que le code garantit, vérifié par `node scripts/audit-seo.mjs` à chaque livraison : pour chacune des 20 requêtes de `QUERY_MAP` (les 18 du brief plus « sac de frappe » et « chaussures de boxe »), la phrase exacte est dans le `<title>`, dans le H1 ou l’accroche, dans la meta description, au moins deux fois dans le texte visible, dans le graphe JSON-LD, et l’accueil y mène par un lien ; chaque page du site porte en pied de page la ligne « Recherches fréquentes » avec les 20 requêtes en toutes lettres vers leur page. Les textes alternatifs des photos portent le nom complet du modèle (famille, marque, coloris).
+
+Ce qu’aucun code ne remplace, dans l’ordre d’effet :
+
+1. **Le domaine.** `boutique-de-boxe.vercel.app` n’a aucune autorité ; un sous-domaine Vercel ne se classe pas en première position. Attacher `boutique-de-boxe.com` (ou le domaine retenu), poser `NEXT_PUBLIC_SITE_ORIGIN` sur ce domaine : canonicals, sitemap, graphe, `llms.txt` et la redirection 301 de l’alias suivent d’eux-mêmes.
+2. **Search Console et Bing Webmaster.** Vérifier le domaine (`NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION`, `NEXT_PUBLIC_BING_SITE_VERIFICATION`), soumettre `/sitemap.xml`, puis lire les positions moyennes par requête. `node scripts/indexnow.mjs` prévient Bing, Yandex, Naver et Seznam à chaque mise à jour.
+3. **Les liens entrants.** Le levier le plus fort est déjà dans la maison : les sites des salles Boxing Center (Portet, Minimes, Saint-Cyprien, Ramonville, L’Union, Tournefeuille) doivent pointer vers la boutique avec les phrases du brief en texte de lien (« vente matériel boxe » → `/boutique-boxe/`, « gants de boxe » → `/gants-de-boxe/`, etc.), depuis leur pied de page et leurs pages matériel. Ensuite : fédérations, clubs partenaires, marques distribuées (Metal Boxe, Elion, Fairtex), annuaires spécialisés.
+4. **Les profils.** Renseigner `SAME_AS` (Instagram, Facebook, YouTube, TikTok) dans `lib/seo.ts` pour que l’entité soit reconnue par Google et par les moteurs de réponse.
+5. **Le contenu vivant.** Une nouveauté par semaine dans `/nouveautes/`, un guide par mois, des fiches complétées : la fraîcheur est un signal sur les requêtes commerciales.
+6. **La vitesse.** Garder le score Core Web Vitals vert après chaque passe de mouvement (photos WebP, polices préchargées, pas de bibliothèque d’animation).

@@ -29,9 +29,9 @@ const ALL = 'gants, bandes, protections, textile, sacs de frappe, chaussures, ma
 
 export const SEO_COPY: Record<string, SeoCopy> = {
   'boutique-boxe': {
-    title: 'Boutique boxe : vente de matériel de boxe en ligne',
-    description: 'Boutique boxe en ligne : plus de 1 000 modèles de matériel de boxe, MMA et sports de combat, avec leurs tailles et leurs prix prévus. Livraison dans toute la France.',
-    eyebrow: 'BOUTIQUE BOXE · VENTE MATÉRIEL BOXE',
+    title: 'Boutique boxe : vente matériel boxe, matos boxe et sports de combat',
+    description: 'Boutique boxe en ligne, vente matériel boxe et matos boxe : plus de 1 000 modèles de gants, bandes, protections, sacs de frappe et textile, avec leurs tailles et leurs prix prévus. Livraison dans toute la France.',
+    eyebrow: 'BOUTIQUE BOXE · VENTE MATÉRIEL BOXE · MATOS BOXE',
     prioritaires: ['boutique boxe', 'boutique de boxe', 'vente matériel boxe', 'matos boxe'],
     secondaires: ['boutique de boxe en ligne', 'matériel de boxe', 'gants de boxe', 'sac de frappe', 'bandes de boxe', 'protège-dents', 'livraison France', 'prix prévu'],
     sections: [
@@ -64,6 +64,7 @@ export const SEO_COPY: Record<string, SeoCopy> = {
       },
     ],
     faq: [
+      { question: 'Matos boxe : que trouve-t-on ici ?', answer: 'Tout le matos boxe d’une séance : bandes, gants du 4 au 20 oz, protège-dents, casque, sac de frappe, corde, short et chaussures. Le matos boxe des salles Boxing Center, livré chez vous dans toute la France.' },
       { question: 'Boutique de Boxe est-elle liée à un club ?', answer: 'Non. Boutique de Boxe est une boutique en ligne de matériel de boxe et de sports de combat. Elle ne propose ni cours ni salle. L’éditeur est la société SAS BOXING CENTER, à Toulouse.' },
       { question: 'Peut-on déjà commander ?', answer: 'Pas encore. Les prix affichés sont des prix prévus à l’ouverture des ventes. Vous pouvez essayer la commande sans payer et laisser votre e-mail pour être prévenu à l’ouverture.' },
       { question: 'Livrez-vous partout en France ?', answer: 'Oui, à l’ouverture des ventes : point relais 6,90 €, offert dès 69 € d’achats, domicile 8,90 €. Le matériel lourd a un tarif spécifique. Pas d’expédition hors de France pour l’instant.' },
@@ -71,8 +72,8 @@ export const SEO_COPY: Record<string, SeoCopy> = {
   },
 
   'materiel-boxe': {
-    title: 'Matériel boxe : tout l’équipement de boxe anglaise',
-    description: 'Matériel de boxe anglaise : gants, bandes, protège-dents, casques, sacs de frappe, chaussures et textile. Tailles réelles, prix prévus, livraison dans toute la France.',
+    title: 'Matériel boxe : équipement boxe anglaise, gants, bandes, protections',
+    description: 'Matériel boxe et équipement boxe anglaise : gants, bandes, protège-dents, casques, sacs de frappe, chaussures et textile. Tailles réelles, prix prévus, livraison dans toute la France.',
     eyebrow: 'MATÉRIEL BOXE · ÉQUIPEMENT BOXE ANGLAISE',
     prioritaires: ['matériel boxe', 'matériel de boxe', 'équipement boxe anglaise', 'matos boxe'],
     secondaires: ['vente matériel boxe', 'gants de boxe', 'bandes de boxe', 'protège-dents', 'casque de boxe', 'sac de frappe', 'chaussures de boxe', 'boxe anglaise débutant'],
@@ -106,6 +107,7 @@ export const SEO_COPY: Record<string, SeoCopy> = {
       },
     ],
     faq: [
+      { question: 'Quel équipement boxe anglaise pour débuter ?', answer: 'L’équipement boxe anglaise de départ tient en quatre pièces : des bandes de 4,50 m, des gants de 12 oz, un protège-dents et une corde à sauter. Le casque et les chaussures viennent avec le sparring.' },
       { question: 'Quel matériel de boxe pour débuter ?', answer: 'Des bandes de 2,50 m ou 4,50 m et une paire de gants de 10 ou 12 oz. Ajoutez un protège-dents dès le premier travail à deux. Le reste attend que votre salle vous le demande.' },
       { question: 'Quel poids de gants de boxe choisir ?', answer: '10 oz pour le sac, 12 oz pour la technique, 14 ou 16 oz avec un partenaire. Votre salle peut imposer un poids pour le sparring : demandez avant d’acheter.' },
       { question: 'Le matériel de boxe est-il livré partout en France ?', answer: 'Oui, à l’ouverture des ventes. Point relais 6,90 €, offert dès 69 € d’achats ; domicile 8,90 € ; sacs de frappe et matériel lourd sur tarif.' },
@@ -148,8 +150,8 @@ export const SEO_COPY: Record<string, SeoCopy> = {
   },
 
   'materiel-sport-de-combat': {
-    title: 'Matériel sport de combat : boutique France',
-    description: 'Matériel sport de combat : boxe anglaise, MMA, muay-thaï, kick-boxing, JJB. Tout le catalogue, avec les tailles et les prix prévus. Boutique en ligne, livraison dans toute la France.',
+    title: 'Matériel sport de combat : boutique sport de combat France',
+    description: 'Matériel sport de combat, boutique sport de combat France : boxe anglaise, MMA, muay-thaï, kick-boxing, JJB. Tout le catalogue avec les tailles et les prix prévus, livraison dans toute la France.',
     eyebrow: 'MATÉRIEL SPORT DE COMBAT · BOUTIQUE SPORT DE COMBAT FRANCE',
     prioritaires: ['matériel sport de combat', 'sport de combat', 'boutique sport de combat France'],
     secondaires: ['équipement sports de combat', 'boxe anglaise', 'MMA', 'muay-thaï', 'kick-boxing', 'jiu-jitsu brésilien', 'savate', 'tout le catalogue'],
@@ -176,6 +178,7 @@ export const SEO_COPY: Record<string, SeoCopy> = {
       },
     ],
     faq: [
+      { question: 'Boutique sport de combat France : livrez-vous partout ?', answer: 'Oui. Boutique sport de combat France : chaque commande part vers toute la France métropolitaine, à domicile ou en point relais, avec les tailles réelles et les prix prévus affichés avant l’ouverture des ventes.' },
       { question: 'Quels sports de combat sont couverts ?', answer: 'Boxe anglaise, MMA, muay-thaï, kick-boxing, jiu-jitsu brésilien, savate et karaté. Chaque fiche indique la discipline concernée.' },
       { question: 'Le matériel est-il le même pour tous les sports de combat ?', answer: 'Non. Les gants, les protections et le textile changent selon la discipline. Un gant de boxe thaï n’a pas la coupe d’un gant de boxe anglaise ; un gant MMA laisse les doigts libres.' },
       { question: 'Expédiez-vous hors de France ?', answer: 'Pas pour l’instant. La livraison prévue couvre la France métropolitaine : point relais et domicile.' },
@@ -217,8 +220,8 @@ export const SEO_COPY: Record<string, SeoCopy> = {
   },
 
   'gants-de-boxe': {
-    title: 'Gants de boxe : vente de gants boxe 4 à 20 oz',
-    description: 'Gants de boxe : 186 modèles du 4 au 20 oz, velcro ou lacets, cuir ou synthétique. Fairtex, Twins, Cleto Reyes, Elion, Adidas. Tailles réelles, prix prévus, livraison en France.',
+    title: 'Gants de boxe : vente gants de boxe et gants boxe du 4 au 20 oz',
+    description: 'Gants boxe, vente gants de boxe : 186 modèles du 4 au 20 oz, velcro ou lacets, cuir ou synthétique. Fairtex, Twins, Cleto Reyes, Elion, Adidas. Tailles réelles, prix prévus, livraison en France.',
     eyebrow: 'GANTS BOXE · VENTE GANTS DE BOXE',
     prioritaires: ['gants de boxe', 'gants boxe', 'vente gants de boxe'],
     secondaires: ['gants de boxe 10 oz', 'gants de boxe 12 oz', 'gants de boxe 14 oz', 'gants de boxe 16 oz', 'gants de boxe cuir', 'gants de boxe enfant', 'gants de boxe débutant', 'gants de boxe sparring', 'gants de boxe à lacets', 'gants de boxe velcro', 'gants de boxe Fairtex', 'gants de boxe Twins', 'gants de boxe Cleto Reyes', 'gants de boxe Elion'],
@@ -251,6 +254,7 @@ export const SEO_COPY: Record<string, SeoCopy> = {
       },
     ],
     faq: [
+      { question: 'Vente gants de boxe : quelles marques et quels poids ?', answer: 'La vente gants de boxe couvre Fairtex, Twins, Cleto Reyes, Elion, Adidas et Metal Boxe, du 4 oz enfant au 20 oz sparring lourd. Chaque fiche donne le poids, la fermeture, la matière et le prix prévu.' },
       { question: 'Quel poids de gants de boxe pour débuter ?', answer: '12 oz pour la plupart des adultes : assez de rembourrage pour le sac et la technique, et accepté dans la majorité des cours. Passez à 14 ou 16 oz dès qu’il y a du travail avec partenaire.' },
       { question: 'Gants de boxe velcro ou lacets ?', answer: 'Velcro pour l’entraînement, seul et vite. Lacets pour la compétition et le sparring encadré, avec quelqu’un pour serrer.' },
       { question: 'Quelle taille de gants de boxe pour un enfant ?', answer: '4 à 6 oz de 5 à 9 ans, 8 oz vers 10 à 12 ans, 10 oz pour les adolescents, selon la corpulence et le guide de la marque. Faites essayer avec les bandes.' },
@@ -293,7 +297,7 @@ export const SEO_COPY: Record<string, SeoCopy> = {
 
   'protections-boxe': {
     title: 'Protections boxe : protège-dents, casques, tibias',
-    description: 'Protections de boxe et sports de combat : protège-dents, casques, protège-tibias, coquilles, protège-poitrine. Shock Doctor, Elion, Fairtex, Adidas. Tailles réelles, prix prévus.',
+    description: 'Protections boxe et sports de combat : protège-dents, casques, protège-tibias, coquilles, protège-poitrine. Shock Doctor, Elion, Fairtex, Adidas. Tailles réelles, prix prévus.',
     eyebrow: 'PROTECTIONS BOXE · CASQUES, PROTÈGE-DENTS, TIBIAS',
     prioritaires: ['protections boxe', 'protections de boxe', 'protège-dents', 'casque de boxe'],
     secondaires: ['protège-tibias', 'coquille de boxe', 'protège-dents boxe', 'casque boxe entraînement', 'protège-poitrine', 'protections MMA', 'protections sparring', 'protège-dents enfant'],
@@ -327,7 +331,7 @@ export const SEO_COPY: Record<string, SeoCopy> = {
 
   'accessoires-boxe': {
     title: 'Accessoires boxe : bandes, sous-gants, cordes à sauter',
-    description: 'Accessoires de boxe : bandes de 2,50 m et 4,50 m, sous-gants gel, cordes à sauter, mitaines, tape, sacs de sport. Elion, Fairtex, Venum, Everlast. Prix prévus, livraison en France.',
+    description: 'Accessoires boxe : bandes de 2,50 m et 4,50 m, sous-gants gel, cordes à sauter, mitaines, tape, sacs de sport. Elion, Fairtex, Venum, Everlast. Prix prévus, livraison en France.',
     eyebrow: 'ACCESSOIRES BOXE · BANDES, SOUS-GANTS, CORDES',
     prioritaires: ['accessoires boxe', 'accessoires de boxe', 'bandes de boxe'],
     secondaires: ['bandes de boxe 4,5 m', 'bandes de boxe 2,5 m', 'sous-gants', 'sous-gants gel', 'corde à sauter', 'mitaines de maintien', 'tape de boxe', 'accessoires d’entraînement'],
@@ -360,7 +364,7 @@ export const SEO_COPY: Record<string, SeoCopy> = {
 
   'textile-boxe': {
     title: 'Textile boxe : shorts, t-shirts, rashguards, sweats',
-    description: 'Textile de boxe et sports de combat : shorts de boxe anglaise et thaï, shorts MMA, rashguards, t-shirts, débardeurs, sweats, kimonos. Tailles réelles, prix prévus, livraison en France.',
+    description: 'Textile boxe et sports de combat : shorts de boxe anglaise et thaï, shorts MMA, rashguards, t-shirts, débardeurs, sweats, kimonos. Tailles réelles, prix prévus, livraison en France.',
     eyebrow: 'TEXTILE BOXE · SHORTS, T-SHIRTS, RASHGUARDS',
     prioritaires: ['textile boxe', 'textile de boxe', 'short de boxe'],
     secondaires: ['short de boxe thaï', 'short MMA', 'rashguard', 'débardeur de boxe', 't-shirt de boxe', 'sweat de boxe', 'kimono JJB', 'legging', 'brassière de sport', 'vêtements de boxe'],
@@ -393,7 +397,7 @@ export const SEO_COPY: Record<string, SeoCopy> = {
 
   'sacs-de-frappe': {
     title: 'Sac de frappe : sacs, poires de vitesse, punching-ball',
-    description: 'Sacs de frappe de 1 m à 1,80 m, sacs sur pied, poires de vitesse, punching-balls et fixations. Fairtex, Elion, Century, Everlast. Poids, hauteur, prix prévus, livraison en France.',
+    description: 'Sac de frappe de 1 m à 1,80 m, sacs sur pied, poires de vitesse, punching-balls et fixations. Fairtex, Elion, Century, Everlast. Poids, hauteur, prix prévus, livraison en France.',
     eyebrow: 'SAC DE FRAPPE · SACS, POIRES, PUNCHING-BALL',
     prioritaires: ['sac de frappe', 'sacs de frappe', 'punching-ball'],
     secondaires: ['sac de frappe sur pied', 'poire de vitesse', 'sac de frappe 1,80 m', 'sac de frappe cuir', 'sac de frappe Fairtex', 'sac de frappe Elion', 'fixation sac de frappe', 'sac de frappe maison', 'mannequin de frappe'],

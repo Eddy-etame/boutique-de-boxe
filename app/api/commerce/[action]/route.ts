@@ -304,7 +304,16 @@ export async function POST(request: Request, context: Context) {
       data.consent !== true ||
       !Number.isInteger(data.quotedTotal) ||
       (data.phone !== undefined && (typeof data.phone !== 'string' || data.phone.length > 30 || !/^[+0-9 ().-]*$/.test(data.phone))) ||
-      (data.optin !== undefined && typeof data.optin !== 'boolean')
+      (data.optin !== undefined && typeof data.optin !== 'boolean') ||
+      typeof data.address1 !== 'string' ||
+      data.address1.trim().length < 3 ||
+      data.address1.length > 150 ||
+      (data.address2 !== undefined && (typeof data.address2 !== 'string' || data.address2.length > 150)) ||
+      typeof data.postcode !== 'string' ||
+      !/^\d{5}$/.test(data.postcode.trim()) ||
+      typeof data.city !== 'string' ||
+      data.city.trim().length < 2 ||
+      data.city.length > 100
     )
       return reply(
         {
@@ -317,6 +326,12 @@ export async function POST(request: Request, context: Context) {
       return reply({ error: 'Rechargez le panier avant de confirmer.' }, 400);
     const phone = typeof data.phone === 'string' ? data.phone.trim() : '';
     const optin = data.optin === true ? 1 : 0;
+    const address = {
+      address1: data.address1.trim(),
+      address2: typeof data.address2 === 'string' ? data.address2.trim() : '',
+      postcode: data.postcode.trim(),
+      city: data.city.trim(),
+    };
     const fingerprint = JSON.stringify([
       data.name.trim(),
       data.email.trim().toLowerCase(),
@@ -326,6 +341,7 @@ export async function POST(request: Request, context: Context) {
       data.quotedRevision,
       phone,
       optin,
+      address,
     ]);
     await ensureBuyerColumns();
     const previous = await database
@@ -379,7 +395,7 @@ export async function POST(request: Request, context: Context) {
       database.prepare('SELECT revision FROM carts WHERE id=? FOR UPDATE').bind(token),
       database
         .prepare(
-          'INSERT INTO simulation_orders(id,cart_id,idempotency_key,fingerprint,name,email,lines,subtotal,shipping,total,delivery,status,created_at,email_status,phone,optin) SELECT ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? FROM carts WHERE id=? AND revision=? AND expires_at>?',
+          'INSERT INTO simulation_orders(id,cart_id,idempotency_key,fingerprint,name,email,lines,subtotal,shipping,total,delivery,status,created_at,email_status,phone,optin,address1,address2,postcode,city) SELECT ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? FROM carts WHERE id=? AND revision=? AND expires_at>?',
         )
         .bind(
           id,
@@ -398,6 +414,10 @@ export async function POST(request: Request, context: Context) {
           status === 'simulated_paid' ? 'pending' : 'not_applicable',
           phone,
           optin,
+          address.address1,
+          address.address2,
+          address.postcode,
+          address.city,
           token,
           cart.revision,
           Date.now(),

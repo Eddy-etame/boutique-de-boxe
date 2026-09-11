@@ -3237,3 +3237,13 @@ html[data-consent-open] .sticky-buy { transform: translateY(110%); }
 .journey-step + .journey-step::before { content: '→'; color: #9aa091; margin-right: 6px; }
 .journey-step small { color: #58614f; font-size: 11px; }
 .journey-step em { font-style: normal; font-size: 11px; background: var(--tape); border: 1px solid var(--ink); padding: 1px 6px; }
+
+/* Pied de page : les recherches fréquentes, en toutes lettres, vers leur page. */
+.footer-queries { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; padding: 18px 0 8px; border-top: 1px solid rgba(255,255,255,.14); font-size: 12px; }
+.footer-queries > span { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; opacity: .6; margin-right: 6px; }
+.footer-queries > a { color: inherit; opacity: .75; text-decoration: none; border-bottom: 1px solid transparent; transition: opacity .25s, border-color .25s; }
+.footer-queries > a:hover, .footer-queries > a:focus-visible { opacity: 1; border-bottom-color: currentColor; }
+
+/* Caisse : code postal et ville côte à côte. */
+.checkout-row { display: grid; grid-template-columns: minmax(110px, 1fr) 2fr; gap: 12px; }
+@media (max-width: 480px) { .checkout-row { grid-template-columns: 1fr; } }

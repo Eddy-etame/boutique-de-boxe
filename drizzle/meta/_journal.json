@@ -29,6 +29,13 @@
       "when": 1789151683712,
       "tag": "0003_buyer_contact",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1789162534685,
+      "tag": "0004_delivery_address",
+      "breakpoints": true
     }
   ]
 }

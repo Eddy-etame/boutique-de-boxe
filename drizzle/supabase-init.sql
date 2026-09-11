@@ -138,3 +138,9 @@ ALTER TABLE "simulation_orders" ADD COLUMN IF NOT EXISTS "phone" text DEFAULT ''
 ALTER TABLE "simulation_orders" ADD COLUMN IF NOT EXISTS "optin" integer DEFAULT 0 NOT NULL;
 CREATE INDEX IF NOT EXISTS "orders_email" ON "simulation_orders" USING btree ("email");
 CREATE INDEX IF NOT EXISTS "orders_created" ON "simulation_orders" USING btree ("created_at");
+
+-- 0004: delivery address on simulated orders
+ALTER TABLE "simulation_orders" ADD COLUMN IF NOT EXISTS "address1" text DEFAULT '' NOT NULL;
+ALTER TABLE "simulation_orders" ADD COLUMN IF NOT EXISTS "address2" text DEFAULT '' NOT NULL;
+ALTER TABLE "simulation_orders" ADD COLUMN IF NOT EXISTS "postcode" text DEFAULT '' NOT NULL;
+ALTER TABLE "simulation_orders" ADD COLUMN IF NOT EXISTS "city" text DEFAULT '' NOT NULL;

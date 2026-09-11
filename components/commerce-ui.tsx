@@ -387,6 +387,10 @@ type CheckoutPayload = {
   email: string;
   phone: string;
   optin: boolean;
+  address1: string;
+  address2: string;
+  postcode: string;
+  city: string;
   delivery: Delivery;
   paymentOutcome: PaymentOutcome;
   consent: true;
@@ -484,6 +488,10 @@ export function CartPage() {
   const [consent, setConsent] = useState(false);
   const [phone, setPhone] = useState('');
   const [optin, setOptin] = useState(false);
+  const [address1, setAddress1] = useState('');
+  const [address2, setAddress2] = useState('');
+  const [postcode, setPostcode] = useState('');
+  const [city, setCity] = useState('');
   const [website, setWebsite] = useState('');
   const [busy, setBusy] = useState(false);
   const [uncertain, setUncertain] = useState(false);
@@ -547,6 +555,10 @@ export function CartPage() {
         email: email.trim().toLowerCase(),
         phone: phone.trim(),
         optin,
+        address1: address1.trim(),
+        address2: address2.trim(),
+        postcode: postcode.trim(),
+        city: city.trim(),
         delivery,
         paymentOutcome,
         consent: true,
@@ -856,7 +868,7 @@ export function CartPage() {
                 >
                   <fieldset disabled={locked} className="checkout-fields">
                     <legend>
-                      <span>01</span> Le reçu, à votre nom
+                      <span>01</span> Vos coordonnées et l’adresse de livraison
                     </legend>
                     <label htmlFor={`${fieldId}-name`}>
                       Nom et prénom
@@ -907,6 +919,60 @@ export function CartPage() {
                         inputMode="tel"
                       />
                     </label>
+                    <label htmlFor={`${fieldId}-address1`}>
+                      Adresse
+                      <input
+                        id={`${fieldId}-address1`}
+                        name="address1"
+                        value={address1}
+                        onChange={(e) => setAddress1(e.target.value)}
+                        required
+                        minLength={3}
+                        maxLength={150}
+                        autoComplete="address-line1"
+                      />
+                    </label>
+                    <label htmlFor={`${fieldId}-address2`}>
+                      Complément <small>(bâtiment, étage, facultatif)</small>
+                      <input
+                        id={`${fieldId}-address2`}
+                        name="address2"
+                        value={address2}
+                        onChange={(e) => setAddress2(e.target.value)}
+                        maxLength={150}
+                        autoComplete="address-line2"
+                      />
+                    </label>
+                    <div className="checkout-row">
+                      <label htmlFor={`${fieldId}-postcode`}>
+                        Code postal
+                        <input
+                          id={`${fieldId}-postcode`}
+                          name="postcode"
+                          value={postcode}
+                          onChange={(e) => setPostcode(e.target.value)}
+                          required
+                          pattern="[0-9]{5}"
+                          inputMode="numeric"
+                          maxLength={5}
+                          autoComplete="postal-code"
+                        />
+                      </label>
+                      <label htmlFor={`${fieldId}-city`}>
+                        Ville
+                        <input
+                          id={`${fieldId}-city`}
+                          name="city"
+                          value={city}
+                          onChange={(e) => setCity(e.target.value)}
+                          required
+                          minLength={2}
+                          maxLength={100}
+                          autoComplete="address-level2"
+                        />
+                      </label>
+                    </div>
+                    <p className="commerce-caption">France métropolitaine. L’adresse sert au calcul de la livraison et à l’expédition à l’ouverture.</p>
                     <label className="simulation-consent checkout-optin" htmlFor={`${fieldId}-optin`}>
                       <input
                         id={`${fieldId}-optin`}
