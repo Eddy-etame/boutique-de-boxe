@@ -385,6 +385,8 @@ type PaymentOutcome = 'approved' | 'declined';
 type CheckoutPayload = {
   name: string;
   email: string;
+  phone: string;
+  optin: boolean;
   delivery: Delivery;
   paymentOutcome: PaymentOutcome;
   consent: true;
@@ -480,6 +482,8 @@ export function CartPage() {
   const [paymentOutcome, setPaymentOutcome] =
     useState<PaymentOutcome>('approved');
   const [consent, setConsent] = useState(false);
+  const [phone, setPhone] = useState('');
+  const [optin, setOptin] = useState(false);
   const [website, setWebsite] = useState('');
   const [busy, setBusy] = useState(false);
   const [uncertain, setUncertain] = useState(false);
@@ -541,6 +545,8 @@ export function CartPage() {
       const payload: CheckoutPayload = {
         name: name.trim(),
         email: email.trim().toLowerCase(),
+        phone: phone.trim(),
+        optin,
         delivery,
         paymentOutcome,
         consent: true,
@@ -887,6 +893,32 @@ export function CartPage() {
                       Le reçu sera destiné à cette adresse. Les détails de
                       l’envoi seront indiqués après la simulation.
                     </p>
+                    <label htmlFor={`${fieldId}-phone`}>
+                      Téléphone <small>(facultatif, pour la livraison)</small>
+                      <input
+                        id={`${fieldId}-phone`}
+                        name="phone"
+                        type="tel"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        maxLength={30}
+                        pattern="[+0-9 ().-]*"
+                        autoComplete="tel"
+                        inputMode="tel"
+                      />
+                    </label>
+                    <label className="simulation-consent checkout-optin" htmlFor={`${fieldId}-optin`}>
+                      <input
+                        id={`${fieldId}-optin`}
+                        type="checkbox"
+                        checked={optin}
+                        onChange={(e) => setOptin(e.target.checked)}
+                        disabled={locked}
+                      />
+                      <span>
+                        Prévenez-moi par e-mail de l’ouverture des ventes et des nouveautés. Un lien de désinscription dans chaque message.
+                      </span>
+                    </label>
                     <label className="honeypot" aria-hidden="true">
                       Laisser vide
                       <input

@@ -158,6 +158,41 @@ async function report(request: Request) {
     return categoryFor(slug)?.name || SUBFAMILIES.find((s) => s.slug === slug)?.name || (path === '/' ? 'Accueil' : path);
   };
   const adds = await q<{ path: string; n: number }>(`SELECT path, count(*)::int AS n FROM events WHERE type='add_to_cart' AND created_at>=? GROUP BY path`);
+
+  // Parcours : les 40 dernières visites, page par page, avec le temps passé et ce qui s’y est fait.
+  const sessions = await q<{ sid: string; started: string; ended: string; device: string; referrer: string; views: number }>(
+    `SELECT sid, min(created_at) AS started, max(created_at) AS ended, max(device) AS device, max(referrer) AS referrer, count(*) FILTER (WHERE type='view')::int AS views
+     FROM events WHERE created_at>=? GROUP BY sid HAVING count(*) FILTER (WHERE type='view') > 0 ORDER BY started DESC LIMIT 40`,
+  );
+  type Step = { sid: string; type: string; path: string; data: string; created_at: string };
+  const steps = sessions.length
+    ? (
+        await database
+          .prepare(
+            `SELECT sid, type, path, data, created_at FROM events WHERE sid IN (${sessions.map(() => '?').join(',')}) AND type IN ('view','leave','add_to_cart','search','alert_submit','contact_submit','click') ORDER BY created_at ASC`,
+          )
+          .bind(...sessions.map((s) => s.sid))
+          .all<Step>()
+      ).results
+    : [];
+  const host = (r: string) => r.match(/^https?:\/\/([^/]+)/)?.[1] || (r ? r.slice(0, 40) : 'accès direct');
+  const journeys = sessions.map((s) => {
+    const own = steps.filter((e) => e.sid === s.sid);
+    const pages: { path: string; name: string; dwell: number | null; marks: string[] }[] = [];
+    for (const e of own) {
+      let d: Record<string, unknown> = {};
+      try { d = JSON.parse(e.data || '{}'); } catch { /* données illisibles */ }
+      const last = pages[pages.length - 1];
+      if (e.type === 'view') pages.push({ path: e.path, name: nameOf(e.path), dwell: null, marks: [] });
+      else if (e.type === 'leave' && last && last.path === e.path) last.dwell = typeof d.dwell === 'number' ? Math.round(d.dwell / 1000) : last.dwell;
+      else if (e.type === 'add_to_cart' && last) last.marks.push('ajout au panier');
+      else if (e.type === 'search' && last && typeof d.q === 'string') last.marks.push('recherche « ' + d.q.slice(0, 40) + ' »' + (d.results === 0 ? ' (sans résultat)' : ''));
+      else if (e.type === 'alert_submit' && last) last.marks.push('alerte demandée');
+      else if (e.type === 'contact_submit' && last) last.marks.push('contact envoyé');
+      else if (e.type === 'click' && last && d.zone === 'hero' && typeof d.label === 'string') last.marks.push('clic hero « ' + d.label.slice(0, 30) + ' »');
+    }
+    return { sid: s.sid, started: s.started, ended: s.ended, device: s.device, from: host(s.referrer || ''), views: s.views, converted: own.some((e) => e.type === 'add_to_cart' || e.type === 'alert_submit' || e.type === 'contact_submit'), pages };
+  });
   const addByPath = new Map(adds.map((a) => [a.path, a.n]));
   const productViews = pages.filter((p) => p.path.startsWith('/produits/')).map((p) => ({ ...p, name: nameOf(p.path), adds: addByPath.get(p.path) || 0 }));
   const label = (rows: { path: string }[]) => rows.map((r) => ({ ...r, name: nameOf(r.path) }));
@@ -181,5 +216,6 @@ async function report(request: Request) {
     devices,
     referrers,
     searches,
+    journeys,
   });
 }

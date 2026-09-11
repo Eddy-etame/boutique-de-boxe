@@ -16,7 +16,9 @@
 
 ## 2. Migrations
 
-Sans poste de travail : coller le contenu de `drizzle/supabase-init.sql` dans Supabase → SQL Editor → Run. Le script crée les 9 tables, leurs index et active la sécurité par ligne ; il peut être rejoué sans risque. Fait le 11 septembre 2026 pour les 8 premières ; la table `events` (mesure d’audience) s’ajoute en collant `drizzle/0002_events.sql`, ou se crée d’elle-même au premier événement reçu par `/api/analytics`.
+Sans poste de travail : coller le contenu de `drizzle/supabase-init.sql` dans Supabase → SQL Editor → Run. Le script crée les 9 tables, leurs index et active la sécurité par ligne ; il peut être rejoué sans risque. Fait le 11 septembre 2026 pour les 8 premières ; la table `events` (mesure d’audience) s’ajoute en collant `drizzle/0002_events.sql`, ou se crée d’elle-même au premier événement reçu par `/api/analytics` ; les colonnes `phone` et `optin` des commandes (`drizzle/0003_buyer_contact.sql`) s’ajoutent de même au premier passage en caisse ou à la première lecture de l’onglet Clients & ventes.
+
+Mesure Vercel sans cookie : Vercel → projet → Analytics → Enable ; le composant est déjà dans le gabarit. Test PayPlug en ligne (atelier seulement) : `COMMERCE_MODE=payplug_test`, `PAYPLUG_TEST_SECRET_KEY`, `PAYPLUG_PUBLIC_BASE_URL` (prêts dans `.env.vercel`), puis retour à `simulation` ; voir PAYPLUG-WIRING.md.
 
 Depuis `site/`, avec la connexion directe dans l’environnement du terminal PowerShell (jamais dans Git) :
 

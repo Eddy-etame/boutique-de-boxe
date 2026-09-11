@@ -3208,3 +3208,32 @@ html[data-replay] *, html[data-replay] *::before, html[data-replay] *::after { a
 html[data-consent-open] .sticky-buy { transform: translateY(110%); }
 @media (max-width: 800px) { .sticky-buy { display: flex; } }
 @media (prefers-reduced-motion: reduce) { .sticky-buy { transition: none; } }
+
+/* Atelier : clients et ventes. */
+.clients-tools { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.clients-tools .button { min-height: 40px; padding: 0 14px; font-size: 13px; }
+.clients-funnel { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.clients-funnel li { border-top: 2px solid var(--ink); padding-top: 10px; display: flex; flex-direction: column; gap: 2px; }
+.clients-funnel strong { font-family: Barlow, sans-serif; font-size: 34px; line-height: 1; }
+.clients-funnel span { font-size: 12px; color: #58614f; }
+.clients-search { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.clients-search input { min-width: 260px; min-height: 40px; border: 1px solid #bfc3b7; padding: 0 12px; font-size: 13px; background: #fff; }
+.clients-scroll { overflow-x: auto; }
+.clients-table td, .clients-table th { text-align: left !important; white-space: normal !important; }
+.clients-table small { color: #58614f; }
+.clients-items { font-size: 12px; color: #3a3d36; max-width: 320px; }
+.checkout-optin { margin-top: 4px; }
+.checkout-fields label small { font-weight: 400; color: #58614f; }
+@media (max-width: 640px) { .clients-funnel { grid-template-columns: 1fr; } }
+
+/* Atelier : parcours des visites, une ligne par visite, les pages enchaînées. */
+.audience-journeys { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.audience-journeys > li { border: 1px solid #d7d8d6; background: #fff; padding: 12px 14px; }
+.audience-journeys > li.is-converted { border-color: var(--ink); box-shadow: inset 4px 0 0 var(--tape); }
+.journey-head { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: #58614f; margin-bottom: 8px; }
+.journey-head strong { color: var(--ink); font-size: 13px; }
+.journey-steps { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 4px; font-size: 13px; }
+.journey-step { display: inline-flex; align-items: baseline; gap: 5px; }
+.journey-step + .journey-step::before { content: '→'; color: #9aa091; margin-right: 6px; }
+.journey-step small { color: #58614f; font-size: 11px; }
+.journey-step em { font-style: normal; font-size: 11px; background: var(--tape); border: 1px solid var(--ink); padding: 1px 6px; }

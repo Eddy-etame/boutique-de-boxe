@@ -89,9 +89,13 @@ export const simulationOrders = pgTable(
     emailAttempts: integer('email_attempts').notNull().default(0),
     emailError: text('email_error'),
     emailClaimedAt: text('email_claimed_at'),
+    phone: text('phone').notNull().default(''),
+    optin: integer('optin').notNull().default(0),
   },
   (t) => [
     uniqueIndex('orders_cart_idempotency').on(t.cartId, t.idempotencyKey),
+    index('orders_email').on(t.email),
+    index('orders_created').on(t.createdAt),
   ],
 );
 

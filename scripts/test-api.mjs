@@ -382,3 +382,53 @@ await check('Analytics report aggregates the session', async () => {
 console.log(
   JSON.stringify({ passed: results.length, date: new Date().toISOString() }),
 );
+
+
+// Clients et ventes : le telephone et l'accord sont enregistres, l'atelier les lit, l'export CSV les rend.
+const buyer = 'client-qa-' + Math.random().toString(36).slice(2, 8) + '@example.invalid';
+await check('Checkout stores phone and opt-in, clients report and CSV expose them', async () => {
+  const jar = {};
+  const keep = (r) => {
+    const c = r.headers.get('set-cookie');
+    if (c) jar.Cookie = c.split(';')[0];
+  };
+  let r = await request('commerce/cart', { action: 'add', productId: 'mat-blade-gold', variant: '12 oz', quantity: 1 }, jar);
+  keep(r);
+  assert.equal(r.status, 200);
+  const cart = await (await request('commerce/cart', undefined, jar)).json();
+  r = await request('commerce/checkout', {
+    idempotencyKey: crypto.randomUUID(), name: 'Client QA', email: buyer, phone: '06 12 34 56 78', optin: true,
+    delivery: 'home', paymentOutcome: 'approved', consent: true, quotedTotal: cart.subtotal + 890, quotedRevision: cart.revision, website: '',
+  }, jar);
+  assert.equal(r.status, 201, 'checkout ' + r.status + ' ' + (await r.text()));
+  const report = await (await request('commerce/admin-clients?days=7', undefined, admin)).json();
+  const c = report.clients.find((x) => x.email === buyer);
+  assert.ok(c && c.optin === true && c.phone === '06 12 34 56 78' && c.approved === 1, JSON.stringify(c));
+  assert.ok(report.totals.approved >= 1 && report.products.length >= 1);
+  const csv = await request('commerce/admin-export?kind=clients&days=7', undefined, admin);
+  assert.equal(csv.status, 200);
+  assert.ok((csv.headers.get('content-type') || '').includes('text/csv'));
+  const bytes = new Uint8Array(await csv.arrayBuffer());
+  assert.deepEqual(Array.from(bytes.slice(0, 3)), [0xef, 0xbb, 0xbf], 'BOM for Excel');
+  const text = new TextDecoder().decode(bytes);
+  assert.ok(text.startsWith('Nom;E-mail;') && text.includes(buyer) && text.includes('06 12 34 56 78'));
+});
+await check('Clients report and export denied to visitors', async () => {
+  assert.equal((await request('commerce/admin-clients')).status, 403);
+  assert.equal((await request('commerce/admin-export?kind=ventes')).status, 403);
+});
+await check('Checkout rejects a malformed phone', async () => {
+  const jar = {};
+  let r = await request('commerce/cart', { action: 'add', productId: 'mat-blade-gold', variant: '12 oz', quantity: 1 }, jar);
+  const c = r.headers.get('set-cookie');
+  if (c) jar.Cookie = c.split(';')[0];
+  const cart = await (await request('commerce/cart', undefined, jar)).json();
+  r = await request('commerce/checkout', {
+    idempotencyKey: crypto.randomUUID(), name: 'Client QA', email: buyer, phone: 'call me <script>', optin: 'yes',
+    delivery: 'home', paymentOutcome: 'approved', consent: true, quotedTotal: cart.subtotal + 890, quotedRevision: cart.revision, website: '',
+  }, jar);
+  assert.equal(r.status, 400);
+});
+console.log(
+  JSON.stringify({ passed: results.length, date: new Date().toISOString() }),
+);

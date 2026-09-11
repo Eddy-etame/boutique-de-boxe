@@ -1,4 +1,5 @@
 import { clientIp } from '@/lib/request';
+import { clientsReport, clientsCsv, ensureBuyerColumns } from '@/lib/clients';
 import { db, isAdmin, readCatalog } from '@/lib/database';
 import {
   cartToken,
@@ -86,6 +87,25 @@ export async function GET(request: Request, context: Context) {
         200,
         { 'X-Robots-Tag': 'noindex, nofollow' },
       );
+    }
+    if (action === 'admin-clients') {
+      if (!(await isAdmin())) return reply({ error: 'Accès réservé.' }, 403);
+      const days = Math.min(Math.max(Number(new URL(request.url).searchParams.get('days')) || 90, 1), 730);
+      return reply(await clientsReport(days));
+    }
+    if (action === 'admin-export') {
+      if (!(await isAdmin())) return reply({ error: 'Accès réservé.' }, 403);
+      const url = new URL(request.url);
+      const kind = url.searchParams.get('kind') === 'ventes' ? 'ventes' : 'clients';
+      const days = Math.min(Math.max(Number(url.searchParams.get('days')) || 365, 1), 3650);
+      return new Response(await clientsCsv(kind, days), {
+        headers: {
+          'Content-Type': 'text/csv; charset=utf-8',
+          'Content-Disposition': `attachment; filename="${kind}-boutique-de-boxe-${new Date().toISOString().slice(0, 10)}.csv"`,
+          'Cache-Control': 'no-store',
+          'X-Robots-Tag': 'noindex',
+        },
+      });
     }
     if (action === 'admin-orders') {
       if (!(await isAdmin())) return reply({ error: 'Accès réservé.' }, 403);
@@ -282,7 +302,9 @@ export async function POST(request: Request, context: Context) {
       !['relay', 'home'].includes(data.delivery) ||
       !['approved', 'declined'].includes(data.paymentOutcome) ||
       data.consent !== true ||
-      !Number.isInteger(data.quotedTotal)
+      !Number.isInteger(data.quotedTotal) ||
+      (data.phone !== undefined && (typeof data.phone !== 'string' || data.phone.length > 30 || !/^[+0-9 ().-]*$/.test(data.phone))) ||
+      (data.optin !== undefined && typeof data.optin !== 'boolean')
     )
       return reply(
         {
@@ -293,6 +315,8 @@ export async function POST(request: Request, context: Context) {
       );
     if (!Number.isInteger(data.quotedRevision) || data.quotedRevision < 1)
       return reply({ error: 'Rechargez le panier avant de confirmer.' }, 400);
+    const phone = typeof data.phone === 'string' ? data.phone.trim() : '';
+    const optin = data.optin === true ? 1 : 0;
     const fingerprint = JSON.stringify([
       data.name.trim(),
       data.email.trim().toLowerCase(),
@@ -300,7 +324,10 @@ export async function POST(request: Request, context: Context) {
       data.paymentOutcome,
       data.quotedTotal,
       data.quotedRevision,
+      phone,
+      optin,
     ]);
+    await ensureBuyerColumns();
     const previous = await database
       .prepare(
         'SELECT * FROM simulation_orders WHERE cart_id=? AND idempotency_key=?',
@@ -352,7 +379,7 @@ export async function POST(request: Request, context: Context) {
       database.prepare('SELECT revision FROM carts WHERE id=? FOR UPDATE').bind(token),
       database
         .prepare(
-          'INSERT INTO simulation_orders(id,cart_id,idempotency_key,fingerprint,name,email,lines,subtotal,shipping,total,delivery,status,created_at,email_status) SELECT ?,?,?,?,?,?,?,?,?,?,?,?,?,? FROM carts WHERE id=? AND revision=? AND expires_at>?',
+          'INSERT INTO simulation_orders(id,cart_id,idempotency_key,fingerprint,name,email,lines,subtotal,shipping,total,delivery,status,created_at,email_status,phone,optin) SELECT ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? FROM carts WHERE id=? AND revision=? AND expires_at>?',
         )
         .bind(
           id,
@@ -369,6 +396,8 @@ export async function POST(request: Request, context: Context) {
           status,
           new Date().toISOString(),
           status === 'simulated_paid' ? 'pending' : 'not_applicable',
+          phone,
+          optin,
           token,
           cart.revision,
           Date.now(),

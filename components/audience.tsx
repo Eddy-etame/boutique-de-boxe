@@ -17,7 +17,9 @@ type Report = {
   devices: { device: string; n: number }[];
   referrers: { host: string; n: number }[];
   searches: { query: string; n: number; none: number }[];
+  journeys: { sid: string; started: string; ended: string; device: string; from: string; views: number; converted: boolean; pages: { path: string; name: string; dwell: number | null; marks: string[] }[] }[];
 };
+const when = (iso: string) => new Date(iso).toLocaleString('fr-FR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
 
 const TYPE_LABEL: Record<string, string> = { add_to_cart: 'Ajouts au panier', alert_submit: 'Inscriptions à l’alerte', contact_submit: 'Demandes de contact', search: 'Recherches', filter: 'Filtres utilisés', click: 'Clics', consent: 'Consentements' };
 const fr = (n: number | null | undefined) => (n == null ? '—' : Number(n).toLocaleString('fr-FR'));
@@ -99,6 +101,33 @@ export function Audience() {
             <p>Ce que les visiteurs cherchent et ne trouvent pas : matériel à ajouter, ou nom à corriger.</p>
           </article>
         </div>
+      </section>
+
+      <section className="audience-block">
+        <h3>Parcours des dernières visites</h3>
+        <p className="commerce-caption">Une ligne par visite : d’où elle vient, chaque page dans l’ordre avec le temps passé, et ce qui s’y est fait.</p>
+        <ol className="audience-journeys">
+          {report.journeys.map((j) => (
+            <li key={j.sid} className={j.converted ? 'is-converted' : ''}>
+              <div className="journey-head">
+                <strong>{when(j.started)}</strong>
+                <span>{j.device || 'appareil inconnu'} · via {j.from}</span>
+                <span>{fr(j.views)} page{j.views > 1 ? 's' : ''}{j.converted ? ' · a agi' : ''}</span>
+              </div>
+              <div className="journey-steps">
+                {j.pages.map((p, i) => (
+                  <span key={i} className="journey-step">
+                    <a href={p.path} target="_blank" rel="noreferrer">{p.name}</a>
+                    {p.dwell != null && <small>{fr(p.dwell)} s</small>}
+                    {p.marks.map((m, k) => <em key={k}>{m}</em>)}
+                  </span>
+                ))}
+                {!j.pages.length && <span className="journey-step"><small>aucune page mesurée</small></span>}
+              </div>
+            </li>
+          ))}
+          {!report.journeys.length && <li><span>Aucune visite mesurée sur la période.</span></li>}
+        </ol>
       </section>
 
       <div className="audience-grid">

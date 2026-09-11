@@ -1,5 +1,6 @@
 'use client';
 import { Audience } from './audience';
+import { Clients } from './clients';
 import { useEffect, useState } from 'react';
 import { CatalogEditor } from './catalog-editor';
 import { OrdersAdmin } from './commerce-ui';
@@ -95,6 +96,7 @@ export function Admin() {
           ['contacts', 'Contacts'],
           ['seo', 'Suivi SEO'],
           ['audience', 'Audience'],
+          ['clients', 'Clients & ventes'],
         ].map(([id, label]) => (
           <button
             key={id}
@@ -109,6 +111,7 @@ export function Admin() {
         ))}
       </div>
       {tab === 'orders' && <OrdersAdmin />}
+      {tab === 'clients' && <Clients />}
       {tab === 'payments' && <PayplugSettings />}
       {tab === 'imports' && (
         <CatalogueImports

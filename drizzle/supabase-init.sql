@@ -132,3 +132,9 @@ CREATE INDEX IF NOT EXISTS "events_created" ON "events" ("created_at");
 CREATE INDEX IF NOT EXISTS "events_sid" ON "events" ("sid");
 CREATE INDEX IF NOT EXISTS "events_path_type" ON "events" ("path","type");
 ALTER TABLE "events" ENABLE ROW LEVEL SECURITY;
+
+-- 0003: buyer contact on simulated orders (phone, opt-in, indexes)
+ALTER TABLE "simulation_orders" ADD COLUMN IF NOT EXISTS "phone" text DEFAULT '' NOT NULL;
+ALTER TABLE "simulation_orders" ADD COLUMN IF NOT EXISTS "optin" integer DEFAULT 0 NOT NULL;
+CREATE INDEX IF NOT EXISTS "orders_email" ON "simulation_orders" USING btree ("email");
+CREATE INDEX IF NOT EXISTS "orders_created" ON "simulation_orders" USING btree ("created_at");

@@ -1,6 +1,20 @@
 # Raccordement PayPlug — Boutique de Boxe
 
-État au 10 septembre 2026 : **la boutique reste en simulation**. Aucune clé PayPlug n’a été copiée depuis box-plus, aucun appel de création de paiement PayPlug n’a été effectué, et aucun débit réel n’est autorisé. Le parcours public conserve le panier, le paiement simulé et le reçu d’essai.
+État au 11 septembre 2026, tard : **la boutique reste en simulation pour le public**, aucun débit réel n’est autorisé (verrou `LIVE_PAYMENT_RELEASED = false`). Le **test bac à sable** a été exécuté en local, à la demande du propriétaire, avec la clé de test du compte PayPlug de box-plus :
+
+- La clé `sk_test_…` a été recopiée depuis `Plannings/box-plus/.env.colleague` (seul fichier de box-plus qui la porte ; `.env` de box-plus ne contient que Stripe) vers `.env.local` et `.env.vercel` de la boutique, tous deux ignorés par Git. Elle n’a jamais été affichée ni journalisée.
+- **Défaut de production trouvé et corrigé** (commit `7eed892`) : l’écriture du paiement vérifié utilisait `MAX(refunded_cents, ?)`, propre à SQLite ; Postgres le refuse, si bien que chaque création, notification ou rapprochement finissait « à rapprocher du portail ». Le faux moteur des tests, écrit en SQLite, masquait le défaut. L’expression est portable et le test le connaît.
+- Vérifié sur le compte de test : création hébergée → `pending` avec l’adresse `https://secure.payplug.com/pay/test/…`, statut relu et vérifié, notification IPN acceptée pour le bon identifiant (`{"received":true}`), refusée pour un identifiant étranger (400), rapprochement par identifiant relevé dans le portail (200). Trois tentatives de test existent en base locale (`payment_attempts`), toutes `pending`.
+- **Attribution** : tout paiement créé avec cette clé apparaît dans le portail PayPlug du compte **box-plus**, en mode TEST, avec `metadata.integration = boutique-de-boxe`, `order_id` et `attempt_id` de la tentative, et la description « Boutique de Boxe · essai … ». C’est ainsi que l’on distingue les paiements de la boutique de ceux de box-plus tant que les deux partagent un compte. Le propriétaire prévoit un compte marchand distinct pour la boutique : il suffira de remplacer les clés.
+- **Comment les messages arrivent** : PayPlug appelle `notification_url` en POST avec `{ id, object: "payment", is_live }` seulement ; la boutique ne croit jamais ce corps, elle relit le paiement par l’API et vérifie identifiant, montant, devise, mode test et métadonnées. Le `return_url` ramène le visiteur sur `/paiement-retour/?id=<tentative>` qui relit le statut au serveur. Le portail enregistre le code de réponse de la notification (`notification.response_code`).
+- **Ce qui n’a pas été fait** : le paiement lui-même (saisie d’une carte de test), laissé au propriétaire ; voir « Finir le test » ci-dessous.
+
+## Finir le test
+
+1. En local, le serveur tourne avec `COMMERCE_MODE=payplug_test`, la clé de test et `PAYPLUG_PUBLIC_BASE_URL=https://boutique-de-boxe.vercel.app` (`NEXT_PUBLIC_SITE_ORIGIN` pointe aussi sur ce domaine le temps du test). Ouvrir Atelier → Réglages PayPlug, préparer un essai, payer sur la page PayPlug avec une carte de test : `4242 4242 4242 4242` (accepté), `4000 0000 0000 0051` (refusé), `3787 0081 0990 001` (3-D Secure) ; toute date future et tout CVC. Le retour arrive sur le site en ligne (qui ignore, car en simulation) : relire alors le statut dans l’atelier local, il passe à « Paiement de test confirmé ».
+2. Pour le tour complet (retour et notification sur le même site), poser sur Vercel `COMMERCE_MODE=payplug_test`, `PAYPLUG_TEST_SECRET_KEY` et `PAYPLUG_PUBLIC_BASE_URL` (déjà prêts dans `.env.vercel`), redéployer, faire le même essai depuis l’atelier en ligne, puis **remettre `COMMERCE_MODE=simulation`**. Le panier public reste simulé dans les deux cas.
+
+
 
 ## Ce qui est préparé
 
@@ -18,10 +32,10 @@
 | Nom | Valeur actuelle / attendue | Utilisation |
 | --- | --- | --- |
 | `COMMERCE_MODE` | `simulation` (également valeur par défaut) | Conserver cette valeur maintenant. `payplug_test` ouvrira uniquement le test administrateur après raccordement. |
-| `PAYPLUG_TEST_SECRET_KEY` | Vide maintenant ; future clé `sk_test_…` | Secret du compte PayPlug de test autorisé. Ne pas utiliser une clé réelle ici. |
+| `PAYPLUG_TEST_SECRET_KEY` | Clé `sk_test_…` du compte box-plus, posée en local et dans `.env.vercel` le 11 septembre 2026 | Secret du compte PayPlug de test. Ne pas utiliser une clé réelle ici ; à remplacer par la clé du compte propre à la boutique quand il existera. |
 | `PAYPLUG_LIVE_SECRET_KEY` | Vide maintenant | Réservée à une future activation explicite. Sa seule présence n’active rien. |
 | `PAYPLUG_API_VERSION` | `2019-08-06` | Version explicitement prise en charge et testée. Une autre valeur est refusée. |
-| `PAYPLUG_PUBLIC_BASE_URL` | Origine HTTPS exacte de cette boutique | Sert à construire les retours et notifications ; ne vient jamais de l’en-tête Host ou d’une saisie client. |
+| `PAYPLUG_PUBLIC_BASE_URL` | `https://boutique-de-boxe.vercel.app` jusqu’au domaine définitif | Sert à construire les retours et notifications ; ne vient jamais de l’en-tête Host ou d’une saisie client. Doit figurer dans les origines possédées (`NEXT_PUBLIC_SITE_ORIGIN` ou le domaine). |
 | `ADMIN_EMAIL` | Adresse du propriétaire, variable Vercel | Accès à l’atelier et aux tests PayPlug. |
 | `RESEND_API_KEY` | À configurer si Resend est retenu | Envoi transactionnel des reçus de simulation ; indépendant de PayPlug. |
 | `MAIL_FROM` | À configurer sur un domaine expéditeur vérifié | Exemple de forme : `Boutique de Boxe <reçus@votre-domaine-verifie.fr>` ; ne pas utiliser cet exemple tel quel. |
@@ -51,7 +65,7 @@ Les origines autorisées dans l’adaptateur sont `NEXT_PUBLIC_SITE_ORIGIN` (si 
 5. Effectuer un test complet avec les cartes de test documentées par PayPlug : succès, refus, annulation du retour, authentification 3-D Secure si présentée, retour avant/après IPN, notification répétée, réponse de création interrompue et rapprochement manuel. Vérifier les états D1 et le portail, ainsi que l’absence de double paiement.
 6. Revenir à `COMMERCE_MODE=simulation` après la recette tant que l’ouverture des ventes n’a pas été demandée.
 
-**Les tests locaux avec réponses PayPlug simulées ne remplacent pas ce test sur le compte marchand.** Aucun test distant PayPlug n’a été exécuté à ce stade.
+**Les tests locaux avec réponses PayPlug simulées ne remplacent pas ce test sur le compte marchand.** Le test distant a été exécuté le 11 septembre 2026 jusqu’à la page de paiement (voir l’état en tête) ; la saisie de carte et le tour complet en ligne restent à faire.
 
 ## Ce qui reste avant des encaissements réels
 
