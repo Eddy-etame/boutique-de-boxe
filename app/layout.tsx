@@ -3,6 +3,7 @@ import { Header, Footer, Motion } from '@/components/shop-shell';
 import { shop } from '@/lib/catalog';
 import { siteGraph, KEYWORDS, ATTRIBUTION } from '@/lib/seo';
 import { ConsentTracker } from '@/components/consent-tracker';
+import { Analytics } from '@vercel/analytics/next';
 import './globals.css';
 import './shop.css';
 import './refinement.css';
@@ -83,6 +84,12 @@ export default function RootLayout({
           type="font/woff2"
           crossOrigin="anonymous"
         />
+        {/* Avant l'hydratation : sans choix enregistre, la page s'affiche deja floutee derriere la carte des cookies. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "if(!/(?:^|; )bdb_consent=/.test(document.cookie))document.documentElement.setAttribute('data-consent-open','');",
+          }}
+        />
       </head>
       <body>
         <a href="#contenu" className="skip-link">
@@ -94,6 +101,7 @@ export default function RootLayout({
         <Motion />
         {/* Carte de consentement et mesure d’audience maison : rien n’est mesuré sans accord. */}
         <ConsentTracker />
+        <Analytics />
         {/* Organisation et site : un seul graphe, référencé par le graphe de chaque page. */}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: siteGraph() }} />
       </body>

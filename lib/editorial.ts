@@ -146,6 +146,7 @@ export const services: Record<string, Service> = {
         title: 'Cookies et mesure d’audience',
         paragraphs: [
           'À votre première visite, une carte vous demande si vous acceptez un cookie de mesure. Si vous acceptez, la boutique enregistre elle-même, sans outil tiers, les pages que vous regardez, le temps passé, les modèles ajoutés au panier, les recherches et les formulaires envoyés. Ces données servent à mieux présenter le matériel. Aucune adresse IP n’est conservée.',
+          'L’hébergeur du site, Vercel, compte par ailleurs les pages vues sans cookie ni identifiant conservé : ce comptage ne permet pas de vous reconnaître d’une visite à l’autre et ne dépend pas de votre choix.',
           'Le cookie d’identifiant dure treize mois, le cookie de choix un an. Si vous refusez, aucun cookie de mesure n’est posé et rien n’est enregistré. Vous changez d’avis à tout moment par le lien « Cookies » en bas de page. Le panier et la connexion à l’atelier utilisent des cookies strictement nécessaires, sans mesure.',
         ],
       },

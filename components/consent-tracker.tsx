@@ -152,6 +152,23 @@ export function ConsentTracker() {
     };
   }, [consent]);
 
+  // La carte prend le focus à l’ouverture ; la page derrière est floutée et ne défile pas.
+  useEffect(() => {
+    if (!open) return;
+    const previous = document.activeElement as HTMLElement | null;
+    document.querySelector<HTMLButtonElement>('.consent-accept')?.focus({ preventScroll: true });
+    const keep = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+      const focusables = Array.from(document.querySelectorAll<HTMLElement>('.consent-card button, .consent-card a'));
+      if (!focusables.length) return;
+      const first = focusables[0], last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    };
+    document.addEventListener('keydown', keep);
+    return () => { document.removeEventListener('keydown', keep); previous?.focus?.({ preventScroll: true }); };
+  }, [open]);
+
   const decide = (value: 'accepted' | 'refused') => {
     writeCookie(CONSENT, value, 365);
     if (value === 'accepted') {
@@ -163,27 +180,31 @@ export function ConsentTracker() {
     setForced(false);
     notify();
     if (value === 'accepted') { track('consent', { value }); flush(); }
+    // Le voile tombe, puis la page rejoue son entrée : le visiteur ne découvre jamais une page immobile.
+    window.setTimeout(() => window.dispatchEvent(new Event('boutique:replay-entry')), 60);
   };
 
   if (!open) return null;
   return (
-    <aside className="consent-card" role="dialog" aria-labelledby="consent-title" aria-describedby="consent-text">
-      <span className="eyebrow">COOKIES ET MESURE</span>
-      <h2 id="consent-title">Nous mesurons votre visite.</h2>
-      <p id="consent-text">
-        Avec votre accord, un cookie nous dit quelles pages vous regardez, ce que vous ajoutez au panier et où vous vous arrêtez. Cela sert à mieux
-        présenter le matériel. Rien n’est vendu ni partagé. Vous changez d’avis quand vous voulez, en bas de page.
-      </p>
-      <div className="consent-actions">
+    <div className="consent-veil">
+      <aside className="consent-card" role="dialog" aria-modal="true" aria-labelledby="consent-title" aria-describedby="consent-text">
+        <span className="eyebrow">COOKIES ET MESURE D’AUDIENCE</span>
+        <h2 id="consent-title">Avant d’entrer.</h2>
+        <p id="consent-text">
+          Avec votre accord, un cookie nous dit quelles pages vous regardez, ce que vous ajoutez au panier et où vous vous arrêtez.
+          Cela sert à mieux présenter le matériel. Rien n’est vendu ni partagé. Vous changez d’avis quand vous voulez, en bas de page.
+        </p>
         <button type="button" className="consent-accept" onClick={() => decide('accepted')}>
-          J’accepte
+          J’accepte et j’entre
         </button>
-        <button type="button" className="consent-refuse" onClick={() => decide('refused')}>
-          Refuser
-        </button>
-      </div>
-      <a href="/confidentialite/">Comment vos données sont traitées</a>
-    </aside>
+        <div className="consent-actions">
+          <button type="button" className="consent-refuse" onClick={() => decide('refused')}>
+            Continuer sans mesure
+          </button>
+          <a href="/confidentialite/">Comment vos données sont traitées</a>
+        </div>
+      </aside>
+    </div>
   );
 }
 

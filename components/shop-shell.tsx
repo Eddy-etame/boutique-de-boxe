@@ -260,6 +260,35 @@ export function Motion() {
     };
     document.addEventListener('click', onClick);
     window.addEventListener('pageswap', onSwap);
+    // Après la carte des cookies, la page rejoue son entrée : animations d’arrivée, révélations visibles, compteurs.
+    const replay = () => {
+      if (stillMotion) return;
+      const root = document.documentElement;
+      root.setAttribute('data-replay', '');
+      const visible = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal].in-view')).filter((el) => {
+        const r = el.getBoundingClientRect();
+        return r.bottom > 0 && r.top < innerHeight;
+      });
+      visible.forEach((el) => el.classList.remove('in-view'));
+      void document.body.offsetWidth;
+      root.removeAttribute('data-replay');
+      visible.forEach((el) => el.classList.add('in-view'));
+      document.querySelectorAll<HTMLElement>('[data-count]').forEach((el) => {
+        const r = el.getBoundingClientRect();
+        if (r.bottom <= 0 || r.top >= innerHeight) return;
+        const target = Number(el.dataset.count || 0);
+        if (!target) return;
+        const start = performance.now();
+        const tick = (now: number) => {
+          const t = Math.min(1, (now - start) / 900);
+          el.textContent = String(Math.round(target * (1 - Math.pow(1 - t, 3))));
+          if (t < 1) requestAnimationFrame(tick);
+        };
+        el.textContent = '0';
+        requestAnimationFrame(tick);
+      });
+    };
+    window.addEventListener('boutique:replay-entry', replay);
     return () => {
       observer.disconnect();
       counters.disconnect();
@@ -267,6 +296,7 @@ export function Motion() {
       stage?.removeEventListener('pointerleave', onLeave);
       document.removeEventListener('click', onClick);
       window.removeEventListener('pageswap', onSwap);
+      window.removeEventListener('boutique:replay-entry', replay);
     };
   }, [pathname]);
   return null;
