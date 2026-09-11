@@ -37,11 +37,11 @@ export default function Home({ items }: { items: Product[] }) {
           <div className="workbench-intro">
             <span className="workbench-rule" />
             <p>
-              {items.length.toLocaleString('fr-FR')} modèles : gants, bandes, protections, textile, sacs.
+              Tout le matériel de boxe et de MMA : gants, bandes, protections, sacs de frappe.
               <br />
-              Les vraies tailles, les vrais détails.
+              Le matériel des salles, livré chez vous, dans toute la France.
               <br />
-              Prix prévus à l’ouverture des ventes.
+              Ouverture des ventes bientôt. <a href="#ouverture">Laissez votre e-mail</a>, on vous prévient le jour J.
             </p>
           </div>
           <a href="/materiel-sport-de-combat/" className="button button-dark">
@@ -180,7 +180,7 @@ export default function Home({ items }: { items: Product[] }) {
           </a>
         </div>
       </section>
-      <section className="opening-note section-pad" data-reveal>
+      <section id="ouverture" className="opening-note section-pad" data-reveal>
         <div>
           <span className="eyebrow">OUVERTURE DES VENTES</span>
           <h2>
