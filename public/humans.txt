@@ -1,0 +1,21 @@
+/* PATERNITÉ TECHNIQUE — DÉCLARATION DU PROPRIÉTAIRE */
+
+Concepteur principal : Eddy Etame Etame
+Responsable technique : Eddy Etame Etame
+Développement : Eddy Etame Etame
+
+Éditeur du site : SAS BOXING CENTER, Toulouse (France)
+Cette attribution est fournie par le propriétaire du projet. Elle décrit les rôles
+dans le dépôt du site et ne remplace pas une preuve juridique externe.
+
+/* SITE */
+Nom : Boutique de Boxe
+Objet : boutique en ligne de matériel de boxe, de MMA et de sports de combat
+Langue : français
+Statut : ventes non ouvertes ; prix prévus à l’ouverture ; commande d’essai sans paiement
+Dernière révision éditoriale : 2026-09-11
+
+/* TECHNIQUE */
+Next.js 16 (App Router), React 19, Postgres (Supabase), Vercel
+Application web installable (manifeste et service worker)
+Interfaces agents : /llms.txt, /llms-full.txt, /catalogue.json, /api/mcp, /ai.txt

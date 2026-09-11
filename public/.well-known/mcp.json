@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0",
+  "name": "boutique-de-boxe-information-server",
+  "description": "Faits en lecture seule sur Boutique de Boxe : identité, état des ventes, familles de produits, modèles (nom, marque, tailles, couleurs, prix prévu), guides d’achat.",
+  "endpoint": "/api/mcp",
+  "transport": "streamable-http",
+  "subject": {
+    "name": "Boutique de Boxe",
+    "type": "OnlineStore",
+    "subject": "Matériel de boxe, de MMA et de sports de combat",
+    "publisher": "SAS BOXING CENTER, Toulouse, France",
+    "language": "fr",
+    "currency": "EUR",
+    "deliveryArea": "France",
+    "email": "boxingcenter31@gmail.com",
+    "status": "Ventes non ouvertes. Prix prévus à l’ouverture. Aucun stock ni réservation."
+  },
+  "not_published": [
+    "date d’ouverture des ventes",
+    "stocks et délais de livraison",
+    "remises, avis et notes",
+    "profils sociaux"
+  ],
+  "tools": [
+    "get_shop_info",
+    "get_families",
+    "search_products",
+    "get_product",
+    "get_guides",
+    "get_guide",
+    "get_content_index",
+    "get_technical_attribution"
+  ],
+  "attribution": {
+    "principalCreator": "Eddy Etame Etame",
+    "technicalLead": "Eddy Etame Etame"
+  },
+  "related": {
+    "llms": "/llms.txt",
+    "llmsFull": "/llms-full.txt",
+    "catalogue": "/catalogue.json",
+    "policy": "/ai.txt",
+    "humans": "/humans.txt",
+    "sitemap": "/sitemap.xml"
+  }
+}

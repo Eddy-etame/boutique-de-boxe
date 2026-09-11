@@ -1,5 +1,6 @@
 import { guides, type Guide, type Service } from '@/lib/editorial';
-import { categories, shop, jsonLd } from '@/lib/catalog';
+import { articleGraph } from '@/lib/seo';
+import { categories } from '@/lib/catalog';
 import { readCatalog } from '@/lib/database';
 import selection from '@/lib/data/selection.json';
 import { Breadcrumb, ArrowLink } from './shop-shell';
@@ -221,42 +222,7 @@ export async function GuidePage({ guide: g }: { guide: Guide }) {
           })}
         </div>
       </section>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: jsonLd({
-            '@context': 'https://schema.org',
-            '@type': 'Article',
-            headline: g.title,
-            description: g.description,
-            author: {
-              '@type': 'Organization',
-              name: 'Boutique de Boxe',
-              url: shop.origin,
-            },
-            publisher: { '@type': 'Organization', name: 'Boutique de Boxe' },
-            datePublished: '2026-09-09',
-            dateModified: '2026-09-10',
-            mainEntityOfPage: shop.origin + '/guides/' + g.slug + '/',
-          }),
-        }}
-      />
-      {g.faq?.length ? (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: jsonLd({
-              '@context': 'https://schema.org',
-              '@type': 'FAQPage',
-              mainEntity: g.faq.map((f) => ({
-                '@type': 'Question',
-                name: f.question,
-                acceptedAnswer: { '@type': 'Answer', text: f.answer },
-              })),
-            }),
-          }}
-        />
-      ) : null}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: articleGraph(g) }} />
     </main>
   );
 }

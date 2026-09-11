@@ -435,7 +435,7 @@ function buildName(p) {
   if (/[,\-×]$|\s(de|et|du|à|pour|avec)$/i.test(name)) problems.push('fin');
   if (problems.length) { review = true; rules.push('R14:' + problems.join('|')); }
 
-  return { name, reference, referenceLabel, colors: uniqColors, notes, review, rules: [...new Set(rules)], adoptedBrand, removedSizes, assemble, steps, uniqColors };
+  return { name, reference, referenceLabel, colors: uniqColors, notes, review, rules: [...new Set(rules)], adoptedBrand, brand, removedSizes, assemble, steps, uniqColors };
 }
 
 /* ------------------------------------------------------------------ tailles */
@@ -490,7 +490,7 @@ const products = JSON.parse(fs.readFileSync(FILE, 'utf8'));
 const rows = [];
 const stats = { total: products.length, review: 0, changed: 0, sizesChanged: 0, sizesCollision: 0, refInternal: 0, threeColors: 0, brandAdopted: 0, collisionsResolved: 0, collisionsLeft: 0 };
 const results = new Map();
-for (const p of products) results.set(p.id, buildName({ ...p, sourceName: p.sourceName || p.name }));
+for (const p of products) results.set(p.id, buildName({ ...p, sourceName: p.sourceName || p.name, brand: p.sourceBrand || p.brand }));
 
 const reserved = new Set(JSON.parse(fs.readFileSync(path.join(HERE, '..', 'lib', 'data', 'products.json'), 'utf8')).map((p) => p.name));
 const groups = new Map();
@@ -531,7 +531,10 @@ for (const p of products) {
   if (!DRY) {
     p.sourceName = sourceName;
     p.name = r.name;
-    if (r.adoptedBrand) p.brand = r.adoptedBrand;
+    // la marque prend sa forme d’affichage (Fairtex, Elion) ; un nom de fournisseur n’est pas une marque
+    const sourceBrand = p.sourceBrand || p.brand;
+    p.sourceBrand = sourceBrand;
+    p.brand = r.adoptedBrand || r.brand || (/^(le coin du ring|boxing shop)$/i.test(sourceBrand) ? 'Marque à préciser' : /^aqua punching bag$/i.test(sourceBrand) ? 'Aqua Punching Bag' : sourceBrand);
     p.colors = colors;
     p.reference = r.reference;
     p.referenceLabel = r.referenceLabel;

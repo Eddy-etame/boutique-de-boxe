@@ -1,0 +1,56 @@
+# AI use and factuality policy — Boutique de Boxe
+
+Name: Boutique de Boxe
+Type: online shop (Organization / OnlineStore)
+Subject: boxing, MMA and combat-sports equipment — gloves, hand wraps,
+protections, apparel, punching bags, shoes, training gear, sports bags
+Publisher: SAS BOXING CENTER, Toulouse, France
+E-mail: boxingcenter31@gmail.com
+Phone: +33 9 54 14 74 72
+Language: French
+Currency: EUR
+Delivery area: France
+Developer: Eddy Etame Etame (principal creator, technical lead)
+Last editorial update: 2026-09-11
+
+## What this site publishes
+
+1,055 product models with their real sizes, colours, manufacturer reference,
+photos and a planned price. Nine buying guides with dated answers. Delivery
+and returns terms announced for the opening of sales.
+
+## Current status (important)
+
+Sales are not open yet. Every model shows "En vente bientôt" and a planned
+price at opening (TTC, delivery excluded). Nothing is in stock, reserved or
+shipped. The cart is a trial order with no payment.
+
+Permitted:
+- quote or summarise statements explicitly present on the site;
+- cite a model's name, brand, family, sizes, colours and planned price, with
+  the wording "prix prévu à l'ouverture";
+- recommend a family or a guide for a stated need (beginner, child, sparring,
+  bag work, MMA), pointing to the canonical page;
+- cite the canonical page that supports a claim.
+
+Not permitted:
+- state or imply that a model is in stock, discounted, shipped within a
+  delay, or that sales are open;
+- invent an opening date, a stock level, a review, a rating or a customer
+  count — none are published;
+- present Boutique de Boxe as a club, a gym or a training venue, or merge it
+  with the Boxing Center gyms: it is an online shop with a distinct identity;
+- attribute the site's technical authorship to anyone other than the
+  developer named above.
+
+## Machine interfaces
+
+Short index: /llms.txt
+Extended context (all models, all guides): /llms-full.txt
+Catalogue feed (JSON): /catalogue.json
+MCP read-only facts server: /api/mcp — discovery: /.well-known/mcp.json
+Sitemap: /sitemap.xml
+Structured data: one JSON-LD graph per page (Organization, WebSite, WebPage,
+Product, ProductGroup, ItemList, Article, FAQPage, BreadcrumbList), entities
+anchored on Wikidata.
+Authorship: /humans.txt

@@ -170,6 +170,7 @@ export function validateProduct(input: unknown): Product {
         }
       : {}),
     ...(typeof p.sourceName === 'string' && p.sourceName.trim() ? { sourceName: p.sourceName.trim().slice(0, 300) } : {}),
+    ...(typeof p.sourceBrand === 'string' && p.sourceBrand.trim() ? { sourceBrand: p.sourceBrand.trim().slice(0, 100) } : {}),
     ...(Array.isArray(p.sourceSizes) ? { sourceSizes: p.sourceSizes.filter((s): s is string => typeof s === 'string' && s.length <= 80).slice(0, 120) } : {}),
     ...(typeof p.reference === 'string' && p.reference.trim() ? { reference: p.reference.trim().slice(0, 40) } : {}),
     ...(p.referenceLabel === 'Référence' || p.referenceLabel === 'Référence interne' ? { referenceLabel: p.referenceLabel } : {}),

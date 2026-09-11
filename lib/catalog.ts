@@ -30,6 +30,7 @@ export type Product = {
   variants?: { id:string; reference:string; label:string; attributes:Record<string,string>; price:number; imageUrl?:string }[];
   /** nom fournisseur d’origine, étiquettes de tailles d’origine, référence fabricant, couleurs (catalogue importé) */
   sourceName?: string;
+  sourceBrand?: string;
   sourceSizes?: string[];
   reference?: string;
   referenceLabel?: 'Référence' | 'Référence interne';

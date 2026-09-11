@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Header, Footer, Motion } from '@/components/shop-shell';
-import { shop, jsonLd } from '@/lib/catalog';
+import { shop } from '@/lib/catalog';
+import { siteGraph, KEYWORDS, ATTRIBUTION } from '@/lib/seo';
 import './globals.css';
 import './shop.css';
 import './refinement.css';
@@ -18,6 +19,11 @@ export const metadata: Metadata = {
   },
   description:
     'Le matériel de boxe, MMA et sports de combat dans le détail. Découvrez les équipements, comparez les modèles et préparez votre séance avec nos guides.',
+  keywords: [...KEYWORDS.site.head, ...KEYWORDS.site.body],
+  authors: [{ name: shop.name, url: shop.origin }],
+  creator: ATTRIBUTION.principalCreator,
+  publisher: shop.entity,
+  category: 'shopping',
   robots: { index: true, follow: true },
   openGraph: {
     siteName: shop.name,
@@ -76,45 +82,8 @@ export default function RootLayout({
         {children}
         <Footer />
         <Motion />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: jsonLd({
-              '@context': 'https://schema.org',
-              '@type': 'WebSite',
-              name: shop.name,
-              url: shop.origin,
-              inLanguage: 'fr-FR',
-              potentialAction: {
-                '@type': 'SearchAction',
-                target: { '@type': 'EntryPoint', urlTemplate: shop.origin + '/recherche/?q={search_term_string}' },
-                'query-input': 'required name=search_term_string',
-              },
-            }),
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: jsonLd({
-              '@context': 'https://schema.org',
-              '@type': 'Organization',
-              '@id': `${shop.origin}/#organisation`,
-              name: shop.name,
-              legalName: shop.entity,
-              url: shop.origin,
-              email: shop.email,
-              telephone: '+33954147472',
-              address: {
-                '@type': 'PostalAddress',
-                streetAddress: '12 rue de Fenouillet',
-                postalCode: '31200',
-                addressLocality: 'Toulouse',
-                addressCountry: 'FR',
-              },
-            }),
-          }}
-        />
+        {/* Organisation et site : un seul graphe, référencé par le graphe de chaque page. */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: siteGraph() }} />
       </body>
     </html>
   );

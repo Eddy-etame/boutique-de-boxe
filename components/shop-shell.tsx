@@ -233,6 +233,8 @@ export function Breadcrumb({
 }: {
   items: { label: string; href?: string }[];
 }) {
+  // Le graphe de chaque page renvoie à ce fil d’Ariane par son @id.
+  const pathname = usePathname();
   return (
     <>
       <script
@@ -241,6 +243,7 @@ export function Breadcrumb({
           __html: jsonLd({
             '@context': 'https://schema.org',
             '@type': 'BreadcrumbList',
+            '@id': shop.origin + (pathname.endsWith('/') ? pathname : pathname + '/') + '#breadcrumb',
             itemListElement: [{ label: 'Accueil', href: '/' }, ...items].map(
               (x, i) => ({
                 '@type': 'ListItem',

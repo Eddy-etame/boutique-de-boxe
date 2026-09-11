@@ -1,4 +1,5 @@
 import { catalogPage } from '@/lib/pagination';
+import { productGraph, collectionGraph, productKeywords, categoryKeywords, guideKeywords, pageKeywords } from '@/lib/seo';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import {
@@ -6,7 +7,6 @@ import {
   getCategoryProducts,
   categories,
   shop,
-  jsonLd,
   money,
 } from '@/lib/catalog';
 import { readCatalog, isAdmin } from '@/lib/database';
@@ -63,7 +63,7 @@ export async function generateMetadata({
     ],
     contact: [
       'Contact : une question sur le matériel ?',
-      'Contactez Boxing Center pour une question sur les équipements présentés, une fiche produit ou la préparation de Boutique de Boxe.',
+      'Écrivez à Boutique de Boxe pour une question sur un modèle, une taille ou une fiche produit. Réponse par e-mail.',
     ],
     confirmation: [
       'Demande enregistrée',
@@ -139,6 +139,8 @@ export async function generateMetadata({
   return {
     title: seoTitle,
     description,
+    // le premier mot-clé est toujours une phrase visible de la page (son titre) ; l’audit le vérifie
+    keywords: product ? productKeywords(product) : cat ? categoryKeywords(cat) : guide ? guideKeywords(guide) : [(service?.title || special[path]?.[0] || '').toLowerCase(), ...(pageKeywords(path) || [])].filter(Boolean),
     alternates: { canonical },
     openGraph: {
       title: pageTitle,
@@ -401,25 +403,7 @@ export default async function Page({ params, searchParams }: Props) {
             </div>
           </section>
         )}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: jsonLd({
-              '@context': 'https://schema.org',
-              '@type': 'Product',
-              name: p.name,
-              description: p.short,
-              image: p.images.map((i) => new URL(i.src, shop.origin).href),
-              sku: p.sourceRef,
-              ...(!['Sélection Boutique de Boxe', 'Marque à préciser'].includes(
-                p.brand,
-              )
-                ? { brand: { '@type': 'Brand', name: p.brand } }
-                : {}),
-              url: shop.origin + '/produits/' + p.slug + '/',
-            }),
-          }}
-        />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: productGraph(p, related) }} />
       </main>
     );
   }
@@ -447,19 +431,15 @@ export default async function Page({ params, searchParams }: Props) {
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{
-              __html: jsonLd({
-                '@context': 'https://schema.org',
-                '@type': 'ItemList',
-                name: cat?.name || (path === 'nouveautes' ? 'Nouveautés' : 'Recherche'),
-                numberOfItems: data.length,
-                itemListElement: data
-                  .slice((currentPage - 1) * 36, currentPage * 36)
-                  .map((x, i) => ({
-                    '@type': 'ListItem',
-                    position: (currentPage - 1) * 36 + i + 1,
-                    name: x.name,
-                    url: shop.origin + '/produits/' + x.slug + '/',
-                  })),
+              __html: collectionGraph({
+                path: '/' + path + '/',
+                name: cat?.name || 'Nouveautés',
+                description: cat?.description || 'Les derniers modèles ajoutés au catalogue Boutique de Boxe.',
+                items: data.slice((currentPage - 1) * 36, currentPage * 36),
+                total: data.length,
+                page: currentPage,
+                perPage: 36,
+                category: cat,
               }),
             }}
           />

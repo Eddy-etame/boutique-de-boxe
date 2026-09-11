@@ -1,8 +1,15 @@
 import type { Metadata } from 'next';
 import Home from '@/components/home';
 import { readCatalog } from '@/lib/database';
+import { homeGraph, PAGE_KEYWORDS } from '@/lib/seo';
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { alternates: { canonical: '/' } };
+export const metadata: Metadata = { alternates: { canonical: '/' }, keywords: PAGE_KEYWORDS[''] };
 export default async function Page() {
-  return <Home items={await readCatalog()} />;
+  const items = await readCatalog();
+  return (
+    <>
+      <Home items={items} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: homeGraph(items) }} />
+    </>
+  );
 }

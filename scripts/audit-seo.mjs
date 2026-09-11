@@ -40,19 +40,55 @@ for (let i = 0; i < locations.length; i += 4) {
       descriptions.add(desc);
       const canonical = html.match(/<link rel="canonical" href="([^"]+)"/)?.[1];
       assert.equal(new URL(canonical).pathname, path, 'canonical ' + path);
-      const structured = [
+      const blocks = [
         ...html.matchAll(
           /<script type="application\/ld\+json">(.*?)<\/script>/gs,
         ),
       ].map((x) => JSON.parse(x[1]));
+      // un graphe par page : on raisonne sur les nœuds, pas sur les blocs
+      const structured = blocks.flatMap((b) => b['@graph'] || [b]);
+      // définitions : tout objet portant un @id et d’autres propriétés ; références : un @id seul.
+      const defined = new Set();
+      const referenced = new Set();
+      const walk = (v) => {
+        if (Array.isArray(v)) return v.forEach(walk);
+        if (!v || typeof v !== 'object') return;
+        if (v['@id']) (Object.keys(v).some((k) => k !== '@id' && k !== '@type') ? defined : referenced).add(v['@id']);
+        Object.values(v).forEach(walk);
+      };
+      walk(structured);
+      const here = new URL(base + path).origin;
+      for (const id of referenced) {
+        // les renvois vers d’autres fiches (modèles proches) se résolvent sur leur propre page
+        const samePage = id.startsWith(here + path) || id.startsWith(here + '/#');
+        if (samePage) assert.ok(defined.has(id), 'référence @id non résolue ' + id + ' sur ' + path);
+      }
+      assert.ok(structured.some((n) => n['@type'] === 'WebSite'), 'WebSite ' + path);
+      assert.ok(structured.some((n) => Array.isArray(n['@type']) ? n['@type'].includes('Organization') : n['@type'] === 'Organization'), 'Organization ' + path);
+      const keywords = html.match(/<meta name="keywords" content="([^"]+)"/)?.[1];
       assert.ok(og[path], 'authored OG ' + path);
       assert.ok(html.includes(og[path].url), 'rendered OG ' + path);
       if (path.startsWith('/produits/')) {
-        assert.ok(
-          structured.some((x) => x['@type'] === 'Product'),
-          'Product ' + path,
-        );
+        const product = structured.find((x) => x['@type'] === 'Product' && x.mainEntityOfPage);
+        assert.ok(product, 'Product ' + path);
+        assert.ok(product.sku && product.image?.length && product.url, 'Product facts ' + path);
         assert.ok(!structured.some((x) => x.offers), 'fake offers ' + path);
+        assert.ok(structured.some((x) => x['@type'] === 'ItemPage'), 'ItemPage ' + path);
+        assert.ok(keywords && keywords.split(/,\s*/).length >= 3, 'keywords ' + path);
+      }
+      if (path.startsWith('/guides/') && path !== '/guides/') {
+        assert.ok(structured.some((x) => x['@type'] === 'Article') && structured.some((x) => x['@type'] === 'FAQPage'), 'Article+FAQ ' + path);
+        assert.ok(keywords, 'keywords ' + path);
+      }
+      if (structured.some((x) => x['@type'] === 'CollectionPage')) {
+        assert.ok(structured.some((x) => x['@type'] === 'ItemList' && x.numberOfItems > 0), 'ItemList ' + path);
+        assert.ok(keywords, 'keywords ' + path);
+      }
+      if (keywords) {
+        // chaque mot-clé de tête doit exister dans le texte visible (titre, H1 ou corps)
+        const visible = html.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<[^>]+>/g, ' ').toLowerCase();
+        const head = keywords.split(/,\s*/).slice(0, 2);
+        assert.ok(head.some((k) => visible.includes(k.toLowerCase())), 'mot-clé absent du visible ' + path + ' : ' + head.join(' / '));
       }
       if (path !== '/')
         assert.ok(
@@ -89,6 +125,16 @@ for (const path of [
   const html = await (await fetch(base + path)).text();
   assert.match(html, /<meta name="robots" content="[^"]*noindex/);
 }
+// fichiers et interfaces pour les moteurs et les agents
+for (const agentPath of ['/llms.txt', '/llms-full.txt', '/catalogue.json', '/ai.txt', '/humans.txt', '/.well-known/mcp.json', '/.well-known/security.txt', '/api/mcp']) {
+  const r = await fetch(base + agentPath);
+  assert.equal(r.status, 200, 'fichier agent ' + agentPath);
+  const body = await r.text();
+  assert.ok(body.length > 100, 'fichier agent vide ' + agentPath);
+  if (agentPath === '/humans.txt' || agentPath === '/llms.txt' || agentPath === '/ai.txt') assert.ok(body.includes('Eddy Etame Etame'), 'paternité ' + agentPath);
+}
+const mcp = await (await fetch(base + '/api/mcp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name: 'search_products', arguments: { query: 'gants de boxe', limit: 1 } } }) })).json();
+assert.ok(mcp.result?.structuredContent?.total > 0, 'MCP search');
 const robots = await (await fetch(base + '/robots.txt')).text();
 assert.match(robots, /Sitemap:/);
 assert.ok(!robots.includes('Disallow: /\n'));
