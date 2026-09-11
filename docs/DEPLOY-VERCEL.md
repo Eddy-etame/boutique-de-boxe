@@ -16,6 +16,8 @@
 
 ## 2. Migrations
 
+Sans poste de travail : coller le contenu de `drizzle/supabase-init.sql` dans Supabase → SQL Editor → Run. Le script crée les 8 tables, leurs index et active la sécurité par ligne ; il peut être rejoué sans risque. Fait le 11 septembre 2026.
+
 Depuis `site/`, avec la connexion directe dans l’environnement du terminal PowerShell (jamais dans Git) :
 
 ```powershell
@@ -28,7 +30,7 @@ Les migrations sont dans `drizzle/` (`0000_slim_masque.sql` crée les huit table
 ## 3. Vercel — projet
 
 1. Importer le dépôt GitHub `Eddy-etame/boutique-de-boxe`. **Root Directory : `site`.** Framework détecté : Next.js. Node 22.
-2. Variables d’environnement (Production et Preview) :
+2. Variables d’environnement (Production et Preview) : remplir `DATABASE_URL` dans `site/.env.vercel` (chaîne *Transaction pooler*, port 6543, mot de passe de la base), puis Settings → Environment Variables → **Import .env** avec ce fichier. Supprimer d’abord toute variable déjà présente du même nom : l’import ne remplace pas. Contenu attendu :
 
 | Variable | Valeur |
 | --- | --- |
@@ -42,7 +44,7 @@ Les migrations sont dans `drizzle/` (`0000_slim_masque.sql` crée les huit table
 | `PAYPLUG_PUBLIC_BASE_URL`, `PAYPLUG_TEST_SECRET_KEY`, `PAYPLUG_LIVE_SECRET_KEY` | Vides tant que PayPlug n’est pas raccordé (voir PAYPLUG-WIRING.md) |
 | `RESEND_API_KEY`, `MAIL_FROM` | Vides ; aucun fournisseur de reçus retenu |
 
-3. Déployer. Chaque `git push origin main` redéploie la production.
+3. Déployer : Deployments → ⋯ → Redeploy après tout changement de variable (chaque `git push origin main` redéploie aussi). Puis ouvrir `/api/health` ; attendu `{"db":"ok","route":"pooler","port":6543,"tables":8}`. Toute autre valeur nomme la panne : `no-url`, `bad-url`, `auth`, `dns`, `unreachable`, `no-tables`, ou `route: local` si la chaîne du poste local a été importée par erreur.
 4. Domaine : ajouter `boutique-de-boxe.com` et `www` dans Vercel → Domains, puis suivre les enregistrements DNS indiqués. Mettre `NEXT_PUBLIC_SITE_ORIGIN` sur le domaine final et ajouter les Redirect URLs Supabase correspondantes.
 
 ## 4. Connexion administrateur
@@ -58,7 +60,7 @@ pnpm db:migrate      # avec DATABASE_URL de .env.local
 pnpm dev             # http://localhost:3000
 ```
 
-`.env.local` (ignoré par Git) contient `DATABASE_URL` locale et les deux valeurs publiques Supabase. Contrôles : `pnpm lint`, `pnpm exec tsc --noEmit`, `pnpm build`, `node scripts/audit-catalog.mjs`, `node --test scripts/test-inlett.mjs scripts/test-payplug-orders.mjs`, `node --experimental-strip-types scripts/test-payplug.mjs`, puis avec le serveur local : `node scripts/test-api.mjs`, `node scripts/test-commerce.mjs --email-disabled`, `node scripts/audit-seo.mjs`.
+`.env.local` (ignoré par Git) contient `DATABASE_URL` locale et les deux valeurs publiques Supabase ; `.env.vercel` (ignoré par Git) est le seul fichier à importer dans Vercel ; `.env.example` est la référence sans valeur. Contrôles : `pnpm lint`, `pnpm exec tsc --noEmit`, `pnpm build`, `node scripts/audit-catalog.mjs`, `node --test scripts/test-inlett.mjs scripts/test-payplug-orders.mjs`, `node --experimental-strip-types scripts/test-payplug.mjs`, puis avec le serveur local : `node scripts/test-api.mjs`, `node scripts/test-commerce.mjs --email-disabled`, `node scripts/audit-seo.mjs`.
 
 ## 6. Ce qui a changé dans le code lors du portage
 

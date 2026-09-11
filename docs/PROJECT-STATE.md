@@ -255,3 +255,13 @@ Ordre recommandé : corriger les défauts de vérité/SEO/stock dégradé ; renf
 Un seul espace de travail : produits/déclinaisons, médias, catégories, guides/pages, demandes/alertes, référencement et tableau de mesure. Prévoir brouillon/aperçu/publication, récupération des retraits, statuts de traitement, recherche/export, envois avec consentement et historique. Les fonctionnalités commerciales de phase 2 restent séparées.
 
 Mesurer les vues de fiches, usages de recherche/filtres, passages guide→produit, alertes réellement enregistrées et contacts réellement enregistrés. Distinguer les visites du site des impressions/clics/requêtes Search Console. Le choix d’un fournisseur, ses accès et les éventuelles règles de consentement devront être résolus à ce moment ; aucun service n’est déclaré raccordé dans ce tour.
+
+## 11 septembre 2026 — base Supabase, page de santé, variables
+
+- Le schéma (8 tables, sécurité par ligne activée) est livré en un fichier à coller : `drizzle/supabase-init.sql`, idempotent. La migration `drizzle/0001_rls.sql` porte la même sécurité pour `pnpm db:migrate`. Le propriétaire l’a exécuté dans l’éditeur SQL de Supabase le 11 septembre.
+- `/api/health` répond sans secret : type de connexion (`pooler`, `direct`, `local`), port, nombre de tables, catégorie de panne (`no-url`, `bad-url`, `auth`, `dns`, `unreachable`, `no-tables`). Première lecture en production : `DATABASE_URL` pointait sur la base locale (`127.0.0.1:54329`), d’où les 503 du panier et des alertes en 0,2 s. Correction : importer `.env.vercel` (chaîne du pooler, port 6543) puis redéployer.
+- Les routes API journalisent désormais le code d’erreur de la base (`commerce GET/POST`, `api POST`) dans les journaux Vercel.
+- Un seul fichier de variables pour Vercel : `.env.vercel` (ignoré par Git). `.env.local` reste le poste local ; `.env.example` est la référence sans valeur ; l’ancien `.env` de l’ère Cloudflare est supprimé.
+- Fichiers publics : `Cache-Control` un an immuable pour `/fonts` et `/icons`, trente jours avec revalidation pour `/products` et `/media` (Vercel servait `max-age=0`).
+- Temps de réponse en production après le disjoncteur et la mémoïsation du catalogue : accueil 1,4 s à froid, 0,4 s à chaud ; catégories 0,4 à 0,9 s.
+- Serveur MCP Supabase déclaré dans `.mcp.json` à la racine du dossier de travail (hors dépôt) ; l’authentification se fait dans un terminal interactif (`claude /mcp`).
