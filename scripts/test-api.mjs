@@ -414,6 +414,19 @@ await check('Checkout stores phone and opt-in, clients report and CSV expose the
   const text = new TextDecoder().decode(bytes);
   assert.ok(text.startsWith('Nom;E-mail;T') && text.includes(buyer) && text.includes('06 12 34 56 78') && text.includes('31000 Toulouse'));
 });
+await check('Client anonymisation erases contact, keeps the order for the books', async () => {
+  assert.equal((await request('commerce/admin-client-anonymise', { email: buyer })).status, 403);
+  const r = await request('commerce/admin-client-anonymise', { email: buyer }, admin);
+  const body = await r.text();
+  assert.equal(r.status, 200, body);
+  const d = JSON.parse(body);
+  assert.ok(d.orders >= 1, JSON.stringify(d));
+  const report = await (await request('commerce/admin-clients?days=7', undefined, admin)).json();
+  assert.ok(!report.clients.some((x) => x.email === buyer), 'buyer still listed');
+  const erased = report.clients.find((x) => x.name === 'Client supprimé' && x.email.endsWith('@anonymise.invalid'));
+  assert.ok(erased && erased.phone === '' && erased.address === '' && erased.approved >= 1, JSON.stringify(erased));
+  assert.equal((await request('commerce/admin-client-anonymise', { email: 'nope' }, admin)).status, 400);
+});
 await check('Clients report and export denied to visitors', async () => {
   assert.equal((await request('commerce/admin-clients')).status, 403);
   assert.equal((await request('commerce/admin-export?kind=ventes')).status, 403);

@@ -184,6 +184,26 @@ export async function POST(request: Request, context: Context) {
       .first<number>('hits');
     if ((hits || 0) > (action === 'cart' ? 120 : 20))
       return reply({ error: 'Trop de demandes. Réessayez plus tard.' }, 429);
+    if (action === 'admin-client-anonymise') {
+      // Droit à l’effacement : les commandes restent pour les comptes, le client disparaît.
+      const email = typeof data.email === 'string' ? data.email.trim().toLowerCase() : '';
+      if (!email || email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+        return reply({ error: 'Adresse invalide.' }, 400);
+      await ensureBuyerColumns();
+      const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(email));
+      const anonymous = 'supprime-' + Array.from(new Uint8Array(digest).slice(0, 6), (b) => b.toString(16).padStart(2, '0')).join('') + '@anonymise.invalid';
+      const now = new Date().toISOString();
+      const orders = await database
+        .prepare("UPDATE simulation_orders SET name='Client supprimé', email=?, phone='', optin=0, address1='', address2='', postcode='', city='' WHERE lower(email)=? RETURNING id")
+        .bind(anonymous, email)
+        .all();
+      const attempts = await database
+        .prepare("UPDATE payment_attempts SET name='Client supprimé', email=?, billing='{}', updated_at=? WHERE lower(email)=? RETURNING id")
+        .bind(anonymous, now, email)
+        .all();
+      const alerts = await database.prepare('DELETE FROM alerts WHERE lower(email)=? RETURNING id').bind(email).all();
+      return reply({ ok: true, orders: orders.results.length, attempts: attempts.results.length, alerts: alerts.results.length });
+    }
     if (action === 'admin-email') {
       if (!uuid(data.id)) return reply({ error: 'Référence invalide.' }, 400);
       const order = await database

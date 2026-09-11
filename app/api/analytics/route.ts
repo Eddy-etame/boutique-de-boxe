@@ -107,8 +107,21 @@ export async function GET(request: Request) {
 async function report(request: Request) {
   const days = Math.min(Math.max(Number(new URL(request.url).searchParams.get('days')) || 30, 1), 365);
   const since = new Date(Date.now() - days * 86400000).toISOString();
+  const before = new Date(Date.now() - 2 * days * 86400000).toISOString();
   await ensureTable();
   const database = await db();
+  // La période précédente, de même longueur, pour lire les écarts.
+  const previous = await database
+    .prepare(
+      `SELECT
+        (SELECT count(*)::int FROM events WHERE type='view' AND created_at>=? AND created_at<?) AS views,
+        (SELECT count(DISTINCT sid)::int FROM events WHERE created_at>=? AND created_at<?) AS sessions,
+        (SELECT count(DISTINCT vid)::int FROM events WHERE created_at>=? AND created_at<?) AS visitors,
+        (SELECT round(avg((data::jsonb->>'dwell')::numeric)/1000)::int FROM events WHERE type='leave' AND created_at>=? AND created_at<?) AS dwell,
+        (SELECT count(*)::int FROM (SELECT sid FROM events WHERE type='view' AND created_at>=? AND created_at<? GROUP BY sid HAVING count(*)=1) s) AS bounces`,
+    )
+    .bind(before, since, before, since, before, since, before, since, before, since)
+    .first<Record<string, number>>();
   const q = <T = Record<string, unknown>>(sql: string) => database.prepare(sql).bind(since).all<T>().then((r) => r.results);
 
   const [totals, pages, entries, exits, transitions, conversions, devices, referrers, searches, byDay] = await Promise.all([
@@ -201,6 +214,7 @@ async function report(request: Request) {
     days,
     since,
     totals: { ...totals, bounceRate: totals?.sessions ? Math.round((Number(totals.bounces) / Number(totals.sessions)) * 100) : 0 },
+    previous: { ...previous, bounceRate: previous?.sessions ? Math.round((Number(previous.bounces) / Number(previous.sessions)) * 100) : 0 },
     byDay,
     pages: label(pages),
     entries: label(entries),

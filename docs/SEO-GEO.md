@@ -66,7 +66,7 @@ ChatGPT (index Bing + OAI-SearchBot), Perplexity (PerplexityBot), Gemini et les 
 
 ## Première position sur les mots-clés du brief : ce qui est fait, ce qui reste
 
-Ce que le code garantit, vérifié par `node scripts/audit-seo.mjs` à chaque livraison : pour chacune des 20 requêtes de `QUERY_MAP` (les 18 du brief plus « sac de frappe » et « chaussures de boxe »), la phrase exacte est dans le `<title>`, dans le H1 ou l’accroche, dans la meta description, au moins deux fois dans le texte visible, dans le graphe JSON-LD, et l’accueil y mène par un lien ; chaque page du site porte en pied de page la ligne « Recherches fréquentes » avec les 20 requêtes en toutes lettres vers leur page. Les textes alternatifs des photos portent le nom complet du modèle (famille, marque, coloris).
+Ce que le code garantit, vérifié par `node scripts/audit-seo.mjs` à chaque livraison et lisible à tout moment dans Atelier → Suivi SEO (tableau des mots-clés du brief, `lib/brief.ts`) : pour chacune des 20 requêtes de `QUERY_MAP` (les 18 du brief plus « sac de frappe » et « chaussures de boxe »), la phrase exacte est dans le `<title>`, dans le H1 ou l’accroche, dans la meta description, au moins deux fois dans le texte visible, dans le graphe JSON-LD, et l’accueil y mène par un lien ; chaque page du site porte en pied de page la ligne « Recherches fréquentes » avec les 20 requêtes en toutes lettres vers leur page. Les textes alternatifs des photos portent le nom complet du modèle (famille, marque, coloris).
 
 Ce qu’aucun code ne remplace, dans l’ordre d’effet :
 

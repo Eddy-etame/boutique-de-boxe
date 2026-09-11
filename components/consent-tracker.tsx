@@ -68,14 +68,16 @@ export function ConsentTracker() {
   const consent = useSyncExternalStore(subscribe, snapshot, () => 'pending');
   const [forced, setForced] = useState(false);
   const pathname = usePathname();
-  // La carte s’ouvre tant qu’aucun choix n’est fait ('' côté client, 'pending' au rendu serveur), et depuis le pied de page.
-  const open = forced || consent === '';
+  // La carte s’ouvre tant qu’aucun choix n’est fait : rendue dès le serveur ('pending'), cachée par le CSS
+  // quand html[data-consent-open] manque (choix déjà fait), et rouverte depuis le pied de page.
+  const open = forced || consent === '' || consent === 'pending';
 
   // Tant que la carte est ouverte, la barre d’achat des fiches reste rentrée (html[data-consent-open]).
   useEffect(() => {
-    document.documentElement.toggleAttribute('data-consent-open', open);
+    // Le vrai cookie, pas l’instantané d’hydratation : un visiteur ayant déjà choisi ne voit jamais le voile.
+    document.documentElement.toggleAttribute('data-consent-open', forced || readCookie(CONSENT) === '');
     return () => document.documentElement.removeAttribute('data-consent-open');
-  }, [open]);
+  }, [open, forced]);
 
   useEffect(() => {
     const reopen = () => setForced(true);
@@ -154,7 +156,7 @@ export function ConsentTracker() {
 
   // La carte prend le focus à l’ouverture ; la page derrière est floutée et ne défile pas.
   useEffect(() => {
-    if (!open) return;
+    if (!open || readCookie(CONSENT) && !forced) return;
     const previous = document.activeElement as HTMLElement | null;
     document.querySelector<HTMLButtonElement>('.consent-accept')?.focus({ preventScroll: true });
     const keep = (e: KeyboardEvent) => {
@@ -167,7 +169,7 @@ export function ConsentTracker() {
     };
     document.addEventListener('keydown', keep);
     return () => { document.removeEventListener('keydown', keep); previous?.focus?.({ preventScroll: true }); };
-  }, [open]);
+  }, [open, forced]);
 
   const decide = (value: 'accepted' | 'refused') => {
     writeCookie(CONSENT, value, 365);

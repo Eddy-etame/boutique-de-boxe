@@ -3150,8 +3150,9 @@ html[data-motion='reduce'] .button:hover {
 .product-facts span { display: block; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: #58614f; margin-bottom: 4px; }
 
 /* Carte de consentement : elle couvre l’écran, la page derrière est floutée, le bouton vert domine. */
-.consent-veil { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 16px; background: rgba(236, 237, 231, .55); animation: veil-in .5s var(--m-ease, ease) both; }
-html[data-consent-open] body > :not(.consent-veil):not(script):not(nextjs-portal) { filter: blur(11px) saturate(.85); transition: filter .5s var(--m-ease, ease); }
+.consent-veil { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 16px; background: rgba(236, 237, 231, .55); -webkit-backdrop-filter: blur(11px) saturate(.85); backdrop-filter: blur(11px) saturate(.85); animation: veil-in .5s var(--m-ease, ease) both; }
+/* Rendu dès le serveur ; sans l’attribut posé avant le premier affichage (choix déjà fait), le voile n’existe pas à l’écran. */
+html:not([data-consent-open]) .consent-veil { display: none; }
 html[data-consent-open] body { overflow: hidden; }
 .consent-card { width: min(520px, 100%); background: #fff; color: var(--ink); border: 1.5px solid var(--ink); padding: 30px 30px 24px; box-shadow: 0 30px 80px rgba(0,0,0,.22); display: flex; flex-direction: column; gap: 12px; animation: consent-in .6s cubic-bezier(.2,.7,.2,1) .25s backwards; }
 @keyframes veil-in { from { opacity: 0; } to { opacity: 1; } }
@@ -3167,7 +3168,7 @@ html[data-consent-open] body { overflow: hidden; }
 .consent-actions > a { font-size: 12px; color: #58614f; text-decoration: underline; text-underline-offset: 3px; }
 /* Pendant la relance de l’entrée, un instant sans animation : elles repartent toutes du début. */
 html[data-replay] *, html[data-replay] *::before, html[data-replay] *::after { animation: none !important; transition: none !important; }
-@media (prefers-reduced-motion: reduce) { .consent-veil, .consent-card { animation: none; } html[data-consent-open] body > :not(.consent-veil) { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .consent-veil, .consent-card { animation: none; } }
 @media (max-width: 650px) { .consent-veil { padding: 10px; align-items: end; } .consent-card { padding: 22px 18px 18px; } .consent-card h2 { font-size: 28px; } .consent-accept { min-height: 62px; font-size: 18px; } }
 
 /* Atelier : audience. */
@@ -3247,3 +3248,20 @@ html[data-consent-open] .sticky-buy { transform: translateY(110%); }
 /* Caisse : code postal et ville côte à côte. */
 .checkout-row { display: grid; grid-template-columns: minmax(110px, 1fr) 2fr; gap: 12px; }
 @media (max-width: 480px) { .checkout-row { grid-template-columns: 1fr; } }
+
+/* Atelier : tableau des mots-clés du brief. */
+.brief-board { margin-bottom: 28px; }
+.brief-table td, .brief-table th { text-align: center !important; }
+.brief-table td:first-child, .brief-table th:first-child, .brief-table td:nth-child(2), .brief-table th:nth-child(2) { text-align: left !important; }
+.brief-table small { color: #58614f; }
+.brief-ok { color: #3d7a1f; font-size: 15px; }
+.brief-ko { color: #b3261e; font-size: 15px; }
+.brief-table tr.is-missing td { background: #fff4f2; }
+
+/* Atelier : écart avec la période précédente. */
+.audience-delta { display: block; font-style: normal; font-size: 11px; margin-top: 6px; color: #58614f; }
+.audience-delta.is-up { color: #3d7a1f; }
+.audience-delta.is-down { color: #b3261e; }
+
+.clients-erase { color: #b3261e; font-size: 12px; min-height: 32px; }
+.clients-notice { margin-bottom: 10px; }

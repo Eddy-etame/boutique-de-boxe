@@ -1,6 +1,7 @@
 'use client';
 import { Audience } from './audience';
 import { Clients } from './clients';
+import { BriefBoard } from './brief-board';
 import { useEffect, useState } from 'react';
 import { CatalogEditor } from './catalog-editor';
 import { OrdersAdmin } from './commerce-ui';
@@ -326,6 +327,7 @@ export function Admin() {
       {tab === 'audience' && <Audience />}
       {tab === 'seo' && (
         <div className="admin-seo">
+          <BriefBoard />
           <h2>Les bases sont en place. Les résultats se mesurent.</h2>
           <p>
             Les métadonnées, le sitemap et les données structurées sont générés

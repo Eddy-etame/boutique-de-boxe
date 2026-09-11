@@ -29,7 +29,7 @@ const ALL = 'gants, bandes, protections, textile, sacs de frappe, chaussures, ma
 
 export const SEO_COPY: Record<string, SeoCopy> = {
   'boutique-boxe': {
-    title: 'Boutique boxe : vente matériel boxe, matos boxe et sports de combat',
+    title: 'Boutique boxe : vente matériel boxe, matos boxe, MMA',
     description: 'Boutique boxe en ligne, vente matériel boxe et matos boxe : plus de 1 000 modèles de gants, bandes, protections, sacs de frappe et textile, avec leurs tailles et leurs prix prévus. Livraison dans toute la France.',
     eyebrow: 'BOUTIQUE BOXE · VENTE MATÉRIEL BOXE · MATOS BOXE',
     prioritaires: ['boutique boxe', 'boutique de boxe', 'vente matériel boxe', 'matos boxe'],
@@ -72,7 +72,7 @@ export const SEO_COPY: Record<string, SeoCopy> = {
   },
 
   'materiel-boxe': {
-    title: 'Matériel boxe : équipement boxe anglaise, gants, bandes, protections',
+    title: 'Matériel boxe : équipement boxe anglaise, gants, bandes',
     description: 'Matériel boxe et équipement boxe anglaise : gants, bandes, protège-dents, casques, sacs de frappe, chaussures et textile. Tailles réelles, prix prévus, livraison dans toute la France.',
     eyebrow: 'MATÉRIEL BOXE · ÉQUIPEMENT BOXE ANGLAISE',
     prioritaires: ['matériel boxe', 'matériel de boxe', 'équipement boxe anglaise', 'matos boxe'],
@@ -178,6 +178,7 @@ export const SEO_COPY: Record<string, SeoCopy> = {
       },
     ],
     faq: [
+      { question: 'Matériel sport de combat : par où commencer ?', answer: 'Le matériel sport de combat de départ tient en trois pièces : un protège-dents, des gants adaptés à la discipline, un short ou un kimono. Le reste, casque, protège-tibias, sac de frappe, vient avec la pratique.' },
       { question: 'Boutique sport de combat France : livrez-vous partout ?', answer: 'Oui. Boutique sport de combat France : chaque commande part vers toute la France métropolitaine, à domicile ou en point relais, avec les tailles réelles et les prix prévus affichés avant l’ouverture des ventes.' },
       { question: 'Quels sports de combat sont couverts ?', answer: 'Boxe anglaise, MMA, muay-thaï, kick-boxing, jiu-jitsu brésilien, savate et karaté. Chaque fiche indique la discipline concernée.' },
       { question: 'Le matériel est-il le même pour tous les sports de combat ?', answer: 'Non. Les gants, les protections et le textile changent selon la discipline. Un gant de boxe thaï n’a pas la coupe d’un gant de boxe anglaise ; un gant MMA laisse les doigts libres.' },
@@ -213,6 +214,7 @@ export const SEO_COPY: Record<string, SeoCopy> = {
       },
     ],
     faq: [
+      { question: 'Boutique arts martiaux : quelles disciplines sont couvertes ?', answer: 'La boutique arts martiaux réunit le jiu-jitsu brésilien, le grappling, le karaté, le judo et la boxe thaï : kimonos de A0 à A4, rashguards, ceintures, protège-tibias et protège-dents, avec les tailles réelles de chaque modèle.' },
       { question: 'Quelle taille de kimono de JJB ?', answer: 'Les tailles A0 à A4 suivent votre taille et votre poids, selon le tableau de la marque du kimono. Un kimono en coton se rétrécit légèrement au premier lavage : suivez la notice.' },
       { question: 'Faut-il un kimono pour débuter le JJB ?', answer: 'Cela dépend du cours : gi ou no-gi. Demandez à votre salle. En no-gi, un rashguard et un short ou des spats suffisent.' },
       { question: 'Les protections de karaté servent-elles pour la boxe thaï ?', answer: 'Rarement. La boxe thaï demande des protège-tibias avec pied couvert et rembourrage épais. Vérifiez l’usage indiqué par le fabricant.' },
@@ -220,7 +222,7 @@ export const SEO_COPY: Record<string, SeoCopy> = {
   },
 
   'gants-de-boxe': {
-    title: 'Gants de boxe : vente gants de boxe et gants boxe du 4 au 20 oz',
+    title: 'Gants de boxe : vente gants de boxe, gants boxe 4 à 20 oz',
     description: 'Gants boxe, vente gants de boxe : 186 modèles du 4 au 20 oz, velcro ou lacets, cuir ou synthétique. Fairtex, Twins, Cleto Reyes, Elion, Adidas. Tailles réelles, prix prévus, livraison en France.',
     eyebrow: 'GANTS BOXE · VENTE GANTS DE BOXE',
     prioritaires: ['gants de boxe', 'gants boxe', 'vente gants de boxe'],
@@ -254,6 +256,7 @@ export const SEO_COPY: Record<string, SeoCopy> = {
       },
     ],
     faq: [
+      { question: 'Gants boxe : velcro ou lacets ?', answer: 'Gants boxe velcro pour s’équiper seul à l’entraînement ; lacets pour le maintien du poignet en sparring et en compétition, avec quelqu’un pour les nouer. Les deux existent du 8 au 16 oz.' },
       { question: 'Vente gants de boxe : quelles marques et quels poids ?', answer: 'La vente gants de boxe couvre Fairtex, Twins, Cleto Reyes, Elion, Adidas et Metal Boxe, du 4 oz enfant au 20 oz sparring lourd. Chaque fiche donne le poids, la fermeture, la matière et le prix prévu.' },
       { question: 'Quel poids de gants de boxe pour débuter ?', answer: '12 oz pour la plupart des adultes : assez de rembourrage pour le sac et la technique, et accepté dans la majorité des cours. Passez à 14 ou 16 oz dès qu’il y a du travail avec partenaire.' },
       { question: 'Gants de boxe velcro ou lacets ?', answer: 'Velcro pour l’entraînement, seul et vite. Lacets pour la compétition et le sparring encadré, avec quelqu’un pour serrer.' },
@@ -323,6 +326,7 @@ export const SEO_COPY: Record<string, SeoCopy> = {
       },
     ],
     faq: [
+      { question: 'Protections boxe : le casque est-il obligatoire ?', answer: 'Les protections boxe obligatoires en club sont le protège-dents et, pour le sparring, le casque ; la coquille et les protège-tibias s’ajoutent selon la discipline. En compétition amateur, le casque dépend de la catégorie.' },
       { question: 'Quelles protections pour un premier cours de boxe ?', answer: 'Un protège-dents suffit pour le premier cours, avec des bandes et des gants. Le casque et le reste viennent avec le sparring, quand votre salle le demande.' },
       { question: 'Comment choisir la taille d’un casque de boxe ?', answer: 'Mesurez le tour de tête et suivez la grille de la marque. Le casque ne doit ni tourner ni descendre sur les yeux quand vous bougez.' },
       { question: 'Un protège-dents convient-il avec un appareil dentaire ?', answer: 'Seulement un modèle prévu pour les bagues, sans moulage. Demandez conseil à votre dentiste ou orthodontiste.' },
@@ -356,6 +360,7 @@ export const SEO_COPY: Record<string, SeoCopy> = {
       },
     ],
     faq: [
+      { question: 'Accessoires boxe : lesquels prendre en premier ?', answer: 'Les accessoires boxe indispensables dès la première séance : une paire de bandes de 4,50 m et une corde à sauter. Les sous-gants, les mitaines et le tape viennent ensuite selon la fréquence des entraînements.' },
       { question: 'Bandes de boxe 2,50 m ou 4,50 m ?', answer: '4,50 m pour un adulte : assez pour couvrir le poignet, la paume et les articulations. 2,50 m pour un enfant ou une petite main.' },
       { question: 'Sous-gants ou bandes ?', answer: 'Les bandes tiennent mieux le poignet et se lavent facilement. Les sous-gants gel s’enfilent en dix secondes. Beaucoup de pratiquants ont les deux.' },
       { question: 'Comment laver ses bandes de boxe ?', answer: 'En machine à 30 °C dans un filet, ou à la main. Séchage à plat, jamais au sèche-linge.' },
@@ -389,6 +394,7 @@ export const SEO_COPY: Record<string, SeoCopy> = {
       },
     ],
     faq: [
+      { question: 'Textile boxe : quel short pour quelle discipline ?', answer: 'Le textile boxe se choisit par discipline : short anglais long et fendu pour la boxe anglaise, short thaï court et large pour le muay-thaï, short MMA sans poche ni fermeture pour le MMA et le grappling.' },
       { question: 'Short de boxe anglaise ou short de boxe thaï ?', answer: 'Le short de boxe anglaise descend au genou et suit la jambe. Le short thaï est court et large pour lever le genou et frapper du pied. Choisissez selon votre discipline.' },
       { question: 'Le rashguard est-il obligatoire ?', answer: 'Pas partout. En grappling et en JJB no-gi, la plupart des salles le demandent : il protège la peau et évite les accrochages. Demandez à votre salle.' },
       { question: 'Quelle taille de short de boxe ?', answer: 'Celle du guide de la marque, à la taille de ceinture. Un short de boxe se porte à la taille, pas sur les hanches, pour rester en place.' },
@@ -543,24 +549,24 @@ export const SEO_COPY: Record<string, SeoCopy> = {
 /** Requêtes du cahier des charges et page canonique de chacune. Lu par llms.txt, ai.txt et le serveur MCP. */
 /** Requêtes du cahier des charges, page canonique et réponse citable en une phrase. Lu par llms.txt, ai.txt et le serveur MCP. */
 export const QUERY_MAP: { query: string; path: string; answer: string }[] = [
-  { query: 'Vente matériel boxe', path: '/boutique-boxe/', answer: 'Boutique de Boxe vend en ligne du matériel de boxe et de sports de combat, plus de 1 000 modèles avec leurs tailles réelles et leurs prix prévus, livrés dans toute la France à l’ouverture des ventes.' },
-  { query: 'Boutique boxe', path: '/boutique-boxe/', answer: 'Boutique de Boxe est une boutique en ligne française de matériel de boxe : gants, bandes, protections, textile, sacs de frappe, chaussures. Ce n’est pas un club.' },
+  { query: 'Vente matériel boxe', path: '/boutique-boxe/', answer: 'Vente matériel boxe en ligne : Boutique de Boxe propose plus de 1 000 modèles de gants, bandes, protections, textile, sacs de frappe et chaussures, avec leurs tailles réelles et leurs prix prévus, livrés dans toute la France à l’ouverture des ventes.' },
+  { query: 'Boutique boxe', path: '/boutique-boxe/', answer: 'Boutique boxe en ligne française, Boutique de Boxe vend le matériel de boxe des salles Boxing Center : gants, bandes, protections, textile, sacs de frappe, chaussures, du 4 oz enfant au 20 oz sparring, livrés dans toute la France.' },
   { query: 'Matos boxe', path: '/boutique-boxe/', answer: 'Le matos boxe de Boutique de Boxe : gants du 4 au 20 oz, bandes, protège-dents, casques, sacs de frappe, des marques Fairtex, Twins, Cleto Reyes, Elion, Adidas, Everlast.' },
-  { query: 'Matériel boxe', path: '/materiel-boxe/', answer: 'Le matériel de boxe anglaise, dans l’ordre d’achat : bandes et gants d’abord, protège-dents dès le travail à deux, puis casque, chaussures et sac de frappe.' },
-  { query: 'Équipement boxe anglaise', path: '/materiel-boxe/', answer: 'Pour débuter la boxe anglaise : des bandes de 4,50 m, des gants de 12 oz et un protège-dents. Le reste vient quand votre salle le demande.' },
+  { query: 'Matériel boxe', path: '/materiel-boxe/', answer: 'Matériel boxe anglaise dans l’ordre d’achat : bandes et gants d’abord, protège-dents ensuite, casque et chaussures avec le sparring, sac de frappe pour la maison. Boutique de Boxe donne les tailles réelles et les prix prévus de chaque modèle.' },
+  { query: 'Équipement boxe anglaise', path: '/materiel-boxe/', answer: 'Équipement boxe anglaise pour débuter : des bandes de 4,50 m, des gants de 12 oz, un protège-dents et une corde à sauter ; le casque et les chaussures arrivent avec le sparring. Boutique de Boxe les vend en ligne, livrés dans toute la France.' },
   { query: 'Matériel MMA', path: '/materiel-mma/', answer: 'Le matériel MMA : gants à doigts libres pour le travail mixte, gants de boxe de 14 ou 16 oz pour le sparring debout, protège-tibias, coquille, protège-dents, rashguard et short sans poche.' },
-  { query: 'Équipement MMA', path: '/materiel-mma/', answer: 'Pour un premier cours de MMA : protège-dents, short sans poche, rashguard, puis les gants demandés par la salle. Casque et gants 4 oz attendent la compétition.' },
-  { query: 'Matériel sport de combat', path: '/materiel-sport-de-combat/', answer: 'Boxe anglaise, MMA, muay-thaï, kick-boxing, jiu-jitsu brésilien, savate : tout le catalogue de matériel de sports de combat, avec les tailles réelles et les prix prévus.' },
+  { query: 'Équipement MMA', path: '/materiel-mma/', answer: 'Équipement MMA pour un premier cours : protège-dents, short sans poche, rashguard, puis les gants demandés par le club, gants MMA à doigts libres ou gants de boxe de 14 à 16 oz. Boutique de Boxe les vend en ligne avec leurs tailles réelles.' },
+  { query: 'Matériel sport de combat', path: '/materiel-sport-de-combat/', answer: 'Matériel sport de combat pour la boxe anglaise, le MMA, le muay-thaï, le kick-boxing, le jiu-jitsu brésilien et la savate : gants, protections, textile, sacs de frappe et chaussures, chez Boutique de Boxe, livrés dans toute la France.' },
   { query: 'Sport de combat', path: '/materiel-sport-de-combat/', answer: 'Chaque sport de combat a son matériel : gants de boxe ou gants MMA, protège-tibias avec ou sans pied, short anglais, thaï ou MMA, kimono pour le JJB.' },
-  { query: 'Boutique sport de combat France', path: '/materiel-sport-de-combat/', answer: 'Boutique de Boxe expédie dans toute la France métropolitaine à l’ouverture des ventes : point relais 6,90 €, offert dès 69 €, domicile 8,90 €.' },
+  { query: 'Boutique sport de combat France', path: '/materiel-sport-de-combat/', answer: 'Boutique sport de combat France : Boutique de Boxe expédie dans toute la France métropolitaine, à domicile ou en point relais, le matériel de boxe, de MMA et d’arts martiaux des salles Boxing Center, avec les tailles réelles et les prix prévus.' },
   { query: 'Boutique arts martiaux', path: '/boutique-arts-martiaux/', answer: 'La boutique arts martiaux de Boutique de Boxe : kimonos de JJB de A0 à A4, kimonos de karaté, ceintures, protège-tibias et pieds, coquilles, protège-dents.' },
-  { query: 'Arts martiaux', path: '/boutique-arts-martiaux/', answer: 'Pour le JJB, le grappling, le karaté et la boxe thaï, le matériel change : kimono ou rashguard, ceinture, protections avec ou sans pied. Chaque fiche indique la discipline.' },
-  { query: 'Vente gants de boxe', path: '/gants-de-boxe/', answer: '186 modèles de gants de boxe du 4 au 20 oz, velcro ou lacets, cuir ou synthétique : Fairtex, Twins, Cleto Reyes, Elion, Adidas, Everlast, Metal Boxe.' },
-  { query: 'Gants boxe', path: '/gants-de-boxe/', answer: 'Un gant de boxe se choisit par usage : 10 oz pour le sac, 12 oz pour la technique, 14 à 16 oz avec un partenaire. Les onces sont un poids, pas une taille de main.' },
+  { query: 'Arts martiaux', path: '/boutique-arts-martiaux/', answer: 'Arts martiaux et sports de combat n’ont pas le même matériel : kimono ou rashguard, ceinture, protège-tibias et protège-dents pour le JJB, le grappling, le karaté et la boxe thaï. Boutique de Boxe les réunit dans sa boutique arts martiaux.' },
+  { query: 'Vente gants de boxe', path: '/gants-de-boxe/', answer: 'Vente gants de boxe en ligne : 186 modèles du 4 au 20 oz, velcro ou lacets, cuir ou synthétique, Fairtex, Twins, Cleto Reyes, Elion, Adidas et Metal Boxe, avec le poids, la fermeture, la matière et le prix prévu de chaque paire.' },
+  { query: 'Gants boxe', path: '/gants-de-boxe/', answer: 'Gants boxe : le poids se choisit par usage, 10 oz pour le sac, 12 oz pour la technique, 14 à 16 oz avec un partenaire, 8 oz en compétition. Les onces sont un poids de rembourrage, pas une taille de main.' },
   { query: 'Gants MMA', path: '/gants-mma/', answer: 'Les gants MMA laissent les doigts libres pour saisir. Modèles d’entraînement rembourrés ou de compétition à 4 oz ; la taille suit le guide de mesure de la marque.' },
-  { query: 'Accessoires boxe', path: '/accessoires-boxe/', answer: 'Les accessoires de boxe de chaque séance : bandes de 2,50 m et 4,50 m, sous-gants gel, mitaines de maintien, cordes à sauter, tape.' },
-  { query: 'Protections boxe', path: '/protections-boxe/', answer: 'Les protections de boxe dans l’ordre : protège-dents d’abord, casque avec le sparring, coquille pour le pieds-poings, protège-tibias pour les coups de pied.' },
-  { query: 'Textile boxe', path: '/textile-boxe/', answer: 'Le textile de boxe : short anglais long et fendu, short thaï court et large, short MMA sans poche, rashguard pour le sol, t-shirts, débardeurs, sweats.' },
+  { query: 'Accessoires boxe', path: '/accessoires-boxe/', answer: 'Accessoires boxe de chaque séance : bandes de 2,50 m et 4,50 m, sous-gants gel, mitaines, corde à sauter, tape et sac de sport. Les bandes protègent les poignets sous les gants ; les sous-gants remplacent le bandage.' },
+  { query: 'Protections boxe', path: '/protections-boxe/', answer: 'Protections boxe dans l’ordre : protège-dents d’abord, casque avec le sparring, protège-tibias pour le pied-poing, coquille et protège-poitrine selon la discipline. Chaque fiche donne la taille réelle et le prix prévu.' },
+  { query: 'Textile boxe', path: '/textile-boxe/', answer: 'Textile boxe : short anglais long et fendu, short thaï court et large, short MMA sans poche, rashguard, t-shirt, débardeur et sweat. Les tailles suivent le tour de taille et la hauteur du modèle, données sur chaque fiche.' },
   { query: 'Sac de frappe', path: '/sacs-de-frappe/', answer: 'Un sac de frappe se choisit par hauteur et poids : 1 m à 1,20 m pour les poings, 1,50 m à 1,80 m pour les coups de pied, environ la moitié de votre poids. Sur pied si vous ne pouvez pas percer.' },
   { query: 'Chaussures de boxe', path: '/chaussures-boxe/', answer: 'Chaussures de boxe montantes pour la cheville sur le ring, basses pour l’entraînement, chaussures de lutte pour le MMA. La pointure suit la grille de la marque.' },
 ];

@@ -26,9 +26,11 @@ export function Clients() {
   const [report, setReport] = useState<Report | null>(null);
   const [error, setError] = useState('');
   const [query, setQuery] = useState('');
+  const [version, setVersion] = useState(0);
+  const [notice, setNotice] = useState('');
   useEffect(() => {
     let alive = true;
-    fetch(`/api/commerce/admin-clients?days=${days}`, { cache: 'no-store' })
+    fetch(`/api/commerce/admin-clients?days=${days}&v=${version}`, { cache: 'no-store' })
       .then((r) => r.json())
       .then((data) => {
         if (!alive) return;
@@ -37,7 +39,20 @@ export function Clients() {
       })
       .catch(() => { if (alive) setError('Lecture impossible.'); });
     return () => { alive = false; };
-  }, [days]);
+  }, [days, version]);
+  async function anonymise(email: string) {
+    if (!window.confirm(`Effacer ${email} ? Les commandes restent pour les comptes, sans nom, adresse ni téléphone. Irréversible.`)) return;
+    setNotice('');
+    try {
+      const r = await fetch('/api/commerce/admin-client-anonymise', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || 'Effacement impossible.');
+      setNotice(`${email} effacé : ${d.orders} commande${d.orders > 1 ? 's' : ''}, ${d.attempts} paiement${d.attempts > 1 ? 's' : ''}, ${d.alerts} alerte${d.alerts > 1 ? 's' : ''}.`);
+      setVersion((v) => v + 1);
+    } catch (e) {
+      setNotice(e instanceof Error ? e.message : 'Effacement impossible.');
+    }
+  }
   if (error) return <p className="commerce-error">{error}</p>;
   if (!report || report.days !== days) return <p>Lecture des clients…</p>;
   const t = report.totals;
@@ -112,6 +127,7 @@ export function Clients() {
         </section>
       </div>
       <section className="audience-block">
+        {notice && <p className="commerce-caption clients-notice" role="status">{notice}</p>}
         <div className="clients-search">
           <h3>Clients</h3>
           <label>
@@ -121,7 +137,7 @@ export function Clients() {
         </div>
         <div className="clients-scroll">
           <table className="audience-table clients-table">
-            <thead><tr><th>Client</th><th>Contact</th><th>E-mail</th><th>Commandes</th><th>Total</th><th>Dernière</th><th>Modèles</th></tr></thead>
+            <thead><tr><th>Client</th><th>Contact</th><th>Accord</th><th>Commandes</th><th>Total</th><th>Dernière</th><th>Modèles</th><th>RGPD</th></tr></thead>
             <tbody>
               {clients.map((c) => (
                 <tr key={c.email}>
@@ -132,9 +148,10 @@ export function Clients() {
                   <td>{euros(c.total)}</td>
                   <td>{when(c.last)}</td>
                   <td className="clients-items">{c.items.slice(0, 4).join(' · ')}{c.items.length > 4 ? ` · +${c.items.length - 4}` : ''}</td>
+                  <td><button type="button" className="text-button clients-erase" onClick={() => void anonymise(c.email)}>Effacer</button></td>
                 </tr>
               ))}
-              {!clients.length && <tr><td colSpan={7}>Aucun client sur la période.</td></tr>}
+              {!clients.length && <tr><td colSpan={8}>Aucun client sur la période.</td></tr>}
             </tbody>
           </table>
         </div>
@@ -142,7 +159,7 @@ export function Clients() {
       <section className="audience-block">
         <h3>Dernières commandes</h3>
         <ul className="audience-list">
-          {report.recent.slice(0, 20).map((o) => (
+          {report.recent.filter((o) => !q || `${o.name} ${o.email} ${o.items.join(' ')}`.toLocaleLowerCase('fr').includes(q)).slice(0, 20).map((o) => (
             <li key={o.id}><span>{when(o.createdAt)} · {o.name} · {o.items.join(', ')}</span><b>{euros(o.total)} · {STATUS[o.status] || o.status}</b></li>
           ))}
           {!report.recent.length && <li><span>Aucune commande sur la période.</span></li>}

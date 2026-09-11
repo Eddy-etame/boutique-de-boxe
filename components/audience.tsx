@@ -6,6 +6,7 @@ type Row = { path: string; name: string; views?: number; sessions?: number; dwel
 type Report = {
   days: number;
   totals: { views: number; sessions: number; visitors: number; dwell: number | null; bounceRate: number };
+  previous: { views: number; sessions: number; visitors: number; dwell: number | null; bounceRate: number };
   byDay: { day: string; views: number; sessions: number }[];
   pages: Row[];
   entries: Row[];
@@ -23,6 +24,13 @@ const when = (iso: string) => new Date(iso).toLocaleString('fr-FR', { day: '2-di
 
 const TYPE_LABEL: Record<string, string> = { add_to_cart: 'Ajouts au panier', alert_submit: 'Inscriptions à l’alerte', contact_submit: 'Demandes de contact', search: 'Recherches', filter: 'Filtres utilisés', click: 'Clics', consent: 'Consentements' };
 const fr = (n: number | null | undefined) => (n == null ? '—' : Number(n).toLocaleString('fr-FR'));
+/** Écart avec la période précédente, en pourcentage ; rien quand la base est vide. */
+function Delta({ now, before, invert = false }: { now: number | null | undefined; before: number | null | undefined; invert?: boolean }) {
+  if (now == null || before == null || !before) return <em className="audience-delta is-flat">période précédente : {before == null ? '—' : fr(before)}</em>;
+  const pct = Math.round(((Number(now) - Number(before)) / Number(before)) * 100);
+  const good = invert ? pct <= 0 : pct >= 0;
+  return <em className={`audience-delta ${pct === 0 ? 'is-flat' : good ? 'is-up' : 'is-down'}`}>{pct > 0 ? '+' : ''}{fr(pct)} % vs période précédente</em>;
+}
 
 function Bars({ rows, max, value }: { rows: Row[]; max: number; value: (r: Row) => number }) {
   return (
@@ -72,11 +80,11 @@ export function Audience() {
         </div>
       </div>
       <div className="admin-stats">
-        <div><strong>{fr(t.views)}</strong><span>pages vues</span></div>
-        <div><strong>{fr(t.sessions)}</strong><span>visites</span></div>
-        <div><strong>{fr(t.visitors)}</strong><span>visiteurs</span></div>
-        <div><strong>{t.dwell == null ? '—' : fr(t.dwell) + ' s'}</strong><span>temps moyen par page</span></div>
-        <div><strong>{fr(t.bounceRate)} %</strong><span>visites d’une seule page</span></div>
+        <div><strong>{fr(t.views)}</strong><span>pages vues</span><Delta now={t.views} before={report.previous?.views} /></div>
+        <div><strong>{fr(t.sessions)}</strong><span>visites</span><Delta now={t.sessions} before={report.previous?.sessions} /></div>
+        <div><strong>{fr(t.visitors)}</strong><span>visiteurs</span><Delta now={t.visitors} before={report.previous?.visitors} /></div>
+        <div><strong>{t.dwell == null ? '—' : fr(t.dwell) + ' s'}</strong><span>temps moyen par page</span><Delta now={t.dwell} before={report.previous?.dwell} /></div>
+        <div><strong>{fr(t.bounceRate)} %</strong><span>visites d’une seule page</span><Delta now={t.bounceRate} before={report.previous?.bounceRate} invert /></div>
       </div>
       {t.views === 0 && <p className="commerce-caption">Aucune visite mesurée sur la période : la mesure ne compte que les visiteurs qui ont accepté les cookies.</p>}
 
