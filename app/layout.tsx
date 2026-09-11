@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Header, Footer, Motion } from '@/components/shop-shell';
 import { shop } from '@/lib/catalog';
 import { siteGraph, KEYWORDS, ATTRIBUTION } from '@/lib/seo';
+import { Analytics } from '@vercel/analytics/next';
 import './globals.css';
 import './shop.css';
 import './refinement.css';
@@ -26,7 +27,14 @@ export const metadata: Metadata = {
   category: 'shopping',
   robots: { index: true, follow: true },
   // Google Search Console : la balise de vérification arrive par variable d’environnement, jamais en dur.
-  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ? { verification: { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION } } : {}),
+  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION
+    ? {
+        verification: {
+          ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION } : {}),
+          ...(process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION ? { other: { 'msvalidate.01': process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION } } : {}),
+        },
+      }
+    : {}),
   openGraph: {
     siteName: shop.name,
     locale: 'fr_FR',
@@ -34,7 +42,7 @@ export const metadata: Metadata = {
     url: shop.origin,
     images: [
       {
-        url: '/og/home.png',
+        url: '/vignette/x/home.png',
         width: 1200,
         height: 630,
         alt: 'Le matériel préparé pour la séance — Boutique de Boxe',
@@ -84,6 +92,8 @@ export default function RootLayout({
         {children}
         <Footer />
         <Motion />
+        {/* Mesure d’audience sans cookie ni bannière (Vercel Web Analytics, à activer dans le projet Vercel). */}
+        <Analytics />
         {/* Organisation et site : un seul graphe, référencé par le graphe de chaque page. */}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: siteGraph() }} />
       </body>

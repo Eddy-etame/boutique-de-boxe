@@ -34,7 +34,7 @@ function queries() {
   return [
     '## Requêtes et pages canoniques',
     'Pour chacune de ces recherches, la page qui répond est celle-ci et aucune autre :',
-    ...QUERY_MAP.map((q) => `- « ${q.query} » → ${urlOf(q.path)}`),
+    ...QUERY_MAP.map((q) => `- « ${q.query} » → ${urlOf(q.path)} — ${q.answer}`),
   ].join('\n');
 }
 

@@ -9,6 +9,15 @@ const nextConfig: NextConfig = {
   trailingSlash: true,
   skipTrailingSlashRedirect: true,
   agentRules: false,
+  // Le rendu des vignettes lit les polices sur le disque et charge sharp à l’exécution.
+  outputFileTracingIncludes: { '/vignette/[...seg]': ['./assets/fonts/*', './node_modules/sharp/**/*', './node_modules/@img/**/*'] },
+  serverExternalPackages: ['sharp'],
+  // Une seule adresse canonique : l’alias vercel.app renvoie vers le domaine dès qu’il est défini.
+  async redirects() {
+    const origin = process.env.NEXT_PUBLIC_SITE_ORIGIN?.trim().replace(/\/$/, '');
+    if (!origin || /vercel\.app|localhost/.test(origin)) return [];
+    return [{ source: '/:path*', has: [{ type: 'host' as const, value: 'boutique-de-boxe.vercel.app' }], destination: origin + '/:path*', permanent: true }];
+  },
   async headers() {
     return [
       { source: '/fonts/:path*', headers: [{ key: 'Cache-Control', value: YEAR }] },

@@ -4,8 +4,6 @@ import { SEO_COPY } from '@/lib/seo-copy';
 import { subfamilyFor, subfamiliesOf, subfamilyProducts } from '@/lib/subfamilies';
 import { longDescription, practiceLevel, disciplinesOf, careAdvice } from '@/lib/describe';
 import { SeoBody } from '@/components/seo-body';
-/** Pages sans vignette dédiée : elles empruntent celle de la page voisine. */
-const OG_FALLBACK: Record<string, string> = { 'boutique-boxe': '/materiel-sport-de-combat/', 'arts-martiaux': '/boutique-arts-martiaux/' };
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import {
@@ -33,7 +31,7 @@ import { Admin } from '@/components/admin';
 import { PayplugReturn } from '@/components/payplug-settings';
 import { CartPage, ReceiptPage } from '@/components/commerce-ui';
 import selection from '@/lib/data/selection.json';
-import ogImages from '@/lib/data/og.json';
+import { ogImage } from '@/lib/og';
 export const dynamic = 'force-dynamic';
 type Props = {
   params: Promise<{ slug: string[] }>;
@@ -113,16 +111,17 @@ export async function generateMetadata({
   const canonical =
     '/' + path + '/' + (paginated && page > 1 ? '?page=' + page : '');
   const pageTitle = title + (paginated && page > 1 ? ' — Page ' + page : '');
-  const og = (
-    ogImages as Record<
-      string,
-      { url: string; width: number; height: number; alt: string }
-    >
-  )['/' + path + '/'] ||
-    (ogImages as Record<string, { url: string; width: number; height: number; alt: string }>)[OG_FALLBACK[path] || (sub ? '/' + sub.parent + '/' : '')] ||
-    (sub ? (ogImages as Record<string, { url: string; width: number; height: number; alt: string }>)[OG_FALLBACK[sub.parent] || ''] : undefined) ||
-    // guides ajoutés après la génération des vignettes : la carte de l’index des guides
-    (guide ? (ogImages as Record<string, { url: string; width: number; height: number; alt: string }>)['/guides/'] : undefined);
+  const og = product
+    ? ogImage('p', product.slug, product.name)
+    : cat
+      ? ogImage('c', cat.slug, cat.name)
+      : sub
+        ? ogImage('s', sub.slug, sub.name)
+        : guide
+          ? ogImage('g', guide.slug, guide.title)
+          : service || special[path]
+            ? ogImage('x', path, title)
+            : undefined;
   const trimmed = (s: string, max: number) =>
     s.length <= max ? s : s.slice(0, max - 1).replace(/[\s,;:·—-]+\S*$/, '').trim() + '…';
   const describe = (p: NonNullable<typeof product>) => {
@@ -154,7 +153,7 @@ export async function generateMetadata({
     description,
     // le premier mot-clé est toujours une phrase visible de la page (son titre) ; l’audit le vérifie
     keywords: product ? productKeywords(product) : cat ? categoryKeywords(cat) : sub ? subfamilyKeywords(sub) : guide ? guideKeywords(guide) : [(service?.title || special[path]?.[0] || '').toLowerCase(), ...(pageKeywords(path) || [])].filter(Boolean),
-    alternates: { canonical },
+    alternates: { canonical, languages: { 'fr-FR': canonical, 'x-default': canonical } },
     openGraph: {
       title: pageTitle,
       description,
@@ -162,20 +161,7 @@ export async function generateMetadata({
       siteName: shop.name,
       locale: 'fr_FR',
       type: guide ? 'article' : 'website',
-      ...(og
-        ? { images: [og] }
-        : product
-          ? {
-              images: [
-                {
-                  url: product.images[0].src,
-                  width: 960,
-                  height: 960,
-                  alt: product.name,
-                },
-              ],
-            }
-          : {}),
+      ...(og ? { images: og } : {}),
     },
     ...([
       'paiement-retour',

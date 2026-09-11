@@ -1,8 +1,5 @@
 import assert from 'node:assert/strict';
-import { writeFileSync, readFileSync, mkdirSync } from 'node:fs';
-const og = JSON.parse(
-  readFileSync(new URL('../lib/data/og.json', import.meta.url), 'utf8'),
-);
+import { writeFileSync, mkdirSync } from 'node:fs';
 const base = process.env.QA_ORIGIN || 'http://localhost:3000';
 const sitemap = await (await fetch(base + '/sitemap.xml')).text();
 const locations = [...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map(
@@ -67,7 +64,7 @@ for (let i = 0; i < locations.length; i += 4) {
       assert.ok(structured.some((n) => Array.isArray(n['@type']) ? n['@type'].includes('Organization') : n['@type'] === 'Organization'), 'Organization ' + path);
       const keywords = html.match(/<meta name="keywords" content="([^"]+)"/)?.[1];
       const ogUrl = html.match(/property="og:image" content="([^"]+)"/)?.[1] || '';
-      assert.ok(Object.values(og).some((v) => ogUrl.endsWith(v.url)), 'authored OG ' + path);
+      assert.match(ogUrl, /\/vignette\/[pcsgx]\/.+\.png$/, 'vignette à la demande ' + path);
       if (path.startsWith('/produits/')) {
         const product = structured.find((x) => x['@type'] === 'Product' && x.mainEntityOfPage);
         assert.ok(product, 'Product ' + path);
@@ -135,6 +132,12 @@ for (const agentPath of ['/llms.txt', '/llms-full.txt', '/catalogue.json', '/ai.
 }
 const mcp = await (await fetch(base + '/api/mcp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name: 'search_products', arguments: { query: 'gants de boxe', limit: 1 } } }) })).json();
 assert.ok(mcp.result?.structuredContent?.total > 0, 'MCP search');
+// vignettes à la demande : un échantillon rendu réellement
+for (const v of ['/vignette/x/home.png', '/vignette/c/gants-de-boxe.png', '/vignette/s/bandes-de-boxe.png', '/vignette/g/debuter-boxe.png', '/vignette/p/' + locations.find((l) => l.startsWith('/produits/')).split('/')[2] + '.png']) {
+  const r = await fetch(base + v);
+  assert.equal(r.status, 200, 'vignette ' + v);
+  assert.match(r.headers.get('content-type') || '', /image\/png/, 'vignette png ' + v);
+}
 const robots = await (await fetch(base + '/robots.txt')).text();
 assert.match(robots, /Sitemap:/);
 assert.ok(!robots.includes('Disallow: /\n'));

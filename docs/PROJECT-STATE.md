@@ -292,3 +292,9 @@ Mesurer les vues de fiches, usages de recherche/filtres, passages guide→produi
 - **Ajout rapide sur les cartes** : un signe plus ; sans taille, le modèle part au panier ; avec tailles, le choix s’ouvre sur la carte.
 - **Catalogue** : 13 fiches à relire retirées de la publication (`.research/produits-a-relire.json`), 1 042 modèles publiés.
 - Google Search Console : balise de vérification par variable `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION`.
+
+## 11 septembre 2026, fin de journée — vignettes à la demande, mesure, portée nationale
+
+- **Vignettes sociales à la demande** : `app/vignette/[kind]/[clé].png` (`lib/og.ts`) rend chaque carte avec les polices du site (Barlow Condensed, Manrope, instanciées en TTF dans `assets/fonts`) et la photo du modèle convertie en PNG à la volée (`sharp`, importé hors bundle). 1 088 PNG et `og.json` retirés du dépôt. Toute page, y compris les sous-familles et les guides ajoutés, a sa carte. Cache d’un jour côté client, sept jours côté CDN.
+- **Mesure** : `@vercel/analytics` posé dans le gabarit ; à activer dans Vercel → projet → Analytics. GA4 viendra avec une bannière de consentement. Vérifications Google et Bing par variables `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` et `NEXT_PUBLIC_BING_SITE_VERIFICATION`.
+- **Portée nationale et moteurs de réponse** : `hreflang` fr-FR + x-default sur chaque page, noms alternatifs « Boxing Boutique » dans le graphe, réponses citables d’une phrase par requête (`QUERY_MAP.answer`) publiées dans `/llms.txt`, `/llms-full.txt` et l’outil MCP `get_query_map`, dix robots d’IA supplémentaires autorisés, redirection 301 de l’alias vercel.app vers le domaine dès que `NEXT_PUBLIC_SITE_ORIGIN` le porte.

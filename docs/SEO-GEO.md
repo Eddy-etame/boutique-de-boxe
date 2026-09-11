@@ -55,3 +55,11 @@ Faux avis, notes autoattribuées, pages satellites quasi identiques, texte cach�
 ## Les requêtes du cahier des charges
 
 Chaque requête a sa page canonique dans `QUERY_MAP` (`lib/seo-copy.ts`), publiée dans `/llms.txt`, `/ai.txt` et l’outil MCP `get_query_map`. La page porte la requête exacte en tête de titre et dans le surtitre, un texte de fond en H2 et une FAQ visible. Les sous-familles (`lib/subfamilies.ts`) couvrent l’arborescence du cahier des charges avec une page par objet. Ajouter une requête : une entrée dans `SEO_COPY` ou `SUBFAMILIES`, puis `node scripts/audit-seo.mjs`.
+
+## Vignettes sociales à la demande
+
+`/vignette/p/<slug>.png` (fiche), `/vignette/c/<slug>.png` (famille), `/vignette/s/<slug>.png` (sous-famille), `/vignette/g/<slug>.png` (guide), `/vignette/x/<page>.png` (accueil, guides, nouveautés, contact, services). Rendu par `app/vignette/[...seg]/route.tsx` avec `next/og`, les polices de `assets/fonts` et la photo convertie par `sharp`. Aucun fichier à régénérer : le nom, la marque, les tailles et la photo viennent des données à la requête.
+
+## Comment les moteurs de réponse lisent le site
+
+ChatGPT (index Bing + OAI-SearchBot), Perplexity (PerplexityBot), Gemini et les aperçus IA de Google (index Google, Google-Extended), Claude (index Brave + ClaudeBot) partagent les mêmes leviers : une page canonique par requête, une réponse directe en tête de page, des faits datés et attribués, un graphe d’entités sans ambiguïté, des fichiers agents lisibles. Le site les sert tous : `QUERY_MAP` donne la page et la réponse citable ; le graphe ancre l’entité ; `hreflang` x-default dit que la page vaut pour toute la France et au-delà ; Bing et IndexNow sont servis comme Google. Reste à faire côté propriétaire : Search Console et Bing Webmaster Tools sur le domaine final, un profil d’établissement Google, des profils sociaux dans `SAME_AS`.

@@ -3,7 +3,7 @@ import Home from '@/components/home';
 import { readCatalog } from '@/lib/database';
 import { homeGraph, PAGE_KEYWORDS } from '@/lib/seo';
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { alternates: { canonical: '/' }, keywords: PAGE_KEYWORDS[''] };
+export const metadata: Metadata = { alternates: { canonical: '/', languages: { 'fr-FR': '/', 'x-default': '/' } }, keywords: PAGE_KEYWORDS[''] };
 export default async function Page() {
   const items = await readCatalog();
   return (

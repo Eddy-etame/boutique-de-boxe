@@ -140,7 +140,7 @@ export async function POST(request: Request) {
         { path: '/contact/', purpose: 'formulaire de contact' },
       ],
     };
-  else if (name === 'get_query_map') value = QUERY_MAP.map((q) => ({ query: q.query, url: urlOf(q.path) }));
+  else if (name === 'get_query_map') value = QUERY_MAP.map((q) => ({ query: q.query, url: urlOf(q.path), answer: q.answer }));
   else if (name === 'get_technical_attribution') value = ATTRIBUTION;
   else return fail(id, -32602, 'Unknown tool name');
 
