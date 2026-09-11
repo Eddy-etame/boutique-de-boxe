@@ -28,6 +28,13 @@ export type Product = {
   sourceUrl?: string;
   disciplines?: string[];
   variants?: { id:string; reference:string; label:string; attributes:Record<string,string>; price:number; imageUrl?:string }[];
+  /** nom fournisseur d’origine, étiquettes de tailles d’origine, référence fabricant, couleurs (catalogue importé) */
+  sourceName?: string;
+  sourceSizes?: string[];
+  reference?: string;
+  referenceLabel?: 'Référence' | 'Référence interne';
+  colors?: string[];
+  review?: boolean;
 };
 export const shop = {
   name: 'Boutique de Boxe',
@@ -187,7 +194,10 @@ export const categoryFor = (slug: string) =>
   categories.find((c) => c.slug === slug);
 export const getCategoryProducts = (c: Category, all: Product[]) =>
   c.families.length ? all.filter((p) => c.families.includes(p.category)) : all;
+/** Nom affiché sur les cartes et en titre : le nom lui-même. Seules les 19 fiches
+ *  d’origine (sans `sourceName`) raccourcissent leur variante sur la carte. */
 export function cleanName(p: Product) {
+  if (p.sourceName) return p.name;
   return p.name
     .replace(' Metal Boxe', '')
     .replace(' — noir et blanc', '')

@@ -377,6 +377,12 @@ export default async function Page({ params, searchParams }: Props) {
                     <td>{value}</td>
                   </tr>
                 ))}
+                {p.colors && p.colors.length > 0 && (
+                  <tr>
+                    <th scope="row">Couleurs</th>
+                    <td>{p.colors.map((c) => c.charAt(0).toUpperCase() + c.slice(1)).join(', ')}</td>
+                  </tr>
+                )}
                 <tr>
                   <th scope="row">Disponibilité</th>
                   <td>En vente bientôt</td>

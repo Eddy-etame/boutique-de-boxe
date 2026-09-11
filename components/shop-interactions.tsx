@@ -111,7 +111,7 @@ export function HeroStage({ product: p }: { product: Product }) {
     >
       <div className="inspector-index">
         <span>
-          {p.brand} / {p.sourceRef}
+          {p.brand} / {p.reference || p.sourceRef}
         </span>
         <span>LE MODÈLE EN DÉTAIL</span>
       </div>
@@ -165,6 +165,9 @@ export function HeroStage({ product: p }: { product: Product }) {
   );
 }
 
+/** le filtre ne propose que la taille, sans la couleur ni la mention entre parenthèses */
+const sizeKey = (s: string) => s.split(',')[0].replace(/\s*\(.*\)$/, '').trim();
+
 export function Catalog({
   items,
   initialQuery = '',
@@ -186,12 +189,12 @@ export function Catalog({
   const [page, setPage] = useState(initialPage);
 
   const brands = [...new Set(items.map((p) => p.brand))];
-  const sizes = [...new Set(items.flatMap((p) => p.sizes))];
+  const sizes = [...new Set(items.flatMap((p) => p.sizes.map(sizeKey)))].filter((s) => s.length <= 16);
   const result = useMemo(() => {
     const out = items.filter(
       (p) =>
         (brand === 'all' || p.brand === brand) &&
-        (size === 'all' || p.sizes.includes(size)) &&
+        (size === 'all' || p.sizes.some((s) => sizeKey(s) === size)) &&
         (family === 'all' || p.category === family) &&
         (budget === 'all' || p.price <= Number(budget) * 100) &&
         matchesSearch(p, query),

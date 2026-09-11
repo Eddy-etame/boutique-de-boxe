@@ -27,36 +27,6 @@ export async function isAdmin() {
       user.email === DEV_OWNER_EMAIL),
   );
 }
-const KEEP_UPPER = new Set(['MMA', 'JJB', 'BJJ', 'UFC', 'FFB', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'K1', 'PU', 'EVA', 'BS', 'WB', 'WBC', 'IBF', 'WBO', 'ONE']);
-/** Noms de flux fournisseurs (capitales, codes) rendus lisibles ; les 19 fiches d’origine ne bougent pas. */
-const cap = (w: string) => w.charAt(0).toUpperCase() + w.slice(1);
-const STOP = new Set(['de', 'du', 'des', 'le', 'la', 'les', 'et', 'en', 'pour', 'avec', 'sans', 'à', 'au', 'aux']);
-function caseWord(w: string, first: boolean): string {
-  const bare = w.replace(/[^A-Za-zÀ-ÿ0-9]/g, '');
-  if (!bare) return w;
-  if (!first && STOP.has(bare.toLowerCase())) return w.toLowerCase();
-  if (KEEP_UPPER.has(bare.toUpperCase())) return w.toUpperCase();
-  const shouty = /^[A-ZÀ-Ý0-9/&.'’-]+$/.test(w) && /[A-ZÀ-Ý]{3,}/.test(w) && !/\d/.test(w);
-  if (!shouty) return first ? cap(w) : w;
-  const lower = w.toLowerCase();
-  return first ? cap(lower) : lower;
-}
-export function humanName(name: string, brand: string): string {
-  let n = name.replace(/\s+/g, ' ').trim();
-  // codes fournisseur : au moins cinq caractères, avec un chiffre, sans voyelle minuscule
-  n = n.replace(/\s+\b(?=[A-Z0-9-]{5,}\b)(?=[A-Z0-9-]*\d)[A-Z0-9-]+\b/g, '');
-  n = n.replace(/\s*-\s+/g, ', ').replace(/\s*,\s*,/g, ',').replace(/[,\s]+$/, '');
-  const b = brand.trim();
-  const brandDisplay = b.split(' ').map((w) => caseWord(w, true)).join(' ');
-  const marker = '§BRAND§';
-  if (b) {
-    const re = new RegExp('\\b' + b.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'gi');
-    let seen = 0;
-    n = n.replace(re, () => (seen++ === 0 ? marker : '')).replace(/\s{2,}/g, ' ').replace(/\s+,/g, ',').trim();
-  }
-  n = n.split(' ').map((w, i) => (w === marker ? brandDisplay : caseWord(w, i === 0))).join(' ');
-  return n.replace(/\s{2,}/g, ' ').trim();
-}
 /** Une seule lecture par requête : les métadonnées et la page partagent le résultat. */
 export const readCatalog = cache(async function readCatalogOnce(): Promise<Product[]> {
   try {
@@ -87,7 +57,7 @@ export const readCatalog = cache(async function readCatalogOnce(): Promise<Produ
       if (e.archived) all.delete(e.id);
       else all.set(e.id, { ...JSON.parse(e.payload), updatedAt: e.updated_at });
     }
-    return [...all.values()].map((p) => (p.id.startsWith('bs-') || p.id.startsWith('lcd') ? { ...p, name: humanName(p.name, p.brand) } : p)).map((p) => {
+    return [...all.values()].map((p) => {
       const o = overrides.results.find((o) => o.product_id === p.id);
       return o
         ? {
@@ -103,8 +73,6 @@ export const readCatalog = cache(async function readCatalogOnce(): Promise<Produ
     // Base injoignable ou non migrée : le catalogue des fichiers reste lisible.
     // Panier, alertes, demandes et atelier répondent 503 tant que la base manque.
     console.error('Catalogue storage unavailable, serving the file catalogue', error instanceof Error ? error.name : 'StorageError');
-    return products.map((p) =>
-      p.id.startsWith('bs-') || p.id.startsWith('lcd') ? { ...p, name: humanName(p.name, p.brand) } : p,
-    );
+    return products;
   }
 });

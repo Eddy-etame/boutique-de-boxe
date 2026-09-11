@@ -56,7 +56,8 @@ for (const p of all) {
     );
     if (p.variants?.length) {
       assert.equal(Math.min(...p.variants.map((v) => v.price)), p.price);
-      assert.equal(p.variants.length, p.sizes.length);
+      // sans taille, une seule déclinaison à l’étiquette vide porte la référence fabricant
+      assert.equal(p.variants.length, p.sizes.length || (p.variants.length === 1 && p.variants[0].label === '' ? 1 : 0));
       for (const variant of p.variants)
         assert.equal(catalog.variantPrice(p, variant.label), variant.price);
       variantCount += p.variants.length;

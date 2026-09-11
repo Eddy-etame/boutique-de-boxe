@@ -107,7 +107,7 @@ export function validateProduct(input: unknown): Product {
         typeof raw.id !== 'string' ||
         raw.id.length > 100 ||
         typeof raw.label !== 'string' ||
-        !p.sizes.includes(raw.label) ||
+        (p.sizes.length ? !p.sizes.includes(raw.label) : raw.label !== '') ||
         variants.some((v) => v.label === raw.label) ||
         !Number.isInteger(raw.price) ||
         raw.price <= 0 ||
@@ -140,7 +140,7 @@ export function validateProduct(input: unknown): Product {
     }
     if (
       variants.length &&
-      (variants.length !== p.sizes.length ||
+      ((p.sizes.length ? variants.length !== p.sizes.length : variants.length > 1) ||
         Math.min(...variants.map((v) => v.price)) !== p.price)
     )
       throw new Error(
@@ -169,6 +169,12 @@ export function validateProduct(input: unknown): Product {
             .slice(0, 10),
         }
       : {}),
+    ...(typeof p.sourceName === 'string' && p.sourceName.trim() ? { sourceName: p.sourceName.trim().slice(0, 300) } : {}),
+    ...(Array.isArray(p.sourceSizes) ? { sourceSizes: p.sourceSizes.filter((s): s is string => typeof s === 'string' && s.length <= 80).slice(0, 120) } : {}),
+    ...(typeof p.reference === 'string' && p.reference.trim() ? { reference: p.reference.trim().slice(0, 40) } : {}),
+    ...(p.referenceLabel === 'Référence' || p.referenceLabel === 'Référence interne' ? { referenceLabel: p.referenceLabel } : {}),
+    ...(Array.isArray(p.colors) ? { colors: p.colors.filter((c): c is string => typeof c === 'string' && c.length <= 30).slice(0, 12) } : {}),
+    ...(typeof p.review === 'boolean' ? { review: p.review } : {}),
     price: Number(p.price),
     short: text('short', 8, 300),
     description: text('description', 30, 8000),
