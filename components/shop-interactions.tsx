@@ -94,20 +94,30 @@ export function HeroStage({ product: p }: { product: Product }) {
   const controls = curated
     ? ['La paire', 'La manchette', 'L’autre face']
     : ['Le modèle', 'Le détail', 'Les vues'];
-  const image = view === 2 ? p.images[1] || p.images[0] : p.images[0];
+  // Trois vues réelles : la photo principale, une seconde photo quand elle existe,
+  // sinon un vrai agrandissement de la seule photo disponible.
+  const second = p.images[1];
+  const third = p.images[2];
+  const image = view === 2 ? second || p.images[0] : view === 1 && !curated && third ? third : p.images[0];
+  const inspection =
+    view === 1 && curated ? 'closure' : view === 1 && !third ? 'zoom' : view === 2 && !second ? 'zoom-low' : 'whole';
   const fact =
     view === 1 && curated
       ? ['Fermeture', p.specs['Fermeture'] || 'Voir la photo']
-      : view === 2
-        ? ['À regarder', 'La forme de la paume, les coutures et la fermeture.']
-        : [
-            'Tailles',
-            p.sizes.join(' / ') || 'Voir la fiche',
-          ];
+      : view === 1
+        ? ['À regarder', third ? 'Le modèle sous un autre angle.' : 'La matière et les coutures, agrandies.']
+        : view === 2
+          ? second
+            ? ['À regarder', 'La forme de la paume, les coutures et la fermeture.']
+            : ['Zoom', 'Ce modèle n’a qu’une photo : voici sa partie basse agrandie.']
+          : [
+              'Tailles',
+              p.sizes.join(' / ') || 'Voir la fiche',
+            ];
   return (
     <div
       className="equipment-inspector"
-      data-inspection={view === 1 && curated ? 'closure' : 'whole'}
+      data-inspection={inspection}
     >
       <div className="inspector-index">
         <span>
@@ -626,7 +636,7 @@ export function ProductDetails({ product: p }: { product: Product }) {
       <div className="product-gallery">
         <div className="gallery-main">
           <span className="tiny-label">
-            {p.brand} / {p.sourceRef}
+            {p.brand} / {p.reference || p.sourceRef}
           </span>
           <img
             src={p.images[image]?.src}
@@ -664,7 +674,7 @@ export function ProductDetails({ product: p }: { product: Product }) {
       </div>
       <div className="product-information">
         <span className="eyebrow">
-          {p.brand} / {p.category.replaceAll('-', ' ')}
+          {p.brand} / {categoryFor(p.category)?.name ?? p.category.replaceAll('-', ' ')}
         </span>
         <h1>{cleanName(p)}</h1>
         <p className="product-lead">{p.short}</p>

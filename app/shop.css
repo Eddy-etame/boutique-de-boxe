@@ -3110,3 +3110,7 @@ html[data-motion='reduce'] .button:hover {
 .admin-editor input[readonly] {
   background: #e9eae5;
 }
+
+/* Inspecteur : quand une seule photo existe, « Le détail » et « Les vues » l’agrandissent vraiment. */
+.equipment-inspector[data-inspection='zoom'] img { transform: scale(1.9) translateY(4%); transform-origin: 50% 35%; }
+.equipment-inspector[data-inspection='zoom-low'] img { transform: scale(1.9) translateY(-6%); transform-origin: 50% 80%; }
