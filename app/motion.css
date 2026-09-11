@@ -187,3 +187,53 @@
   .in-view > .editorial-heading h2, .in-view > .bench-heading h2, .in-view .ounce-copy h2, .in-view .opening-note h2, .gallery-main > img { animation: none; }
   .product-card:hover .product-image img { transform: none; }
 }
+
+/* Fiche : la lecture arrive dans l’ordre à côté de la photo. */
+.product-information > * { animation: m-arrive var(--m-base) var(--m-ease) both; }
+.product-information > *:nth-child(1) { animation-delay: 0.04s; }
+.product-information > *:nth-child(2) { animation-delay: 0.1s; }
+.product-information > *:nth-child(3) { animation-delay: 0.16s; }
+.product-information > *:nth-child(4) { animation-delay: 0.22s; }
+.product-information > *:nth-child(5) { animation-delay: 0.28s; }
+.product-information > *:nth-child(6) { animation-delay: 0.34s; }
+.product-information > *:nth-child(7) { animation-delay: 0.4s; }
+.product-information > *:nth-child(8) { animation-delay: 0.46s; }
+.product-information > *:nth-child(n + 9) { animation-delay: 0.52s; }
+
+/* Fiche : les faits et les caractéristiques se posent ligne à ligne quand la section arrive. */
+.in-view .product-facts > div { animation: m-arrive var(--m-base) var(--m-ease) both; }
+.in-view .product-facts > div:nth-child(2) { animation-delay: 0.07s; }
+.in-view .product-facts > div:nth-child(3) { animation-delay: 0.14s; }
+.in-view .product-facts > div:nth-child(4) { animation-delay: 0.21s; }
+.in-view .spec-table tr { animation: m-arrive var(--m-fast) var(--m-ease) both; }
+.in-view .spec-table tr:nth-child(2) { animation-delay: 0.05s; }
+.in-view .spec-table tr:nth-child(3) { animation-delay: 0.1s; }
+.in-view .spec-table tr:nth-child(4) { animation-delay: 0.15s; }
+.in-view .spec-table tr:nth-child(5) { animation-delay: 0.2s; }
+.in-view .spec-table tr:nth-child(6) { animation-delay: 0.25s; }
+.in-view .spec-table tr:nth-child(7) { animation-delay: 0.3s; }
+.in-view .spec-table tr:nth-child(n + 8) { animation-delay: 0.35s; }
+
+/* Fiche : la taille choisie se sent, la vignette choisie se soulève. */
+.variant-picker button { transition: background 0.25s var(--m-ease), color 0.25s var(--m-ease), border-color 0.25s var(--m-ease), transform 0.25s var(--m-ease); }
+.variant-picker button:hover { transform: translateY(-1px); }
+.gallery-thumbs button { transition: border-color 0.3s var(--m-ease), transform 0.3s var(--m-ease); }
+.gallery-thumbs button:hover, .gallery-thumbs button:focus-visible { transform: translateY(-2px); }
+
+/* Fiche : sous la souris, la photo s’agrandit autour du point regardé ; au doigt, le plein écran reste. */
+@media (hover: hover) and (pointer: fine) {
+  .gallery-main[data-loupe] { --ox: 50%; --oy: 50%; overflow: hidden; cursor: zoom-in; }
+  .gallery-main[data-loupe] > img { transform-origin: var(--ox) var(--oy); transition: transform 0.5s var(--m-ease); }
+  .gallery-main[data-loupe]:hover > img { transform: scale(1.75); }
+  .gallery-main[data-loupe] .tiny-label { transition: opacity 0.3s var(--m-ease); }
+  .gallery-main[data-loupe]:hover .tiny-label { opacity: 0; }
+}
+
+/* Fiche : la confirmation d’ajout arrive, sans saut. */
+.cart-added > * { animation: m-arrive var(--m-fast) var(--m-ease) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .product-information > *, .in-view .product-facts > div, .in-view .spec-table tr, .cart-added > * { animation: none; }
+  .gallery-main[data-loupe]:hover > img { transform: none; }
+  .variant-picker button:hover, .gallery-thumbs button:hover { transform: none; }
+}

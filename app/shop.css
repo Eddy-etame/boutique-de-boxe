@@ -3193,3 +3193,14 @@ html[data-motion='reduce'] .button:hover {
 .audience-suggestions article { background: #fff; border: 1px solid #d7d8d6; padding: 16px; }
 .audience-suggestions h4 { font-size: 15px; margin-bottom: 10px; }
 .audience-suggestions article > p { font-size: 12px; color: #58614f; margin-top: 10px; line-height: 1.5; }
+
+/* Fiche sur téléphone : la barre d’achat suit le lecteur quand le bouton principal est sorti de l’écran. */
+.sticky-buy { position: fixed; left: 0; right: 0; bottom: 0; z-index: 55; display: none; align-items: center; gap: 12px; padding: 10px 14px calc(10px + env(safe-area-inset-bottom)); background: var(--paper); border-top: 1.5px solid var(--ink); box-shadow: 0 -12px 30px rgba(0,0,0,.12); transform: translateY(110%); transition: transform .45s var(--m-ease, ease); }
+.sticky-buy.is-shown { transform: none; }
+.sticky-buy-copy { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.sticky-buy-copy strong { font-size: 20px; letter-spacing: -.03em; line-height: 1.1; }
+.sticky-buy-copy span { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sticky-buy .button { min-height: 48px; padding: 0 18px; white-space: nowrap; }
+html[data-consent-open] .sticky-buy { transform: translateY(110%); }
+@media (max-width: 800px) { .sticky-buy { display: flex; } }
+@media (prefers-reduced-motion: reduce) { .sticky-buy { transition: none; } }

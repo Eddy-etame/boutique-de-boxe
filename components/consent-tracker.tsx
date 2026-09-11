@@ -71,6 +71,12 @@ export function ConsentTracker() {
   // La carte s’ouvre tant qu’aucun choix n’est fait ('' côté client, 'pending' au rendu serveur), et depuis le pied de page.
   const open = forced || consent === '';
 
+  // Tant que la carte est ouverte, la barre d’achat des fiches reste rentrée (html[data-consent-open]).
+  useEffect(() => {
+    document.documentElement.toggleAttribute('data-consent-open', open);
+    return () => document.documentElement.removeAttribute('data-consent-open');
+  }, [open]);
+
   useEffect(() => {
     const reopen = () => setForced(true);
     window.addEventListener('boutique:cookies', reopen);

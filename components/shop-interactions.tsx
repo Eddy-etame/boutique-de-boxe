@@ -1,6 +1,6 @@
 'use client';
 import { pageWindow } from '@/lib/pagination';
-import { useMemo, useState, useEffect, useSyncExternalStore } from 'react';
+import { useMemo, useState, useEffect, useRef, useSyncExternalStore } from 'react';
 import {
   ArrowRight,
   ArrowUpRight,
@@ -632,10 +632,55 @@ export function ProductDetails({ product: p }: { product: Product }) {
   const [size, setSize] = useState(p.sizes.length === 1 ? p.sizes[0] : '');
   const [open, setOpen] = useState(false);
   const [zoom, setZoom] = useState(false);
+  const [stuck, setStuck] = useState(false);
+  const [added, setAdded] = useState(false);
+  const buyRef = useRef<HTMLDivElement>(null);
+  const sizeChosen = p.sizes.length === 0 || p.sizes.includes(size);
+
+  // Sur téléphone, la barre d’achat suit le lecteur dès que le bouton principal sort de l’écran.
+  useEffect(() => {
+    const el = buyRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    const io = new IntersectionObserver(([e]) => setStuck(!e.isIntersecting), { threshold: 0 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  // La confirmation d’ajout se lit aussi dans la barre.
+  useEffect(() => {
+    let t: ReturnType<typeof setTimeout> | null = null;
+    const onAdded = () => {
+      setAdded(true);
+      if (t) clearTimeout(t);
+      t = setTimeout(() => setAdded(false), 2600);
+    };
+    window.addEventListener('boutique:cart-added', onAdded);
+    return () => {
+      window.removeEventListener('boutique:cart-added', onAdded);
+      if (t) clearTimeout(t);
+    };
+  }, []);
+
+  // La loupe : sous la souris, la photo s’agrandit autour du point regardé.
+  const loupe = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType !== 'mouse') return;
+    const r = e.currentTarget.getBoundingClientRect();
+    e.currentTarget.style.setProperty('--ox', `${((e.clientX - r.left) / r.width) * 100}%`);
+    e.currentTarget.style.setProperty('--oy', `${((e.clientY - r.top) / r.height) * 100}%`);
+  };
+  const step = (delta: number) => setImage((i) => (i + delta + p.images.length) % p.images.length);
+  const stickyAdd = () => {
+    if (sizeChosen) {
+      buyRef.current?.querySelector<HTMLButtonElement>('button.cart-add')?.click();
+      return;
+    }
+    const first = document.querySelector<HTMLElement>('.variant-picker button, .product-variant-select');
+    first?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    first?.focus({ preventScroll: true });
+  };
   return (
     <div className="product-detail">
       <div className="product-gallery">
-        <div className="gallery-main">
+        <div className="gallery-main" data-loupe={p.images.length ? '' : undefined} onPointerMove={loupe}>
           <span className="tiny-label">
             {p.brand} / {p.reference || p.sourceRef}
           </span>
@@ -667,6 +712,14 @@ export function ProductDetails({ product: p }: { product: Product }) {
                 aria-label={`Afficher la photo ${i + 1}`}
                 aria-pressed={image === i}
                 onClick={() => setImage(i)}
+                onKeyDown={(e) => {
+                  if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+                  e.preventDefault();
+                  const delta = e.key === 'ArrowRight' ? 1 : -1;
+                  step(delta);
+                  const next = e.currentTarget.parentElement?.children[(i + delta + p.images.length) % p.images.length] as HTMLElement | undefined;
+                  next?.focus();
+                }}
               >
                 <img src={img.small} width={84} height={84} alt="" />
               </button>
@@ -745,7 +798,9 @@ export function ProductDetails({ product: p }: { product: Product }) {
             <p key={n}>{n}</p>
           ))}
         </div>
-        <AddToCart key={p.id + size} product={p} variant={size} />
+        <div ref={buyRef} className="buy-anchor">
+          <AddToCart key={p.id + size} product={p} variant={size} />
+        </div>
         <details className="product-alert-disclosure">
           <summary>Être averti de l’ouverture des ventes</summary>
           <AlertForm productId={p.id} variant={size} />
@@ -764,6 +819,27 @@ export function ProductDetails({ product: p }: { product: Product }) {
           Livraison en France : tarifs prévus à l’ouverture{' '}
           <ArrowUpRight size={15} />
         </a>
+      </div>
+      <div className={stuck ? 'sticky-buy is-shown' : 'sticky-buy'} aria-hidden={!stuck}>
+        <div className="sticky-buy-copy">
+          <strong>{money(variantPrice(p, size))}</strong>
+          <span>{size || (p.sizes.length > 0 ? 'Taille à choisir' : cleanName(p))}</span>
+        </div>
+        <button type="button" className="button button-dark" tabIndex={stuck ? 0 : -1} onClick={stickyAdd}>
+          {added ? (
+            <>
+              Ajouté <Check size={17} aria-hidden="true" />
+            </>
+          ) : sizeChosen ? (
+            <>
+              Ajouter au panier <Plus size={17} aria-hidden="true" />
+            </>
+          ) : (
+            <>
+              Choisir la taille <ArrowUpRight size={17} aria-hidden="true" />
+            </>
+          )}
+        </button>
       </div>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="zoom-dialog" showCloseButton={false}>
