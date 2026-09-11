@@ -1,3 +1,5 @@
+import { db } from '@/lib/database';
+import { clientIp } from '@/lib/request';
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import {
@@ -47,8 +49,30 @@ export async function POST(request: Request, { params }: Params) {
       'Si cette adresse est celle du propriétaire, un lien de connexion vient de lui être envoyé. Il expire rapidement et ne sert qu’une fois.';
     if (!email || email.length > 254 || !email.includes('@'))
       return page('Adresse invalide', 'Indiquez une adresse e-mail complète.', 400);
-    if (!isOwnerEmail(email) || !supabaseConfigured())
+    // Même réponse, même titre et durée comparable pour toute adresse : la page ne
+    // révèle pas quelle adresse est celle du propriétaire.
+    try {
+      const bucket = Math.floor(Date.now() / 3600000);
+      const digest = await crypto.subtle.digest(
+        'SHA-256',
+        new TextEncoder().encode(`${clientIp(request)}:${bucket}:auth:magic-link`),
+      );
+      const key = Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, '0')).join('');
+      const hits = await (await db())
+        .prepare(
+          'INSERT INTO rate_limits(key,hits,expires) VALUES (?,1,?) ON CONFLICT(key) DO UPDATE SET hits=rate_limits.hits+1 RETURNING hits',
+        )
+        .bind(key, (bucket + 2) * 3600000)
+        .first<number>('hits');
+      if ((hits || 0) > 10) return page('Trop de demandes', 'Réessayez dans une heure.', 429);
+    } catch (error) {
+      console.error('auth rate limit', (error as { code?: string }).code || (error as Error).name);
+      return page('Service indisponible', 'Réessayez dans quelques minutes.', 503);
+    }
+    if (!isOwnerEmail(email) || !supabaseConfigured()) {
+      await new Promise((resolve) => setTimeout(resolve, 700 + Math.random() * 800));
       return page('Lien demandé', generic);
+    }
     const origin = new URL(request.url).origin;
     const supabase = await supabaseServer();
     const { error } = await supabase.auth.signInWithOtp({
@@ -58,15 +82,10 @@ export async function POST(request: Request, { params }: Params) {
         shouldCreateUser: true,
       },
     });
-    if (error) {
-      console.error('Magic link failed', error.name);
-      return page(
-        'Envoi impossible',
-        'Le service d’authentification n’a pas accepté la demande. Réessayez dans quelques minutes.',
-        503,
-      );
-    }
-    return page('Lien envoyé', generic);
+    // Un refus du fournisseur (souvent sa limite d’une minute par adresse) est journalisé,
+    // jamais affiché : la page resterait sinon un oracle sur l’adresse du propriétaire.
+    if (error) console.error('Magic link failed', error.name, error.message);
+    return page('Lien demandé', generic);
   }
   if (action === 'signout') {
     if (!sameOrigin(request))
