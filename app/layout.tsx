@@ -25,6 +25,8 @@ export const metadata: Metadata = {
   publisher: shop.entity,
   category: 'shopping',
   robots: { index: true, follow: true },
+  // Google Search Console : la balise de vérification arrive par variable d’environnement, jamais en dur.
+  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ? { verification: { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION } } : {}),
   openGraph: {
     siteName: shop.name,
     locale: 'fr_FR',

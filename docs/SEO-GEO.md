@@ -51,3 +51,7 @@ Ces fichiers servent la citabilité et les outils tiers. Ils ne sont pas présen
 ## Ce qu’on refuse
 
 Faux avis, notes autoattribuées, pages satellites quasi identiques, texte caché, mention d’une remise ou d’un stock qui n’existe pas, confusion entre la boutique et les salles Boxing Center.
+
+## Les requêtes du cahier des charges
+
+Chaque requête a sa page canonique dans `QUERY_MAP` (`lib/seo-copy.ts`), publiée dans `/llms.txt`, `/ai.txt` et l’outil MCP `get_query_map`. La page porte la requête exacte en tête de titre et dans le surtitre, un texte de fond en H2 et une FAQ visible. Les sous-familles (`lib/subfamilies.ts`) couvrent l’arborescence du cahier des charges avec une page par objet. Ajouter une requête : une entrée dans `SEO_COPY` ou `SUBFAMILIES`, puis `node scripts/audit-seo.mjs`.

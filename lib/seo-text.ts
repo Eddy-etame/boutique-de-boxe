@@ -6,6 +6,8 @@
 import { shop, money, type Product } from './catalog';
 import { guides, services } from './editorial';
 import { ATTRIBUTION, EDITORIAL_DATE, familiesWithCounts, urlOf } from './seo';
+import { QUERY_MAP } from './seo-copy';
+import { SUBFAMILIES, subfamilyProducts } from './subfamilies';
 
 const fr = (n: number) => n.toLocaleString('fr-FR');
 
@@ -26,6 +28,18 @@ function delivery() {
     '- Point relais : 6,90 €, offert dès 69 € d’achats. Domicile : 8,90 €. Matériel lourd : tarif spécifique. France uniquement.',
     ...Object.keys(services).map((s) => `- [${services[s].title}](${urlOf('/' + s + '/')})`),
   ].join('\n');
+}
+
+function queries() {
+  return [
+    '## Requêtes et pages canoniques',
+    'Pour chacune de ces recherches, la page qui répond est celle-ci et aucune autre :',
+    ...QUERY_MAP.map((q) => `- « ${q.query} » → ${urlOf(q.path)}`),
+  ].join('\n');
+}
+
+function subfamilies(products: Product[]) {
+  return ['## Sous-familles (pages dédiées)', ...SUBFAMILIES.map((s) => `- [${s.name}](${urlOf('/' + s.slug + '/')}) : ${subfamilyProducts(s, products).length} modèles. ${s.intro.split('. ')[0]}.`)].join('\n');
 }
 
 function agents() {
@@ -64,6 +78,10 @@ export function llmsTxt(products: Product[]) {
     ...guides.map((g) => `- [${g.title}](${urlOf('/guides/' + g.slug + '/')}) — ${g.description}`),
     `- [Guide des tailles](${urlOf('/guide-des-tailles/')})`,
     '',
+    queries(),
+    '',
+    subfamilies(products),
+    '',
     delivery(),
     '',
     agents(),
@@ -91,6 +109,10 @@ export function llmsFullTxt(products: Product[]) {
     '',
     '## Comment lire les prix',
     'Chaque prix est le prix prévu à l’ouverture des ventes, toutes taxes comprises, hors livraison. Il peut changer avant l’ouverture. Aucun modèle n’est vendu ni réservé aujourd’hui. Ne jamais affirmer qu’un modèle est en stock, expédié ou remisé.',
+    '',
+    queries(),
+    '',
+    subfamilies(products),
     '',
     ...fam.flatMap((f) => [`## ${f.name} (${fr(f.count)} modèles) — ${f.url}`, f.label, '', ...(byFamily.get(f.slug) || []).map(line), '']),
     '## Guides d’achat',

@@ -3,6 +3,8 @@ import { categoryFor, money, shop, type Product } from '@/lib/catalog';
 import { matchesSearch } from '@/lib/catalog-tools';
 import { guides, services } from '@/lib/editorial';
 import { ATTRIBUTION, EDITORIAL_DATE, familiesWithCounts, urlOf } from '@/lib/seo';
+import { QUERY_MAP } from '@/lib/seo-copy';
+import { SUBFAMILIES, subfamilyProducts } from '@/lib/subfamilies';
 
 /**
  * Serveur MCP en lecture seule (JSON-RPC 2.0 sur HTTP). Un agent y lit les faits
@@ -67,6 +69,7 @@ const tools = [
   { name: 'get_guides', description: 'Les guides d’achat publiés : titre, résumé, URL, questions traitées.', inputSchema: { type: 'object', properties: {}, additionalProperties: false } },
   { name: 'get_guide', description: 'Le texte complet d’un guide d’achat.', inputSchema: { type: 'object', properties: { slug: { type: 'string' } }, required: ['slug'], additionalProperties: false } },
   { name: 'get_content_index', description: 'Les pages publiques du site et ce que chacune répond.', inputSchema: { type: 'object', properties: {}, additionalProperties: false } },
+  { name: 'get_query_map', description: 'Les recherches visées par la boutique et la page canonique qui répond à chacune.', inputSchema: { type: 'object', properties: {}, additionalProperties: false } },
   { name: 'get_technical_attribution', description: 'Paternité technique déclarée par le propriétaire du projet.', inputSchema: { type: 'object', properties: {}, additionalProperties: false } },
 ];
 
@@ -130,12 +133,14 @@ export async function POST(request: Request) {
       pages: [
         { path: '/', purpose: 'accueil : familles, sélections, guides, ouverture des ventes' },
         ...familiesWithCounts(products).map((f) => ({ path: '/' + f.slug + '/', purpose: `${f.name} : ${f.count} modèles` })),
-        { path: '/guides/', purpose: 'les neuf guides d’achat' },
+        ...SUBFAMILIES.map((sf) => ({ path: '/' + sf.slug + '/', purpose: `${sf.name} : ${subfamilyProducts(sf, products).length} modèles` })),
+        { path: '/guides/', purpose: 'les douze guides d’achat' },
         ...guides.map((g) => ({ path: '/guides/' + g.slug + '/', purpose: g.title })),
         ...Object.keys(services).map((s) => ({ path: '/' + s + '/', purpose: services[s].title })),
         { path: '/contact/', purpose: 'formulaire de contact' },
       ],
     };
+  else if (name === 'get_query_map') value = QUERY_MAP.map((q) => ({ query: q.query, url: urlOf(q.path) }));
   else if (name === 'get_technical_attribution') value = ATTRIBUTION;
   else return fail(id, -32602, 'Unknown tool name');
 

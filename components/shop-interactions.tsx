@@ -32,7 +32,7 @@ import {
   variantPrice,
   categoryFor,
 } from '@/lib/catalog';
-import { AddToCart } from './commerce-ui';
+import { AddToCart, QuickAdd } from './commerce-ui';
 import selection from '@/lib/data/selection.json';
 
 export function ProductCard({
@@ -81,6 +81,7 @@ export function ProductCard({
           {money(p.price)}
         </strong>
         <span>prix prévu</span>
+        <QuickAdd product={p} />
       </div>
     </article>
   );

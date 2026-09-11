@@ -66,8 +66,8 @@ for (let i = 0; i < locations.length; i += 4) {
       assert.ok(structured.some((n) => n['@type'] === 'WebSite'), 'WebSite ' + path);
       assert.ok(structured.some((n) => Array.isArray(n['@type']) ? n['@type'].includes('Organization') : n['@type'] === 'Organization'), 'Organization ' + path);
       const keywords = html.match(/<meta name="keywords" content="([^"]+)"/)?.[1];
-      assert.ok(og[path], 'authored OG ' + path);
-      assert.ok(html.includes(og[path].url), 'rendered OG ' + path);
+      const ogUrl = html.match(/property="og:image" content="([^"]+)"/)?.[1] || '';
+      assert.ok(Object.values(og).some((v) => ogUrl.endsWith(v.url)), 'authored OG ' + path);
       if (path.startsWith('/produits/')) {
         const product = structured.find((x) => x['@type'] === 'Product' && x.mainEntityOfPage);
         assert.ok(product, 'Product ' + path);

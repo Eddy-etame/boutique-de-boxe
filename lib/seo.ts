@@ -12,6 +12,8 @@
  */
 import { shop, categories, categoryFor, getCategoryProducts, money, jsonLd, type Product, type Category } from './catalog';
 import type { Guide } from './editorial';
+import { SEO_COPY, type SeoFaq } from './seo-copy';
+import type { Subfamily } from './subfamilies';
 
 /** Date de la dernière révision éditoriale, publiée dans les fichiers agents et les pages. */
 export const EDITORIAL_DATE = '2026-09-11';
@@ -149,9 +151,23 @@ export function productKeywords(p: Product): string[] {
 }
 
 export function categoryKeywords(c: Category): string[] {
+  const copy = SEO_COPY[c.slug];
   const k = KEYWORDS.categories[c.slug];
-  // le nom de la famille d’abord : il est le H1, donc toujours visible
-  return [...new Set([c.name.toLowerCase(), ...(k ? [...k.head, ...k.body] : [])])];
+  // le nom de la famille d’abord : il est le H1, donc toujours visible ; puis les requêtes du cahier des charges
+  return [...new Set([c.name.toLowerCase(), ...(copy ? [...copy.prioritaires, ...copy.secondaires] : []), ...(k ? [...k.head, ...k.body] : [])])];
+}
+
+export function subfamilyKeywords(s: Subfamily): string[] {
+  return [...new Set([s.name.toLowerCase(), ...s.prioritaires, ...s.secondaires])];
+}
+
+/** Questions visibles de la page, publiées en FAQPage. */
+export function faqNode(path: string, faq: SeoFaq[]) {
+  return {
+    '@type': 'FAQPage',
+    '@id': urlOf(path) + '#faq',
+    mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.question, acceptedAnswer: { '@type': 'Answer', text: f.answer } })),
+  };
 }
 
 export function guideKeywords(g: Guide): string[] {
@@ -196,7 +212,7 @@ export function websiteNode() {
     url: shop.origin,
     name: shop.name,
     alternateName: ['Boutique de Boxe en ligne', 'boutique-de-boxe.com'],
-    description: 'Matériel de boxe, MMA et sports de combat : 1 055 modèles avec leurs tailles et leurs prix prévus, neuf guides d’achat.',
+    description: 'Matériel de boxe, MMA et sports de combat : plus de 1 000 modèles avec leurs tailles et leurs prix prévus, douze guides d’achat.',
     inLanguage: 'fr-FR',
     publisher: { '@id': ID('organisation') },
     dateModified: EDITORIAL_DATE,
@@ -268,11 +284,12 @@ function productCore(p: Product) {
 }
 
 /** Fiche produit : WebPage (ItemPage), Product, ProductGroup des tailles, modèles proches, fil d’Ariane. */
-export function productGraph(p: Product, related: Product[]) {
+export function productGraph(p: Product, related: Product[], opts: { description?: string } = {}) {
   const path = '/produits/' + p.slug + '/';
   const family = categoryFor(p.category);
   const product = {
     ...productCore(p),
+    ...(opts.description ? { description: opts.description } : {}),
     mainEntityOfPage: { '@id': urlOf(path) + '#webpage' },
     ...(related.length ? { isRelatedTo: related.slice(0, 4).map((r) => ({ '@id': urlOf('/produits/' + r.slug + '/') + '#product' })) } : {}),
     ...(p.sizes.length > 1 ? { isVariantOf: { '@id': urlOf(path) + '#group' } } : {}),
@@ -298,7 +315,7 @@ export function productGraph(p: Product, related: Product[]) {
 }
 
 /** Page famille : CollectionPage, ItemList paginée, fil d’Ariane. */
-export function collectionGraph(o: { path: string; name: string; description: string; items: Product[]; total: number; page: number; perPage: number; category?: Category }) {
+export function collectionGraph(o: { path: string; name: string; description: string; items: Product[]; total: number; page: number; perPage: number; category?: Category; faq?: SeoFaq[]; keywords?: string[]; about?: unknown[] }) {
   const list = {
     '@type': 'ItemList',
     '@id': urlOf(o.path) + '#list',
@@ -313,10 +330,19 @@ export function collectionGraph(o: { path: string; name: string; description: st
       image: abs(x.images[0]?.small || x.images[0]?.src),
     })),
   };
+  const about = o.about || (o.category ? (CATEGORY_ENTITY[o.category.slug] || []).map(thing) : []);
+  const keywords = o.keywords || (o.category ? categoryKeywords(o.category) : []);
   return graph([
-    webPageNode({ path: o.path + (o.page > 1 ? '?page=' + o.page : ''), name: o.name, description: o.description, type: 'CollectionPage', about: o.category ? (CATEGORY_ENTITY[o.category.slug] || []).map(thing) : [], keywords: o.category ? categoryKeywords(o.category) : [], mainEntity: list['@id'] }),
+    webPageNode({ path: o.path + (o.page > 1 ? '?page=' + o.page : ''), name: o.name, description: o.description, type: 'CollectionPage', about, keywords, mainEntity: list['@id'] }),
     list,
+    ...(o.faq?.length ? [faqNode(o.path, o.faq)] : []),
   ]);
+}
+
+/** Sous-famille : CollectionPage, liste, questions ; renvoie à la famille parente par `about`. */
+export function subfamilyGraph(sub: Subfamily, items: Product[]) {
+  const parent = categoryFor(sub.parent);
+  return collectionGraph({ path: '/' + sub.slug + '/', name: sub.name, description: sub.description, items: items.slice(0, 36), total: items.length, page: 1, perPage: 36, category: parent, faq: sub.faq, keywords: subfamilyKeywords(sub), about: parent ? (CATEGORY_ENTITY[parent.slug] || []).map(thing) : [] });
 }
 
 /** Guide : Article + FAQPage, auteur et éditeur = la boutique. */

@@ -3,6 +3,8 @@ import { readCatalog } from '@/lib/database';
 import { categories, categoryFor, getCategoryProducts, shop } from '@/lib/catalog';
 import { guides, services } from '@/lib/editorial';
 import { EDITORIAL_DATE } from '@/lib/seo';
+import { SUBFAMILIES } from '@/lib/subfamilies';
+const SUBFAMILY_PATHS = new Set(SUBFAMILIES.map((s) => '/' + s.slug + '/'));
 export const dynamic = 'force-dynamic';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const products = await readCatalog();
@@ -23,6 +25,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     '/',
     ...categories.map((c) => '/' + c.slug + '/'),
+    ...SUBFAMILIES.map((s) => '/' + s.slug + '/'),
     ...products.map((p) => '/produits/' + p.slug + '/'),
     '/nouveautes/',
     '/guides/',
@@ -31,12 +34,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/contact/',
   ].map((path) => {
     const product = path.startsWith('/produits/') ? products.find((p) => '/produits/' + p.slug + '/' === path) : undefined;
-    const kind = path === '/' ? 'home' : product ? 'product' : path.startsWith('/guides/') ? 'guide' : categoryFor(path.replace(/^\/|\/$/g, '')) ? 'category' : path === '/nouveautes/' || path === '/guides/' ? 'index' : 'service';
+    const kind = path === '/' ? 'home' : product ? 'product' : SUBFAMILY_PATHS.has(path) ? 'subfamily' : path.startsWith('/guides/') ? 'guide' : categoryFor(path.replace(/^\/|\/$/g, '')) ? 'category' : path === '/nouveautes/' || path === '/guides/' ? 'index' : 'service';
     return {
       url: shop.origin + path,
-      ...(dates.has(path) ? { lastModified: dates.get(path) } : kind === 'guide' || kind === 'home' || kind === 'index' ? { lastModified: EDITORIAL_DATE } : {}),
-      changeFrequency: ({ home: 'daily', category: 'daily', index: 'daily', product: 'weekly', guide: 'monthly', service: 'yearly' } as const)[kind],
-      priority: { home: 1, category: 0.9, index: 0.8, guide: 0.8, product: 0.7, service: 0.4 }[kind],
+      ...(dates.has(path) ? { lastModified: dates.get(path) } : kind === 'guide' || kind === 'home' || kind === 'index' || kind === 'subfamily' ? { lastModified: EDITORIAL_DATE } : {}),
+      changeFrequency: ({ home: 'daily', category: 'daily', index: 'daily', subfamily: 'weekly', product: 'weekly', guide: 'monthly', service: 'yearly' } as const)[kind],
+      priority: { home: 1, category: 0.9, index: 0.8, subfamily: 0.8, guide: 0.8, product: 0.7, service: 0.4 }[kind],
       // Plan d’images : les photos du modèle, pour Google Images.
       ...(product ? { images: product.images.slice(0, 4).map((i) => shop.origin + i.src) } : {}),
     };

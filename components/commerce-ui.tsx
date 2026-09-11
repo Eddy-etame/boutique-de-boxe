@@ -298,6 +298,65 @@ export function AddToCart({
   );
 }
 
+/**
+ * Ajout rapide depuis une carte : un modèle sans taille part au panier en un
+ * geste ; un modèle à tailles ouvre le choix sur place, puis part au panier.
+ */
+export function QuickAdd({ product }: { product: Product }) {
+  const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState('');
+  const [done, setDone] = useState('');
+  const [error, setError] = useState('');
+  const sizes = product.sizes;
+  const oneSize = sizes.length <= 1;
+
+  async function add(variant: string) {
+    if (busy) return;
+    setBusy(variant || '·');
+    setError('');
+    try {
+      await mutateCart({ action: 'add', productId: product.id, variant, quantity: 1 });
+      setDone(variant || '·');
+      setOpen(false);
+      window.dispatchEvent(new Event('boutique:cart-added'));
+      setTimeout(() => setDone(''), 2200);
+    } catch (e) {
+      setError((e as ApiFailure).message || 'Ajout impossible.');
+    } finally {
+      setBusy('');
+    }
+  }
+
+  return (
+    <div className={'quick-add' + (open ? ' is-open' : '')} role="group" aria-label="Ajout rapide au panier">
+      <button
+        type="button"
+        className="quick-add-button"
+        onKeyDown={(e) => e.key === 'Escape' && setOpen(false)}
+        aria-label={oneSize ? `Ajouter ${product.name} au panier` : `Choisir une taille et ajouter ${product.name} au panier`}
+        aria-expanded={oneSize ? undefined : open}
+        disabled={Boolean(busy)}
+        onClick={() => (oneSize ? add(sizes[0] || '') : setOpen((o) => !o))}
+      >
+        {done ? <Check size={18} aria-hidden="true" /> : <Plus size={18} aria-hidden="true" />}
+      </button>
+      {!oneSize && open && (
+        <div className="quick-add-sizes" role="group" aria-label={`Tailles de ${product.name}`}>
+          <span>Taille</span>
+          {sizes.map((s) => (
+            <button key={s} type="button" disabled={Boolean(busy)} onClick={() => add(s)} onKeyDown={(e) => e.key === 'Escape' && setOpen(false)}>
+              {busy === s ? '…' : s.split(',')[0]}
+            </button>
+          ))}
+        </div>
+      )}
+      <span className="quick-add-status" role="status" aria-live="polite">
+        {done ? 'Ajouté au panier' : error}
+      </span>
+    </div>
+  );
+}
+
 function Steps({ current }: { current: 1 | 2 | 3 }) {
   return (
     <ol className="commerce-steps" aria-label="Votre parcours d’essai">

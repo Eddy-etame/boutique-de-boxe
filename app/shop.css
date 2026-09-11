@@ -3114,3 +3114,37 @@ html[data-motion='reduce'] .button:hover {
 /* Inspecteur : quand une seule photo existe, « Le détail » et « Les vues » l’agrandissent vraiment. */
 .equipment-inspector[data-inspection='zoom'] img { transform: scale(1.9) translateY(4%); transform-origin: 50% 35%; }
 .equipment-inspector[data-inspection='zoom-low'] img { transform: scale(1.9) translateY(-6%); transform-origin: 50% 80%; }
+
+/* Ajout rapide depuis la carte : un signe plus, le choix de taille sur place. */
+.price-row { position: relative; }
+.quick-add { margin-left: auto; position: relative; display: flex; align-items: center; }
+.quick-add-button { width: 34px; height: 34px; border: 1.5px solid var(--ink); background: transparent; color: var(--ink); display: grid; place-items: center; cursor: pointer; transition: background .25s var(--m-ease, ease), color .25s var(--m-ease, ease), transform .25s var(--m-ease, ease); }
+.quick-add-button:hover, .quick-add-button:focus-visible, .quick-add.is-open .quick-add-button { background: var(--ink); color: #fff; }
+.quick-add-button:active { transform: scale(.94); }
+.quick-add-button:disabled { opacity: .5; cursor: progress; }
+.quick-add-sizes { position: absolute; left: 0; right: 0; bottom: calc(100% + 8px); z-index: 5; background: #fff; border: 1px solid var(--ink); padding: 10px; display: flex; flex-wrap: wrap; gap: 6px; box-shadow: 0 12px 30px rgba(0,0,0,.12); animation: m-arrive .25s var(--m-ease, ease) both; }
+.quick-add-sizes > span { flex-basis: 100%; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: #58614f; }
+.quick-add-sizes button { border: 1px solid #c3c8b7; background: #fff; padding: 7px 10px; font-size: 12px; cursor: pointer; }
+.quick-add-sizes button:hover, .quick-add-sizes button:focus-visible { background: var(--tape); border-color: var(--ink); }
+.quick-add-status { position: absolute; right: 0; top: calc(100% + 4px); font-size: 10px; white-space: nowrap; color: #58614f; }
+@media (max-width: 650px) { .quick-add-button { width: 30px; height: 30px; } }
+
+/* Texte de fond et questions des pages de catalogue. */
+.seo-body { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px 56px; padding: 56px 0 24px; border-top: 1px solid #bfc3b7; }
+.seo-body h2 { font-size: clamp(22px, 2vw, 30px); line-height: 1.1; margin-bottom: 14px; }
+.seo-body p { font-size: 15px; line-height: 1.65; max-width: 62ch; }
+.seo-body p + p { margin-top: 10px; }
+.seo-faq { padding: 24px 0 56px; }
+.seo-faq h2 { font-size: clamp(22px, 2vw, 30px); margin-bottom: 18px; }
+.seo-faq details { border-top: 1px solid #bfc3b7; }
+.seo-faq details:last-child { border-bottom: 1px solid #bfc3b7; }
+.seo-faq summary { cursor: pointer; padding: 16px 0; font-weight: 650; font-size: 16px; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+.seo-faq summary::after { content: '+'; font-weight: 400; }
+.seo-faq details[open] summary::after { content: '−'; }
+.seo-faq details p { padding: 0 0 18px; max-width: 70ch; line-height: 1.6; }
+.subfamily-links { display: flex; flex-wrap: wrap; gap: 10px; padding: 0 0 40px; }
+.subfamily-links a { border: 1px solid var(--ink); padding: 9px 14px; font-size: 13px; text-decoration: none; color: var(--ink); transition: background .25s, color .25s; }
+.subfamily-links a:hover, .subfamily-links a:focus-visible { background: var(--ink); color: #fff; }
+.product-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin: 18px 0; }
+.product-facts div { border-top: 1px solid #bfc3b7; padding-top: 10px; }
+.product-facts span { display: block; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: #58614f; margin-bottom: 4px; }

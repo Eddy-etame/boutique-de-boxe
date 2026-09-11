@@ -15,6 +15,9 @@ const covers = [
   'DEUX GANTS.',
   'LA RELÈVE.',
   'VOTRE COUPE.',
+  'LA LISTE.',
+  'LE MINIMUM.',
+  'LA TAILLE.',
 ];
 export async function GuidesIndex() {
   const products = await readCatalog();
@@ -31,7 +34,7 @@ export async function GuidesIndex() {
           </h1>
         </div>
         <p>
-          Neuf guides pour choisir la bonne taille, le bon poids et le bon
+          Douze guides pour choisir la bonne taille, le bon poids et le bon
           modèle avant d’acheter.
         </p>
       </section>
@@ -87,7 +90,7 @@ export async function GuidePage({ guide: g }: { guide: Guide }) {
         <h1>{g.title}</h1>
         <p>{g.intro}</p>
         <span className="article-byline">
-          Boutique de Boxe · Repères documentaires · Mis à jour le 10 septembre
+          Boutique de Boxe · Repères documentaires · Mis à jour le 11 septembre
           2026
         </span>
       </header>
@@ -108,7 +111,7 @@ export async function GuidePage({ guide: g }: { guide: Guide }) {
                   height={photo.images[0].height}
                   alt={photo.images[0].alt}
                 />
-                <span>La pièce illustrée : {photo.name} ↗</span>
+                <span>Le modèle illustré : {photo.name} ↗</span>
               </a>
             )}
           </div>
@@ -208,7 +211,7 @@ export async function GuidePage({ guide: g }: { guide: Guide }) {
       </div>
       <section className="guide-related">
         <span className="eyebrow">PASSER DU CONSEIL AU MODÈLE</span>
-        <h2>Les pièces à regarder.</h2>
+        <h2>Les modèles à regarder.</h2>
         <div className="category-crosslinks">
           {g.relatedCategories.map((slug) => {
             const c = categories.find((x) => x.slug === slug);

@@ -1,5 +1,11 @@
 import { catalogPage } from '@/lib/pagination';
-import { productGraph, collectionGraph, productKeywords, categoryKeywords, guideKeywords, pageKeywords } from '@/lib/seo';
+import { productGraph, collectionGraph, subfamilyGraph, subfamilyKeywords, productKeywords, categoryKeywords, guideKeywords, pageKeywords } from '@/lib/seo';
+import { SEO_COPY } from '@/lib/seo-copy';
+import { subfamilyFor, subfamiliesOf, subfamilyProducts } from '@/lib/subfamilies';
+import { longDescription, practiceLevel, disciplinesOf, careAdvice } from '@/lib/describe';
+import { SeoBody } from '@/components/seo-body';
+/** Pages sans vignette dédiée : elles empruntent celle de la page voisine. */
+const OG_FALLBACK: Record<string, string> = { 'boutique-boxe': '/materiel-sport-de-combat/', 'arts-martiaux': '/boutique-arts-martiaux/' };
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import {
@@ -45,13 +51,14 @@ export async function generateMetadata({
       ? products.find((p) => p.slug === slug[1])
       : undefined;
   const cat = categoryFor(path);
+  const sub = subfamilyFor(path);
   const guide =
     slug[0] === 'guides' ? guides.find((g) => g.slug === slug[1]) : undefined;
   const service = services[path];
   const special: Record<string, [string, string]> = {
     guides: [
       'Guides d’achat boxe, MMA et sports de combat',
-      'Neuf guides pour choisir gants, protections et équipement de boxe ou MMA selon votre pratique. Les tailles, les onces et les critères utiles.',
+      'Douze guides pour choisir gants, protections et équipement de boxe ou MMA selon votre pratique. Les tailles, les onces et les critères utiles.',
     ],
     nouveautes: [
       'Nouveautés : les équipements du catalogue',
@@ -89,7 +96,8 @@ export async function generateMetadata({
   };
   const title =
     product?.name ||
-    cat?.name ||
+    (cat && (SEO_COPY[cat.slug]?.title || cat.name)) ||
+    sub?.title ||
     guide?.title ||
     service?.title ||
     special[path]?.[0] ||
@@ -110,7 +118,11 @@ export async function generateMetadata({
       string,
       { url: string; width: number; height: number; alt: string }
     >
-  )['/' + path + '/'];
+  )['/' + path + '/'] ||
+    (ogImages as Record<string, { url: string; width: number; height: number; alt: string }>)[OG_FALLBACK[path] || (sub ? '/' + sub.parent + '/' : '')] ||
+    (sub ? (ogImages as Record<string, { url: string; width: number; height: number; alt: string }>)[OG_FALLBACK[sub.parent] || ''] : undefined) ||
+    // guides ajoutés après la génération des vignettes : la carte de l’index des guides
+    (guide ? (ogImages as Record<string, { url: string; width: number; height: number; alt: string }>)['/guides/'] : undefined);
   const trimmed = (s: string, max: number) =>
     s.length <= max ? s : s.slice(0, max - 1).replace(/[\s,;:·—-]+\S*$/, '').trim() + '…';
   const describe = (p: NonNullable<typeof product>) => {
@@ -129,7 +141,8 @@ export async function generateMetadata({
         ? product.seoDescription
         : describe(product)
       : undefined) ||
-    cat?.description ||
+    (cat && (SEO_COPY[cat.slug]?.description || cat.description)) ||
+    sub?.description ||
     guide?.description ||
     service?.description ||
     special[path]?.[1] ||
@@ -140,7 +153,7 @@ export async function generateMetadata({
     title: seoTitle,
     description,
     // le premier mot-clé est toujours une phrase visible de la page (son titre) ; l’audit le vérifie
-    keywords: product ? productKeywords(product) : cat ? categoryKeywords(cat) : guide ? guideKeywords(guide) : [(service?.title || special[path]?.[0] || '').toLowerCase(), ...(pageKeywords(path) || [])].filter(Boolean),
+    keywords: product ? productKeywords(product) : cat ? categoryKeywords(cat) : sub ? subfamilyKeywords(sub) : guide ? guideKeywords(guide) : [(service?.title || special[path]?.[0] || '').toLowerCase(), ...(pageKeywords(path) || [])].filter(Boolean),
     alternates: { canonical },
     openGraph: {
       title: pageTitle,
@@ -334,24 +347,26 @@ export default async function Page({ params, searchParams }: Props) {
         <section className="spec-section">
           <div>
             <span className="eyebrow">LE MODÈLE</span>
-            {p.description.trim() !== p.name.trim() && (
-              <>
-                <h2>En détail.</h2>
-                <p>{p.description}</p>
-              </>
-            )}
-            {p.use && (
+            <div className="product-facts">
+              <div><span>Discipline</span>{disciplinesOf(p).join(', ')}</div>
+              <div><span>Niveau conseillé</span>{practiceLevel(p)}</div>
+              <div><span>Famille</span><a href={'/' + p.category + '/'}>{cat.name}</a></div>
+              {p.reference && <div><span>{p.referenceLabel || 'Référence'}</span>{p.reference}</div>}
+            </div>
+            <h2>En détail.</h2>
+            <p>{longDescription(p)}</p>
+            {p.use && p.use.length > 40 && (
               <>
                 <h2>À l’usage.</h2>
                 <p>{p.use}</p>
               </>
             )}
-            {p.care ? (
-              <>
-                <h2>Entretien.</h2>
-                <p>{p.care}</p>
-              </>
-            ) : null}
+            <h2>Entretien.</h2>
+            <p>{careAdvice(p)}</p>
+            {(() => {
+              const s = subfamiliesOf(p.category).find((x) => x.match(p));
+              return s ? <ArrowLink href={'/' + s.slug + '/'}>Tous les modèles : {s.name}</ArrowLink> : null;
+            })()}
             <ArrowLink
               href={
                 cat.guide === 'guide-des-tailles'
@@ -403,7 +418,47 @@ export default async function Page({ params, searchParams }: Props) {
             </div>
           </section>
         )}
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: productGraph(p, related) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: productGraph(p, related, { description: longDescription(p) }) }} />
+      </main>
+    );
+  }
+  const sub = subfamilyFor(path);
+  if (sub) {
+    const data = subfamilyProducts(sub, products);
+    const parent = categoryFor(sub.parent);
+    const siblings = subfamiliesOf(sub.parent).filter((x) => x.slug !== sub.slug);
+    return (
+      <main id="contenu" className="page-wrap">
+        <Breadcrumb items={[...(parent ? [{ label: parent.name, href: '/' + parent.slug + '/' }] : []), { label: sub.name }]} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: subfamilyGraph(sub, data) }} />
+        <section className="page-heading">
+          <div>
+            <span className="eyebrow">{sub.eyebrow}</span>
+            <h1>{sub.name}</h1>
+          </div>
+          <div>
+            <div className="label">{data.length} modèles, avec leurs tailles et leurs prix prévus.</div>
+            <p>{sub.intro}</p>
+          </div>
+        </section>
+        <nav className="subfamily-links" aria-label="Pages voisines">
+          {parent && <a href={'/' + parent.slug + '/'}>Toute la famille : {parent.name}</a>}
+          {siblings.map((x) => (
+            <a key={x.slug} href={'/' + x.slug + '/'}>{x.name}</a>
+          ))}
+        </nav>
+        <Catalog
+          items={data.map((p) => ({ ...p, description: p.description.slice(0, 180), use: undefined, care: undefined, specs: {}, notes: [], images: p.images.slice(0, 1) }))}
+          initialPage={1}
+          showFamilies={false}
+        />
+        <SeoBody sections={sub.sections} faq={sub.faq} />
+        <section className="spec-section">
+          <div>
+            <h2>Pour choisir sans se tromper.</h2>
+            <ArrowLink href={sub.guide === 'guide-des-tailles' ? '/guide-des-tailles/' : '/guides/' + sub.guide + '/'}>Lire le guide d’achat</ArrowLink>
+          </div>
+        </section>
       </main>
     );
   }
@@ -440,6 +495,7 @@ export default async function Page({ params, searchParams }: Props) {
                 page: currentPage,
                 perPage: 36,
                 category: cat,
+                faq: cat ? SEO_COPY[cat.slug]?.faq : undefined,
               }),
             }}
           />
@@ -447,7 +503,7 @@ export default async function Page({ params, searchParams }: Props) {
         <section className="page-heading">
           <div>
             <span className="eyebrow">
-              LE CATALOGUE / {cat?.number || 'INDEX'}
+              {(cat && SEO_COPY[cat.slug]?.eyebrow) || 'LE CATALOGUE / ' + (cat?.number || 'INDEX')}
             </span>
             <h1>
               {cat?.name ||
@@ -466,6 +522,16 @@ export default async function Page({ params, searchParams }: Props) {
             </p>
           </div>
         </section>
+        {cat && (() => {
+          const subs = [...subfamiliesOf(cat.slug), ...cat.families.flatMap((f) => subfamiliesOf(f))].filter((x, i, a) => a.indexOf(x) === i);
+          return subs.length ? (
+            <nav className="subfamily-links" aria-label="Sous-familles">
+              {subs.map((x) => (
+                <a key={x.slug} href={'/' + x.slug + '/'}>{x.name}</a>
+              ))}
+            </nav>
+          ) : null;
+        })()}
         <Catalog
           items={data.map((p) => ({
             ...p,
@@ -521,6 +587,7 @@ export default async function Page({ params, searchParams }: Props) {
             </div>
           </section>
         )}
+        {cat && SEO_COPY[cat.slug] && <SeoBody sections={SEO_COPY[cat.slug].sections} faq={SEO_COPY[cat.slug].faq} />}
       </main>
     );
   }
