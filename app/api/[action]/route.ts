@@ -492,6 +492,7 @@ export async function POST(
   } catch (error) {
     if (error instanceof SyntaxError)
       return response({ error: 'Demande illisible. Réessayez.' }, 400);
+    console.error('api POST', (error as { code?: string }).code || (error as Error).name, (error as Error).message);
 
     if (error instanceof Error && /demande|format|origine/i.test(error.message))
       return response({ error: error.message }, 400);

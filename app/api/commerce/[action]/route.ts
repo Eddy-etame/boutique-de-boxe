@@ -100,7 +100,8 @@ export async function GET(request: Request, context: Context) {
       return reply({ orders: rows.results });
     }
     return reply({ error: 'Ressource introuvable.' }, 404);
-  } catch {
+  } catch (error) {
+    console.error('commerce GET', (error as { code?: string }).code || (error as Error).name, (error as Error).message);
     return reply(
       {
         error:
@@ -437,6 +438,7 @@ export async function POST(request: Request, context: Context) {
   } catch (error) {
     if (error instanceof SyntaxError)
       return reply({ error: 'Demande illisible.' }, 400);
+    console.error('commerce POST', (error as { code?: string }).code || (error as Error).name, (error as Error).message);
     return reply(
       {
         error:
