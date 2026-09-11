@@ -389,7 +389,9 @@ export function createPayplug(
         },
         ...(creating ? { body: JSON.stringify(payload) } : {}),
       });
-    } catch {
+    } catch (cause) {
+      // Journal technique sans corps de réponse : nom et message de l'erreur réseau seulement.
+      console.error('PayPlug', creating ? 'create' : 'retrieve', 'fetch failed:', (cause as Error)?.name, (cause as Error)?.message);
       throw new PayplugError(
         creating ? 'create_unconfirmed' : 'retrieve_failed',
         { ambiguous: creating },
@@ -398,6 +400,7 @@ export function createPayplug(
     if (response.status !== 200 && response.status !== 201) {
       // Do not expose or log provider error bodies: they can echo billing data.
       await response.body?.cancel().catch(() => undefined);
+      console.error('PayPlug', creating ? 'create' : 'retrieve', 'upstream status', response.status);
       const definiteRejection = [400, 401, 403, 404, 405, 422].includes(
         response.status,
       );
@@ -415,7 +418,8 @@ export function createPayplug(
     }
     try {
       return await responseObject(response);
-    } catch {
+    } catch (cause) {
+      console.error('PayPlug', creating ? 'create' : 'retrieve', 'unreadable response:', (cause as Error)?.name, (cause as Error)?.message, 'status', response.status);
       throw new PayplugError(
         creating ? 'create_unconfirmed' : 'retrieve_failed',
         { ambiguous: creating, upstreamStatus: response.status },
@@ -429,7 +433,12 @@ export function createPayplug(
     if (!isPayplugPaymentId(id)) throw new PayplugError('invalid_input');
     const snapshot = { ...binding };
     const value = await request('GET', `/payments/${encodeURIComponent(id)}`);
-    return verifyPayment(value, snapshot, id);
+    try {
+      return verifyPayment(value, snapshot, id);
+    } catch (cause) {
+      console.error('PayPlug retrieve verify failed:', (cause as Error)?.message, JSON.stringify({ id: record(value) ? value.id : null, is_live: record(value) ? value.is_live : null, amount: record(value) ? value.amount : null, currency: record(value) ? value.currency : null, meta: record(value) && record(value.metadata) ? value.metadata : null, binding: snapshot }));
+      throw cause;
+    }
   }
   return {
     async createHostedPayment(input: {
@@ -476,7 +485,9 @@ export function createPayplug(
         if (!verified.paymentUrl || verified.state !== 'pending')
           throw new PayplugError('verification_failed');
         return verified;
-      } catch {
+      } catch (cause) {
+        // Diagnostic sans donnees personnelles : identifiants, montants et mode seulement.
+        console.error('PayPlug create verify failed:', (cause as Error)?.message, JSON.stringify({ id: record(value) ? value.id : null, is_live: record(value) ? value.is_live : null, amount: record(value) ? value.amount : null, currency: record(value) ? value.currency : null, meta: record(value) && record(value.metadata) ? value.metadata : null, binding }));
         // The provider may already have created an object even if our validation failed.
         throw new PayplugError('create_unconfirmed', {
           ambiguous: true,

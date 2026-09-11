@@ -108,7 +108,7 @@ async function applyVerified(
   await database.batch([
     database
       .prepare(
-        "UPDATE payment_attempts SET provider_id=?,payment_url=?,status=CASE WHEN refunded_cents>0 OR ?>0 THEN 'unconfirmed' WHEN ?='unconfirmed' THEN 'unconfirmed' WHEN status='paid' THEN 'paid' ELSE ? END,refunded_cents=MAX(refunded_cents,?),paid_at=COALESCE(paid_at,?),error=CASE WHEN refunded_cents>0 OR ?>0 THEN 'Remboursement signalé : vérifier le portail PayPlug.' ELSE ? END,updated_at=? WHERE id=? AND (provider_id IS NULL OR provider_id=?)",
+        "UPDATE payment_attempts SET provider_id=?,payment_url=?,status=CASE WHEN refunded_cents>0 OR ?>0 THEN 'unconfirmed' WHEN ?='unconfirmed' THEN 'unconfirmed' WHEN status='paid' THEN 'paid' ELSE ? END,refunded_cents=CASE WHEN refunded_cents>? THEN refunded_cents ELSE ? END,paid_at=COALESCE(paid_at,?),error=CASE WHEN refunded_cents>0 OR ?>0 THEN 'Remboursement signalé : vérifier le portail PayPlug.' ELSE ? END,updated_at=? WHERE id=? AND (provider_id IS NULL OR provider_id=?)",
       )
       .bind(
         payment.id,
@@ -116,6 +116,7 @@ async function applyVerified(
         payment.refundedAmountCents,
         payment.state,
         payment.state,
+        payment.refundedAmountCents,
         payment.refundedAmountCents,
         payment.paidAt ? new Date(payment.paidAt * 1000).toISOString() : null,
         payment.refundedAmountCents,
@@ -270,7 +271,8 @@ export async function payplugPost(request: Request, action: string) {
           ),
         ),
       });
-    } catch {
+    } catch (error) {
+      if (!(error instanceof PayplugError)) console.error('PayPlug reconcile: erreur interne', (error as Error)?.message);
       return reply(
         {
           error:
@@ -433,6 +435,7 @@ export async function payplugPost(request: Request, action: string) {
     });
     return reply({ attempt: safe(await applyVerified(a, payment)) }, 201);
   } catch (error) {
+    if (!(error instanceof PayplugError)) console.error('PayPlug create: erreur interne', (error as Error)?.message);
     const uncertain = !(error instanceof PayplugError) || error.ambiguous;
     const paymentId =
       error instanceof PayplugError ? error.providerPaymentId : null;

@@ -849,11 +849,12 @@ function harness({
             return {};
           }
           if (sql.startsWith('UPDATE payment_attempts SET provider_id=')) {
-            if (sql.includes('refunded_cents=MAX')) {
+            if (sql.includes('refunded_cents=CASE WHEN refunded_cents>? THEN refunded_cents ELSE ? END')) {
+              // Portable form (Postgres has no two-argument MAX): the refund amount is bound twice.
               assert.equal(
                 values.length,
-                12,
-                'Verified payment update must bind all twelve placeholders',
+                13,
+                'Verified payment update must bind all thirteen placeholders',
               );
               const [
                 provider_id,
@@ -861,6 +862,7 @@ function harness({
                 refundStatus,
                 state,
                 stateFallback,
+                refundCompared,
                 refundStored,
                 paid_at,
                 refundError,
@@ -870,6 +872,7 @@ function harness({
                 expectedProvider,
               ] = values;
               assert.equal(state, stateFallback);
+              assert.equal(refundCompared, refundStored);
               const row = rows.get(id);
               if (
                 row &&
