@@ -74,7 +74,7 @@
 .equipment-rows > a:focus-visible::after { transform: scaleX(1); }
 
 /* Inspecteur : chaque vue se pose, le repère arrive, le contrôle actif se souligne. */
-.inspector-photo img { animation: m-settle var(--m-base) var(--m-ease) both; }
+.inspector-photo img { animation: m-settle var(--m-base) var(--m-ease) backwards; }
 .inspection-pin { animation: m-arrive var(--m-fast) var(--m-ease) both; animation-delay: 0.15s; }
 .inspection-caption > div { animation: m-arrive var(--m-fast) var(--m-ease) both; }
 .inspection-controls button { position: relative; }
@@ -145,4 +145,45 @@
 .workbench-hero, .page-heading, .breadcrumb { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {
   [data-reveal]:not(.in-view) { opacity: 1; transform: none; }
+}
+
+/* Hero : la pièce prend du relief sous le pointeur. Variables posées par Motion, remises à zéro à la sortie. */
+.equipment-inspector { --tx: 0; --ty: 0; }
+.equipment-inspector .inspector-photo img {
+  transform: perspective(1200px) rotateX(calc(var(--ty) * -3deg)) rotateY(calc(var(--tx) * 4deg)) scale(1.03);
+  transition: transform 0.6s var(--m-ease);
+}
+.equipment-inspector[data-inspection='closure'] .inspector-photo img { transform: perspective(1200px) rotateX(calc(var(--ty) * -2deg)) rotateY(calc(var(--tx) * 3deg)) scale(1.7) translateY(-15%); }
+.equipment-inspector[data-inspection='zoom'] .inspector-photo img { transform: perspective(1200px) rotateX(calc(var(--ty) * -2deg)) rotateY(calc(var(--tx) * 3deg)) scale(1.9) translateY(4%); }
+.equipment-inspector[data-inspection='zoom-low'] .inspector-photo img { transform: perspective(1200px) rotateX(calc(var(--ty) * -2deg)) rotateY(calc(var(--tx) * 3deg)) scale(1.9) translateY(-6%); }
+
+/* Titres de section : le titre s’écrit de gauche à droite quand la section arrive. */
+@keyframes m-wipe {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+.in-view > .editorial-heading h2,
+.in-view > .bench-heading h2,
+.in-view .ounce-copy h2,
+.in-view .opening-note h2 { animation: m-wipe 0.9s var(--m-ease) both; animation-delay: 0.1s; }
+
+/* Cartes : la photo avance, la flèche part, le nom se souligne. */
+.product-image img { transition: transform 0.55s var(--m-ease); }
+.product-card:hover .product-image img,
+.product-card:focus-within .product-image img { transform: scale(1.045) translateY(-4px); }
+.product-arrow { transition: background 0.3s var(--m-ease), transform 0.3s var(--m-ease); }
+.product-card:hover .product-arrow { transform: translate(2px, -2px); }
+.product-card h3 a { text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 3px; transition: text-decoration-color 0.3s var(--m-ease); }
+.product-card:hover h3 a, .product-card h3 a:focus-visible { text-decoration-color: currentColor; }
+
+/* Compteurs : chiffre à largeur stable pendant la montée. */
+.equipment-row-count b { font-variant-numeric: tabular-nums; font-weight: inherit; }
+
+/* Fiche : chaque photo choisie se pose. */
+.gallery-main > img { animation: m-settle var(--m-base) var(--m-ease) backwards; }
+
+@media (prefers-reduced-motion: reduce) {
+  .equipment-inspector .inspector-photo img { transform: none !important; transition: none; }
+  .in-view > .editorial-heading h2, .in-view > .bench-heading h2, .in-view .ounce-copy h2, .in-view .opening-note h2, .gallery-main > img { animation: none; }
+  .product-card:hover .product-image img { transform: none; }
 }

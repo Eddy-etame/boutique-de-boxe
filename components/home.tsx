@@ -44,7 +44,7 @@ export default function Home({ items }: { items: Product[] }) {
               Ouverture des ventes bientôt. <a href="#ouverture">Laissez votre e-mail</a>, on vous prévient le jour J.
             </p>
           </div>
-          <a href="/materiel-sport-de-combat/" className="button button-dark">
+          <a href="/boutique-boxe/" className="button button-dark">
             Voir tout le matériel <ArrowUpRight size={20} />
           </a>
           <a className="bench-jump" href="#preparer">
@@ -137,7 +137,7 @@ export default function Home({ items }: { items: Product[] }) {
                   )}
                   <h3>{c.name}</h3>
                   <span className="equipment-row-count">
-                    {count} modèle{count > 1 ? 's' : ''}
+                    <b data-count={count}>{count}</b> modèle{count > 1 ? 's' : ''}
                   </span>
                   <ArrowUpRight size={25} />
                 </a>

@@ -203,6 +203,44 @@ export function Motion() {
     document
       .querySelectorAll('[data-reveal]')
       .forEach((e) => observer.observe(e));
+    const stillMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.dataset.motion === 'reduce';
+    // Les comptes de familles montent jusqu’à leur valeur quand la ligne apparaît : le chiffre se lit en arrivant.
+    const counters = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          counters.unobserve(e.target);
+          const el = e.target as HTMLElement;
+          const target = Number(el.dataset.count || el.textContent || 0);
+          if (stillMotion || !target) continue;
+          const start = performance.now();
+          const tick = (now: number) => {
+            const t = Math.min(1, (now - start) / 900);
+            const eased = 1 - Math.pow(1 - t, 3);
+            el.textContent = String(Math.round(target * eased));
+            if (t < 1) requestAnimationFrame(tick);
+          };
+          el.textContent = '0';
+          requestAnimationFrame(tick);
+        }
+      },
+      { threshold: 0.6 },
+    );
+    document.querySelectorAll<HTMLElement>('[data-count]').forEach((el) => counters.observe(el));
+    // La photo du hero suit le pointeur, à peine : la pièce prend du relief sans bouger de place.
+    const stage = document.querySelector<HTMLElement>('.equipment-inspector');
+    const onMove = (e: PointerEvent) => {
+      if (!stage || stillMotion || e.pointerType === 'touch') return;
+      const r = stage.getBoundingClientRect();
+      stage.style.setProperty('--tx', String(((e.clientX - r.left) / r.width - 0.5) * 2));
+      stage.style.setProperty('--ty', String(((e.clientY - r.top) / r.height - 0.5) * 2));
+    };
+    const onLeave = () => {
+      stage?.style.setProperty('--tx', '0');
+      stage?.style.setProperty('--ty', '0');
+    };
+    stage?.addEventListener('pointermove', onMove);
+    stage?.addEventListener('pointerleave', onLeave);
     if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator)
       navigator.serviceWorker.register('/sw.js').catch(() => {});
     let chosen: HTMLImageElement | null = null;
@@ -222,6 +260,9 @@ export function Motion() {
     window.addEventListener('pageswap', onSwap);
     return () => {
       observer.disconnect();
+      counters.disconnect();
+      stage?.removeEventListener('pointermove', onMove);
+      stage?.removeEventListener('pointerleave', onLeave);
       document.removeEventListener('click', onClick);
       window.removeEventListener('pageswap', onSwap);
     };

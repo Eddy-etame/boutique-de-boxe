@@ -640,6 +640,7 @@ export function ProductDetails({ product: p }: { product: Product }) {
             {p.brand} / {p.reference || p.sourceRef}
           </span>
           <img
+            key={p.images[image]?.src}
             src={p.images[image]?.src}
             width={960}
             height={960}
