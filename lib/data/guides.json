@@ -3,7 +3,7 @@
     "slug": "choisir-gants-boxe",
     "title": "Comment choisir ses gants de boxe ?",
     "description": "Sac, pattes d’ours ou sparring : choisissez vos gants de boxe selon vos séances, leur coupe, leur fermeture et votre budget.",
-    "eyebrow": "Le bon gant, pour la bonne séance",
+    "eyebrow": "Guide d’achat · Gants de boxe",
     "readMinutes": 4,
     "intro": "Une paire de gants se choisit d’abord pour ce que vous allez faire avec. Deux modèles du même poids peuvent avoir une coupe, une fermeture et un toucher très différents. Voici les points à examiner avant de choisir une couleur.",
     "sections": [
@@ -31,7 +31,7 @@
       {
         "title": "Répartissez votre budget sur l’équipement complet",
         "paragraphs": [
-          "Comparez des paires destinées au même usage, dans un budget fixé avant de regarder les éditions spéciales. Gardez une place pour les bandes et les protections demandées par le club. Un visuel qui vous plaît compte, mais il vient après un gant utilisable et confortable."
+          "Comparez des paires prévues pour le même usage, avec un budget fixé avant de regarder les éditions spéciales. Gardez une part pour les bandes et les protections demandées par votre salle. La couleur compte, mais après un gant confortable et utilisable."
         ],
         "bullets": [
           "Usage annoncé compatible avec votre séance.",
@@ -62,7 +62,11 @@
         "answer": "Non. Son gant donne un point de comparaison, pas une prescription. Vérifiez le poids demandé pour la séance puis la coupe qui convient à votre propre main."
       }
     ],
-    "relatedCategories": ["gants-de-boxe", "accessoires-boxe", "materiel-boxe"],
+    "relatedCategories": [
+      "gants-de-boxe",
+      "accessoires-boxe",
+      "materiel-boxe"
+    ],
     "sources": [
       {
         "title": "Hayabusa — Boxing Gloves Buying Guide",
@@ -78,7 +82,7 @@
     "slug": "taille-poids-gants-boxe",
     "title": "Gants de boxe : comprendre les tailles 10, 12, 14 et 16 oz",
     "description": "Comprenez ce que signifient les onces des gants de boxe, distinguez poids et coupe, puis choisissez avec les consignes de votre club.",
-    "eyebrow": "Des onces, pas une pointure",
+    "eyebrow": "Guide · Poids et tailles des gants",
     "readMinutes": 4,
     "intro": "10 oz, 12 oz, 14 oz, 16 oz : ces indications parlent du poids du gant. Elles ne décrivent pas, à elles seules, la place disponible pour votre main. Pour choisir, il faut relier ce chiffre à un modèle et à un usage.",
     "sections": [
@@ -107,7 +111,7 @@
         "title": "Faites un essai qui ressemble à votre entraînement",
         "paragraphs": [
           "Mettez vos bandes habituelles et essayez chaque main. Refermez le poing sans forcer, tenez la garde quelques instants et vérifiez le placement du pouce. La fermeture doit se régler correctement sans que vous ayez à compenser une coupe trop large en serrant excessivement.",
-          "Comparez deux modèles du poids recommandé si nécessaire. Si l’un convient mieux, notez sa référence exacte : retenir uniquement la marque ou la couleur ne permettra pas de retrouver la même coupe plus tard."
+          "Comparez deux modèles du poids recommandé si vous hésitez. Si l’un vous va mieux, notez son nom complet. La marque ou la couleur seule ne suffit pas pour retrouver la même coupe plus tard."
         ]
       },
       {
@@ -131,14 +135,18 @@
       },
       {
         "question": "Est-ce que 16 oz convient à tout le monde pour le sparring ?",
-        "answer": "Non. Le club peut demander un poids particulier, mais doit aussi valider le gant et son usage. La coupe de votre main et l’état du rembourrage restent à contrôler."
+        "answer": "Non. Votre salle peut demander un poids précis, mais elle doit aussi accepter le gant et son usage. La coupe de votre main et l’état du rembourrage restent à vérifier."
       },
       {
         "question": "Puis-je reprendre le poids de mes anciens gants ?",
         "answer": "C’est une information utile si vos séances n’ont pas changé. Vérifiez néanmoins la coupe du nouveau modèle et les consignes actuelles du club avant de reprendre automatiquement la même indication."
       }
     ],
-    "relatedCategories": ["gants-de-boxe", "materiel-boxe", "accessoires-boxe"],
+    "relatedCategories": [
+      "gants-de-boxe",
+      "materiel-boxe",
+      "accessoires-boxe"
+    ],
     "sources": [
       {
         "title": "Hayabusa — What Weight Boxing Gloves Should You Use?",
@@ -154,14 +162,14 @@
     "slug": "choisir-gants-mma",
     "title": "Comment choisir ses gants MMA pour l’entraînement ?",
     "description": "Distinguez gants MMA de sparring et de compétition. Vérifiez l’usage, la taille, les ouvertures et la fermeture avant de vous équiper.",
-    "eyebrow": "Frapper, saisir, changer de phase",
+    "eyebrow": "Guide d’achat · Gants MMA",
     "readMinutes": 4,
-    "intro": "Les gants MMA doivent accompagner des exercices qui alternent parfois frappes et saisies. Leurs doigts ouverts les distinguent des gants de boxe, mais cette ressemblance entre modèles ne signifie pas qu’ils servent tous au même entraînement.",
+    "intro": "Les gants MMA servent aux exercices qui mêlent frappes et saisies. Leurs doigts ouverts les distinguent des gants de boxe. Deux modèles qui se ressemblent ne servent pas forcément au même entraînement.",
     "sections": [
       {
         "title": "Identifiez le type de séance avant le modèle",
         "paragraphs": [
-          "Demandez si le cours prévoit du travail technique, du sparring MMA ou une préparation à une compétition. Les marques distinguent notamment des gants de sparring et des modèles de compétition. Un équipement photographié sur un combat professionnel n’est pas une recommandation pour une première séance.",
+          "Demandez si le cours prévoit du travail technique, du sparring MMA ou une compétition à venir. Les marques séparent souvent les gants de sparring des gants de compétition. Un gant vu sur un combat professionnel n’est pas un conseil pour une première séance.",
           "Pour un cours consacré uniquement à la boxe ou aux frappes debout, l’entraîneur peut demander des gants de boxe. Pour du grappling sans frappes, les besoins peuvent encore être différents. Faites préciser la liste du cours plutôt que d’acheter pour le mot MMA seul."
         ]
       },
@@ -173,9 +181,9 @@
         ]
       },
       {
-        "title": "Utilisez le guide de mesure de la référence choisie",
+        "title": "Utilisez le guide de mesure du modèle choisi",
         "paragraphs": [
-          "Les tailles S, M ou L/XL ne sont pas interchangeables entre fabricants. Mesurez la zone indiquée dans leur guide, sans improviser une conversion depuis vos gants de boxe. Vérifiez aussi les instructions concernant les bandes : l’essai doit tenir compte de ce que le club vous demande de porter.",
+          "Les tailles S, M ou L/XL ne sont pas les mêmes d’une marque à l’autre. Mesurez la zone indiquée dans leur guide, sans convertir depuis vos gants de boxe. Vérifiez aussi les consignes sur les bandes : essayez le gant avec ce que votre salle vous demande de porter.",
           "Fermez la sangle comme prévu et contrôlez qu’elle tient correctement. Vous ne devriez pas avoir besoin de la replacer après chaque mouvement. Si les deux mains ne donnent pas la même sensation, examinez chacune avant de conclure que la taille convient."
         ]
       },
@@ -202,7 +210,7 @@
     "faq": [
       {
         "question": "Des gants MMA de compétition conviennent-ils au sparring ?",
-        "answer": "Pas automatiquement. Choisissez une référence destinée à l’usage demandé et faites-la accepter par le club. L’équipement de compétition suit les règles de l’événement, qui ne définissent pas toutes les séances d’entraînement."
+        "answer": "Pas automatiquement. Choisissez un modèle prévu pour l’usage demandé et faites-le accepter par votre salle. Le matériel de compétition suit les règles de l’événement, pas celles de chaque entraînement."
       },
       {
         "question": "Puis-je choisir mes gants MMA avec mes onces de boxe ?",
@@ -213,7 +221,11 @@
         "answer": "Certains cours les demandent pour leurs séquences de frappe. Demandez la liste par type de séance afin de compléter votre équipement au bon moment, sans acheter deux paires par principe."
       }
     ],
-    "relatedCategories": ["gants-mma", "materiel-mma", "gants-de-boxe"],
+    "relatedCategories": [
+      "gants-mma",
+      "materiel-mma",
+      "gants-de-boxe"
+    ],
     "sources": [
       {
         "title": "Venum — Gants de sparring MMA Impact Evo Scales",
@@ -233,9 +245,9 @@
     "slug": "debuter-boxe",
     "title": "Quel équipement pour débuter la boxe anglaise ?",
     "description": "Préparez votre premier cours de boxe : matériel prêté, achats personnels, tenue et organisation du sac. Une liste utile, sans achats précipités.",
-    "eyebrow": "Votre premier sac de boxe",
+    "eyebrow": "Guide · Débuter la boxe anglaise",
     "readMinutes": 4,
-    "intro": "Vous n’avez pas besoin de transformer votre salon en salle de boxe pour commencer. Le premier équipement utile est celui demandé pour votre cours. Une courte discussion avec le club permet de distinguer ce qui est prêté, ce qui est personnel et ce qui peut attendre.",
+    "intro": "Vous n’avez pas besoin de transformer votre salon en salle de boxe pour commencer. Le premier matériel utile est celui demandé pour votre cours. Une courte discussion avec votre salle sépare ce qui est prêté, ce qui est personnel et ce qui peut attendre.",
     "sections": [
       {
         "title": "Avant la séance d’essai, demandez ce qui est fourni",
@@ -254,14 +266,14 @@
       {
         "title": "Choisissez une tenue qui vous laisse bouger",
         "paragraphs": [
-          "Essayez votre tenue en levant les bras, en fléchissant les jambes et en pivotant doucement. Vérifiez qu’elle reste confortable et ne demande pas d’ajustement permanent. Pour les chaussures, suivez la règle du club concernant le revêtement et les semelles admises ; préparez une paire propre destinée à la salle.",
+          "Essayez votre tenue en levant les bras, en fléchissant les jambes et en pivotant doucement. Elle doit rester confortable sans réglage permanent. Pour les chaussures, suivez la règle de votre salle sur les semelles admises. Prévoyez une paire propre réservée à l’intérieur.",
           "Les vêtements portés lors d’un cours loisir ne sont pas nécessairement ceux exigés en compétition. Vous pourrez traiter ce second sujet avec votre entraîneur si vous préparez une rencontre. Pour commencer, concentrez-vous sur la séance réellement réservée."
         ]
       },
       {
         "title": "Préparez un sac facile à vérifier",
         "paragraphs": [
-          "Gardez les petits éléments dans une poche dédiée pour les retrouver rapidement. Préparez le sac avant de partir plutôt qu’en cherchant vos affaires au dernier moment. Adaptez cette liste à ce qui a été confirmé par le club."
+          "Gardez les petits objets dans une poche dédiée pour les retrouver vite. Préparez le sac avant de partir, pas au dernier moment. Adaptez cette liste à ce que votre salle a confirmé."
         ],
         "bullets": [
           "Gants et bandes si demandés.",
@@ -274,18 +286,18 @@
       {
         "title": "Attendez d’avoir un usage avant d’acheter un sac de frappe",
         "paragraphs": [
-          "Pour travailler à domicile, demandez d’abord quels exercices vous pouvez reprendre entre les cours. Un sac de frappe pose aussi des questions de place, de fixation, de bruit et de compatibilité avec le logement. Le voir dans la salle ne suffit pas à choisir son installation chez vous. Priorisez l’apprentissage et l’équipement personnel avant le matériel encombrant."
+          "Pour travailler chez vous, demandez d’abord quels exercices vous pouvez reprendre entre les cours. Un sac de frappe pose des questions de place, de fixation, de bruit et de logement. Le voir en salle ne suffit pas pour choisir son installation chez vous. L’apprentissage et le matériel personnel passent avant le matériel encombrant."
         ]
       }
     ],
     "faq": [
       {
         "question": "Puis-je commencer sans acheter mes gants ?",
-        "answer": "Oui si le club propose un prêt adapté à votre séance. Confirmez-le directement avant de venir. Demandez aussi les conditions d’utilisation et les éléments qui doivent rester strictement personnels."
+        "answer": "Oui, si votre salle prête du matériel adapté à votre séance. Confirmez-le avant de venir. Demandez aussi les conditions de prêt et ce qui doit rester strictement personnel."
       },
       {
         "question": "Faut-il des chaussures de boxe au premier cours ?",
-        "answer": "Cela dépend de la salle et du cours. Demandez quelle paire propre est autorisée. Vous déciderez ensuite de l’achat de chaussures spécialisées selon votre pratique et les conseils de l’encadrant."
+        "answer": "Cela dépend de votre salle et du cours. Demandez quelle paire propre est acceptée. Vous choisirez ensuite des chaussures spécialisées selon votre pratique et les conseils de votre entraîneur."
       },
       {
         "question": "Un pack débutant est-il forcément économique ?",
@@ -313,14 +325,14 @@
     "slug": "debuter-mma",
     "title": "Quel matériel pour commencer le MMA ?",
     "description": "Préparez votre équipement MMA selon vos cours : frappes, grappling, protections et tenue. Distinguez entraînement et règlement de compétition.",
-    "eyebrow": "Un sac pensé pour vos cours",
+    "eyebrow": "Guide · Débuter le MMA",
     "readMinutes": 4,
     "intro": "Un cours de MMA peut réunir des séquences très différentes. Votre sac doit suivre le programme, pas reproduire la tenue d’un combattant vu à l’écran. Pour débuter, faites préciser le matériel demandé pour chaque cours auquel vous allez participer.",
     "sections": [
       {
         "title": "Demandez la liste par séance",
         "paragraphs": [
-          "Un cours consacré aux frappes debout ne demande pas forcément le même équipement qu’un cours de grappling ou qu’une séance mêlant les phases. Faites préciser le type de gants, les protections et la tenue attendus. Demandez aussi ce qui peut être prêté pendant la découverte.",
+          "Un cours de frappes debout ne demande pas le même matériel qu’un cours de grappling ou qu’une séance qui mêle les deux. Faites préciser le type de gants, les protections et la tenue attendus. Demandez aussi ce qui peut être prêté pendant la découverte.",
           "Notez les réponses dans votre planning : lundi, travail de frappe ; mercredi, grappling ; samedi, MMA. Cette organisation vous aide à acheter progressivement et à ne pas arriver avec un équipement adapté à une autre partie du programme."
         ]
       },
@@ -328,7 +340,7 @@
         "title": "Ne choisissez pas les gants sur leur apparence seule",
         "paragraphs": [
           "Les gants MMA à doigts ouverts ne remplacent pas automatiquement les gants de boxe. L’encadrant peut demander ces derniers pour les exercices de frappe. Lorsque des gants MMA sont prévus, vérifiez si un modèle de sparring est demandé plutôt qu’un modèle destiné à la compétition.",
-          "Gardez les références exactes des paires validées. Le poids, la coupe et la construction varient ; une photo de petits gants noirs ne suffit pas pour retrouver le bon équipement. Une fiche claire doit préciser l’usage, la taille et la fermeture."
+          "Notez le nom exact des paires acceptées. Le poids, la coupe et la construction varient d’un modèle à l’autre. Une photo de petits gants noirs ne suffit pas pour retrouver le bon. Une fiche claire donne l’usage, la taille et la fermeture."
         ]
       },
       {
@@ -349,7 +361,7 @@
         "title": "Séparez la liste du club du règlement de compétition",
         "paragraphs": [
           "Il n’existe pas une liste universelle qui rende n’importe quel équipement « obligatoire en MMA ». Les règles dépendent du cadre de pratique et de l’organisation. L’IMMAF distingue notamment les règles et les protocoles de ses compétitions. Si vous préparez un événement, récupérez sa version applicable avec votre club.",
-          "Au retour d’un entraînement, sortez le matériel humide et nettoyez chaque pièce selon sa notice. Préparer des affaires propres pour le cours suivant fait partie de l’organisation, même lorsque vous ne pratiquez qu’une fois par semaine."
+          "Au retour d’un entraînement, sortez le matériel humide et nettoyez chaque élément selon sa notice. Préparez des affaires propres pour le cours suivant, même si vous pratiquez une fois par semaine."
         ]
       }
     ],
@@ -389,9 +401,9 @@
     "slug": "choisir-protections",
     "title": "Quelles protections choisir pour les sports de combat ?",
     "description": "Protège-dents, casque, protège-tibias : sélectionnez les protections demandées pour votre discipline et vérifiez leur ajustement avant la séance.",
-    "eyebrow": "L’usage, l’ajustement, l’état",
+    "eyebrow": "Guide d’achat · Protections",
     "readMinutes": 4,
-    "intro": "Une protection se choisit pour un usage précis et doit rester correctement placée pendant cet usage. Commencez par la liste de votre encadrant, puis regardez la taille, les réglages et l’entretien de chaque pièce. Le nombre d’accessoires ne fait pas la qualité d’un équipement.",
+    "intro": "Une protection se choisit pour un usage précis et doit rester en place pendant cet usage. Commencez par la liste de votre entraîneur. Regardez ensuite la taille, les réglages et l’entretien de chaque protection. Le nombre d’accessoires ne fait pas la qualité d’un équipement.",
     "sections": [
       {
         "title": "Partez de la discipline et du type de contact",
@@ -411,7 +423,7 @@
         "title": "Casque et protège-tibias : vérifiez la tenue en mouvement",
         "paragraphs": [
           "Pour le casque, contrôlez la taille, les réglages et votre champ de vision. Pour les protège-tibias, observez la couverture prévue par le modèle et la position des attaches. Demandez à l’encadrant un contrôle avant de commencer les exercices.",
-          "Faites quelques mouvements simples, sans contact, pour voir si l’équipement se déplace. Une pièce qui tourne ou descend ne devient pas adaptée parce qu’on serre toujours plus fort. Aucun casque ni rembourrage ne rend les coups à la tête sans risque : gardez les consignes d’intensité et d’arrêt de votre cours."
+          "Faites quelques mouvements simples, sans contact, pour voir si la protection bouge. Une protection qui tourne ou descend ne devient pas adaptée en serrant plus fort. Aucun casque ni rembourrage ne rend les coups à la tête sans risque. Gardez les consignes d’intensité et d’arrêt de votre cours."
         ]
       },
       {
@@ -428,7 +440,7 @@
         ]
       },
       {
-        "title": "Nettoyez chaque pièce selon sa propre notice",
+        "title": "Nettoyez chaque protection selon sa notice",
         "paragraphs": [
           "Un textile, une coque, une mousse et un protège-dents ne se nettoient pas forcément de la même manière. Séparez les affaires utilisées du linge propre pendant le transport, puis sortez-les du sac. Gardez le matériel personnel identifié pour éviter les échanges involontaires. Le parfum d’un désodorisant ne remplace ni le nettoyage ni le contrôle de l’état."
         ]
@@ -441,7 +453,7 @@
       },
       {
         "question": "Puis-je choisir mes protège-tibias comme ceux d’un ami ?",
-        "answer": "Son modèle peut être un point de départ. Vérifiez votre taille, la tenue en mouvement et l’usage prévu. Demandez aussi si le club accepte cette construction pour vos exercices."
+        "answer": "Son modèle peut être un point de départ. Vérifiez votre taille, la tenue en mouvement et l’usage prévu. Demandez aussi si votre salle accepte cette protection pour vos exercices."
       },
       {
         "question": "Un protège-dents se prête-t-il après rinçage ?",
@@ -473,7 +485,7 @@
     "slug": "difference-gants-boxe-mma",
     "title": "Gants de boxe et gants MMA : quelles différences ?",
     "description": "Comparez la forme, les usages et les tailles des gants de boxe et des gants MMA. Comprenez quelle paire prendre pour chaque séance.",
-    "eyebrow": "Deux constructions, des usages précis",
+    "eyebrow": "Guide · Gants de boxe ou gants MMA",
     "readMinutes": 4,
     "intro": "La différence se voit immédiatement : les gants de boxe enveloppent les doigts, tandis que les gants MMA laissent leurs extrémités ouvertes. Mais pour préparer votre entraînement, il faut aller plus loin que leur silhouette. Voici ce que cette différence change dans votre choix.",
     "sections": [
@@ -481,7 +493,7 @@
         "title": "La forme suit les mouvements attendus",
         "paragraphs": [
           "Un gant de boxe rassemble les doigts dans une enveloppe rembourrée et se choisit notamment pour des exercices de frappe. La construction ouverte d’un gant MMA permet de conserver des possibilités de saisie. Certains modèles dégagent davantage la paume ; d’autres ont une construction de sparring plus enveloppante.",
-          "Ces éléments doivent être observés sur le modèle exact. La seule étiquette MMA ne décrit ni le volume de rembourrage, ni la coupe, ni les exercices pour lesquels le fabricant l’a conçu."
+          "Ces points se vérifient sur le modèle exact. L’étiquette MMA seule ne dit rien du volume de rembourrage, de la coupe ni des exercices prévus par le fabricant."
         ]
       },
       {
@@ -495,7 +507,7 @@
         "title": "Un pratiquant de MMA peut utiliser plusieurs types de gants",
         "paragraphs": [
           "Un entraînement de MMA peut réserver une partie de la séance aux frappes debout, puis une autre aux transitions avec saisies. L’encadrant peut demander des gants de boxe pour la première et des gants MMA adaptés pour la seconde. L’achat dépend donc du programme, pas uniquement du nom de la discipline.",
-          "À l’inverse, un cours de grappling sans frappes ne crée pas automatiquement un besoin de gants. Une liste précise par séance évite d’acheter une paire qui restera inutilisée ou de chercher à remplacer le matériel demandé par ce que vous possédez déjà."
+          "À l’inverse, un cours de grappling sans frappes ne demande pas forcément des gants. Une liste précise par séance évite d’acheter une paire qui restera dans le sac. Elle évite aussi de remplacer le matériel demandé par ce que vous avez déjà."
         ]
       },
       {
@@ -508,7 +520,7 @@
       {
         "title": "Posez quatre questions avant de compléter votre sac",
         "paragraphs": [
-          "Si vous possédez déjà une paire, donnez au club sa référence et expliquez ce que vous souhaitez pratiquer. La réponse sera plus utile qu’un simple « est-ce que ces gants sont bons ? »."
+          "Si vous avez déjà une paire, donnez son nom exact à votre salle et expliquez ce que vous voulez pratiquer. La réponse sera plus utile qu’un simple « est-ce que ces gants sont bons ? »."
         ],
         "bullets": [
           "Quels exercices vais-je faire avec cette paire ?",
@@ -521,15 +533,15 @@
     "faq": [
       {
         "question": "Puis-je aller à un cours de boxe avec des gants MMA ?",
-        "answer": "Demandez au club avant de venir. Les gants MMA ne remplacent pas automatiquement les gants de boxe prévus pour le cours, même si les deux servent dans certains exercices de frappe."
+        "answer": "Demandez à votre salle avant de venir. Les gants MMA ne remplacent pas automatiquement les gants de boxe prévus pour le cours. Les deux servent pourtant dans certains exercices de frappe."
       },
       {
         "question": "Les gants MMA sont-ils toujours des gants de compétition ?",
-        "answer": "Non. Des fabricants proposent des versions destinées au sparring et à l’entraînement. Vérifiez la référence, sa fiche et l’usage accepté par l’encadrant."
+        "answer": "Non. Des fabricants proposent des versions pour le sparring et d’autres pour l’entraînement. Vérifiez le modèle, sa fiche et l’usage accepté par votre entraîneur."
       },
       {
         "question": "Quelle paire acheter en premier si je pratique les deux disciplines ?",
-        "answer": "Celle qui correspond aux premières séances de votre planning et au matériel que le club ne prête pas. Faites la liste des besoins réels avant d’acheter deux paires simultanément."
+        "answer": "Celle qui correspond aux premières séances de votre planning et au matériel que votre salle ne prête pas. Listez vos besoins réels avant d’acheter deux paires d’un coup."
       }
     ],
     "relatedCategories": [
@@ -557,7 +569,7 @@
     "slug": "equipement-enfant",
     "title": "Matériel de boxe pour enfant : préparer les premiers cours",
     "description": "Choisissez l’équipement de boxe d’un enfant selon son cours, son ajustement et les consignes du club. Une liste claire pour les parents.",
-    "eyebrow": "À sa taille, pour son apprentissage",
+    "eyebrow": "Guide · Matériel enfant",
     "readMinutes": 4,
     "intro": "Pour équiper un enfant, la première question porte sur son cours : découverte motrice, boxe éducative, travail technique ou rencontre officielle ? Demandez à l’encadrant la liste précise et les possibilités de prêt. Les achats viendront ensuite, avec l’enfant pour vérifier le confort.",
     "sections": [
@@ -571,14 +583,14 @@
       {
         "title": "Essayez les gants au lieu de choisir uniquement par âge",
         "paragraphs": [
-          "Une indication junior donne un repère commercial, pas la certitude d’un bon ajustement. Suivez le guide du fabricant et les consignes de poids du club. Faites essayer les deux mains avec les bandes prévues, puis demandez à l’enfant de fermer doucement le poing et de tenir sa garde.",
+          "Une mention junior donne un repère commercial, pas la certitude d’un bon ajustement. Suivez le guide du fabricant et les consignes de poids de sa salle. Faites essayer les deux mains avec les bandes prévues. Demandez ensuite à l’enfant de fermer doucement le poing et de tenir sa garde.",
           "Demandez-lui de montrer les zones qui gênent. Des doigts comprimés, un pouce mal placé ou une main qui glisse justifient un autre essai. Évitez de prendre volontairement trop grand pour que le matériel dure : il doit être adapté au cours d’aujourd’hui."
         ]
       },
       {
         "title": "Traitez le protège-dents comme un achat personnel",
         "paragraphs": [
-          "Le modèle et l’ajustement doivent convenir à l’enfant. Respectez la notice du fabricant et conservez-la. Pour un appareil orthodontique ou un doute lié à la dentition, demandez conseil à un dentiste ou orthodontiste ; certains fabricants, comme SISU, imposent une supervision professionnelle pour leurs modèles portés sur des bagues.",
+          "Le modèle et l’ajustement doivent convenir à l’enfant. Respectez la notice du fabricant et gardez-la. Avec un appareil dentaire ou un doute sur la dentition, demandez conseil à un dentiste ou à un orthodontiste. Certains fabricants, comme SISU, exigent un suivi professionnel pour leurs modèles portés sur des bagues.",
           "Un protège-dents ne se transmet pas entre enfants comme un vêtement. Prévoyez sa boîte et vérifiez avec l’enfant comment le ranger. Un équipement devenu inconfortable pendant la croissance doit être réévalué."
         ]
       },
@@ -605,7 +617,7 @@
     "faq": [
       {
         "question": "Quel poids de gants choisir selon l’âge de mon enfant ?",
-        "answer": "L’âge seul ne suffit pas. Demandez le poids prévu pour le cours, consultez le guide du modèle et vérifiez la coupe avec l’enfant. Pour une rencontre, appliquez le règlement indiqué par le club."
+        "answer": "L’âge seul ne suffit pas. Demandez le poids prévu pour le cours, lisez le guide du modèle et vérifiez la coupe avec l’enfant. Pour une rencontre, appliquez le règlement donné par sa salle."
       },
       {
         "question": "Peut-on acheter plus grand pour anticiper la croissance ?",
@@ -613,7 +625,7 @@
       },
       {
         "question": "Faut-il acheter un casque dès la première séance ?",
-        "answer": "Seulement si le club le demande et ne fournit pas le matériel adapté. Le besoin dépend du cours. Pour une compétition, vérifiez séparément les règles et les modalités de fourniture."
+        "answer": "Seulement si sa salle le demande et ne fournit pas le matériel adapté. Le besoin dépend du cours. Pour une compétition, vérifiez à part les règles et ce qui est fourni."
       }
     ],
     "relatedCategories": [
@@ -641,9 +653,9 @@
     "slug": "equipement-femme",
     "title": "Équipement de boxe et de combat pour femme : choisir la bonne coupe",
     "description": "Gants, brassière, textile et protections : choisissez votre équipement de combat selon votre morphologie, vos mouvements et les consignes du club.",
-    "eyebrow": "Du matériel qui vous convient",
+    "eyebrow": "Guide · Matériel femme",
     "readMinutes": 4,
-    "intro": "Le bon équipement répond à votre pratique et à votre morphologie. Une couleur ou une étiquette « femme » ne permet pas de juger l’ajustement d’un gant, le maintien d’une brassière ou la coupe d’un short. Voici comment comparer les éléments utiles.",
+    "intro": "Le bon matériel répond à votre pratique et à votre morphologie. Une couleur ou une étiquette « femme » ne dit rien de l’ajustement d’un gant. Elle ne dit rien non plus du maintien d’une brassière ou de la coupe d’un short. Voici comment comparer ce qui compte.",
     "sections": [
       {
         "title": "Pour les gants, distinguez poids et volume intérieur",
@@ -655,7 +667,7 @@
       {
         "title": "Choisissez une brassière adaptée aux mouvements du cours",
         "paragraphs": [
-          "Prenez vos mesures selon le guide du fabricant, puis essayez en bougeant les bras et en changeant de position. La bande, les bretelles et la poitrine doivent rester confortables. Une compression excessive n’est pas un bon critère de maintien ; Decathlon rappelle l’importance d’une taille qui accompagne la poitrine sans la comprimer.",
+          "Prenez vos mesures selon le guide du fabricant, puis essayez en bougeant les bras et en changeant de position. La bande, les bretelles et la poitrine doivent rester confortables. Une compression forte n’est pas un bon signe de maintien : la taille doit accompagner la poitrine sans la comprimer.",
           "Regardez également comment la brassière se comporte sous le haut prévu. Si une fermeture ou une couture vous gêne pendant un mouvement simple, cherchez une autre coupe. La séance peut inclure des rotations, des déplacements et du travail au sol selon la discipline."
         ]
       },
@@ -670,7 +682,7 @@
         "title": "Vérifiez les protections propres à votre pratique",
         "paragraphs": [
           "Protège-dents, protège-tibias, casque ou protection pelvienne : demandez les éléments attendus pour votre cours. Pour une compétition, le règlement peut préciser des exigences supplémentaires, y compris pour la tenue ou certaines protections. Récupérez les instructions de l’événement avec l’encadrant.",
-          "La dénomination d’une gamme ne prouve pas qu’une protection convient à toutes les morphologies. Vérifiez ses mesures et sa stabilité lors d’un essai. Si vous hésitez sur une pièce personnelle, posez une question précise sur son ajustement et son usage."
+          "Le nom d’une gamme ne prouve pas qu’une protection convient à toutes les morphologies. Vérifiez ses mesures et sa stabilité à l’essai. Si vous hésitez sur une protection personnelle, posez une question précise sur son ajustement et son usage."
         ]
       },
       {
