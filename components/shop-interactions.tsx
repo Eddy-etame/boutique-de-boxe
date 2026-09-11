@@ -339,14 +339,14 @@ export function Catalog({
         </button>
       </div>
       <div className="catalog-count" aria-live="polite">
-        <span>
+        <span key={result.length} className="catalog-count-value">
           {result.length} {result.length === 1 ? 'modèle' : 'modèles'}
         </span>
         <span>EN VENTE BIENTÔT</span>
       </div>
       {result.length ? (
         <>
-          <div className="product-grid">
+          <div className="product-grid" key={[query, sort, brand, size, family, budget, page].join('|')}>
             {result
               .slice(
                 (Math.min(page, Math.max(1, Math.ceil(result.length / 36))) -

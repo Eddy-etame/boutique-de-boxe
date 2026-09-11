@@ -237,3 +237,74 @@
   .gallery-main[data-loupe]:hover > img { transform: none; }
   .variant-picker button:hover, .gallery-thumbs button:hover { transform: none; }
 }
+
+/* Catalogue : le titre arrive dans l’ordre de lecture, la phrase et le texte suivent. */
+.page-heading > div > * { animation: m-arrive var(--m-base) var(--m-ease) both; }
+.page-heading > div:first-child > .eyebrow { animation-delay: 0.04s; }
+.page-heading > div:first-child > h1 { animation: m-wipe 0.9s var(--m-ease) both; animation-delay: 0.12s; }
+.page-heading > div:last-child > .label { animation-delay: 0.3s; }
+.page-heading > div:last-child > p { animation-delay: 0.4s; }
+
+/* Catalogue : les sous-familles arrivent une à une, le trait se dessine sous le lien survolé. */
+.subfamily-links > a { animation: m-arrive var(--m-fast) var(--m-ease) both; position: relative; }
+.subfamily-links > a:nth-child(1) { animation-delay: 0.45s; }
+.subfamily-links > a:nth-child(2) { animation-delay: 0.5s; }
+.subfamily-links > a:nth-child(3) { animation-delay: 0.55s; }
+.subfamily-links > a:nth-child(4) { animation-delay: 0.6s; }
+.subfamily-links > a:nth-child(5) { animation-delay: 0.65s; }
+.subfamily-links > a:nth-child(6) { animation-delay: 0.7s; }
+.subfamily-links > a:nth-child(n + 7) { animation-delay: 0.75s; }
+
+/* Catalogue : la grille se recompose à chaque recherche, filtre ou page ; les cartes arrivent en cascade. */
+.catalog .product-grid > .product-card { animation: m-arrive var(--m-base) var(--m-ease) both; }
+.catalog .product-grid > .product-card:nth-child(2) { animation-delay: 0.05s; }
+.catalog .product-grid > .product-card:nth-child(3) { animation-delay: 0.1s; }
+.catalog .product-grid > .product-card:nth-child(4) { animation-delay: 0.15s; }
+.catalog .product-grid > .product-card:nth-child(5) { animation-delay: 0.2s; }
+.catalog .product-grid > .product-card:nth-child(6) { animation-delay: 0.25s; }
+.catalog .product-grid > .product-card:nth-child(7) { animation-delay: 0.3s; }
+.catalog .product-grid > .product-card:nth-child(8) { animation-delay: 0.35s; }
+.catalog .product-grid > .product-card:nth-child(9) { animation-delay: 0.4s; }
+.catalog .product-grid > .product-card:nth-child(10) { animation-delay: 0.45s; }
+.catalog .product-grid > .product-card:nth-child(11) { animation-delay: 0.5s; }
+.catalog .product-grid > .product-card:nth-child(n + 12) { animation-delay: 0.55s; }
+.catalog-count-value { display: inline-block; animation: m-arrive var(--m-fast) var(--m-ease) both; font-variant-numeric: tabular-nums; }
+.filter-panel.is-open { animation: m-arrive var(--m-fast) var(--m-ease) both; }
+.filter-panel.is-open > .filter-field { animation: m-arrive var(--m-fast) var(--m-ease) both; }
+.filter-panel.is-open > .filter-field:nth-child(2) { animation-delay: 0.05s; }
+.filter-panel.is-open > .filter-field:nth-child(3) { animation-delay: 0.1s; }
+.filter-panel.is-open > .filter-field:nth-child(4) { animation-delay: 0.15s; }
+.filter-toggle svg { transition: transform var(--m-fast) var(--m-ease); }
+.filter-toggle:hover svg:last-child { transform: rotate(90deg); }
+.catalog-pagination a { transition: background 0.25s var(--m-ease), color 0.25s var(--m-ease), transform 0.25s var(--m-ease); }
+.catalog-pagination a:hover { transform: translateY(-1px); }
+.empty-state { animation: m-settle var(--m-base) var(--m-ease) both; }
+
+/* Catalogue : critères, familles voisines, texte de fond et questions arrivent quand la section arrive. */
+.in-view .choice-criteria > div { animation: m-arrive var(--m-base) var(--m-ease) both; }
+.in-view .choice-criteria > div:nth-child(2) { animation-delay: 0.08s; }
+.in-view .choice-criteria > div:nth-child(3) { animation-delay: 0.16s; }
+.in-view .choice-criteria > div:nth-child(4) { animation-delay: 0.24s; }
+.in-view .category-crosslinks > a { animation: m-arrive var(--m-fast) var(--m-ease) both; }
+.in-view .category-crosslinks > a:nth-child(2) { animation-delay: 0.05s; }
+.in-view .category-crosslinks > a:nth-child(3) { animation-delay: 0.1s; }
+.in-view .category-crosslinks > a:nth-child(4) { animation-delay: 0.15s; }
+.in-view .category-crosslinks > a:nth-child(5) { animation-delay: 0.2s; }
+.seo-body.in-view > div { animation: m-arrive var(--m-base) var(--m-ease) both; }
+.seo-body.in-view > div:nth-child(2) { animation-delay: 0.1s; }
+.seo-body.in-view > div:nth-child(3) { animation-delay: 0.2s; }
+.seo-faq.in-view > details { animation: m-arrive var(--m-fast) var(--m-ease) both; }
+.seo-faq.in-view > details:nth-child(3) { animation-delay: 0.05s; }
+.seo-faq.in-view > details:nth-child(4) { animation-delay: 0.1s; }
+.seo-faq.in-view > details:nth-child(5) { animation-delay: 0.15s; }
+.seo-faq.in-view > details:nth-child(n + 6) { animation-delay: 0.2s; }
+.seo-faq details[open] > p { animation: m-arrive var(--m-fast) var(--m-ease) both; }
+.seo-faq summary { transition: color 0.25s var(--m-ease); }
+.seo-faq summary:hover { color: var(--blue); }
+
+@media (prefers-reduced-motion: reduce) {
+  .page-heading > div > *, .page-heading > div:first-child > h1, .subfamily-links > a, .catalog .product-grid > .product-card, .catalog-count-value,
+  .filter-panel.is-open, .filter-panel.is-open > .filter-field, .empty-state, .in-view .choice-criteria > div, .in-view .category-crosslinks > a,
+  .seo-body.in-view > div, .seo-faq.in-view > details, .seo-faq details[open] > p { animation: none; }
+  .filter-toggle:hover svg:last-child, .catalog-pagination a:hover { transform: none; }
+}

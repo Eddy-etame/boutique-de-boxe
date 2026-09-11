@@ -197,7 +197,7 @@ export function Motion() {
     );
     document
       .querySelectorAll(
-        'main > section:not(.workbench-hero):not(.page-heading):not(.session-bench), main .product-card, main .guide-card, main .equipment-rows > a, main .kit-piece, footer',
+        'main > section:not(.workbench-hero):not(.page-heading):not(.session-bench), main .product-card:not(.catalog .product-card), main .guide-card, main .equipment-rows > a, main .kit-piece, footer',
       )
       .forEach((e) => {
         if (!e.hasAttribute('data-reveal')) e.setAttribute('data-reveal', '');
