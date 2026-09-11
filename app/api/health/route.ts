@@ -19,7 +19,7 @@ function classify(url: string): Pick<Health, 'route' | 'port'> {
   try {
     const u = new URL(url);
     const port = Number(u.port || 5432);
-    if (/pooler\.supabase\.com$/.test(u.hostname)) return { route: 'pooler', port };
+    if (u.hostname.endsWith('pooler.supabase.com')) return { route: 'pooler', port };
     if (/^db\..*\.supabase\.co$/.test(u.hostname)) return { route: 'direct', port };
     if (/localhost|127\.0\.0\.1/.test(u.hostname)) return { route: 'local', port };
     return { route: 'other', port };
