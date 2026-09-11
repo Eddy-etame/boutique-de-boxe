@@ -28,6 +28,8 @@ async function ensureTable() {
   await database.prepare('CREATE INDEX IF NOT EXISTS events_created ON events (created_at)').run();
   await database.prepare('CREATE INDEX IF NOT EXISTS events_sid ON events (sid)').run();
   await database.prepare('CREATE INDEX IF NOT EXISTS events_path_type ON events (path, type)').run();
+  // Meme regle que les autres tables : securite par ligne activee, le service seul lit et ecrit.
+  await database.prepare('ALTER TABLE events ENABLE ROW LEVEL SECURITY').run();
   tableReady = true;
 }
 
