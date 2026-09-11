@@ -16,7 +16,7 @@
 
 ## 2. Migrations
 
-Sans poste de travail : coller le contenu de `drizzle/supabase-init.sql` dans Supabase → SQL Editor → Run. Le script crée les 8 tables, leurs index et active la sécurité par ligne ; il peut être rejoué sans risque. Fait le 11 septembre 2026.
+Sans poste de travail : coller le contenu de `drizzle/supabase-init.sql` dans Supabase → SQL Editor → Run. Le script crée les 9 tables, leurs index et active la sécurité par ligne ; il peut être rejoué sans risque. Fait le 11 septembre 2026 pour les 8 premières ; la table `events` (mesure d’audience) s’ajoute en collant `drizzle/0002_events.sql`, ou se crée d’elle-même au premier événement reçu par `/api/analytics`.
 
 Depuis `site/`, avec la connexion directe dans l’environnement du terminal PowerShell (jamais dans Git) :
 

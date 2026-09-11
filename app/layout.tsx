@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Header, Footer, Motion } from '@/components/shop-shell';
 import { shop } from '@/lib/catalog';
 import { siteGraph, KEYWORDS, ATTRIBUTION } from '@/lib/seo';
-import { Analytics } from '@vercel/analytics/next';
+import { ConsentTracker } from '@/components/consent-tracker';
 import './globals.css';
 import './shop.css';
 import './refinement.css';
@@ -92,8 +92,8 @@ export default function RootLayout({
         {children}
         <Footer />
         <Motion />
-        {/* Mesure d’audience sans cookie ni bannière (Vercel Web Analytics, à activer dans le projet Vercel). */}
-        <Analytics />
+        {/* Carte de consentement et mesure d’audience maison : rien n’est mesuré sans accord. */}
+        <ConsentTracker />
         {/* Organisation et site : un seul graphe, référencé par le graphe de chaque page. */}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: siteGraph() }} />
       </body>

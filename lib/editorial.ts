@@ -61,7 +61,7 @@ export const services: Record<string, Service> = {
       {
         title: 'Une question sur un équipement ?',
         paragraphs: [
-          'Écrivez à boxingcenter31@gmail.com en indiquant le modèle concerné et votre question. Pour une commande effectuée dans une autre boutique Boxing Center, précisez également le site d’achat et sa référence.',
+          'Écrivez à boxingcenter31@gmail.com en indiquant le modèle concerné et votre question. Pour un achat fait ailleurs, précisez le site d’achat et sa référence.',
         ],
       },
     ],
@@ -81,13 +81,13 @@ export const services: Record<string, Service> = {
       {
         title: 'Publication et contact',
         paragraphs: [
-          'Directeur de la publication : Sébastien DUTILH. Courriel : boxingcenter31@gmail.com. Téléphone : 09 54 14 74 72. Boutique de Boxe est le catalogue national de matériel de sports de combat édité par Boxing Center.',
+          'Directeur de la publication : Sébastien DUTILH. Courriel : boxingcenter31@gmail.com. Téléphone : 09 54 14 74 72. Boutique de Boxe est une boutique en ligne nationale de matériel de sports de combat, éditée par la SAS BOXING CENTER. Elle est distincte des salles de sport de l’éditeur.',
         ],
       },
       {
         title: 'Hébergement',
         paragraphs: [
-          'Cette version du site est hébergée sur l’infrastructure Cloudflare par l’intermédiaire du service OpenAI Sites. Cloudflare, Inc. : 101 Townsend Street, San Francisco, CA 94107, États-Unis.',
+          'Le site est hébergé par Vercel Inc., 440 N Barranca Avenue #4133, Covina, CA 91723, États-Unis. Les données du catalogue et des demandes sont stockées chez Supabase Inc., dans la région Europe de l’Ouest (Londres).',
         ],
       },
       {
@@ -131,7 +131,7 @@ export const services: Record<string, Service> = {
       {
         title: 'Demandes et alertes',
         paragraphs: [
-          'Les demandes sont enregistrées pour être traitées par Boxing Center. L’inscription à une alerte est facultative et limitée à l’objet demandé. Les informations sur les données personnelles figurent dans la politique de confidentialité.',
+          'Les demandes sont enregistrées pour être traitées par l’éditeur, la SAS BOXING CENTER. L’inscription à une alerte est facultative et limitée à l’objet demandé. Les informations sur les données personnelles figurent dans la politique de confidentialité.',
         ],
       },
     ],
@@ -139,9 +139,16 @@ export const services: Record<string, Service> = {
   confidentialite: {
     title: 'Vos données personnelles',
     description:
-      'Utilisation des données de contact et d’alerte de disponibilité par Boxing Center, conservation et exercice de vos droits.',
+      'Cookies de mesure, données de contact et d’alerte de disponibilité : ce que Boutique de Boxe enregistre, combien de temps, et vos droits.',
     eyebrow: 'LE SITE / CONFIDENTIALITÉ',
     sections: [
+      {
+        title: 'Cookies et mesure d’audience',
+        paragraphs: [
+          'À votre première visite, une carte vous demande si vous acceptez un cookie de mesure. Si vous acceptez, la boutique enregistre elle-même, sans outil tiers, les pages que vous regardez, le temps passé, les modèles ajoutés au panier, les recherches et les formulaires envoyés. Ces données servent à mieux présenter le matériel. Aucune adresse IP n’est conservée.',
+          'Le cookie d’identifiant dure treize mois, le cookie de choix un an. Si vous refusez, aucun cookie de mesure n’est posé et rien n’est enregistré. Vous changez d’avis à tout moment par le lien « Cookies » en bas de page. Le panier et la connexion à l’atelier utilisent des cookies strictement nécessaires, sans mesure.',
+        ],
+      },
       {
         title: 'Qui traite vos données ?',
         paragraphs: [

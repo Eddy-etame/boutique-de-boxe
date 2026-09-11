@@ -1,5 +1,6 @@
 'use client';
 import { usePathname } from 'next/navigation';
+import { CookiesButton } from './consent-tracker';
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { ArrowUpRight, Search, Menu, ArrowRight, X } from 'lucide-react';
 import {
@@ -173,6 +174,7 @@ export function Footer() {
           <a href="/mentions-legales/">Mentions légales</a>
           <a href="/conditions-generales-de-vente/">CGV</a>
           <a href="/confidentialite/">Confidentialité</a>
+          <CookiesButton />
           <a href="/atelier/">Administration</a>
         </nav>
       </div>

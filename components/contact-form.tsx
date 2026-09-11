@@ -106,8 +106,8 @@ export function ContactForm() {
       if (!mounted.current || controller.signal.aborted) return;
       setStatus(
         relay === 'accepted_client'
-          ? 'Votre demande est enregistrée et transmise au service de contact. L’équipe Boxing Center pourra vous répondre à l’adresse indiquée.'
-          : 'Votre demande est bien enregistrée pour l’équipe Boxing Center. L’accusé de réception par e-mail n’a pas pu être confirmé ; inutile de renvoyer votre message.',
+          ? 'Votre demande est enregistrée et transmise au service de contact. Boutique de Boxe vous répond à l’adresse indiquée.'
+          : 'Votre demande est bien enregistrée par Boutique de Boxe. L’accusé de réception par e-mail n’a pas pu être confirmé ; inutile de renvoyer votre message.',
       );
       attempt.current = null;
       form.reset();

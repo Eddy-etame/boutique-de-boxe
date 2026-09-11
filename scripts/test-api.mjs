@@ -347,3 +347,38 @@ await check('Native form works without client JavaScript', async () => {
 console.log(
   JSON.stringify({ passed: results.length, date: new Date().toISOString() }),
 );
+
+// Mesure d'audience maison : consentement, nettoyage, acces reserve.
+const sid = 'qa-session-' + Math.random().toString(36).slice(2, 10);
+const vid = 'qa-visitor-' + Math.random().toString(36).slice(2, 10);
+const ev = (t, p, d) => ({ t, p, d, sid, vid });
+await check('Analytics ignored without consent', async () => {
+  const r = await request('analytics', { events: [ev('view', '/')] });
+  assert.equal(r.status, 202);
+  assert.equal((await r.json()).ok, false);
+});
+await check('Analytics stored with consent, private paths and junk dropped', async () => {
+  const r = await request('analytics', {
+    events: [
+      ev('view', '/gants-de-boxe/', { w: 1440, evil: '<script>', dwell: 'x' }),
+      ev('view', '/atelier/'),
+      ev('nope', '/'),
+      ev('leave', '/gants-de-boxe/', { dwell: 12000, depth: 70 }),
+    ],
+  }, { Cookie: 'bdb_consent=accepted; bdb_vid=' + vid });
+  assert.equal(r.status, 200);
+  assert.equal((await r.json()).stored, 2);
+});
+await check('Analytics report denied to visitors', async () =>
+  assert.equal((await request('analytics?days=7')).status, 403),
+);
+await check('Analytics report aggregates the session', async () => {
+  const d = await (await request('analytics?days=7', undefined, admin)).json();
+  assert.ok(d.totals.views >= 1);
+  const page = d.pages.find((p) => p.path === '/gants-de-boxe/');
+  assert.ok(page && page.views >= 1 && page.name === 'Gants de boxe');
+  assert.ok(!d.pages.some((p) => p.path === '/atelier/'));
+});
+console.log(
+  JSON.stringify({ passed: results.length, date: new Date().toISOString() }),
+);

@@ -1,4 +1,5 @@
 import {
+  index,
   pgTable,
   text,
   integer,
@@ -124,4 +125,21 @@ export const paymentAttempts = pgTable(
     uniqueIndex('payplug_cart_request').on(t.cartId, t.requestKey),
     uniqueIndex('payplug_cart_revision').on(t.cartId, t.cartRevision),
   ],
+);
+
+/** Mesure d’audience maison : un événement par page vue, sortie, clic, ajout, recherche. Aucune adresse IP. */
+export const events = pgTable(
+  'events',
+  {
+    id: text('id').primaryKey(),
+    vid: text('vid').notNull(),
+    sid: text('sid').notNull(),
+    type: text('type').notNull(),
+    path: text('path').notNull(),
+    referrer: text('referrer').notNull().default(''),
+    data: text('data').notNull().default('{}'),
+    device: text('device').notNull().default(''),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [index('events_created').on(t.createdAt), index('events_sid').on(t.sid), index('events_path_type').on(t.path, t.type)],
 );

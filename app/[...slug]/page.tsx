@@ -204,8 +204,8 @@ export default async function Page({ params, searchParams }: Props) {
           <span className="eyebrow">CONTACT</span>
           <h1>Demande enregistrée.</h1>
           <p>
-            Votre demande a été enregistrée pour être traitée par l’équipe
-            Boxing Center.
+            Votre demande est enregistrée. Boutique de Boxe vous répond par
+            e-mail.
           </p>
           <ArrowLink href="/">Revenir à la boutique</ArrowLink>
         </section>

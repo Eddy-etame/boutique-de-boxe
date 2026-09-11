@@ -1,4 +1,5 @@
 'use client';
+import { Audience } from './audience';
 import { useEffect, useState } from 'react';
 import { CatalogEditor } from './catalog-editor';
 import { OrdersAdmin } from './commerce-ui';
@@ -93,6 +94,7 @@ export function Admin() {
           ['alerts', 'Alertes'],
           ['contacts', 'Contacts'],
           ['seo', 'Suivi SEO'],
+          ['audience', 'Audience'],
         ].map(([id, label]) => (
           <button
             key={id}
@@ -318,6 +320,7 @@ export function Admin() {
           )}
         </div>
       )}
+      {tab === 'audience' && <Audience />}
       {tab === 'seo' && (
         <div className="admin-seo">
           <h2>Les bases sont en place. Les résultats se mesurent.</h2>
@@ -339,8 +342,8 @@ export function Admin() {
             <article>
               <h3>Mesure d’audience</h3>
               <p>
-                Google Analytics n’est pas activé. Le choix d’une propriété et
-                le consentement aux traceurs doivent précéder son activation.
+                La mesure est faite par la boutique elle-même, avec l’accord du
+                visiteur : voir l’onglet Audience. Aucun outil tiers.
               </p>
             </article>
             <article>
