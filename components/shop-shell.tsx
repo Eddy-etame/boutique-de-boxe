@@ -28,6 +28,13 @@ export function Brand() {
 }
 export function Header() {
   const [menu, setMenu] = useState(false);
+  // L'entête reste collée en haut ; dès que la page défile, elle se décolle (ombre + fond dense).
+  useEffect(() => {
+    const onScroll = () => document.documentElement.toggleAttribute('data-scrolled', window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
   return (
     <>
       <div className="launch-strip">

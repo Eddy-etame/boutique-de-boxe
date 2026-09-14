@@ -143,15 +143,28 @@ summary:focus-visible {
   box-shadow: 0 0 0 3px #9bafef15;
 }
 .site-header {
-  position: relative;
-  z-index: 30;
+  position: sticky;
+  top: 0;
+  z-index: 40;
   height: 96px;
-  margin: 0 4.2%;
+  padding: 0 4.2%;
   border-bottom: 1px solid var(--line);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--paper);
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  -webkit-backdrop-filter: saturate(1.1) blur(10px);
+  backdrop-filter: saturate(1.1) blur(10px);
+  transition: box-shadow 0.35s var(--m-ease, ease), border-color 0.35s var(--m-ease, ease);
+}
+/* Une fois défilé, l'entête se décolle : ombre portée et fond plus dense. */
+html[data-scrolled] .site-header {
+  background: color-mix(in srgb, var(--paper) 96%, transparent);
+  border-bottom-color: transparent;
+  box-shadow: 0 8px 30px rgba(20, 22, 18, 0.09);
+}
+@supports not (backdrop-filter: blur(1px)) {
+  .site-header { background: var(--paper); }
 }
 .brand {
   display: flex;
@@ -1686,7 +1699,7 @@ summary:focus-visible {
     gap: 3px;
   }
   .site-header {
-    margin: 0 5%;
+    padding: 0 5%;
     height: 74px;
   }
   .brand > span {
@@ -3122,7 +3135,9 @@ html[data-motion='reduce'] .button:hover {
 .quick-add-button:hover, .quick-add-button:focus-visible, .quick-add.is-open .quick-add-button { background: var(--ink); color: #fff; }
 .quick-add-button:active { transform: scale(.94); }
 .quick-add-button:disabled { opacity: .5; cursor: progress; }
-.quick-add-sizes { position: absolute; left: 0; right: 0; bottom: calc(100% + 8px); z-index: 5; background: #fff; border: 1px solid var(--ink); padding: 10px; display: flex; flex-wrap: wrap; gap: 6px; box-shadow: 0 12px 30px rgba(0,0,0,.12); animation: m-arrive .25s var(--m-ease, ease) both; }
+.quick-add-sizes { position: absolute; left: auto; right: 0; bottom: calc(100% + 10px); z-index: 6; width: max-content; min-width: 176px; max-width: min(260px, 74vw); background: #fff; border: 1.5px solid var(--ink); padding: 12px; display: flex; flex-wrap: wrap; gap: 7px; box-shadow: 0 16px 38px rgba(20,22,18,.16); animation: quick-pop .28s var(--m-ease, ease) both; }
+.quick-add-sizes::after { content: ''; position: absolute; right: 12px; top: 100%; border: 7px solid transparent; border-top-color: var(--ink); }
+@keyframes quick-pop { from { opacity: 0; transform: translateY(8px) scale(.97); } to { opacity: 1; transform: none; } }
 .quick-add-sizes > span { flex-basis: 100%; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: #58614f; }
 .quick-add-sizes button { border: 1px solid #c3c8b7; background: #fff; padding: 7px 10px; font-size: 12px; cursor: pointer; }
 .quick-add-sizes button:hover, .quick-add-sizes button:focus-visible { background: var(--tape); border-color: var(--ink); }
@@ -3208,7 +3223,7 @@ html[data-replay] *, html[data-replay] *::before, html[data-replay] *::after { a
 .sticky-buy .button { min-height: 48px; padding: 0 18px; white-space: nowrap; }
 html[data-consent-open] .sticky-buy { transform: translateY(110%); }
 @media (max-width: 800px) { .sticky-buy { display: flex; } }
-@media (prefers-reduced-motion: reduce) { .sticky-buy { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .sticky-buy { transition: none; } .quick-add-sizes { animation: none; } .site-header { transition: none; } }
 
 /* Atelier : clients et ventes. */
 .clients-tools { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
