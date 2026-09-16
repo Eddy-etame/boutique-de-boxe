@@ -1,5 +1,7 @@
 # Raccordement PayPlug — Boutique de Boxe
 
+**Consigne actuelle — 16 septembre 2026 :** `COMMERCE_MODE=simulation` dans `.env.local`, `.env.vercel` et `.env.example`. Origine publique préparée : `https://boutique-de-boxe.fr`. Les essais du 11 septembre ci-dessous sont historiques ; ils ne décrivent plus le mode local actuel. Aucun paiement ni appel PayPlug n’a été effectué pendant cette passe. Vérifier DNS, HTTPS, callbacks et IPN après le déploiement avant tout nouvel essai autorisé.
+
 État au 11 septembre 2026, tard : **la boutique reste en simulation pour le public**, aucun débit réel n’est autorisé (verrou `LIVE_PAYMENT_RELEASED = false`). Le **test bac à sable** a été exécuté en local, à la demande du propriétaire, avec la clé de test du compte PayPlug de box-plus :
 
 - La clé `sk_test_…` a été recopiée depuis `Plannings/box-plus/.env.colleague` (seul fichier de box-plus qui la porte ; `.env` de box-plus ne contient que Stripe) vers `.env.local` et `.env.vercel` de la boutique, tous deux ignorés par Git. Elle n’a jamais été affichée ni journalisée.
@@ -11,7 +13,7 @@
 
 ## Finir le test
 
-1. En local, le serveur tourne avec `COMMERCE_MODE=payplug_test`, la clé de test et `PAYPLUG_PUBLIC_BASE_URL=https://boutique-de-boxe.vercel.app` (`NEXT_PUBLIC_SITE_ORIGIN` pointe aussi sur ce domaine le temps du test). Ouvrir Atelier → Réglages PayPlug, préparer un essai, payer sur la page PayPlug avec une carte de test : `4242 4242 4242 4242` (accepté), `4000 0000 0000 0051` (refusé), `3787 0081 0990 001` (3-D Secure) ; toute date future et tout CVC. Le retour arrive sur le site en ligne (qui ignore, car en simulation) : relire alors le statut dans l’atelier local, il passe à « Paiement de test confirmé ».
+1. Lors de l’essai du 11 septembre, le serveur tournait avec `COMMERCE_MODE=payplug_test`, la clé de test et `PAYPLUG_PUBLIC_BASE_URL=https://boutique-de-boxe.vercel.app` (ancienne origine de test, remplacée par `.fr` le 16 septembre). Ouvrir Atelier → Réglages PayPlug, préparer un essai, payer sur la page PayPlug avec une carte de test : `4242 4242 4242 4242` (accepté), `4000 0000 0000 0051` (refusé), `3787 0081 0990 001` (3-D Secure) ; toute date future et tout CVC. Le retour arrive sur le site en ligne (qui ignore, car en simulation) : relire alors le statut dans l’atelier local, il passe à « Paiement de test confirmé ».
 2. Pour le tour complet (retour et notification sur le même site), poser sur Vercel `COMMERCE_MODE=payplug_test`, `PAYPLUG_TEST_SECRET_KEY` et `PAYPLUG_PUBLIC_BASE_URL` (déjà prêts dans `.env.vercel`), redéployer, faire le même essai depuis l’atelier en ligne, puis **remettre `COMMERCE_MODE=simulation`**. Le panier public reste simulé dans les deux cas.
 
 
@@ -35,7 +37,7 @@
 | `PAYPLUG_TEST_SECRET_KEY` | Clé `sk_test_…` du compte box-plus, posée en local et dans `.env.vercel` le 11 septembre 2026 | Secret du compte PayPlug de test. Ne pas utiliser une clé réelle ici ; à remplacer par la clé du compte propre à la boutique quand il existera. |
 | `PAYPLUG_LIVE_SECRET_KEY` | Vide maintenant | Réservée à une future activation explicite. Sa seule présence n’active rien. |
 | `PAYPLUG_API_VERSION` | `2019-08-06` | Version explicitement prise en charge et testée. Une autre valeur est refusée. |
-| `PAYPLUG_PUBLIC_BASE_URL` | `https://boutique-de-boxe.vercel.app` jusqu’au domaine définitif | Sert à construire les retours et notifications ; ne vient jamais de l’en-tête Host ou d’une saisie client. Doit figurer dans les origines possédées (`NEXT_PUBLIC_SITE_ORIGIN` ou le domaine). |
+| `PAYPLUG_PUBLIC_BASE_URL` | `https://boutique-de-boxe.fr` | Sert à construire les retours et notifications ; ne vient jamais de l’en-tête Host ou d’une saisie client. Doit figurer dans la liste stricte des origines autorisées de l’adaptateur. |
 | `ADMIN_EMAIL` | Adresse du propriétaire, variable Vercel | Accès à l’atelier et aux tests PayPlug. |
 | `RESEND_API_KEY` | À configurer si Resend est retenu | Envoi transactionnel des reçus de simulation ; indépendant de PayPlug. |
 | `MAIL_FROM` | À configurer sur un domaine expéditeur vérifié | Exemple de forme : `Boutique de Boxe <reçus@votre-domaine-verifie.fr>` ; ne pas utiliser cet exemple tel quel. |
@@ -43,7 +45,7 @@
 
 Le fichier `.env.example` contient des noms et valeurs de référence sans secret. En local, les secrets se placent dans **`.env.local`**, ignoré par Git ; sur Vercel, dans Settings → Environment Variables (voir DEPLOY-VERCEL.md). Ne pas mettre de clé dans `NEXT_PUBLIC_*`, dans le catalogue, dans un formulaire ou dans Git. Ne pas modifier les secrets de box-plus.
 
-Les origines autorisées dans l’adaptateur sont `NEXT_PUBLIC_SITE_ORIGIN` (si défini) et `https://boutique-de-boxe.com` / `https://www.boutique-de-boxe.com`. Cette liste est une restriction technique ; elle ne prouve pas que le domaine personnalisé est connecté. Un changement de domaine nécessite de vérifier son contrôle, son HTTPS, puis de mettre à jour la liste et les canonicals ensemble.
+Les origines autorisées dans l’adaptateur sont `https://boutique-de-boxe.fr` et `https://www.boutique-de-boxe.fr` uniquement ; une ancienne variable d’environnement n’élargit plus cette liste. Cette liste est une restriction technique ; elle ne prouve pas que le domaine personnalisé est connecté. Un changement de domaine nécessite de vérifier son contrôle, son HTTPS, puis de mettre à jour la liste et les canonicals ensemble.
 
 ## Routes préparées
 
@@ -60,9 +62,9 @@ Les origines autorisées dans l’adaptateur sont `NEXT_PUBLIC_SITE_ORIGIN` (si 
 
 1. Confirmer le compte marchand Boxing Center à utiliser et fournir sa clé **de test** dans les secrets de cette boutique. Les fonctionnalités et limites du compte restent à vérifier dans le portail.
 2. Fournir une origine HTTPS réellement joignable par PayPlug. **Un aperçu Vercel protégé par mot de passe bloquerait les IPN ; utiliser un déploiement dont `/api/payplug/ipn` est public.** Il faut un environnement de test dont cette route est publiquement accessible, ou une configuration d’accès compatible vérifiée. Ne pas élargir l’accès au site automatiquement.
-3. Appliquer les migrations Postgres sur Supabase (`pnpm db:migrate`, voir DEPLOY-VERCEL.md) ; la table `payment_attempts` fait partie de la migration initiale `0000_slim_masque.sql`. La seconde conserve un marqueur de remboursement pour empêcher une notification ancienne d’effacer un besoin de vérification. Les migrations sont incluses au build Sites ; vérifier leur application lors du prochain déploiement.
+3. Appliquer les migrations Postgres sur Supabase (`pnpm db:migrate`, voir DEPLOY-VERCEL.md) ; la table `payment_attempts` fait partie de la migration initiale `0000_slim_masque.sql`. La seconde conserve un marqueur de remboursement pour empêcher une notification ancienne d’effacer un besoin de vérification. Vérifier leur application sur la base Postgres liée au déploiement Vercel.
 4. Renseigner `PAYPLUG_PUBLIC_BASE_URL`, puis passer **explicitement** `COMMERCE_MODE` à `payplug_test` dans cet environnement de test. Vérifier les réglages de l’atelier. Le panier public restera simulé.
-5. Effectuer un test complet avec les cartes de test documentées par PayPlug : succès, refus, annulation du retour, authentification 3-D Secure si présentée, retour avant/après IPN, notification répétée, réponse de création interrompue et rapprochement manuel. Vérifier les états D1 et le portail, ainsi que l’absence de double paiement.
+5. Effectuer un test complet avec les cartes de test documentées par PayPlug : succès, refus, annulation du retour, authentification 3-D Secure si présentée, retour avant/après IPN, notification répétée, réponse de création interrompue et rapprochement manuel. Vérifier les états Postgres et le portail, ainsi que l’absence de double paiement.
 6. Revenir à `COMMERCE_MODE=simulation` après la recette tant que l’ouverture des ventes n’a pas été demandée.
 
 **Les tests locaux avec réponses PayPlug simulées ne remplacent pas ce test sur le compte marchand.** Le test distant a été exécuté le 11 septembre 2026 jusqu’à la page de paiement (voir l’état en tête) ; la saisie de carte et le tour complet en ligne restent à faire.

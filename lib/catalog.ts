@@ -39,10 +39,9 @@ export type Product = {
 };
 export const shop = {
   name: 'Boutique de Boxe',
-  origin:
-    process.env.NEXT_PUBLIC_SITE_ORIGIN?.trim().replace(/\/$/, '') ||
-    'https://boutique-de-boxe.com',
-  intendedDomain: 'https://boutique-de-boxe.com',
+  // Identité publique fixe : un aperçu ou une ancienne variable ne change pas les canonicals.
+  origin: 'https://boutique-de-boxe.fr',
+  intendedDomain: 'https://boutique-de-boxe.fr',
   email: 'boxingcenter31@gmail.com',
   phone: '09 54 14 74 72',
   entity: 'SAS BOXING CENTER',

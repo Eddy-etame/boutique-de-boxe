@@ -1,5 +1,62 @@
 # État actuel — Boutique de Boxe
 
+## Passe du 16 septembre 2026 — hero, parcours, accessibilité et domaine .fr
+
+**Cette section remplace les anciennes consignes de domaine et d’hébergement.** La demande actuelle est de raffiner la version existante, pas de rétablir une V2. Le dépôt Git réel est `C:\Users\Mommy Jayce\Desktop\Boxing Center\Deployment\boutique-de-boxe\site`, base de travail `f274e54`. La pile constatée est Next.js 16.3.4, Postgres / Supabase Auth et déploiement prévu sur Vercel. L’ancien aperçu Sites ne représente pas ce code.
+
+**Décision du propriétaire : `https://boutique-de-boxe.fr` est l’origine SEO/GEO publique.** `shop.origin` et `shop.intendedDomain` sont fixes dans `lib/catalog.ts`. Une ancienne variable d’aperçu ne doit plus remplacer les canonicals. Coordonnées et entreprise restent celles de Boxing Center, avec une boutique de portée nationale ; aucune adresse physique, livraison effective ni stock n’est inventé pour correspondre au domaine.
+
+### Ce qui a changé
+
+- **Hero :** photo réelle plus grande ; cadrage propre de « L’autre face », sans la marge grise intégrée à la photo ; zoom de la manchette dissocié du léger mouvement de pointeur. Une collision de spécificité CSS cumulait les deux zooms : corrigée après inspection visuelle. Aucun détail photographique n’a été inventé. Les boutons ont un état sélectionné explicite et le lien porte « Voir ce modèle » avec son nom de produit. Le mode animations réduites conserve le cadrage statique.
+- **Pied de page :** un accès dominant au catalogue, puis deux choix utiles — préparer son sac et comprendre les onces. Hiérarchie encre/crème/citron conservée. Les neuf familles, guides, services, contact, mentions légales, cookies et préférence d’animation sont accessibles. Les vingt intentions SEO sont conservées en HTML dans un répertoire natif dépliable ; le contenu n’est pas remplacé par une liste de mots-clés décorative.
+- **Accessibilité / UX :** refus des cookies plus lisible et cible de 48 px ; arrière-plan `inert` pendant le dialogue, boucle clavier et restitution du focus ; lecture du consentement au serveur pour supprimer la divergence d’hydratation constatée ; secours `<noscript>` qui retire le voile et libère le contenu ; ancres dégagées sous le header ; révélation d’une section recevant le focus. Le header et les noms de familles ne débordent plus à 320 px. Les contrôles du hero font au moins 52 px (56 px sur mobile), ses liens 44 px.
+- **Exactitude :** « achats fréquents » supprimé de l’accueil faute de données de ventes. L’état d’ouverture reste explicite et les prix restent prévisionnels.
+- **SEO / GEO :** canonicals, hreflang, Open Graph, Twitter, JSON-LD, sitemap, robots, flux catalogue, MCP et fichiers agents dépendent de l’origine `.fr`. Nom alternatif du WebSite, `security.txt`, indication Search Console de l’atelier et exemples d’environnement corrigés. `urlOf` résout maintenant correctement les photos externes : l’ancien code concaténait deux origines dans le sitemap et les flux machine.
+- **Redirections :** règles permanentes 308 préparées depuis `www.boutique-de-boxe.fr` et l’alias stable Vercel, avec chemin et paramètres. Les autres aperçus et localhost restent joignables. Aucune propriété ni redirection effective du `.com` n’est supposée.
+- **Paiement :** `.env.local`, `.env.vercel`, `.env.example` sont en `COMMERCE_MODE=simulation`. Les deux variables publiques d’origine sont en `.fr`. L’adaptateur accepte uniquement les deux origines `.fr` prévues ; les anciennes origines et URL piégées sont testées comme refusées. Le verrou de paiement réel reste fermé. Aucune clé privée modifiée ou affichée, aucun paiement ni e-mail envoyé.
+
+### Application de la barre de qualité
+
+Conserver le langage visuel validé et améliorer ce qui sert la décision : montrer la matière et le produit, rendre les chemins de lecture explicites, donner un poids visuel différent aux actions principales et secondaires. Les références déjà analysées restent l’inspection d’objet de Teenage Engineering, le détail matériel de Vollebak et la hiérarchie éditoriale d’A24. Pas de nouvelle collection de composants génériques, de bandeau animé automatique ni de promesse commerciale ajoutée pour habiller l’interface.
+
+La critique s’appuie sur le rendu et les usages : grand écran, petit écran, clavier, réduction des animations, métadonnées et liens réels. Les défauts découverts pendant la recette ont été corrigés, y compris le double zoom, le débordement à 320 px, l’hydratation du consentement et les URL d’images concaténées. Aucun pourcentage arbitraire ni promesse de première position. Cette passe n’est pas une certification WCAG complète, ni une preuve de Core Web Vitals terrain ou de disponibilité du domaine public.
+
+### Vérifications de cette passe
+
+- Build Next.js de production : réussi après les dernières corrections ; contrôle TypeScript intégré réussi.
+- Lint oxlint : réussi. `git diff --check` : aucune erreur de blancs.
+- Audit SEO sur le build de production local (port 3001) : **1 104 pages, 1 104 titres uniques, 1 104 descriptions uniques, 2 440 liens internes relevés** ; contrôles H1, métadonnées, graphes, origines `.fr`, mots-clés du brief, fichiers agents, absence d’offres commerciales inventées, pages privées non indexables et vignettes sociales passés. Rapport détaillé : `outputs/seo.json` (artefact local, ignoré par Git).
+- PayPlug : **19/19 contrôles avec réponses simulées**, y compris les anciennes origines refusées, **zéro requête externe**. Trace locale : `outputs/payplug-2026-09-16.log`.
+- `QA_ORIGIN=http://localhost:3001 node scripts/test-public-shell.mjs` : quatre états de cookie rendus par le serveur (absent, accepté, refusé, invalide), secours no-JS présent dans le HTML, canonique `.fr`, redirections 308 www et alias Vercel avec chemin/query conservés, absence de boucle sur le domaine principal : réussi.
+- Navigateur : hero et pied de page inspectés sur ordinateur (jusqu’à 1440 px) et sur mobile (390 et 320 px) ; aucun débordement horizontal à 320 px ; accès catalogue et guide effectivement parcourus ; ancre du sac vérifiée sous le header. La vue « L’autre face » charge sa photo réelle et reste agrandie. Les petites oscillations du pointeur sont coupées quand les animations sont réduites ; le zoom statique reste visible.
+- Sur le build compilé : ouverture du consentement au clavier, arrière-plan `inert`, Shift+Tab vers le dernier lien, refus puis restitution du focus au bouton Cookies, zéro nœud `inert` résiduel. Aucun message console d’erreur/avertissement rattaché au port 3001 lors de ce parcours ; les anciens messages HMR de développement ne sont pas présentés comme des erreurs de production.
+- Limites : secours sans JavaScript vérifié par le HTML, pas par une session navigateur avec JavaScript désactivé ; aucune recette exhaustive avec lecteur d’écran ni certification WCAG ; aucune mesure de trafic ou de classement, aucun test de paiement distant ou de réception d’e-mail dans cette passe.
+
+### Déploiement et suite concrète
+
+Le code et les exemples locaux sont prêts pour `.fr`. **Aucun déploiement ni changement DNS / Vercel / Supabase distant n’a été exécuté dans cette passe.** La sonde Web sur le domaine a été bloquée par l’outil ; sa disponibilité publique et son HTTPS restent non vérifiés. Les anciennes constatations de déploiement ne constituent pas une preuve actuelle.
+
+1. Ajouter `boutique-de-boxe.fr` et `www.boutique-de-boxe.fr` au projet Vercel, poser les DNS indiqués et vérifier HTTPS.
+2. Déployer cette version avec `NEXT_PUBLIC_SITE_ORIGIN=https://boutique-de-boxe.fr`, `PAYPLUG_PUBLIC_BASE_URL=https://boutique-de-boxe.fr`, `COMMERCE_MODE=simulation`. Les deux fichiers `.env.local` et `.env.vercel` restent ignorés par Git ; ne jamais les ajouter.
+3. Configurer Supabase Auth : Site URL `.fr`, callback `https://boutique-de-boxe.fr/api/auth/callback`, conserver l’URL locale utile au développement. Contrôler un lien magique sur le domaine raccordé dans une recette séparée.
+4. Vérifier en public les redirections, le sitemap, robots, un produit, un guide, la vignette sociale et les fichiers agents. Vérifier ensuite l’IPN et les retours dans un test PayPlug explicitement autorisé ; rester en simulation d’ici là.
+5. Propriété Search Console : `boutique-de-boxe.fr`, sitemap `https://boutique-de-boxe.fr/sitemap.xml`. Le propriétaire garde la décision d’indexation ; aucun IndexNow ni envoi Search Console n’a été déclenché.
+
+Procédures détaillées actualisées : [DEPLOY-VERCEL.md](DEPLOY-VERCEL.md), [PAYPLUG-WIRING.md](PAYPLUG-WIRING.md), [SEO-GEO.md](SEO-GEO.md). Scripts utiles : `scripts/audit-seo.mjs`, `scripts/test-public-shell.mjs`, `scripts/test-payplug.mjs`.
+
+### Dossiers de contexte conservés
+
+- `C:\Users\Mommy Jayce\Desktop\Boxing Center\Deployment\boutique-de-boxe` : brief, recherche et sous-dossier applicatif `site`.
+- `C:\Users\Mommy Jayce\Desktop\Boxing Center\Plannings\box-plus` : référence historique catalogue / logique PayPlug ; aucun nouveau pull ni import demandé pour cette passe ciblée.
+- `C:\Users\Mommy Jayce\Desktop\amaz\_` : référence historique de logique et sécurité ; pas de copie aveugle de mécanismes sans besoin constaté.
+- `C:\Users\Mommy Jayce\Desktop\skills` : doctrines Baffled Bar, Fusion Baffled, Second Brain et passe critique utilisées pour conserver le niveau d’exigence.
+
+---
+
+## Historique des passes précédentes — domaines et piles potentiellement périmés
+
+
 Mise à jour : 10 septembre 2026, après-midi. Cette section décrit le chantier actuel ; les journaux datés plus bas constituent l’historique.
 
 ### Échelle PC, application installable, SEO et référencement IA, 11 septembre

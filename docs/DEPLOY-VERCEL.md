@@ -1,13 +1,13 @@
 # Déploiement Vercel + Supabase — Boutique de Boxe
 
-État au 10 septembre 2026. L’application est un projet **Next.js 16** ; la base est **Postgres Supabase** ; l’administrateur se connecte par **lien magique Supabase Auth**. Plus aucun composant Cloudflare (D1, wrangler) ni OpenAI Sites.
+Mise à jour domaine : 16 septembre 2026. Les étapes de raccordement distant ci-dessous restent à vérifier sur les comptes du propriétaire. L’application est un projet **Next.js 16** ; la base est **Postgres Supabase** ; l’administrateur se connecte par **lien magique Supabase Auth**. Plus aucun composant Cloudflare (D1, wrangler) ni OpenAI Sites.
 
 ## 1. Supabase — une fois
 
 1. Projet dédié à la boutique (créé le 10 septembre). Ne pas partager le projet box-plus.
 2. **Authentication → URL Configuration** :
-   - Site URL : `https://boutique-de-boxe.com` (ou l’URL Vercel tant que le domaine n’est pas raccordé).
-   - Redirect URLs : `https://boutique-de-boxe.com/api/auth/callback`, `https://www.boutique-de-boxe.com/api/auth/callback`, l’URL Vercel `/api/auth/callback`, et `http://localhost:3000/api/auth/callback` pour le poste de travail.
+   - Site URL : `https://boutique-de-boxe.fr`.
+   - Redirect URLs : `https://boutique-de-boxe.fr/api/auth/callback`, `https://www.boutique-de-boxe.fr/api/auth/callback`, l’URL Vercel `/api/auth/callback`, et `http://localhost:3000/api/auth/callback` pour le poste de travail.
 3. **Authentication → Providers → Email** : laisser « Enable email provider » actif ; « Confirm email » peut rester actif, le lien magique crée le compte du propriétaire à la première connexion.
 4. **Settings → Database → Connection string** :
    - *Transaction pooler* (port 6543) → valeur de `DATABASE_URL` sur Vercel.
@@ -31,7 +31,7 @@ Les migrations sont dans `drizzle/` (`0000_slim_masque.sql` crée les huit table
 
 ## 3. Vercel — projet
 
-1. Importer le dépôt GitHub `Eddy-etame/boutique-de-boxe`. **Root Directory : `site`.** Framework détecté : Next.js. Node 22.
+1. Importer le dépôt GitHub `Eddy-etame/boutique-de-boxe`. **Root Directory : le dossier contenant `package.json` dans le dépôt Git (racine du dépôt actuel ; `site/` est son emplacement sur le poste).** Framework détecté : Next.js. Node 22.
 2. Variables d’environnement (Production et Preview) : remplir `DATABASE_URL` dans `site/.env.vercel` (chaîne *Transaction pooler*, port 6543, mot de passe de la base), puis Settings → Environment Variables → **Import .env** avec ce fichier. Supprimer d’abord toute variable déjà présente du même nom : l’import ne remplace pas. Contenu attendu :
 
 | Variable | Valeur |
@@ -40,14 +40,15 @@ Les migrations sont dans `drizzle/` (`0000_slim_masque.sql` crée les huit table
 | `NEXT_PUBLIC_SUPABASE_URL` | URL du projet Supabase |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clé anon (publique) |
 | `ADMIN_EMAIL` | Adresse du propriétaire, seule autorisée dans l’atelier |
-| `NEXT_PUBLIC_SITE_ORIGIN` | `https://boutique-de-boxe.com` en production ; l’URL Vercel sur les aperçus si l’on veut des canonicals d’aperçu |
+| `NEXT_PUBLIC_SITE_ORIGIN` | `https://boutique-de-boxe.fr` ; les métadonnées publiques restent fixées sur ce domaine même sur un aperçu |
 | `COMMERCE_MODE` | `simulation` |
 | `PAYPLUG_API_VERSION` | `2019-08-06` |
-| `PAYPLUG_PUBLIC_BASE_URL`, `PAYPLUG_TEST_SECRET_KEY`, `PAYPLUG_LIVE_SECRET_KEY` | Vides tant que PayPlug n’est pas raccordé (voir PAYPLUG-WIRING.md) |
+| `PAYPLUG_PUBLIC_BASE_URL` | `https://boutique-de-boxe.fr` ; aucun appel en mode simulation |
+| `PAYPLUG_TEST_SECRET_KEY`, `PAYPLUG_LIVE_SECRET_KEY` | Secrets privés selon PAYPLUG-WIRING.md ; conserver le mode simulation |
 | `RESEND_API_KEY`, `MAIL_FROM` | Vides ; aucun fournisseur de reçus retenu |
 
 3. Déployer : Deployments → ⋯ → Redeploy après tout changement de variable (chaque `git push origin main` redéploie aussi). Puis ouvrir `/api/health` ; attendu `{"db":"ok","route":"pooler","port":6543,"tables":8}`. Toute autre valeur nomme la panne : `no-url`, `bad-url`, `auth`, `dns`, `unreachable`, `no-tables`, ou `route: local` si la chaîne du poste local a été importée par erreur.
-4. Domaine : ajouter `boutique-de-boxe.com` et `www` dans Vercel → Domains, puis suivre les enregistrements DNS indiqués. Mettre `NEXT_PUBLIC_SITE_ORIGIN` sur le domaine final et ajouter les Redirect URLs Supabase correspondantes.
+4. Domaine : ajouter `boutique-de-boxe.fr` et `www` dans Vercel → Domains, puis suivre les enregistrements DNS indiqués. Mettre `NEXT_PUBLIC_SITE_ORIGIN` sur le domaine final et ajouter les Redirect URLs Supabase correspondantes.
 
 ## 4. Connexion administrateur
 
@@ -71,5 +72,13 @@ pnpm dev             # http://localhost:3000
 - `lib/auth.ts` : session Supabase ; cookie `__sites_local_auth` uniquement en développement. `app/chatgpt-auth.ts` supprimé.
 - `lib/request.ts` : adresse client (`x-real-ip`, puis `cf-connecting-ip` des tests, puis `x-forwarded-for`).
 - Requêtes : `json_extract` → `payload::jsonb->>'…'` ; `SET hits=hits+1` → `SET hits=rate_limits.hits+1` (ambiguïté Postgres) ; validation de commande verrouillée par `SELECT … FOR UPDATE` sur le panier.
-- `lib/catalog.ts` : origine du site depuis `NEXT_PUBLIC_SITE_ORIGIN`, défaut `https://boutique-de-boxe.com`.
+- `lib/catalog.ts` : identité SEO publique fixée sur `https://boutique-de-boxe.fr` ; une variable d’aperçu ne la remplace pas.
 - `next.config.ts` : `trailingSlash` conservé, `skipTrailingSlashRedirect` pour ne pas rediriger les routes API en 308.
+
+## Domaine demandé le 16 septembre 2026
+
+`https://boutique-de-boxe.fr` est l’origine publique unique : métadonnées, canonicals, hreflang, images sociales, sitemap, graphes et flux pour les moteurs suivent `shop.origin`. `next.config.ts` prépare des redirections permanentes (308) depuis `www.boutique-de-boxe.fr` et l’alias stable `boutique-de-boxe.vercel.app`, en conservant chemin et paramètres. Les autres aperçus et localhost restent consultables. Aucun droit sur l’ancien `.com` n’est supposé ; ne configurer de redirection depuis lui que si son contrôle est confirmé.
+
+À appliquer sur les comptes : ajouter le domaine et www dans Vercel, poser les DNS indiqués, vérifier HTTPS, importer les deux variables d’origine en `.fr`, garder `COMMERCE_MODE=simulation`, puis redéployer. Aligner Site URL et les URL de rappel autorisées Supabase. Aucun de ces réglages distants n’a été exécuté pendant la passe locale du 16 septembre.
+
+Après raccordement : vérifier les réponses publiques, les redirections, `/robots.txt`, `/sitemap.xml`, un lien de connexion et les retours PayPlug dans un test séparé autorisé. La propriété Search Console doit viser `boutique-de-boxe.fr` ; le propriétaire décide de la soumission du sitemap. Aucun envoi IndexNow n’a été déclenché.

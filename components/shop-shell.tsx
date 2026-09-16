@@ -30,7 +30,11 @@ export function Header() {
   const [menu, setMenu] = useState(false);
   // L'entête reste collée en haut ; dès que la page défile, elle se décolle (ombre + fond dense).
   useEffect(() => {
-    const onScroll = () => document.documentElement.toggleAttribute('data-scrolled', window.scrollY > 8);
+    const onScroll = () =>
+      document.documentElement.toggleAttribute(
+        'data-scrolled',
+        window.scrollY > 8,
+      );
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
@@ -54,7 +58,8 @@ export function Header() {
             Les guides <ArrowUpRight size={13} />
           </a>
         </nav>
-        <div className="header-actions"><CartLink />
+        <div className="header-actions">
+          <CartLink />
           <a
             className="icon-button"
             href="/recherche/"
@@ -119,71 +124,136 @@ export function Header() {
 export function Footer() {
   return (
     <footer className="site-footer">
-      <div className="footer-top">
-        <div>
-          <span className="eyebrow">BOUTIQUE DE BOXE</span>
-          <p>
-            LIVRAISON DANS
+      <div className="footer-next">
+        <div className="footer-next-heading">
+          <span className="eyebrow">
+            <i className="tape-mark" aria-hidden="true" /> À VOUS DE CHOISIR
+          </span>
+          <h2>
+            Le prochain round
             <br />
-            <em>TOUTE LA FRANCE.</em>
+            <em>se prépare ici.</em>
+          </h2>
+          <p>
+            Un modèle en tête ou un sac à compléter ?<br />
+            Prenez le chemin qui vous correspond.
           </p>
         </div>
-        <a
-          className="round-link"
-          href="/materiel-sport-de-combat/"
-          aria-label="Explorer tout le matériel"
-        >
-          <ArrowUpRight size={42} />
+        <nav className="footer-routes" aria-label="Votre prochaine étape">
+          <a
+            className="footer-route footer-route-primary"
+            href="/boutique-boxe/"
+          >
+            <span className="footer-route-index" aria-hidden="true">
+              01
+            </span>
+            <span>
+              <strong>Trouver mon équipement</strong>
+              <small>Gants, protections, textile et sacs.</small>
+            </span>
+            <ArrowUpRight aria-hidden="true" />
+          </a>
+          <a className="footer-route" href="/#preparer">
+            <span className="footer-route-index" aria-hidden="true">
+              02
+            </span>
+            <span>
+              <strong>Préparer mon sac</strong>
+              <small>Gardez ce que vous avez. Complétez le reste.</small>
+            </span>
+            <ArrowUpRight aria-hidden="true" />
+          </a>
+          <a className="footer-route" href="/guides/taille-poids-gants-boxe/">
+            <span className="footer-route-index" aria-hidden="true">
+              03
+            </span>
+            <span>
+              <strong>Choisir le poids de mes gants</strong>
+              <small>Les repères pour comprendre les onces.</small>
+            </span>
+            <ArrowUpRight aria-hidden="true" />
+          </a>
+        </nav>
+      </div>
+      <div className="footer-opening">
+        <span>
+          <i className="status-dot" aria-hidden="true" />
+          <strong>Les ventes arrivent.</strong> Préparez votre sélection dès
+          maintenant.
+        </span>
+        <a href="/#ouverture">
+          Être prévenu à l’ouverture <ArrowRight size={18} aria-hidden="true" />
         </a>
       </div>
       <div className="footer-grid">
-        <div>
+        <div className="footer-identity">
           <Brand />
           <p className="footer-blurb">
-            Gants, protections, textile et sacs pour la boxe, le MMA et les
-            sports de combat. Livraison dans toute la France à l’ouverture des
-            ventes.
+            Matériel de boxe, MMA et arts martiaux. Des modèles à examiner, des
+            guides pour choisir. Livraison en France à l’ouverture des ventes.
           </p>
+          <a href="/contact/" className="email-link">
+            Une question sur le matériel ?{' '}
+            <ArrowUpRight size={16} aria-hidden="true" />
+          </a>
         </div>
-        <div>
-          <h2>Le catalogue</h2>
-          {categories.slice(0, 6).map((c) => (
-            <a key={c.slug} href={`/${c.slug}/`}>
-              {c.name}
-            </a>
-          ))}
-          <a href="/nouveautes/">Nouveautés</a>
-        </div>
-        <div>
-          <h2>Dans votre coin</h2>
-          <a href="/guides/">Guides d’achat</a>
-          <a href="/guide-des-tailles/">Guide des tailles</a>
-          <a href="/#preparer">Préparer ma séance</a>
-          <a href="/livraison/">Livraison</a>
-          <a href="/retours/">Retours</a>
-          <a href="/contact/">Contact</a>
-          <a href="/offres-de-lancement/">Ouverture de la boutique</a>
-        </div>
-        <div>
-          <h2>La boutique</h2>
+        <nav aria-labelledby="footer-equipment">
+          <h3 id="footer-equipment">Votre équipement</h3>
+          {categories
+            .filter((c) =>
+              [
+                'gants-de-boxe',
+                'gants-mma',
+                'protections-boxe',
+                'textile-boxe',
+                'accessoires-boxe',
+                'sacs-de-frappe',
+                'chaussures-boxe',
+                'equipement-entrainement',
+                'sacs-de-sport',
+              ].includes(c.slug),
+            )
+            .map((c) => (
+              <a key={c.slug} href={`/${c.slug}/`}>
+                {c.name}
+              </a>
+            ))}
+        </nav>
+        <nav aria-labelledby="footer-practice">
+          <h3 id="footer-practice">Votre pratique</h3>
           <a href="/materiel-boxe/">Boxe anglaise</a>
           <a href="/materiel-mma/">Matériel MMA</a>
           <a href="/boutique-arts-martiaux/">Arts martiaux</a>
           <a href="/materiel-sport-de-combat/">Sports de combat</a>
-          <a href="mailto:boxingcenter31@gmail.com" className="email-link">
-            Nous écrire <ArrowUpRight size={14} />
+          <h3 className="footer-subheading">Pour bien choisir</h3>
+          <a href="/guides/">Guides d’achat</a>
+          <a href="/guide-des-tailles/">Guide des tailles</a>
+          <a href="/nouveautes/">Nouveautés</a>
+        </nav>
+        <nav aria-labelledby="footer-service">
+          <h3 id="footer-service">Vos questions</h3>
+          <a href="/livraison/">Livraison et frais prévus</a>
+          <a href="/retours/">Retours</a>
+          <a href="/contact/">Nous contacter</a>
+          <a href="/offres-de-lancement/">Ouverture de la boutique</a>
+          <a href="mailto:boxingcenter31@gmail.com" className="footer-contact">
+            Nous écrire <ArrowUpRight size={14} aria-hidden="true" />
           </a>
-        </div>
+        </nav>
       </div>
-      {/* Recherches fréquentes : les requêtes du brief, en toutes lettres, vers leur page, sur chaque page du site. */}
-      <nav className="footer-queries" aria-label="Recherches fréquentes">
-        <span>Recherches fréquentes</span>
-        {QUERY_MAP.map((q) => (
-          <a key={q.query} href={q.path}>
-            {q.query}
-          </a>
-        ))}
-      </nav>
+      <details className="footer-directory">
+        <summary>
+          Explorer les recherches par équipement{' '}
+          <span aria-hidden="true">+</span>
+        </summary>
+        <nav className="footer-queries" aria-label="Recherches par équipement">
+          {QUERY_MAP.map((q) => (
+            <a key={q.query} href={q.path}>
+              {q.query}
+            </a>
+          ))}
+        </nav>
+      </details>
       <div className="footer-bottom">
         <MotionControl />
         <span>© {new Date().getFullYear()} Boutique de Boxe</span>
@@ -222,7 +292,9 @@ export function Motion() {
     document
       .querySelectorAll('[data-reveal]')
       .forEach((e) => observer.observe(e));
-    const stillMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.dataset.motion === 'reduce';
+    const prefersStill = () =>
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+      document.documentElement.dataset.motion === 'reduce';
     // Les comptes de familles montent jusqu’à leur valeur quand la ligne apparaît : le chiffre se lit en arrivant.
     const counters = new IntersectionObserver(
       (entries) => {
@@ -231,10 +303,10 @@ export function Motion() {
           counters.unobserve(e.target);
           const el = e.target as HTMLElement;
           const target = Number(el.dataset.count || el.textContent || 0);
-          if (stillMotion || !target) continue;
+          if (prefersStill() || !target) continue;
           const start = performance.now();
           const tick = (now: number) => {
-            const t = Math.min(1, (now - start) / 900);
+            const t = prefersStill() ? 1 : Math.min(1, (now - start) / 900);
             const eased = 1 - Math.pow(1 - t, 3);
             el.textContent = String(Math.round(target * eased));
             if (t < 1) requestAnimationFrame(tick);
@@ -245,14 +317,22 @@ export function Motion() {
       },
       { threshold: 0.6 },
     );
-    document.querySelectorAll<HTMLElement>('[data-count]').forEach((el) => counters.observe(el));
+    document
+      .querySelectorAll<HTMLElement>('[data-count]')
+      .forEach((el) => counters.observe(el));
     // La photo du hero suit le pointeur, à peine : la pièce prend du relief sans bouger de place.
     const stage = document.querySelector<HTMLElement>('.equipment-inspector');
     const onMove = (e: PointerEvent) => {
-      if (!stage || stillMotion || e.pointerType === 'touch') return;
+      if (!stage || prefersStill() || e.pointerType === 'touch') return;
       const r = stage.getBoundingClientRect();
-      stage.style.setProperty('--tx', String(((e.clientX - r.left) / r.width - 0.5) * 2));
-      stage.style.setProperty('--ty', String(((e.clientY - r.top) / r.height - 0.5) * 2));
+      stage.style.setProperty(
+        '--tx',
+        String(((e.clientX - r.left) / r.width - 0.5) * 2),
+      );
+      stage.style.setProperty(
+        '--ty',
+        String(((e.clientY - r.top) / r.height - 0.5) * 2),
+      );
     };
     const onLeave = () => {
       stage?.style.setProperty('--tx', '0');
@@ -273,16 +353,19 @@ export function Motion() {
     };
     const onSwap = (e: Event) => {
       const swap = e as Event & { viewTransition?: unknown };
-      if (swap.viewTransition && chosen) chosen.style.viewTransitionName = 'product-hero';
+      if (swap.viewTransition && chosen)
+        chosen.style.viewTransitionName = 'product-hero';
     };
     document.addEventListener('click', onClick);
     window.addEventListener('pageswap', onSwap);
     // Après la carte des cookies, la page rejoue son entrée : animations d’arrivée, révélations visibles, compteurs.
     const replay = () => {
-      if (stillMotion) return;
+      if (prefersStill()) return;
       const root = document.documentElement;
       root.setAttribute('data-replay', '');
-      const visible = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal].in-view')).filter((el) => {
+      const visible = Array.from(
+        document.querySelectorAll<HTMLElement>('[data-reveal].in-view'),
+      ).filter((el) => {
         const r = el.getBoundingClientRect();
         return r.bottom > 0 && r.top < innerHeight;
       });
@@ -297,8 +380,10 @@ export function Motion() {
         if (!target) return;
         const start = performance.now();
         const tick = (now: number) => {
-          const t = Math.min(1, (now - start) / 900);
-          el.textContent = String(Math.round(target * (1 - Math.pow(1 - t, 3))));
+          const t = prefersStill() ? 1 : Math.min(1, (now - start) / 900);
+          el.textContent = String(
+            Math.round(target * (1 - Math.pow(1 - t, 3))),
+          );
           if (t < 1) requestAnimationFrame(tick);
         };
         el.textContent = '0';
@@ -306,6 +391,16 @@ export function Motion() {
       });
     };
     window.addEventListener('boutique:replay-entry', replay);
+    const revealFocus = (event: FocusEvent) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const section = target.closest<HTMLElement>('[data-reveal]');
+      if (section) {
+        section.classList.add('in-view');
+        observer.unobserve(section);
+      }
+    };
+    document.addEventListener('focusin', revealFocus);
     return () => {
       observer.disconnect();
       counters.disconnect();
@@ -314,6 +409,7 @@ export function Motion() {
       document.removeEventListener('click', onClick);
       window.removeEventListener('pageswap', onSwap);
       window.removeEventListener('boutique:replay-entry', replay);
+      document.removeEventListener('focusin', revealFocus);
     };
   }, [pathname]);
   return null;
@@ -333,7 +429,10 @@ export function Breadcrumb({
           __html: jsonLd({
             '@context': 'https://schema.org',
             '@type': 'BreadcrumbList',
-            '@id': shop.origin + (pathname.endsWith('/') ? pathname : pathname + '/') + '#breadcrumb',
+            '@id':
+              shop.origin +
+              (pathname.endsWith('/') ? pathname : pathname + '/') +
+              '#breadcrumb',
             itemListElement: [{ label: 'Accueil', href: '/' }, ...items].map(
               (x, i) => ({
                 '@type': 'ListItem',

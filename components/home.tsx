@@ -37,11 +37,14 @@ export default function Home({ items }: { items: Product[] }) {
           <div className="workbench-intro">
             <span className="workbench-rule" />
             <p>
-              Tout le matériel de boxe et de MMA : gants, bandes, protections, sacs de frappe.
+              Tout le matériel de boxe et de MMA : gants, bandes, protections,
+              sacs de frappe.
               <br />
               Le matériel des salles, livré chez vous, dans toute la France.
               <br />
-              Ouverture des ventes bientôt. <a href="#ouverture">Laissez votre e-mail</a>, on vous prévient le jour J.
+              Ouverture des ventes bientôt.{' '}
+              <a href="#ouverture">Laissez votre e-mail</a>, on vous prévient le
+              jour J.
             </p>
           </div>
           <a href="/boutique-boxe/" className="button button-dark">
@@ -72,7 +75,7 @@ export default function Home({ items }: { items: Product[] }) {
       <section className="field-selection section-pad" data-reveal>
         <header className="editorial-heading">
           <div>
-            <span className="eyebrow">QUATRE ACHATS FRÉQUENTS</span>
+            <span className="eyebrow">QUATRE PIÈCES POUR COMMENCER</span>
             <h2>
               Par où commencer ?
               <br />
@@ -80,8 +83,9 @@ export default function Home({ items }: { items: Product[] }) {
             </h2>
           </div>
           <p>
-            Des gants MMA, un kimono, un rashguard et des bandes : quatre
-            modèles souvent achetés en premier, avec leurs tailles et leurs prix.
+            Des gants MMA, un kimono, un rashguard et des bandes : quatre points
+            de départ à choisir selon votre pratique, avec leurs tailles et
+            leurs prix.
           </p>
         </header>
         <div className="product-grid">
@@ -137,7 +141,8 @@ export default function Home({ items }: { items: Product[] }) {
                   )}
                   <h3>{c.name}</h3>
                   <span className="equipment-row-count">
-                    <b data-count={count}>{count}</b> modèle{count > 1 ? 's' : ''}
+                    <b data-count={count}>{count}</b> modèle
+                    {count > 1 ? 's' : ''}
                   </span>
                   <ArrowUpRight size={25} />
                 </a>

@@ -1,6 +1,12 @@
 'use client';
 import { pageWindow } from '@/lib/pagination';
-import { useMemo, useState, useEffect, useRef, useSyncExternalStore } from 'react';
+import {
+  useMemo,
+  useState,
+  useEffect,
+  useRef,
+  useSyncExternalStore,
+} from 'react';
 import {
   ArrowRight,
   ArrowUpRight,
@@ -49,7 +55,9 @@ export function ProductCard({
           {String(index + 1).padStart(2, '0')}
         </span>
         <span className="product-status">
-          {p.audience === 'enfant' ? 'Enfant' : (categoryFor(p.category)?.name ?? 'Catalogue')}
+          {p.audience === 'enfant'
+            ? 'Enfant'
+            : (categoryFor(p.category)?.name ?? 'Catalogue')}
         </span>
         <img
           src={p.images[0]?.small}
@@ -67,9 +75,7 @@ export function ProductCard({
       <div className="product-meta">
         <span>{p.brand}</span>
         <span>
-          {p.sizes.length
-            ? p.sizes.slice(0, 4).join(' / ')
-            : 'Tailles à venir'}
+          {p.sizes.length ? p.sizes.slice(0, 4).join(' / ') : 'Tailles à venir'}
         </span>
       </div>
       <h3>
@@ -99,26 +105,48 @@ export function HeroStage({ product: p }: { product: Product }) {
   // sinon un vrai agrandissement de la seule photo disponible.
   const second = p.images[1];
   const third = p.images[2];
-  const image = view === 2 ? second || p.images[0] : view === 1 && !curated && third ? third : p.images[0];
+  const image =
+    view === 2
+      ? second || p.images[0]
+      : view === 1 && !curated && third
+        ? third
+        : p.images[0];
   const inspection =
-    view === 1 && curated ? 'closure' : view === 1 && !third ? 'zoom' : view === 2 && !second ? 'zoom-low' : 'whole';
+    view === 1 && curated
+      ? 'closure'
+      : view === 2 && curated && second
+        ? 'reverse'
+        : view === 1 && !third
+          ? 'zoom'
+          : view === 2 && !second
+            ? 'zoom-low'
+            : 'whole';
   const fact =
     view === 1 && curated
       ? ['Fermeture', p.specs['Fermeture'] || 'Voir la photo']
       : view === 1
-        ? ['À regarder', third ? 'Le modèle sous un autre angle.' : 'La matière et les coutures, agrandies.']
+        ? [
+            'À regarder',
+            third
+              ? 'Le modèle sous un autre angle.'
+              : 'La matière et les coutures, agrandies.',
+          ]
         : view === 2
           ? second
-            ? ['À regarder', 'La forme de la paume, les coutures et la fermeture.']
-            : ['Zoom', 'Ce modèle n’a qu’une photo : voici sa partie basse agrandie.']
-          : [
-              'Tailles',
-              p.sizes.join(' / ') || 'Voir la fiche',
-            ];
+            ? [
+                'À regarder',
+                'La forme de la paume, les coutures et la fermeture.',
+              ]
+            : [
+                'Zoom',
+                'Ce modèle n’a qu’une photo : voici sa partie basse agrandie.',
+              ]
+          : ['Tailles', p.sizes.join(' / ') || 'Voir la fiche'];
   return (
     <div
       className="equipment-inspector"
       data-inspection={inspection}
+      data-curated={curated || undefined}
     >
       <div className="inspector-index">
         <span>
@@ -127,14 +155,16 @@ export function HeroStage({ product: p }: { product: Product }) {
         <span>LE MODÈLE EN DÉTAIL</span>
       </div>
       <div className="inspector-photo">
-        <img
-          key={image.src + view}
-          src={image.src}
-          width={image.width}
-          height={image.height}
-          alt={image.alt}
-          fetchPriority="high"
-        />
+        <div className="inspector-crop">
+          <img
+            key={image.src + view}
+            src={image.src}
+            width={image.width}
+            height={image.height}
+            alt={image.alt}
+            fetchPriority={view === 0 ? 'high' : 'auto'}
+          />
+        </div>
         {view === 1 && curated && (
           <div className="inspection-pin">
             <i />
@@ -152,8 +182,12 @@ export function HeroStage({ product: p }: { product: Product }) {
           <span>{fact[0]}</span>
           <p>{fact[1]}</p>
         </div>
-        <a href={'/produits/' + p.slug + '/'} aria-label={'Examiner ' + p.name}>
-          <ArrowUpRight size={24} />
+        <a
+          href={'/produits/' + p.slug + '/'}
+          aria-label={'Voir ce modèle : ' + p.name}
+        >
+          <span>Voir ce modèle</span>
+          <ArrowUpRight size={20} aria-hidden="true" />
         </a>
       </div>
       <div
@@ -164,10 +198,11 @@ export function HeroStage({ product: p }: { product: Product }) {
         {controls.map((label, i) => (
           <button
             key={label}
+            type="button"
             aria-pressed={view === i}
             onClick={() => setView(i)}
           >
-            <span>{String(i + 1).padStart(2, '0')}</span>
+            <span aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
             {label}
           </button>
         ))}
@@ -177,7 +212,11 @@ export function HeroStage({ product: p }: { product: Product }) {
 }
 
 /** le filtre ne propose que la taille, sans la couleur ni la mention entre parenthèses */
-const sizeKey = (s: string) => s.split(',')[0].replace(/\s*\(.*\)$/, '').trim();
+const sizeKey = (s: string) =>
+  s
+    .split(',')[0]
+    .replace(/\s*\(.*\)$/, '')
+    .trim();
 
 export function Catalog({
   items,
@@ -200,7 +239,9 @@ export function Catalog({
   const [page, setPage] = useState(initialPage);
 
   const brands = [...new Set(items.map((p) => p.brand))];
-  const sizes = [...new Set(items.flatMap((p) => p.sizes.map(sizeKey)))].filter((s) => s.length <= 16);
+  const sizes = [...new Set(items.flatMap((p) => p.sizes.map(sizeKey)))].filter(
+    (s) => s.length <= 16,
+  );
   const result = useMemo(() => {
     const out = items.filter(
       (p) =>
@@ -346,7 +387,10 @@ export function Catalog({
       </div>
       {result.length ? (
         <>
-          <div className="product-grid" key={[query, sort, brand, size, family, budget, page].join('|')}>
+          <div
+            className="product-grid"
+            key={[query, sort, brand, size, family, budget, page].join('|')}
+          >
             {result
               .slice(
                 (Math.min(page, Math.max(1, Math.ceil(result.length / 36))) -
@@ -616,9 +660,7 @@ export function SessionChooser({ items }: { items: Product[] }) {
         </div>
       )}
       <div className="bench-footer">
-        <p>
-          Aucun lot imposé. Vous choisissez chaque taille.
-        </p>
+        <p>Aucun lot imposé. Vous choisissez chaque taille.</p>
         <a href={'/guides/' + selected.guide + '/'} className="inline-link">
           Lire le guide <ArrowRight size={18} />
         </a>
@@ -641,7 +683,9 @@ export function ProductDetails({ product: p }: { product: Product }) {
   useEffect(() => {
     const el = buyRef.current;
     if (!el || typeof IntersectionObserver === 'undefined') return;
-    const io = new IntersectionObserver(([e]) => setStuck(!e.isIntersecting), { threshold: 0 });
+    const io = new IntersectionObserver(([e]) => setStuck(!e.isIntersecting), {
+      threshold: 0,
+    });
     io.observe(el);
     return () => io.disconnect();
   }, []);
@@ -664,23 +708,38 @@ export function ProductDetails({ product: p }: { product: Product }) {
   const loupe = (e: React.PointerEvent<HTMLDivElement>) => {
     if (e.pointerType !== 'mouse') return;
     const r = e.currentTarget.getBoundingClientRect();
-    e.currentTarget.style.setProperty('--ox', `${((e.clientX - r.left) / r.width) * 100}%`);
-    e.currentTarget.style.setProperty('--oy', `${((e.clientY - r.top) / r.height) * 100}%`);
+    e.currentTarget.style.setProperty(
+      '--ox',
+      `${((e.clientX - r.left) / r.width) * 100}%`,
+    );
+    e.currentTarget.style.setProperty(
+      '--oy',
+      `${((e.clientY - r.top) / r.height) * 100}%`,
+    );
   };
-  const step = (delta: number) => setImage((i) => (i + delta + p.images.length) % p.images.length);
+  const step = (delta: number) =>
+    setImage((i) => (i + delta + p.images.length) % p.images.length);
   const stickyAdd = () => {
     if (sizeChosen) {
-      buyRef.current?.querySelector<HTMLButtonElement>('button.cart-add')?.click();
+      buyRef.current
+        ?.querySelector<HTMLButtonElement>('button.cart-add')
+        ?.click();
       return;
     }
-    const first = document.querySelector<HTMLElement>('.variant-picker button, .product-variant-select');
+    const first = document.querySelector<HTMLElement>(
+      '.variant-picker button, .product-variant-select',
+    );
     first?.scrollIntoView({ block: 'center', behavior: 'smooth' });
     first?.focus({ preventScroll: true });
   };
   return (
     <div className="product-detail">
       <div className="product-gallery">
-        <div className="gallery-main" data-loupe={p.images.length ? '' : undefined} onPointerMove={loupe}>
+        <div
+          className="gallery-main"
+          data-loupe={p.images.length ? '' : undefined}
+          onPointerMove={loupe}
+        >
           <span className="tiny-label">
             {p.brand} / {p.reference || p.sourceRef}
           </span>
@@ -717,7 +776,9 @@ export function ProductDetails({ product: p }: { product: Product }) {
                   e.preventDefault();
                   const delta = e.key === 'ArrowRight' ? 1 : -1;
                   step(delta);
-                  const next = e.currentTarget.parentElement?.children[(i + delta + p.images.length) % p.images.length] as HTMLElement | undefined;
+                  const next = e.currentTarget.parentElement?.children[
+                    (i + delta + p.images.length) % p.images.length
+                  ] as HTMLElement | undefined;
                   next?.focus();
                 }}
               >
@@ -729,7 +790,8 @@ export function ProductDetails({ product: p }: { product: Product }) {
       </div>
       <div className="product-information">
         <span className="eyebrow">
-          {p.brand} / {categoryFor(p.category)?.name ?? p.category.replaceAll('-', ' ')}
+          {p.brand} /{' '}
+          {categoryFor(p.category)?.name ?? p.category.replaceAll('-', ' ')}
         </span>
         <h1>{cleanName(p)}</h1>
         <p className="product-lead">{p.short}</p>
@@ -756,9 +818,7 @@ export function ProductDetails({ product: p }: { product: Product }) {
             </legend>
             {p.sizes.length === 1 ? (
               <p className="variant-single">
-                {p.sizes[0] === p.name
-                  ? 'Taille unique'
-                  : p.sizes[0]}
+                {p.sizes[0] === p.name ? 'Taille unique' : p.sizes[0]}
               </p>
             ) : p.sizes.length > 12 ? (
               <Select
@@ -820,12 +880,22 @@ export function ProductDetails({ product: p }: { product: Product }) {
           <ArrowUpRight size={15} />
         </a>
       </div>
-      <div className={stuck ? 'sticky-buy is-shown' : 'sticky-buy'} aria-hidden={!stuck}>
+      <div
+        className={stuck ? 'sticky-buy is-shown' : 'sticky-buy'}
+        aria-hidden={!stuck}
+      >
         <div className="sticky-buy-copy">
           <strong>{money(variantPrice(p, size))}</strong>
-          <span>{size || (p.sizes.length > 0 ? 'Taille à choisir' : cleanName(p))}</span>
+          <span>
+            {size || (p.sizes.length > 0 ? 'Taille à choisir' : cleanName(p))}
+          </span>
         </div>
-        <button type="button" className="button button-dark" tabIndex={stuck ? 0 : -1} onClick={stickyAdd}>
+        <button
+          type="button"
+          className="button button-dark"
+          tabIndex={stuck ? 0 : -1}
+          onClick={stickyAdd}
+        >
           {added ? (
             <>
               Ajouté <Check size={17} aria-hidden="true" />
@@ -875,7 +945,12 @@ export function ProductDetails({ product: p }: { product: Product }) {
   );
 }
 
-export type AlertFormLabels = { field?: string; consent?: string; submit?: string; placeholder?: string };
+export type AlertFormLabels = {
+  field?: string;
+  consent?: string;
+  submit?: string;
+  placeholder?: string;
+};
 export function AlertForm({
   productId = 'launch',
   variant = '',
@@ -952,13 +1027,17 @@ export function AlertForm({
           placeholder={labels.placeholder ?? 'Votre adresse e-mail'}
           autoComplete="email"
         />
-        <button disabled={busy} aria-label={labels.submit ?? 'M’inscrire à l’alerte'}>
+        <button
+          disabled={busy}
+          aria-label={labels.submit ?? 'M’inscrire à l’alerte'}
+        >
           {busy ? '…' : <ArrowRight size={20} />}
         </button>
       </div>
       <label className="consent">
         <input type="checkbox" name="consent" required />
-        {labels.consent ?? 'J’accepte de recevoir un e-mail à l’ouverture.'}{' '}
+        {labels.consent ??
+          'J’accepte de recevoir un e-mail à l’ouverture.'}{' '}
         <a href="/confidentialite/">Confidentialité</a>
       </label>
       {state && (

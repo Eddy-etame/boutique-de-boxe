@@ -177,8 +177,9 @@ export function guideKeywords(g: Guide): string[] {
 /* ------------------------------------------------------------------ graphe JSON-LD */
 
 const ID = (fragment: string) => `${shop.origin}/#${fragment}`;
-const abs = (path: string) => (path.startsWith('http') ? path : shop.origin + path);
-export const urlOf = (path: string) => shop.origin + path;
+// Les imports peuvent conserver des photos HTTPS externes ; ne jamais préfixer deux origines.
+export const urlOf = (path: string) => new URL(path, shop.origin).href;
+const abs = urlOf;
 
 export function organizationNode() {
   return {
@@ -211,7 +212,7 @@ export function websiteNode() {
     '@id': ID('site'),
     url: shop.origin,
     name: shop.name,
-    alternateName: ['Boutique de Boxe en ligne', 'Boxing Boutique', 'boutique-de-boxe.com'],
+    alternateName: ['Boutique de Boxe en ligne', 'Boxing Boutique', 'boutique-de-boxe.fr'],
     description: 'Matériel de boxe, MMA et sports de combat : plus de 1 000 modèles avec leurs tailles et leurs prix prévus, douze guides d’achat.',
     inLanguage: 'fr-FR',
     publisher: { '@id': ID('organisation') },

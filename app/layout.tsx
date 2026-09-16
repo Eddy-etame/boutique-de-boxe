@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { cookies } from 'next/headers';
 import { Header, Footer, Motion } from '@/components/shop-shell';
 import { shop } from '@/lib/catalog';
 import { siteGraph, KEYWORDS, ATTRIBUTION } from '@/lib/seo';
@@ -10,8 +11,8 @@ import './refinement.css';
 import './commerce.css';
 import './motion.css';
 import './scale.css';
+import './wayfinding.css';
 import type { Viewport } from 'next';
-
 
 export const metadata: Metadata = {
   metadataBase: new URL(shop.origin),
@@ -28,11 +29,21 @@ export const metadata: Metadata = {
   category: 'shopping',
   robots: { index: true, follow: true },
   // Google Search Console : la balise de vérification arrive par variable d’environnement, jamais en dur.
-  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION
+  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ||
+  process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION
     ? {
         verification: {
-          ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION } : {}),
-          ...(process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION ? { other: { 'msvalidate.01': process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION } } : {}),
+          ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+            ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }
+            : {}),
+          ...(process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION
+            ? {
+                other: {
+                  'msvalidate.01':
+                    process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION,
+                },
+              }
+            : {}),
         },
       }
     : {}),
@@ -53,7 +64,11 @@ export const metadata: Metadata = {
   icons: { icon: '/favicon.svg', apple: '/icons/apple-touch-icon.png' },
   manifest: '/manifest.webmanifest',
   twitter: { card: 'summary_large_image' },
-  appleWebApp: { capable: true, title: 'Boutique de Boxe', statusBarStyle: 'default' },
+  appleWebApp: {
+    capable: true,
+    title: 'Boutique de Boxe',
+    statusBarStyle: 'default',
+  },
 };
 export const viewport: Viewport = {
   themeColor: '#18191e',
@@ -62,13 +77,15 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const consent = (await cookies()).get('bdb_consent')?.value;
+  const consentOpen = consent !== 'accepted' && consent !== 'refused';
   return (
-    <html lang="fr">
+    <html lang="fr" data-consent-open={consentOpen ? '' : undefined}>
       <head>
         <link
           rel="preload"
@@ -84,12 +101,9 @@ export default function RootLayout({
           type="font/woff2"
           crossOrigin="anonymous"
         />
-        {/* Avant l'hydratation : sans choix enregistre, la page s'affiche deja floutee derriere la carte des cookies. */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: "if(!/(?:^|; )bdb_consent=/.test(document.cookie))document.documentElement.setAttribute('data-consent-open','');",
-          }}
-        />
+        <noscript>
+          <style>{`.consent-veil{display:none!important}html[data-consent-open] body{overflow:auto!important}[data-reveal]{opacity:1!important;transform:none!important;animation:none!important}`}</style>
+        </noscript>
       </head>
       <body>
         <a href="#contenu" className="skip-link">
@@ -103,7 +117,10 @@ export default function RootLayout({
         <ConsentTracker />
         <Analytics />
         {/* Organisation et site : un seul graphe, référencé par le graphe de chaque page. */}
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: siteGraph() }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: siteGraph() }}
+        />
       </body>
     </html>
   );

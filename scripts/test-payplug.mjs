@@ -36,7 +36,7 @@ const billing = {
 const env = {
   COMMERCE_MODE: 'payplug_test',
   PAYPLUG_TEST_SECRET_KEY: 'sk_test_MOCKKEYONLY',
-  PAYPLUG_PUBLIC_BASE_URL: 'https://boutique-de-boxe.com',
+  PAYPLUG_PUBLIC_BASE_URL: 'https://boutique-de-boxe.fr',
 };
 const paymentId = 'pay_MockPaymentIdentifier123';
 const pending = () => ({
@@ -132,11 +132,13 @@ test('wrong-mode key, unsupported API version, unknown mode and unowned origins 
     { PAYPLUG_TEST_SECRET_KEY: '' },
     { PAYPLUG_API_VERSION: '2026-09-10' },
     { COMMERCE_MODE: 'TEST' },
-    { PAYPLUG_PUBLIC_BASE_URL: 'http://boutique-de-boxe.com' },
-    { PAYPLUG_PUBLIC_BASE_URL: 'https://boutique-de-boxe.com.evil.invalid' },
-    { PAYPLUG_PUBLIC_BASE_URL: 'https://user:password@boutique-de-boxe.com/' },
-    { PAYPLUG_PUBLIC_BASE_URL: 'https://boutique-de-boxe.com/?token=secret' },
-    { PAYPLUG_PUBLIC_BASE_URL: 'https://boutique-de-boxe.com/nested' },
+    { PAYPLUG_PUBLIC_BASE_URL: 'https://boutique-de-boxe.com' },
+    { PAYPLUG_PUBLIC_BASE_URL: 'https://boutique-de-boxe.vercel.app' },
+    { PAYPLUG_PUBLIC_BASE_URL: 'http://boutique-de-boxe.fr' },
+    { PAYPLUG_PUBLIC_BASE_URL: 'https://boutique-de-boxe.fr.evil.invalid' },
+    { PAYPLUG_PUBLIC_BASE_URL: 'https://user:password@boutique-de-boxe.fr/' },
+    { PAYPLUG_PUBLIC_BASE_URL: 'https://boutique-de-boxe.fr/?token=secret' },
+    { PAYPLUG_PUBLIC_BASE_URL: 'https://boutique-de-boxe.fr/nested' },
   ];
   for (const patch of patches) {
     const h = harness(pending(), 200, { ...env, ...patch });

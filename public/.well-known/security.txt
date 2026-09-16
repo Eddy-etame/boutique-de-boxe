@@ -1,5 +1,5 @@
 Contact: mailto:boxingcenter31@gmail.com
 Expires: 2027-09-11T00:00:00.000Z
 Preferred-Languages: fr, en
-Canonical: https://boutique-de-boxe.com/.well-known/security.txt
-Policy: https://boutique-de-boxe.com/confidentialite/
+Canonical: https://boutique-de-boxe.fr/.well-known/security.txt
+Policy: https://boutique-de-boxe.fr/confidentialite/

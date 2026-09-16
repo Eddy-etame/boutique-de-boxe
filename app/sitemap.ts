@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 import { readCatalog } from '@/lib/database';
 import { categories, categoryFor, getCategoryProducts, shop } from '@/lib/catalog';
 import { guides, services } from '@/lib/editorial';
-import { EDITORIAL_DATE } from '@/lib/seo';
+import { EDITORIAL_DATE, urlOf } from '@/lib/seo';
 import { SUBFAMILIES } from '@/lib/subfamilies';
 const SUBFAMILY_PATHS = new Set(SUBFAMILIES.map((s) => '/' + s.slug + '/'));
 export const dynamic = 'force-dynamic';
@@ -41,7 +41,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: ({ home: 'daily', category: 'daily', index: 'daily', subfamily: 'weekly', product: 'weekly', guide: 'monthly', service: 'yearly' } as const)[kind],
       priority: { home: 1, category: 0.9, index: 0.8, subfamily: 0.8, guide: 0.8, product: 0.7, service: 0.4 }[kind],
       // Plan d’images : les photos du modèle, pour Google Images.
-      ...(product ? { images: product.images.slice(0, 4).map((i) => shop.origin + i.src) } : {}),
+      ...(product ? { images: product.images.slice(0, 4).map((i) => urlOf(i.src)) } : {}),
     };
   });
 }
