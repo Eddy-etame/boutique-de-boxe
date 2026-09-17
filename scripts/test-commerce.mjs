@@ -67,6 +67,7 @@ class Session {
     const h = {
       Origin: origin,
       'cf-connecting-ip': this.testIP,
+      'x-forwarded-for': this.testIP,
       ...(payload === undefined ? {} : { 'Content-Type': 'application/json' }),
       ...(this.cookies.size
         ? { Cookie: [...this.cookies].map(([k, v]) => `${k}=${v}`).join('; ') }
@@ -572,7 +573,19 @@ try {
         downloaded.response.headers.get('content-security-policy') || '',
         /default-src 'none'/,
       );
-      assert.match(downloaded.raw, /SIMULATION/);
+      // Le reçu se télécharge en PDF (et non plus en HTML), fidèle mais net et sélectionnable.
+      assert.match(
+        downloaded.response.headers.get('content-type') || '',
+        /application\/pdf/,
+      );
+      assert.match(
+        downloaded.response.headers.get('content-disposition') || '',
+        /attachment; filename="recu-simulation-[0-9a-f]{8}\.pdf"/,
+      );
+      assert.ok(
+        downloaded.raw.startsWith('%PDF-'),
+        'the downloaded receipt is a PDF document',
+      );
     },
   );
 

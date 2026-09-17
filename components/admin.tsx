@@ -1,13 +1,19 @@
 'use client';
-import { Audience } from './audience';
-import { Clients } from './clients';
 import { BriefBoard } from './brief-board';
 import { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { CatalogEditor } from './catalog-editor';
-import { OrdersAdmin } from './commerce-ui';
-import { PayplugSettings } from './payplug-settings';
-import { CatalogueImports } from './catalogue-imports';
 import type { Product } from '@/lib/catalog';
+
+// Chaque panneau d’onglet est chargé à l’ouverture de son onglet, pas au chargement
+// de l’atelier : le gros module de commande et les tableaux recharts ne pèsent plus
+// sur l’entrée. Déclarés au niveau module pour ne pas se remonter à chaque rendu.
+const loading = () => <p role="status">Chargement…</p>;
+const OrdersAdmin = dynamic(() => import('./commerce-ui').then((m) => m.OrdersAdmin), { ssr: false, loading });
+const Audience = dynamic(() => import('./audience').then((m) => m.Audience), { ssr: false, loading });
+const Clients = dynamic(() => import('./clients').then((m) => m.Clients), { ssr: false, loading });
+const PayplugSettings = dynamic(() => import('./payplug-settings').then((m) => m.PayplugSettings), { ssr: false, loading });
+const CatalogueImports = dynamic(() => import('./catalogue-imports').then((m) => m.CatalogueImports), { ssr: false, loading });
 type RecordRow = Record<string, string | number>;
 type AdminData = {
   products: Product[];

@@ -28,12 +28,24 @@ function classify(url: string): Pick<Health, 'route' | 'port'> {
   }
 }
 
+declare global {
+  // eslint-disable-next-line no-var
+  var __healthCache: { body: unknown; status: number; at: number } | undefined;
+}
+
 export async function GET() {
+  const headers = { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow' };
+  // Une sonde par instance chaude toutes les ~10 s : on ne rouvre pas une connexion à chaque requête publique.
+  const cached = globalThis.__healthCache;
+  if (cached && Date.now() - cached.at < 10000)
+    return Response.json(cached.body, { status: cached.status, headers });
   const checkedAt = new Date().toISOString();
   const url = process.env.DATABASE_URL?.trim();
-  const headers = { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow' };
-  const answer = (h: Omit<Health, 'checkedAt'>, status = 200) =>
-    Response.json({ ...h, checkedAt }, { status, headers });
+  const answer = (h: Omit<Health, 'checkedAt'>, status = 200) => {
+    const payload = { ...h, checkedAt };
+    globalThis.__healthCache = { body: payload, status, at: Date.now() };
+    return Response.json(payload, { status, headers });
+  };
 
   if (!url) return answer({ db: 'no-url', route: 'none', port: null, tables: 0 }, 503);
   const where = classify(url);

@@ -6,6 +6,36 @@ import { shop } from './lib/catalog';
 const YEAR = 'public, max-age=31536000, immutable';
 const MONTH = 'public, max-age=2592000, stale-while-revalidate=604800';
 
+// En-têtes de sécurité sur les pages HTML. La CSP autorise le nécessaire :
+// runtime Next et JSON-LD en ligne (unsafe-inline), fontes et images du site,
+// beacons de mesure et /api en same-origin, le défi anti-robot du formulaire de
+// contact (inlett), et les workers same-origin (sw.js, inlett-pow.js). En dev,
+// on ajoute unsafe-eval et le socket HMR pour ne pas casser React Refresh.
+const isProd = process.env.NODE_ENV === 'production';
+const csp = [
+  "default-src 'self'",
+  "base-uri 'none'",
+  "object-src 'none'",
+  "frame-ancestors 'none'",
+  "frame-src 'none'",
+  "form-action 'self'",
+  "img-src 'self' data:",
+  "font-src 'self'",
+  "style-src 'self' 'unsafe-inline'",
+  "script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com" + (isProd ? '' : " 'unsafe-eval'"),
+  "connect-src 'self' https://inlett.vercel.app https://va.vercel-scripts.com https://vitals.vercel-insights.com" + (isProd ? '' : ' ws: wss:'),
+  "worker-src 'self'",
+  "manifest-src 'self'",
+  ...(isProd ? ['upgrade-insecure-requests'] : []),
+].join('; ');
+const securityHeaders = [
+  { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains' },
+  { key: 'X-Content-Type-Options', value: 'nosniff' },
+  { key: 'X-Frame-Options', value: 'DENY' },
+  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), payment=(self), usb=(), browsing-topics=()' },
+];
+
 const nextConfig: NextConfig = {
   trailingSlash: true,
   skipTrailingSlashRedirect: true,
@@ -32,6 +62,13 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
+      // Sécurité sur toutes les réponses (l’API garde en plus ses propres en-têtes).
+      { source: '/:path*', headers: securityHeaders },
+      // CSP sur les pages HTML seulement : /api garde sa CSP propre (reçu en default-src 'none').
+      {
+        source: '/((?!api/).*)',
+        headers: [{ key: 'Content-Security-Policy', value: csp }],
+      },
       {
         source: '/fonts/:path*',
         headers: [{ key: 'Cache-Control', value: YEAR }],

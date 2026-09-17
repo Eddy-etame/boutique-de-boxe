@@ -66,7 +66,8 @@ export function ProductCard({
           width={480}
           height={480}
           alt={p.images[0]?.alt || p.name}
-          loading="lazy"
+          loading={index < 4 ? 'eager' : 'lazy'}
+          fetchPriority={index === 0 ? 'high' : 'auto'}
         />
         <span className="product-arrow">
           <ArrowUpRight size={20} />

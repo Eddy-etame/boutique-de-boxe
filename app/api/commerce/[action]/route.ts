@@ -1,11 +1,13 @@
 import { clientIp } from '@/lib/request';
 import { clientsReport, clientsCsv, ensureBuyerColumns } from '@/lib/clients';
+import { receiptPdf } from '@/lib/receipt-pdf';
 import { db, isAdmin, readCatalog } from '@/lib/database';
+import { after } from 'next/server';
 import {
   cartToken,
   resolveCart,
+  buildCart,
   shippingFor,
-  receiptHtml,
   sendReceipt,
   recoverStaleEmailClaims,
   uuid,
@@ -63,19 +65,23 @@ export async function GET(request: Request, context: Context) {
       const order = await ownedOrder(request);
       if (!order || order.status !== 'simulated_paid')
         return reply({ error: 'Reçu introuvable ou accès expiré.' }, 404);
-      if (new URL(request.url).searchParams.get('download') === '1')
-        return new Response(receiptHtml(order), {
-          headers: {
-            'Content-Type': 'text/html; charset=utf-8',
-            'X-Robots-Tag': 'noindex, nofollow',
-            'Content-Disposition': `attachment; filename="recu-simulation-${order.id.slice(0, 8)}.html"`,
-            'Cache-Control': 'no-store',
-            'X-Content-Type-Options': 'nosniff',
-            'Content-Security-Policy':
-              "default-src 'none'; style-src 'unsafe-inline'",
-            'Referrer-Policy': 'no-referrer',
+      if (new URL(request.url).searchParams.get('download') === '1') {
+        const pdf = await receiptPdf(order);
+        return new Response(
+          new Blob([pdf as unknown as BlobPart], { type: 'application/pdf' }),
+          {
+            headers: {
+              'Content-Type': 'application/pdf',
+              'X-Robots-Tag': 'noindex, nofollow',
+              'Content-Disposition': `attachment; filename="recu-simulation-${order.id.slice(0, 8)}.pdf"`,
+              'Cache-Control': 'no-store',
+              'X-Content-Type-Options': 'nosniff',
+              'Content-Security-Policy': "default-src 'none'",
+              'Referrer-Policy': 'no-referrer',
+            },
           },
-        });
+        );
+      }
       const {
         cart_id: _cart,
         idempotency_key: _key,
@@ -306,7 +312,8 @@ export async function POST(request: Request, context: Context) {
           },
           409,
         );
-      return reply(await resolveCart(token, products), 200, cookie);
+      // Le panier vient d’être écrit : on le recompose en mémoire, sans relire la base.
+      return reply(buildCart(items, products, cart.revision + 1), 200, cookie);
     }
     if (action !== 'checkout')
       return reply({ error: 'Ressource introuvable.' }, 404);
@@ -492,18 +499,19 @@ export async function POST(request: Request, context: Context) {
         409,
       );
     }
-    if (order) {
-      try {
-        await sendReceipt(order);
-      } catch {
-        /* The saved order remains valid when the mail service fails. */
-      }
-    }
-    const emailStatus = await database
-      .prepare('SELECT email_status FROM simulation_orders WHERE id=?')
-      .bind(id)
-      .first<string>('email_status');
-    return reply({ id, status, emailStatus }, 201, cookie);
+    // Le reçu part après la réponse : le client n’attend plus l’aller-retour e-mail.
+    if (order && status === 'simulated_paid')
+      after(() => sendReceipt(order).catch(() => undefined));
+    return reply(
+      {
+        id,
+        status,
+        emailStatus:
+          status === 'simulated_paid' ? 'pending' : 'not_applicable',
+      },
+      201,
+      cookie,
+    );
   } catch (error) {
     if (error instanceof SyntaxError)
       return reply({ error: 'Demande illisible.' }, 400);

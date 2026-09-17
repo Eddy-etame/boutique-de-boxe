@@ -28,51 +28,77 @@ export async function isAdmin() {
   );
 }
 /** Une seule lecture par requête : les métadonnées et la page partagent le résultat. */
+async function readCatalogFromDb(): Promise<Product[]> {
+  const database = await db();
+  const [entries, overrides] = await Promise.all([
+    database
+      .prepare('SELECT id,payload,archived,updated_at FROM catalog_entries')
+      .all<{
+        id: string;
+        payload: string;
+        archived: number;
+        updated_at: string;
+      }>(),
+    database
+      .prepare(
+        'SELECT product_id,name,description,price_cents,updated_at FROM product_overrides',
+      )
+      .all<{
+        product_id: string;
+        name: string;
+        description: string;
+        price_cents: number;
+        updated_at: string;
+      }>(),
+  ]);
+  const all = new Map(products.map((p) => [p.id, p]));
+  for (const e of entries.results) {
+    if (e.archived) all.delete(e.id);
+    else all.set(e.id, { ...JSON.parse(e.payload), updatedAt: e.updated_at });
+  }
+  // Index par identifiant : lecture O(1) au lieu d’un find() sur 1 000 lignes.
+  const overrideById = new Map(overrides.results.map((o) => [o.product_id, o]));
+  return [...all.values()].map((p) => {
+    const o = overrideById.get(p.id);
+    return o
+      ? {
+          ...p,
+          name: o.name,
+          description: o.description,
+          price: o.price_cents,
+          updatedAt: o.updated_at,
+        }
+      : p;
+  });
+}
+
+// Mémo en mémoire, partagé entre les requêtes d’une même instance : le catalogue
+// (~2,6 Mo sérialisé) dépasse la limite de 2 Mo du cache de données de Next, donc
+// on le garde ici. Sur globalThis, pas dans une variable de module : le rendu des
+// pages (composants serveur) et les routes d’API sont empaquetés séparément et ne
+// partageraient pas une variable de module ; globalThis est unique par instance,
+// donc bustCatalog() vu par les deux. TTL court, et vidé sur-le-champ aux éditions.
+const CATALOG_TTL = 60000;
+declare global {
+  // eslint-disable-next-line no-var
+  var __catalogMemo: { at: number; data: Product[] } | null | undefined;
+}
+/** Vide le mémo du catalogue : à appeler après chaque écriture de l’atelier. */
+export function bustCatalog() {
+  globalThis.__catalogMemo = null;
+}
+
 export const readCatalog = cache(async function readCatalogOnce(): Promise<Product[]> {
+  const memo = globalThis.__catalogMemo;
+  if (memo && Date.now() - memo.at < CATALOG_TTL) return memo.data;
   try {
-    const database = await db();
-    const [entries, overrides] = await Promise.all([
-      database
-        .prepare('SELECT id,payload,archived,updated_at FROM catalog_entries')
-        .all<{
-          id: string;
-          payload: string;
-          archived: number;
-          updated_at: string;
-        }>(),
-      database
-        .prepare(
-          'SELECT product_id,name,description,price_cents,updated_at FROM product_overrides',
-        )
-        .all<{
-          product_id: string;
-          name: string;
-          description: string;
-          price_cents: number;
-          updated_at: string;
-        }>(),
-    ]);
-    const all = new Map(products.map((p) => [p.id, p]));
-    for (const e of entries.results) {
-      if (e.archived) all.delete(e.id);
-      else all.set(e.id, { ...JSON.parse(e.payload), updatedAt: e.updated_at });
-    }
-    return [...all.values()].map((p) => {
-      const o = overrides.results.find((o) => o.product_id === p.id);
-      return o
-        ? {
-            ...p,
-            name: o.name,
-            description: o.description,
-            price: o.price_cents,
-            updatedAt: o.updated_at,
-          }
-        : p;
-    });
+    const data = await readCatalogFromDb();
+    globalThis.__catalogMemo = { at: Date.now(), data };
+    return data;
   } catch (error) {
-    // Base injoignable ou non migrée : le catalogue des fichiers reste lisible.
+    // Base injoignable ou non migrée : le dernier catalogue connu, sinon celui des fichiers.
     // Panier, alertes, demandes et atelier répondent 503 tant que la base manque.
     console.error('Catalogue storage unavailable, serving the file catalogue', error instanceof Error ? error.name : 'StorageError');
-    return products;
+    return globalThis.__catalogMemo?.data ?? products;
   }
 });

@@ -52,9 +52,26 @@ const device = (ua: string) => (/ipad|tablet/i.test(ua) ? 'tablette' : /mobi|and
 export async function POST(request: Request) {
   if (request.headers.get('origin') && request.headers.get('origin') !== new URL(request.url).origin) return reply({ error: 'Origine invalide.' }, 400);
   if (cookie(request, 'bdb_consent') !== 'accepted') return reply({ ok: false, reason: 'consent' }, 202);
+  // Lecture bornée : on refuse un corps trop gros avant de le désérialiser.
+  const reader = request.body?.getReader();
+  if (!reader) return reply({ error: 'Demande vide.' }, 400);
+  let raw = '';
+  let bytes = 0;
+  const decoder = new TextDecoder();
+  for (;;) {
+    const chunk = await reader.read();
+    if (chunk.done) break;
+    bytes += chunk.value.length;
+    if (bytes > 32000) {
+      await reader.cancel();
+      return reply({ error: 'Demande trop longue.' }, 413);
+    }
+    raw += decoder.decode(chunk.value, { stream: true });
+  }
+  raw += decoder.decode();
   let body: { events?: unknown[] } | null = null;
   try {
-    body = await request.json();
+    body = JSON.parse(raw);
   } catch {
     return reply({ error: 'Demande illisible.' }, 400);
   }
@@ -73,9 +90,9 @@ export async function POST(request: Request) {
   await ensureTable();
   const dev = device(request.headers.get('user-agent') || '');
   const base = Date.now();
-  let stored = 0;
+  // On rassemble les lignes valides puis on insère en un seul aller-retour.
+  const rows: unknown[][] = [];
   for (const raw of list) {
-    const now = new Date(base + stored).toISOString();
     const e = raw as Record<string, unknown>;
     const str = (v: unknown) => (typeof v === 'string' ? v : '');
     const type = str(e.t);
@@ -85,13 +102,17 @@ export async function POST(request: Request) {
     if (!TYPES.has(type) || !/^\/[^\s<>"']{0,200}$/.test(path) || /^\/(atelier|connexion|api)(\/|$)/.test(path) || !/^[a-z0-9-]{8,40}$/.test(sid) || !/^[a-z0-9-]{8,40}$/.test(vid)) continue;
     const referrer = typeof e.r === 'string' ? e.r.slice(0, 300) : '';
     const data = clean(e.d);
-    await database
-      .prepare('INSERT INTO events(id,vid,sid,type,path,referrer,data,device,created_at) VALUES (?,?,?,?,?,?,?,?,?)')
-      .bind(crypto.randomUUID(), vid, sid, type, path, referrer, data, dev, now)
-      .run();
-    stored++;
+    const now = new Date(base + rows.length).toISOString();
+    rows.push([crypto.randomUUID(), vid, sid, type, path, referrer, data, dev, now]);
   }
-  return reply({ ok: true, stored });
+  if (rows.length) {
+    const ph = rows.map(() => '(?,?,?,?,?,?,?,?,?)').join(',');
+    await database
+      .prepare(`INSERT INTO events(id,vid,sid,type,path,referrer,data,device,created_at) VALUES ${ph}`)
+      .bind(...rows.flat())
+      .run();
+  }
+  return reply({ ok: true, stored: rows.length });
 }
 
 export async function GET(request: Request) {
@@ -100,7 +121,7 @@ export async function GET(request: Request) {
     return await report(request);
   } catch (error) {
     console.error('analytics report', (error as Error).message);
-    return reply({ error: 'Lecture de l’audience impossible : ' + (error as Error).message.slice(0, 200) }, 500);
+    return reply({ error: 'Lecture de l’audience impossible pour le moment.' }, 500);
   }
 }
 
@@ -110,8 +131,9 @@ async function report(request: Request) {
   const before = new Date(Date.now() - 2 * days * 86400000).toISOString();
   await ensureTable();
   const database = await db();
-  // La période précédente, de même longueur, pour lire les écarts.
-  const previous = await database
+  const q = <T = Record<string, unknown>>(sql: string) => database.prepare(sql).bind(since).all<T>().then((r) => r.results);
+  // La période précédente, de même longueur, pour lire les écarts — lancée avec les autres.
+  const previousP = database
     .prepare(
       `SELECT
         (SELECT count(*)::int FROM events WHERE type='view' AND created_at>=? AND created_at<?) AS views,
@@ -122,9 +144,15 @@ async function report(request: Request) {
     )
     .bind(before, since, before, since, before, since, before, since, before, since)
     .first<Record<string, number>>();
-  const q = <T = Record<string, unknown>>(sql: string) => database.prepare(sql).bind(since).all<T>().then((r) => r.results);
+  // Toutes ces lectures sont indépendantes : une seule vague au lieu de quatre.
+  const addsP = q<{ path: string; n: number }>(`SELECT path, count(*)::int AS n FROM events WHERE type='add_to_cart' AND created_at>=? GROUP BY path`);
+  const sessionsP = q<{ sid: string; started: string; ended: string; device: string; referrer: string; views: number }>(
+    `SELECT sid, min(created_at) AS started, max(created_at) AS ended, max(device) AS device, max(referrer) AS referrer, count(*) FILTER (WHERE type='view')::int AS views
+     FROM events WHERE created_at>=? GROUP BY sid HAVING count(*) FILTER (WHERE type='view') > 0 ORDER BY started DESC LIMIT 40`,
+  );
+  const productsP = readCatalog();
 
-  const [totals, pages, entries, exits, transitions, conversions, devices, referrers, searches, byDay] = await Promise.all([
+  const [totals, pages, entries, exits, transitions, conversions, devices, referrers, searches, byDay, previous, adds, sessions, products] = await Promise.all([
     database
       .prepare(
         `SELECT
@@ -160,23 +188,21 @@ async function report(request: Request) {
     q<{ host: string; n: number }>(`SELECT COALESCE(NULLIF(substring(referrer from '^https?://([^/]+)'), ''), 'accès direct') AS host, count(DISTINCT sid)::int AS n FROM events WHERE type='view' AND created_at>=? AND referrer NOT LIKE '%boutique-de-boxe%' GROUP BY host ORDER BY n DESC LIMIT 15`),
     q<{ query: string; n: number; none: number }>(`SELECT lower(data::jsonb->>'q') AS query, count(*)::int AS n, sum(CASE WHEN (data::jsonb->>'results')='0' THEN 1 ELSE 0 END)::int AS none FROM events WHERE type='search' AND created_at>=? AND (data::jsonb->>'q')<>'' GROUP BY query ORDER BY n DESC LIMIT 25`),
     q<{ day: string; views: number; sessions: number }>(`SELECT substring(created_at from 1 for 10) AS day, count(*)::int AS views, count(DISTINCT sid)::int AS sessions FROM events WHERE type='view' AND created_at>=? GROUP BY day ORDER BY day`),
+    previousP,
+    addsP,
+    sessionsP,
+    productsP,
   ]);
 
   // Noms lisibles pour les fiches, familles et sous-familles ; modèles vus sans ajout au panier.
-  const products = await readCatalog();
   const nameOf = (path: string) => {
     const m = path.match(/^\/produits\/([^/]+)\/?$/);
     if (m) return products.find((p) => p.slug === m[1])?.name || path;
     const slug = path.replace(/^\/|\/$/g, '');
     return categoryFor(slug)?.name || SUBFAMILIES.find((s) => s.slug === slug)?.name || (path === '/' ? 'Accueil' : path);
   };
-  const adds = await q<{ path: string; n: number }>(`SELECT path, count(*)::int AS n FROM events WHERE type='add_to_cart' AND created_at>=? GROUP BY path`);
 
   // Parcours : les 40 dernières visites, page par page, avec le temps passé et ce qui s’y est fait.
-  const sessions = await q<{ sid: string; started: string; ended: string; device: string; referrer: string; views: number }>(
-    `SELECT sid, min(created_at) AS started, max(created_at) AS ended, max(device) AS device, max(referrer) AS referrer, count(*) FILTER (WHERE type='view')::int AS views
-     FROM events WHERE created_at>=? GROUP BY sid HAVING count(*) FILTER (WHERE type='view') > 0 ORDER BY started DESC LIMIT 40`,
-  );
   type Step = { sid: string; type: string; path: string; data: string; created_at: string };
   const steps = sessions.length
     ? (

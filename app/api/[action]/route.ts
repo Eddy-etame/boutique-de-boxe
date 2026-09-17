@@ -1,4 +1,4 @@
-import { db, isAdmin, readCatalog } from '@/lib/database';
+import { db, isAdmin, readCatalog, bustCatalog } from '@/lib/database';
 
 import { validateProduct } from '@/lib/product-input';
 
@@ -137,7 +137,17 @@ export async function GET(
 ) {
   const { action } = await params;
 
-  if (action === 'catalog') return response({ products: await readCatalog() });
+  if (action === 'catalog')
+    return Response.json(
+      { products: await readCatalog() },
+      {
+        headers: {
+          'Cache-Control':
+            'public, s-maxage=300, stale-while-revalidate=86400',
+          'X-Content-Type-Options': 'nosniff',
+        },
+      },
+    );
 
   if (action === 'admin') {
     if (!(await isAdmin()))
@@ -254,6 +264,7 @@ export async function POST(
             product.id,
           ),
       ]);
+      bustCatalog();
       return request.headers
         .get('content-type')
         ?.includes('application/x-www-form-urlencoded')
@@ -283,6 +294,7 @@ export async function POST(
         )
         .bind(product.id, JSON.stringify(product), new Date().toISOString())
         .run();
+      bustCatalog();
       return response({ ok: true });
     }
 
@@ -356,6 +368,7 @@ export async function POST(
 
         .run();
 
+      bustCatalog();
       return response({ ok: true });
     }
 

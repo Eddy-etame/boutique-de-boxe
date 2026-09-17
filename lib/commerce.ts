@@ -47,19 +47,13 @@ export function cartToken(request: Request) {
     ?.slice(8);
   return uuid(value) ? value : null;
 }
-export async function resolveCart(
-  id: string,
-  catalog?: Product[],
-): Promise<Cart> {
-  const stored = await (
-    await db()
-  )
-    .prepare('SELECT payload,revision,expires_at FROM carts WHERE id=?')
-    .bind(id)
-    .first<{ payload: string; revision: number; expires_at: number }>();
-  const raw: CartItem[] =
-    stored && stored.expires_at > Date.now() ? JSON.parse(stored.payload) : [];
-  const products = catalog || (await readCatalog());
+/** Compose le panier à partir des lignes brutes et du catalogue, sans accès base :
+ *  réutilisable après une écriture pour éviter de relire ce qu’on vient d’écrire. */
+export function buildCart(
+  raw: CartItem[],
+  products: Product[],
+  revision: number,
+): Cart {
   const notices: string[] = [];
   const items: CartLine[] = [];
   for (const line of raw) {
@@ -86,8 +80,26 @@ export async function resolveCart(
     items,
     subtotal: items.reduce((sum, line) => sum + line.price * line.quantity, 0),
     notices,
-    revision: stored?.revision || 0,
+    revision,
   };
+}
+
+export async function resolveCart(
+  id: string,
+  catalog?: Product[],
+): Promise<Cart> {
+  // La lecture du panier et le chargement du catalogue sont indépendants : en parallèle.
+  const database = await db();
+  const [stored, products] = await Promise.all([
+    database
+      .prepare('SELECT payload,revision,expires_at FROM carts WHERE id=?')
+      .bind(id)
+      .first<{ payload: string; revision: number; expires_at: number }>(),
+    catalog ? Promise.resolve(catalog) : readCatalog(),
+  ]);
+  const raw: CartItem[] =
+    stored && stored.expires_at > Date.now() ? JSON.parse(stored.payload) : [];
+  return buildCart(raw, products, stored?.revision || 0);
 }
 export function shippingFor(subtotal: number, delivery: string) {
   return delivery === 'home' ? 890 : subtotal >= 6900 ? 0 : 690;

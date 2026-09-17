@@ -1,4 +1,5 @@
-import { readCatalog } from '@/lib/database';
+import { db, readCatalog } from '@/lib/database';
+import { clientIp } from '@/lib/request';
 import { categoryFor, money, shop, type Product } from '@/lib/catalog';
 import { matchesSearch } from '@/lib/catalog-tools';
 import { guides, services } from '@/lib/editorial';
@@ -103,6 +104,21 @@ export async function POST(request: Request) {
   if (method === 'notifications/initialized') return new Response(null, { status: 204 });
   if (method === 'tools/list') return ok(id, { tools });
   if (method !== 'tools/call') return fail(id, -32601, 'Method not found');
+
+  // Limite d’abus sur l’appel d’outils (lecture catalogue) ; en cas de base injoignable, on laisse passer.
+  try {
+    const bucket = Math.floor(Date.now() / 3600000);
+    const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`${clientIp(request)}:${bucket}:mcp`));
+    const key = Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, '0')).join('');
+    const hits = await (await db())
+      .prepare('INSERT INTO rate_limits(key,hits,expires) VALUES (?,1,?) ON CONFLICT(key) DO UPDATE SET hits=rate_limits.hits+1 RETURNING hits')
+      .bind(key, (bucket + 2) * 3600000)
+      .first<number>('hits');
+    if ((hits || 0) > 300) return fail(id, -32000, 'Rate limited', 429);
+  } catch (error) {
+    console.error('mcp rate limit', (error as { code?: string }).code || (error as Error).name);
+    // Base injoignable : on laisse passer ; readCatalog sert alors le catalogue fichier, sans charge DB.
+  }
 
   const name = params.name as string;
   const args = (params.arguments || {}) as Record<string, unknown>;

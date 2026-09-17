@@ -1453,7 +1453,7 @@ export function ReceiptPage({ id }: { id: string }) {
               href={downloadPath(order.id)}
               download
             >
-              Télécharger le reçu <Download size={18} aria-hidden="true" />
+              Télécharger le reçu (PDF) <Download size={18} aria-hidden="true" />
             </a>
             <button
               type="button"
@@ -1472,8 +1472,8 @@ export function ReceiptPage({ id }: { id: string }) {
               <RefreshCw size={15} aria-hidden="true" />
             </button>
             <p className="commerce-caption">
-              Le téléchargement contient vos coordonnées et les détails de cet
-              essai. Conservez-le dans un espace personnel.
+              Le PDF contient vos coordonnées et les détails de cet essai.
+              Conservez-le dans un espace personnel.
             </p>
             <a className="text-button" href={CATALOGUE}>
               Retour à l’équipement{' '}

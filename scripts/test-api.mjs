@@ -9,6 +9,7 @@ async function request(path, data, headers = {}) {
       'Content-Type': 'application/json',
       Origin: base,
       'cf-connecting-ip': runIP,
+      'x-forwarded-for': runIP,
       ...headers,
     },
     ...(data ? { body: JSON.stringify(data) } : {}),
@@ -306,6 +307,8 @@ await check('Rate limit enforced', async () => {
         {
           'cf-connecting-ip':
             '198.51.100.' + (10 + Number(runIP.split('.').pop())),
+          'x-forwarded-for':
+            '198.51.100.' + (10 + Number(runIP.split('.').pop())),
         },
       )
     ).status;
@@ -324,6 +327,7 @@ await check('Native form works without client JavaScript', async () => {
       Origin: base,
       'Content-Type': 'application/x-www-form-urlencoded',
       'cf-connecting-ip': '192.0.2.99',
+      'x-forwarded-for': '192.0.2.99',
     },
     body: new URLSearchParams({
       name: 'Test formulaire natif',

@@ -197,7 +197,9 @@ export async function clientsReport(days: number) {
 
 const cell = (v: string | number | null | undefined) => {
   const s = v == null ? '' : String(v);
-  return /[";\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  // Neutralise l’injection de formule Excel : un champ commençant par = + - @ (ou tab) est préfixé d’une apostrophe.
+  const g = /^[=+\-@\t\r]/.test(s) ? "'" + s : s;
+  return /[";\n\r]/.test(g) ? '"' + g.replace(/"/g, '""') + '"' : g;
 };
 const euros = (cents: number) => (cents / 100).toFixed(2).replace('.', ',');
 

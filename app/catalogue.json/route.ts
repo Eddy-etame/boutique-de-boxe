@@ -5,7 +5,19 @@ import { ATTRIBUTION, EDITORIAL_DATE, familiesWithCounts, urlOf } from '@/lib/se
 /** Flux machine du catalogue : un objet par modèle, sans offre commerciale tant que la vente n’est pas ouverte. */
 export const dynamic = 'force-dynamic';
 
+// Mémo de rendu : le corps n’est recomposé qu’une fois par 5 min, même si la
+// requête varie par une chaîne de recherche (le cache CDN, lui, est contournable).
+let memo: { at: number; body: string } | null = null;
+
 export async function GET() {
+  if (memo && Date.now() - memo.at < 300000)
+    return new Response(memo.body, {
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Cache-Control': 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400',
+        'Access-Control-Allow-Origin': '*',
+      },
+    });
   const products = await readCatalog();
   const body = {
     name: shop.name,
@@ -37,7 +49,13 @@ export async function GET() {
       availability: 'En vente bientôt',
     })),
   };
-  return Response.json(body, {
-    headers: { 'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400', 'Access-Control-Allow-Origin': '*' },
+  const serialized = JSON.stringify(body);
+  memo = { at: Date.now(), body: serialized };
+  return new Response(serialized, {
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400',
+      'Access-Control-Allow-Origin': '*',
+    },
   });
 }
