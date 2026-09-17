@@ -33,6 +33,7 @@ function fonts() {
   return fontCache;
 }
 
+const heroTitleSize = (t: string) => (t.length > 60 ? 44 : t.length > 42 ? 52 : t.length > 26 ? 62 : 74);
 const titleSize = (t: string) => (t.length > 64 ? 46 : t.length > 44 ? 54 : t.length > 28 ? 62 : 72);
 
 /** Photo du site (WebP) → PNG en data URL ; en cas d’échec, pas de photo plutôt qu’une erreur. */
@@ -65,6 +66,69 @@ export async function GET(request: Request, { params }: { params: Promise<{ seg:
   const photos = (await Promise.all(card.photos.map((src) => toPng(src.startsWith('http') ? src : origin + src)))).filter((x): x is string => Boolean(x));
   const hasPhoto = photos.length > 0;
   const titleWidth = hasPhoto ? 660 : 1088;
+
+  // Fiche produit : le modèle détouré, en grand, posé sur sa scène. La vignette vend le produit, pas la boutique.
+  const cutout = card.cut ? await toPng(origin + card.cut.src) : null;
+  if (card.cut && cutout) {
+    const cut = card.cut;
+    // La scène Ring, comme sur le site : le noir de la salle, un projecteur, un halo de la couleur du modèle.
+    const dark = cut.lum < 0.24;
+    const n = parseInt(cut.tint.slice(1), 16);
+    const glow = cut.vivid ? `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, 0.42)` : 'rgba(255, 255, 255, 0.16)';
+    const name = card.title.split(' — ')[0];
+    const detail = card.title.includes(' — ') ? card.title.split(' — ').slice(1).join(' — ') : '';
+    const sizes = card.facts.find((f) => f.label === 'TAILLES')?.value;
+    return new ImageResponse(
+      (
+        <div style={{ width: OG_WIDTH, height: OG_HEIGHT, background: PAPER, color: INK, display: 'flex', fontFamily: 'Manrope', position: 'relative' }}>
+          {/* La scène, à fond perdu sur la droite */}
+          <div style={{ position: 'absolute', left: 588, top: 0, width: 612, height: OG_HEIGHT, display: 'flex', background: dark ? '#262b24' : '#1d211c' }} />
+          <div style={{ position: 'absolute', left: 588, top: 474, width: 612, height: 156, display: 'flex', background: dark ? '#181c15' : '#141711' }} />
+          <div style={{ position: 'absolute', left: 588, top: 0, width: 612, height: OG_HEIGHT, display: 'flex', backgroundImage: `radial-gradient(ellipse 66% 58% at 50% 38%, rgba(255,255,255,${dark ? 0.34 : 0.2}) 0%, rgba(255,255,255,0) 72%)` }} />
+          <div style={{ position: 'absolute', left: 588, top: 0, width: 612, height: OG_HEIGHT, display: 'flex', backgroundImage: `radial-gradient(ellipse 52% 46% at 50% 58%, ${glow} 0%, rgba(0,0,0,0) 70%)` }} />
+          <div style={{ position: 'absolute', left: 588, top: 540, width: 612, height: 70, display: 'flex', backgroundImage: 'radial-gradient(ellipse 46% 50% at 50% 50%, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 70%)' }} />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={cutout} alt="" width={cut.mode === 'cadre' ? 600 : 590} height={cut.mode === 'cadre' ? 600 : 590} style={{ position: 'absolute', left: cut.mode === 'cadre' ? 600 : 599, top: cut.mode === 'cadre' ? 30 : 24, objectFit: 'contain' }} />
+          <div style={{ position: 'absolute', left: 588, top: 0, width: 6, height: OG_HEIGHT, background: TAPE, display: 'flex' }} />
+
+          {/* La marque */}
+          <div style={{ position: 'absolute', left: 56, top: 40, display: 'flex', flexDirection: 'column', fontFamily: 'Barlow', fontSize: 26, lineHeight: 1.05, letterSpacing: 0.5 }}>
+            <span>BOUTIQUE</span>
+            <span>DE BOXE.</span>
+          </div>
+
+          {/* Le modèle */}
+          <div style={{ position: 'absolute', left: 56, top: 148, width: 496, display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', fontSize: 15, fontWeight: 700, letterSpacing: 1.6, color: MUTED }}>{card.eyebrow}</div>
+            <div style={{ display: 'flex', marginTop: 16, fontFamily: 'Barlow', fontSize: heroTitleSize(name), lineHeight: 0.98, letterSpacing: -0.5 }}>{name}</div>
+            {detail ? <div style={{ display: 'flex', marginTop: 14, fontSize: 22, fontWeight: 600, color: MUTED, lineHeight: 1.2 }}>{detail}</div> : null}
+          </div>
+
+          {/* Le prix, les tailles */}
+          <div style={{ position: 'absolute', left: 56, top: 468, width: 496, display: 'flex', alignItems: 'flex-end', gap: 28 }}>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.4, color: MUTED }}>PRIX PRÉVU</span>
+              <span style={{ display: 'flex', marginTop: 4, fontFamily: 'Barlow', fontSize: 58, lineHeight: 1, background: TAPE, padding: '4px 12px 2px' }}>{card.price}</span>
+            </div>
+            {sizes ? (
+              <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.4, color: MUTED }}>TAILLES</span>
+                <span style={{ display: 'flex', marginTop: 6, fontSize: 20, fontWeight: 600, lineHeight: 1.2 }}>{sizes.length > 44 ? sizes.slice(0, 42) + '…' : sizes}</span>
+              </div>
+            ) : null}
+          </div>
+          <div style={{ position: 'absolute', left: 56, top: 579, width: 496, height: 1, background: INK, display: 'flex' }} />
+          <div style={{ position: 'absolute', left: 56, top: 594, display: 'flex', fontSize: 13, fontWeight: 700, letterSpacing: 1, color: MUTED }}>LIVRAISON DANS TOUTE LA FRANCE · OUVERTURE BIENTÔT</div>
+        </div>
+      ),
+      {
+        width: OG_WIDTH,
+        height: OG_HEIGHT,
+        fonts: fonts().map((f) => ({ name: f.name, data: f.data, weight: f.weight, style: 'normal' as const })),
+        headers: { 'Cache-Control': 'public, max-age=86400, s-maxage=604800, stale-while-revalidate=2592000' },
+      },
+    );
+  }
 
   return new ImageResponse(
     (

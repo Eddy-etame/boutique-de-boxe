@@ -1,9 +1,9 @@
 import { ArrowUpRight, ArrowDown } from 'lucide-react';
-import { categories, type Product } from '@/lib/catalog';
+import { categories, listItem, type Product } from '@/lib/catalog';
 import { HOME_FAQ } from '@/lib/seo-copy';
 import { SeoBody } from './seo-body';
+import { HeroRing } from './hero-ring';
 import {
-  HeroStage,
   ProductCard,
   SessionChooser,
   AlertForm,
@@ -11,7 +11,20 @@ import {
 import { EquipmentCompare } from './equipment-compare';
 import selection from '@/lib/data/selection.json';
 export default function Home({ items }: { items: Product[] }) {
-  const hero = items.find((p) => p.id === 'mat-blade-gold') || items[0];
+  // Quatre rounds à la une : le rouge qui arrête l’œil, le noir et or, le prix d’entrée du club, une protection.
+  // Le nom court est écrit à la main : une fiche de pesée ne porte pas un intitulé de catalogue.
+  const rounds = (
+    [
+      ['bs-2000706', 'Cleto Reyes Pro Sparring, rouge'],
+      ['bs-2000703', 'Cleto Reyes High Precision, noir et or'],
+      ['mat-blade-gold', 'Blade Metal Boxe, noir et blanc'],
+      ['bs-10038', 'Casque Adidas FFB, bleu'],
+    ] as const
+  ).flatMap(([id, label]) => {
+    const p = items.find((p) => p.id === id);
+    return p ? [{ product: listItem(p), label }] : [];
+  });
+  const heroes = rounds.length ? rounds : items.slice(0, 1).map((p) => ({ product: listItem(p), label: p.name }));
   const featured = [
     'mat-shell-mma',
     'bench-manto-miko-noir',
@@ -49,14 +62,19 @@ export default function Home({ items }: { items: Product[] }) {
               jour J.
             </p>
           </div>
-          <a href="/boutique-boxe/" className="button button-dark">
-            Voir tout le matériel <ArrowUpRight size={20} />
-          </a>
+          <div className="hero-actions">
+            <a href="#ouverture" className="button button-tape">
+              Me prévenir à l’ouverture <ArrowDown size={20} />
+            </a>
+            <a href="/boutique-boxe/" className="button button-dark">
+              Voir tout le matériel <ArrowUpRight size={20} />
+            </a>
+          </div>
           <a className="bench-jump" href="#preparer">
             Préparer mon sac de séance <ArrowDown size={16} />
           </a>
         </div>
-        {hero && <HeroStage product={hero} />}
+        <HeroRing items={heroes.map((h) => h.product)} labels={heroes.map((h) => h.label)} />
         <div className="bench-signature">
           <span>BOUTIQUE DE BOXE / GANTS, PROTECTIONS, TEXTILE, SACS.</span>
           <span>{items.length} MODÈLES</span>
@@ -92,7 +110,7 @@ export default function Home({ items }: { items: Product[] }) {
         </header>
         <div className="product-grid">
           {featured.map((p, i) => (
-            <ProductCard key={p.id} product={p} index={i} />
+            <ProductCard key={p.id} product={listItem(p)} index={i} />
           ))}
         </div>
         <a className="inline-link" href="/nouveautes/">
@@ -202,7 +220,20 @@ export default function Home({ items }: { items: Product[] }) {
         </div>
         <AlertForm />
       </section>
-      <SeoBody sections={[]} faq={HOME_FAQ} heading="Questions fréquentes" />
+      {/* L’accueil n’a pas le conteneur des pages : la FAQ prend la gouttière des sections. */}
+      <div className="home-faq section-pad">
+        <div className="home-faq-intro">
+          <span className="eyebrow">AVANT DE COMMANDER</span>
+          <p>
+            Ouverture des ventes, commande d’essai, livraison, tailles, marques
+            : les réponses courtes, sans chercher.
+          </p>
+          <a className="inline-link" href="/faq/">
+            Toutes les questions <ArrowUpRight size={17} />
+          </a>
+        </div>
+        <SeoBody sections={[]} faq={HOME_FAQ} heading="Questions fréquentes" />
+      </div>
     </main>
   );
 }

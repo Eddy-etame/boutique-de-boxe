@@ -1,0 +1,166 @@
+/* Le ring de l’accueil (components/hero-ring.tsx). La scène est celle des fiches et des cartes, en grand :
+   le noir de la salle, trois cordes au fond, un projecteur qui suit le pointeur, le modèle détouré qui
+   déborde du cadre, et sa fiche de pesée. */
+@property --lx { syntax: '<percentage>'; inherits: true; initial-value: 50%; }
+@property --ly { syntax: '<percentage>'; inherits: true; initial-value: 26%; }
+
+.hero-ring {
+  --lx: 50%;
+  --ly: 26%;
+  position: relative;
+  min-height: clamp(440px, 46vw, 680px);
+  color: var(--paper);
+  background: linear-gradient(#1b1f1a 0 72%, #121510 72% 100%);
+  isolation: isolate;
+  /* Le modèle déborde à gauche et en haut : rien n’est coupé par le cadre. */
+  overflow: visible;
+  transition: --lx 0.9s cubic-bezier(0.2, 0.7, 0.2, 1), --ly 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.hero-ring[data-lit] { transition: none; }
+
+/* Le sol : une flaque de lumière sous le modèle, de sa propre couleur. */
+.hero-ring-floor {
+  position: absolute;
+  inset: 72% 0 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 44% 60% at 48% 38%, color-mix(in oklab, var(--tint) 34%, rgba(255, 255, 255, 0.2)), transparent 72%),
+    linear-gradient(rgba(255, 255, 255, 0.05), transparent 40%);
+  transition: background 0.8s;
+}
+/* Trois cordes au fond du ring : la première en ruban jaune. */
+.hero-ring-ropes { position: absolute; inset: 22% 0 28%; z-index: 0; display: flex; flex-direction: column; justify-content: space-between; opacity: 0.55; }
+.hero-ring-ropes i { display: block; height: 2px; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22) 12% 88%, transparent); }
+.hero-ring-ropes i:first-child { height: 3px; background: linear-gradient(90deg, transparent, var(--tape) 12% 88%, transparent); opacity: 0.85; }
+
+/* Le projecteur : un cône doux, centré sur le pointeur (ou qui balaie seul sur écran tactile). */
+.hero-ring-light {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 58% 62% at var(--lx) var(--ly), rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0.06) 46%, transparent 72%),
+    radial-gradient(ellipse 90% 80% at 50% 120%, rgba(0, 0, 0, 0.55), transparent 60%);
+  mix-blend-mode: screen;
+}
+@media (hover: none) {
+  .hero-ring { animation: hero-sweep 9s ease-in-out infinite alternate; }
+}
+@keyframes hero-sweep { from { --lx: 24%; } to { --lx: 76%; } }
+
+/* Le numéro du round, immense, derrière le modèle. */
+.hero-ring-count {
+  position: absolute;
+  right: 3%;
+  top: -4%;
+  z-index: 0;
+  font: 800 clamp(180px, 25vw, 400px) / 0.9 Barlow, Impact, sans-serif;
+  letter-spacing: -0.03em;
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.13);
+  user-select: none;
+}
+
+/* Le modèle : plus large que le cadre, il sort par la gauche et par le haut. */
+.hero-ring-product {
+  position: absolute;
+  left: -9%;
+  right: 3%;
+  top: -11%;
+  bottom: 5%;
+  z-index: 2;
+  display: block;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(7%) scale(0.94);
+  filter: blur(10px);
+  transition: opacity 0.55s, transform 0.85s cubic-bezier(0.2, 0.7, 0.2, 1), filter 0.55s, visibility 0s 0.6s;
+}
+.hero-ring-product[data-active] { opacity: 1; visibility: visible; transform: none; filter: none; transition-delay: 0.12s, 0.12s, 0.12s, 0s; }
+.hero-ring-product img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  filter: drop-shadow(0 0 46px color-mix(in oklab, var(--tint) 46%, transparent)) drop-shadow(0 30px 28px rgba(0, 0, 0, 0.5));
+  animation: hero-breathe 7s ease-in-out infinite;
+  transform-origin: 50% 92%;
+}
+.hero-ring-product:focus-visible { outline: 3px solid var(--tape); outline-offset: -6px; }
+@keyframes hero-breathe { 0%, 100% { transform: translateY(0) rotate(-0.6deg); } 50% { transform: translateY(-1.4%) rotate(0.6deg); } }
+
+/* La fiche de pesée. */
+.hero-tape {
+  position: absolute;
+  left: -5%;
+  bottom: 9%;
+  z-index: 3;
+  width: min(330px, 62%);
+  padding: 18px 20px 16px;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 26px 50px rgba(0, 0, 0, 0.45);
+}
+.hero-tape::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 5px; background: var(--tape); }
+.hero-tape-round { display: block; font: 800 15px / 1 Barlow, Impact, sans-serif; letter-spacing: 0.12em; }
+.hero-tape-round i { font-style: normal; opacity: 0.5; }
+.hero-tape strong { display: block; margin: 10px 0 12px; font: 800 clamp(20px, 1.7vw, 26px) / 1.04 Barlow, Impact, sans-serif; text-transform: uppercase; text-wrap: balance; }
+.hero-tape dl { margin: 0; border-top: 1px solid var(--line); }
+.hero-tape dl > div { display: flex; justify-content: space-between; align-items: baseline; gap: 14px; padding: 7px 0; border-bottom: 1px solid var(--line); }
+.hero-tape dt { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.hero-tape dd { margin: 0; font-size: 13px; font-weight: 650; text-align: right; }
+.hero-tape-price { font: 800 22px / 1 Barlow, Impact, sans-serif !important; background: var(--tape); padding: 3px 8px 1px; }
+.hero-tape-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; font-size: 13px; font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
+.hero-tape-link:hover { text-decoration-thickness: 2px; }
+
+/* Les rounds : une barre par modèle, celle du round en cours se remplit. */
+.hero-ring-controls { position: absolute; right: 18px; bottom: 16px; z-index: 4; display: flex; align-items: center; gap: 8px; }
+.hero-ring-controls > button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  background: rgba(18, 21, 16, 0.55);
+  color: var(--paper);
+  cursor: pointer;
+  transition: background 0.25s, color 0.25s, border-color 0.25s;
+}
+.hero-ring-controls > button:hover { background: var(--tape); color: var(--ink); border-color: var(--tape); }
+.hero-ring-controls button:focus-visible { outline: 2px solid var(--tape); outline-offset: 2px; }
+.hero-ticks { display: flex; gap: 6px; padding: 0 6px; }
+.hero-ticks button { width: 38px; height: 44px; padding: 20px 0; border: 0; background: transparent; cursor: pointer; }
+.hero-ticks button::before { content: ''; display: block; height: 4px; background: rgba(255, 255, 255, 0.26); }
+.hero-ticks button i { display: block; height: 4px; margin-top: -4px; background: var(--tape); transform: scaleX(0); transform-origin: 0 50%; }
+.hero-ticks button[aria-current] i { transform: scaleX(1); }
+.hero-ring[data-auto] .hero-ticks button[aria-current] i { animation: hero-tick 6.5s linear forwards; }
+.hero-ring[data-auto]:hover .hero-ticks i, .hero-ring[data-auto]:focus-within .hero-ticks i { animation-play-state: paused; }
+@keyframes hero-tick { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+@media (max-width: 1000px) {
+  /* Sur téléphone, le ring prend de la hauteur : le modèle entier au-dessus, sa fiche de pesée dessous. */
+  .hero-ring { min-height: clamp(560px, 142vw, 760px); margin: 0 -5.3%; }
+  .hero-ring-product { left: 2%; right: 2%; top: -3%; bottom: 43%; }
+  .hero-ring-ropes { inset: 14% 0 50%; }
+  .hero-ring-floor { inset: 50% 0 0; }
+  .hero-ring { background: linear-gradient(#1b1f1a 0 50%, #121510 50% 100%); }
+  .hero-ring-count { top: 0; font-size: clamp(150px, 46vw, 300px); }
+  .hero-tape { left: 5%; right: 5%; bottom: 74px; width: auto; padding: 14px 16px 12px; }
+  .hero-tape strong { margin: 8px 0 8px; font-size: 19px; }
+  .hero-tape dl > div { padding: 5px 0; }
+  .hero-tape dl > div:nth-child(2) { display: none; }
+  .hero-tape-link { margin-top: 8px; }
+  .hero-ring-controls { left: 5%; right: 5%; bottom: 14px; justify-content: space-between; }
+  .hero-ticks { flex: 1; justify-content: center; }
+}
+
+/* Mouvement réduit (réglage du système ou bouton du site) : rien ne défile, rien ne flotte. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-ring, .hero-ring-product img { animation: none; }
+  .hero-ring[data-auto] .hero-ticks button[aria-current] i { animation: none; }
+  .hero-ring-product { transition: opacity 0.2s, visibility 0s; transform: none; filter: none; }
+}
+html[data-motion='reduce'] .hero-ring, html[data-motion='reduce'] .hero-ring-product img { animation: none; }
+html[data-motion='reduce'] .hero-ring[data-auto] .hero-ticks button[aria-current] i { animation: none; }
+html[data-motion='reduce'] .hero-ring-product { transition: opacity 0.2s, visibility 0s; transform: none; filter: none; }

@@ -1,0 +1,197 @@
+/* Banc d’essai de la scène produit. Chargé par /labo/ seulement. */
+.labo-controls {
+  position: sticky;
+  top: 86px;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 16px 36px;
+  padding: 16px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper) 90%, transparent);
+  backdrop-filter: blur(12px);
+}
+.labo-controls fieldset { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; }
+.labo-controls legend { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; padding: 0; }
+.labo-controls button {
+  min-height: 46px;
+  padding: 0 20px;
+  margin-right: -1px;
+  border: 1px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+  transition: background 0.25s, color 0.25s;
+}
+.labo-controls button:hover { background: #e4e6da; }
+.labo-controls button[aria-pressed='true'] { background: var(--ink); color: var(--paper); }
+.labo-controls button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; position: relative; z-index: 1; }
+.labo-before { display: flex; align-items: center; gap: 10px; min-height: 46px; font-size: 14px; cursor: pointer; }
+.labo-before input { width: 18px; height: 18px; accent-color: var(--ink); }
+.labo-note { padding: 18px 0 0; font-size: 15px; color: var(--muted); max-width: 70ch; }
+
+.labo-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-flow: dense;
+  gap: 42px 20px;
+  padding: 26px 0 80px;
+}
+.labo-card { display: flex; flex-direction: column; min-width: 0; }
+.labo-card h3 { font-size: 16px; line-height: 1.3; margin: 14px 0 6px; font-weight: 650; }
+.labo-card h3 a { text-decoration: none; background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: background-size 0.35s; }
+.labo-card:hover h3 a { background-size: 100% 1px; }
+.labo-card p { font-size: 15px; }
+.labo-card p span { font-size: 12px; color: var(--muted); }
+
+/* Une disposition qui respire : un modèle en grand tous les sept, les autres autour. */
+.labo-grid[data-layout='rythme'] .labo-card:nth-child(7n + 1) { grid-column: span 2; grid-row: span 2; }
+.labo-grid[data-layout='rythme'] .labo-card:nth-child(7n + 1) .labo-stage { aspect-ratio: auto; flex: 1; min-height: 0; }
+.labo-grid[data-layout='rythme'] .labo-card:nth-child(7n + 1) h3 { font: 800 clamp(26px, 2.6vw, 40px) / 1.02 Barlow, Impact, sans-serif; text-transform: uppercase; margin-top: 18px; }
+
+/* La scène : un carré, le modèle posé dessus. L’image détourée porte déjà sa ligne de sol (90 %) et son ombre. */
+.labo-stage {
+  position: relative;
+  display: block;
+  aspect-ratio: 1;
+  overflow: hidden;
+  isolation: isolate;
+  color: var(--ink);
+  transition: background 0.5s;
+}
+.labo-stage img {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  transform-origin: 50% 90%;
+  transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1), filter 0.5s;
+}
+.labo-card[data-mode='cadre'] .labo-stage img { transform-origin: 50% 100%; }
+.labo-card:hover .labo-cut, .labo-card:focus-within .labo-cut { transform: scale(1.055); }
+.labo-original { object-fit: contain; mix-blend-mode: multiply; padding: 9%; }
+.labo-index, .labo-family {
+  position: absolute;
+  top: 14px;
+  z-index: 2;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.labo-index { left: 16px; }
+.labo-family { right: 16px; opacity: 0.72; }
+
+/* 1. Toile : le tapis clair, la même lumière pour tous. Un modèle très clair assombrit le tapis d’un cran. */
+[data-stage='toile'] .labo-stage {
+  background:
+    linear-gradient(transparent 0 88%, rgba(44, 50, 32, 0.08) 100%),
+    radial-gradient(ellipse 72% 58% at 50% 46%, #f5f6ef 0%, #e5e7db 60%, #d8dbcd 100%);
+}
+[data-stage='toile'] .labo-card[data-bright] .labo-stage {
+  background:
+    linear-gradient(transparent 0 88%, rgba(44, 50, 32, 0.1) 100%),
+    radial-gradient(ellipse 72% 58% at 50% 46%, #e2e5d6 0%, #cfd3c1 60%, #c1c6b2 100%);
+}
+
+/* 2. Teinte : la nuance vient du modèle, la luminosité reste la même d’une tuile à l’autre. */
+[data-stage='teinte'] .labo-stage {
+  background: radial-gradient(ellipse 72% 58% at 50% 46%, #f5f6ef 0%, #e5e7db 60%, #d8dbcd 100%);
+}
+@supports (color: oklch(from red l c h)) {
+  [data-stage='teinte'] .labo-card[data-vivid] .labo-stage {
+    background: radial-gradient(
+      ellipse 74% 60% at 50% 45%,
+      oklch(from var(--tint) 0.95 calc(c * 0.22) h) 0%,
+      oklch(from var(--tint) 0.89 calc(c * 0.42) h) 62%,
+      oklch(from var(--tint) 0.84 calc(c * 0.5) h) 100%
+    );
+  }
+  [data-stage='teinte'] .labo-card[data-vivid]:hover .labo-stage {
+    background: radial-gradient(
+      ellipse 74% 60% at 50% 45%,
+      oklch(from var(--tint) 0.93 calc(c * 0.4) h) 0%,
+      oklch(from var(--tint) 0.85 calc(c * 0.7) h) 100%
+    );
+  }
+}
+[data-stage='teinte'] .labo-card[data-bright]:not([data-vivid]) .labo-stage {
+  background: radial-gradient(ellipse 72% 58% at 50% 46%, #e2e5d6 0%, #cfd3c1 60%, #c1c6b2 100%);
+}
+
+/* 3. Ring : le noir de la salle, un projecteur au-dessus, une flaque de lumière au sol. */
+[data-stage='ring'] .labo-stage {
+  color: var(--paper);
+  background:
+    radial-gradient(ellipse 46% 9% at 50% 91%, rgba(255, 255, 255, 0.16), transparent 70%),
+    radial-gradient(ellipse 66% 56% at 50% 34%, rgba(255, 255, 255, 0.17), transparent 72%),
+    linear-gradient(#1d211c 0 71%, #141711 71% 100%);
+}
+/* Un modèle noir dans le noir : le projecteur monte d’un cran et un liseré de lumière détache la silhouette. */
+[data-stage='ring'] .labo-card[data-dark] .labo-stage {
+  background:
+    radial-gradient(ellipse 50% 10% at 50% 91%, rgba(255, 255, 255, 0.26), transparent 70%),
+    radial-gradient(ellipse 72% 62% at 50% 36%, rgba(255, 255, 255, 0.34), transparent 74%),
+    linear-gradient(#262b24 0 71%, #181c15 71% 100%);
+}
+[data-stage='ring'] .labo-card[data-dark] .labo-cut {
+  filter: drop-shadow(0 -1px 0 rgba(255, 255, 255, 0.35)) drop-shadow(0 0 24px rgba(255, 255, 255, 0.16)) brightness(1.12) contrast(1.04);
+}
+[data-stage='ring'] .labo-stage::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 71%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.09);
+}
+[data-stage='ring'] .labo-stage::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  z-index: 2;
+  background: var(--tape);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 0.55s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+[data-stage='ring'] .labo-card:hover .labo-stage::after,
+[data-stage='ring'] .labo-card:focus-within .labo-stage::after { transform: scaleX(1); }
+[data-stage='ring'] .labo-cut { filter: drop-shadow(0 0 26px rgba(255, 255, 255, 0.1)); }
+@supports (color: oklch(from red l c h)) {
+  [data-stage='ring'] .labo-card[data-vivid] .labo-cut { filter: drop-shadow(0 0 30px oklch(from var(--tint) 0.72 c h / 0.34)); }
+}
+[data-stage='ring'] .labo-original { mix-blend-mode: normal; }
+
+@media (max-width: 1000px) {
+  .labo-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 650px) {
+  /* Sur téléphone, une seule ligne qui défile : les commandes ne mangent pas la scène qu’elles règlent. */
+  .labo-controls { top: 76px; flex-wrap: nowrap; align-items: center; gap: 14px; padding: 10px 0; overflow-x: auto; scrollbar-width: none; }
+  .labo-controls::-webkit-scrollbar { display: none; }
+  .labo-controls fieldset { flex: none; flex-wrap: nowrap; }
+  .labo-controls legend { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .labo-controls button { padding: 0 14px; min-height: 44px; }
+  .labo-before { flex: none; font-size: 13px; }
+  .labo-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 12px; }
+  .labo-card h3 { font-size: 14px; }
+  .labo-index, .labo-family { top: 10px; font-size: 10px; }
+  .labo-index { left: 10px; }
+  .labo-family { right: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .labo-stage img, .labo-stage, .labo-stage::after { transition: none; }
+  .labo-card:hover .labo-cut { transform: none; }
+}

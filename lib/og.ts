@@ -20,6 +20,9 @@ export type Card = {
   photos: string[];
   photoLabel: string;
   path: string;
+  /** Fiche produit : la photo détourée, posée sur la scène, et le prix prévu en clair. */
+  cut?: { src: string; mode: 'pose' | 'cadre'; tint: string; vivid: boolean; lum: number };
+  price?: string;
 };
 
 export const ogImageUrl = (kind: CardKind, key: string) => `/vignette/${kind}/${key}.png`;
@@ -51,6 +54,8 @@ function productCard(p: Product): Card {
     photos: p.images[0] ? [p.images[0].src] : [],
     photoLabel: 'PHOTO DU MODÈLE',
     path: '/produits/' + p.slug + '/',
+    cut: p.cut ? { src: p.cut.large, mode: p.cut.mode, tint: p.cut.tint, vivid: p.cut.vivid, lum: p.cut.lum } : undefined,
+    price: money(p.price),
   };
 }
 

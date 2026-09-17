@@ -95,7 +95,7 @@
     "price": 3490,
     "short": "Une manchette haute et un pouce attaché pour ce modèle Sparring Metal Boxe.",
     "description": "Sur le modèle Sparring de Metal Boxe, la construction se lit d’abord au niveau de la manchette haute et du pouce attaché. Le rembourrage utilise une mousse injectée Ergo 90, tandis que l’aération porte la désignation WindTec. La galerie permet d’examiner les deux faces du gant et le détail de sa manchette, pour comparer sa forme à celle des autres modèles de boxe. Le poids exact de la taille sera précisé avant l’ouverture des ventes. Vous disposez donc ici des caractéristiques de construction du modèle Sparring, sans qu’un poids non confirmé serve de base à votre sélection.",
-    "sizes": [],
+    "sizes": ["16 oz"],
     "specs": {
       "Modèle": "Sparring",
       "Rembourrage": "Mousse injectée Ergo 90",

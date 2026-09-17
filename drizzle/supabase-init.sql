@@ -144,3 +144,8 @@ ALTER TABLE "simulation_orders" ADD COLUMN IF NOT EXISTS "address1" text DEFAULT
 ALTER TABLE "simulation_orders" ADD COLUMN IF NOT EXISTS "address2" text DEFAULT '' NOT NULL;
 ALTER TABLE "simulation_orders" ADD COLUMN IF NOT EXISTS "postcode" text DEFAULT '' NOT NULL;
 ALTER TABLE "simulation_orders" ADD COLUMN IF NOT EXISTS "city" text DEFAULT '' NOT NULL;
+
+-- 0005 : alertes d'ouverture, mobile facultatif, accord SMS, endroit de l'inscription
+ALTER TABLE "alerts" ADD COLUMN IF NOT EXISTS "phone" text DEFAULT '' NOT NULL;
+ALTER TABLE "alerts" ADD COLUMN IF NOT EXISTS "sms_consent" integer DEFAULT 0 NOT NULL;
+ALTER TABLE "alerts" ADD COLUMN IF NOT EXISTS "source" text DEFAULT '' NOT NULL;

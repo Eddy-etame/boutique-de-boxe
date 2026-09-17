@@ -38,8 +38,20 @@ import {
   variantPrice,
   categoryFor,
 } from '@/lib/catalog';
-import { AddToCart, QuickAdd } from './commerce-ui';
+import { AddToCart, QuickAdd, PackAdd } from './commerce-ui';
 import selection from '@/lib/data/selection.json';
+
+/** La scène d’un modèle détouré : mode, bords touchés par le sujet, modèle sombre ou vif, teinte dominante. */
+function stageProps(p: Product, active = true) {
+  const cut = active ? p.cut : undefined;
+  return {
+    'data-cut': cut?.mode,
+    'data-edges': cut?.edges.join(' ') || undefined,
+    'data-dark': cut && cut.lum < 0.24 ? '' : undefined,
+    'data-vivid': cut?.vivid ? '' : undefined,
+    style: cut ? ({ '--tint': cut.tint } as React.CSSProperties) : undefined,
+  };
+}
 
 export function ProductCard({
   product: p,
@@ -50,7 +62,11 @@ export function ProductCard({
 }) {
   return (
     <article className="product-card">
-      <a href={`/produits/${p.slug}/`} className="product-image">
+      <a
+        href={`/produits/${p.slug}/`}
+        className="product-image"
+        {...stageProps(p)}
+      >
         <span className="product-index">
           {String(index + 1).padStart(2, '0')}
         </span>
@@ -60,8 +76,8 @@ export function ProductCard({
             : (categoryFor(p.category)?.name ?? 'Catalogue')}
         </span>
         <img
-          src={p.images[0]?.small}
-          srcSet={`${p.images[0]?.small} 480w, ${p.images[0]?.src} 960w`}
+          src={p.cut?.small ?? p.images[0]?.small}
+          srcSet={`${p.cut?.small ?? p.images[0]?.small} 480w, ${p.cut?.large ?? p.images[0]?.src} 960w`}
           sizes="(max-width: 600px) 46vw, (max-width: 1000px) 31vw, 24vw"
           width={480}
           height={480}
@@ -220,16 +236,44 @@ const sizeKey = (s: string) =>
     .trim();
 
 export function Catalog({
-  items,
+  items: pageItems,
+  total = pageItems.length,
+  scope = '',
   initialQuery = '',
   showFamilies = false,
   initialPage = 1,
 }: {
+  /** Les cartes de la page affichée (36 au plus), déjà allégées. */
   items: Product[];
+  /** Le nombre de modèles de la liste entière. */
+  total?: number;
+  /** La liste entière se demande à /api/catalog-list?scope=… au premier geste du visiteur. */
+  scope?: string;
   initialQuery?: string;
   showFamilies?: boolean;
   initialPage?: number;
 }) {
+  // La liste entière n’est chargée que si le visiteur cherche, filtre, trie ou change de page.
+  const [all, setAll] = useState<Product[] | null>(scope ? null : pageItems);
+  const [requested, setRequested] = useState(Boolean(scope && initialQuery));
+  useEffect(() => {
+    if (!requested || all || !scope) return;
+    let alive = true;
+    fetch('/api/catalog-list?scope=' + encodeURIComponent(scope))
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error('liste'))))
+      .then((d: { items: Product[] }) => {
+        if (alive) setAll(d.items);
+      })
+      .catch(() => {
+        if (alive) setRequested(false);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [requested, all, scope]);
+  const need = () => setRequested(true);
+  const loading = requested && !all;
+  const items = all ?? pageItems;
   const [query, setQuery] = useState(initialQuery);
   const [sort, setSort] = useState('selection');
   const [brand, setBrand] = useState('all');
@@ -262,9 +306,11 @@ export function Catalog({
             : () => 0,
     );
   }, [items, query, sort, brand, size, family, budget]);
+  const count = all ? result.length : total;
   useEffect(
     () =>
       registerCatalogTools(items, (q) => {
+        setRequested(true);
         setQuery(q);
         setPage(1);
         setBrand('all');
@@ -286,6 +332,7 @@ export function Catalog({
         <Select
           value={value}
           onValueChange={(v) => {
+            need();
             set(String(v));
             setPage(1);
           }}
@@ -314,7 +361,9 @@ export function Catalog({
           <span className="sr-only">Rechercher dans le catalogue</span>
           <input
             value={query}
+            onFocus={need}
             onChange={(e) => {
+              need();
               setQuery(e.target.value);
               setPage(1);
             }}
@@ -324,7 +373,10 @@ export function Catalog({
         </label>
         <button
           className="filter-toggle"
-          onClick={() => setFilters(!filters)}
+          onClick={() => {
+            need();
+            setFilters(!filters);
+          }}
           aria-expanded={filters}
           aria-controls="catalog-filters"
         >
@@ -381,8 +433,8 @@ export function Catalog({
         </button>
       </div>
       <div className="catalog-count" aria-live="polite">
-        <span key={result.length} className="catalog-count-value">
-          {result.length} {result.length === 1 ? 'modèle' : 'modèles'}
+        <span key={count} className="catalog-count-value">
+          {count} {count === 1 ? 'modèle' : 'modèles'}
         </span>
         <span>EN VENTE BIENTÔT</span>
       </div>
@@ -390,22 +442,22 @@ export function Catalog({
         <>
           <div
             className="product-grid"
-            key={[query, sort, brand, size, family, budget, page].join('|')}
+            aria-busy={loading || undefined}
+            key={[query, sort, brand, size, family, budget, page, all ? 1 : 0].join('|')}
           >
-            {result
-              .slice(
-                (Math.min(page, Math.max(1, Math.ceil(result.length / 36))) -
-                  1) *
-                  36,
-                Math.min(page, Math.max(1, Math.ceil(result.length / 36))) * 36,
-              )
-              .map((p, i) => (
-                <ProductCard key={p.id} product={p} index={i} />
-              ))}
+            {(all
+              ? result.slice(
+                  (Math.min(page, Math.max(1, Math.ceil(result.length / 36))) - 1) * 36,
+                  Math.min(page, Math.max(1, Math.ceil(result.length / 36))) * 36,
+                )
+              : pageItems
+            ).map((p, i) => (
+              <ProductCard key={p.id} product={p} index={i} />
+            ))}
           </div>
-          {result.length > 36 && (
+          {count > 36 && (
             <nav className="catalog-pagination" aria-label="Pages du catalogue">
-              {pageWindow(page, Math.ceil(result.length / 36)).map(
+              {pageWindow(page, Math.ceil(count / 36)).map(
                 (n, i, visible) => (
                   <span key={n}>
                     {i > 0 && n - visible[i - 1] > 1 && (
@@ -417,6 +469,7 @@ export function Catalog({
                       aria-current={page === n ? 'page' : undefined}
                       onClick={(e) => {
                         e.preventDefault();
+                        need();
                         setPage(n);
                         document
                           .querySelector('.catalog-toolbar')
@@ -593,7 +646,10 @@ export function SessionChooser({ items }: { items: Product[] }) {
             className={'kit-piece ' + (owned.includes(p.id) ? 'is-owned' : '')}
             key={p.id}
           >
-            <div className="kit-picture">
+            <div
+              className="kit-picture"
+              {...stageProps(p)}
+            >
               <span className="tiny-label">
                 {String(i + 1).padStart(2, '0')} / {r.label}
               </span>
@@ -606,7 +662,7 @@ export function SessionChooser({ items }: { items: Product[] }) {
                 }
               >
                 <img
-                  src={p.images[0].small}
+                  src={p.cut?.small ?? p.images[0].small}
                   alt={p.images[0].alt}
                   width={480}
                   height={480}
@@ -652,12 +708,22 @@ export function SessionChooser({ items }: { items: Product[] }) {
           </article>
         ))}
       </div>
-      {!results.length && (
-        <div className="kit-empty">
-          <p>Pas encore de modèle enfant vérifié pour cette discipline.</p>
-          <a href="/contact/" className="button">
-            Nous écrire <ArrowUpRight size={18} />
-          </a>
+      {remaining.length > 0 && (
+        <PackAdd
+          key={selected.key + ':' + owned.join(',')}
+          items={remaining.map((r) => ({ product: r.product, label: r.label }))}
+        />
+      )}
+      {'notice' in selected && selected.notice && (
+        <div className="kit-notice">
+          <p>{selected.notice}</p>
+          <AlertForm
+            source={'sac-' + selected.key.replace(':', '-')}
+            labels={{
+              field: 'Prévenez-moi quand ce modèle arrive',
+              consent: 'J’accepte de recevoir un e-mail à l’arrivée du modèle.',
+            }}
+          />
         </div>
       )}
       <div className="bench-footer">
@@ -739,6 +805,7 @@ export function ProductDetails({ product: p }: { product: Product }) {
         <div
           className="gallery-main"
           data-loupe={p.images.length ? '' : undefined}
+          {...stageProps(p, image === 0)}
           onPointerMove={loupe}
         >
           <span className="tiny-label">
@@ -746,7 +813,7 @@ export function ProductDetails({ product: p }: { product: Product }) {
           </span>
           <img
             key={p.images[image]?.src}
-            src={p.images[image]?.src}
+            src={image === 0 && p.cut ? p.cut.large : p.images[image]?.src}
             width={960}
             height={960}
             alt={p.images[image]?.alt}
@@ -859,13 +926,31 @@ export function ProductDetails({ product: p }: { product: Product }) {
             <p key={n}>{n}</p>
           ))}
         </div>
+        {/* Avant l’ouverture des ventes, l’appel à l’action est l’inscription : le billet d’ouverture du modèle. */}
+        <section className="launch-ticket" id="billet" aria-labelledby="billet-titre">
+          <span className="eyebrow">BILLET D’OUVERTURE</span>
+          <p id="billet-titre" className="launch-ticket-title">
+            Soyez prévenu le jour J.
+          </p>
+          <p className="launch-ticket-copy">
+            Les ventes ouvrent bientôt. Un e-mail le matin de l’ouverture pour{' '}
+            <strong>
+              {cleanName(p)}
+              {size ? `, ${size}` : ''}
+            </strong>
+            . Rien d’autre.
+          </p>
+          <AlertForm
+            productId={p.id}
+            variant={size}
+            source="fiche"
+            labels={{ field: 'Votre adresse e-mail' }}
+          />
+        </section>
         <div ref={buyRef} className="buy-anchor">
+          <p className="trial-lead">Ou essayez la commande dès maintenant, sans payer.</p>
           <AddToCart key={p.id + size} product={p} variant={size} />
         </div>
-        <details className="product-alert-disclosure">
-          <summary>Être averti de l’ouverture des ventes</summary>
-          <AlertForm productId={p.id} variant={size} />
-        </details>
         <div className="detail-assurances">
           <span>
             <Check size={15} />
@@ -893,7 +978,23 @@ export function ProductDetails({ product: p }: { product: Product }) {
         </div>
         <button
           type="button"
-          className="button button-dark"
+          className="button sticky-alert"
+          tabIndex={stuck ? 0 : -1}
+          onClick={() => {
+            const field = document.querySelector<HTMLInputElement>(
+              '#billet input[type="email"], #billet input[type="tel"]',
+            );
+            document
+              .getElementById('billet')
+              ?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            field?.focus({ preventScroll: true });
+          }}
+        >
+          Me prévenir <ArrowUpRight size={17} aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          className="button button-dark sticky-add"
           tabIndex={stuck ? 0 : -1}
           onClick={stickyAdd}
         >
@@ -956,14 +1057,103 @@ export function AlertForm({
   productId = 'launch',
   variant = '',
   labels = {},
+  source = '',
 }: {
   productId?: string;
   variant?: string;
   labels?: AlertFormLabels;
+  /** Où l’inscription se fait (accueil, fiche, sac de séance) : lu dans l’atelier. */
+  source?: string;
 }) {
   const [email, setEmail] = useState('');
   const [state, setState] = useState('');
   const [busy, setBusy] = useState(false);
+  // Deuxième temps, facultatif : l’e-mail est déjà enregistré, le numéro s’ajoute pour un SMS le jour J.
+  const [step, setStep] = useState<{ ref: string; email: string } | null>(null);
+  const [phone, setPhone] = useState('');
+  if (step)
+    return (
+      <form
+        className="alert-form alert-form-phone"
+        onSubmit={async (e) => {
+          e.preventDefault();
+          setBusy(true);
+          setState('');
+          try {
+            const r = await fetch('/api/alerts', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                email: step.email,
+                ref: step.ref,
+                phone,
+                smsConsent: true,
+                website: '',
+              }),
+            });
+            const data = (await r.json()) as { error?: string };
+            if (!r.ok)
+              throw new Error(data.error || 'Le numéro n’a pas pu être enregistré.');
+            setStep(null);
+            setPhone('');
+            setState(
+              'C’est noté : un e-mail et un SMS le jour de l’ouverture. Rien d’autre.',
+            );
+          } catch (err) {
+            setState(
+              err instanceof Error ? err.message : 'Un problème est survenu. Réessayez.',
+            );
+          } finally {
+            setBusy(false);
+          }
+        }}
+      >
+        <p className="alert-done" role="status">
+          <strong>Votre e-mail est enregistré.</strong> Un SMS en plus, le matin
+          de l’ouverture ? Facultatif.
+        </p>
+        <label htmlFor={`alert-phone-${productId}`}>Votre numéro de mobile</label>
+        <div className="alert-input">
+          <input
+            id={`alert-phone-${productId}`}
+            name="phone"
+            type="tel"
+            inputMode="tel"
+            required
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            maxLength={30}
+            placeholder="06 12 34 56 78"
+            autoComplete="tel"
+          />
+          <button disabled={busy} aria-label="Ajouter mon numéro">
+            {busy ? '…' : <ArrowRight size={20} />}
+          </button>
+        </div>
+        <label className="consent">
+          <input type="checkbox" name="smsConsent" required />
+          J’accepte de recevoir un SMS le jour de l’ouverture.{' '}
+          <a href="/confidentialite/">Confidentialité</a>
+        </label>
+        <button
+          type="button"
+          className="text-button"
+          onClick={() => {
+            setStep(null);
+            setState(
+              'C’est noté. Vous recevrez un e-mail à l’ouverture des ventes. Vous pouvez vous désinscrire à tout moment.',
+            );
+          }}
+        >
+          Non merci, l’e-mail suffit
+        </button>
+        {state && (
+          <p role="alert" className="form-status">
+            {state}
+          </p>
+        )}
+      </form>
+    );
   return (
     <form
       className="alert-form"
@@ -982,17 +1172,26 @@ export function AlertForm({
               productId,
               variant,
               consent: true,
+              source,
               website: '',
             }),
           });
-          const data = (await r.json()) as { error?: string };
+          const data = (await r.json()) as {
+            error?: string;
+            ref?: string;
+            already?: boolean;
+          };
           if (!r.ok)
             throw new Error(
               data.error || 'L’inscription n’a pas pu être enregistrée.',
             );
-          setState(
-            'C’est noté. Vous recevrez un e-mail à l’ouverture des ventes. Vous pouvez vous désinscrire à tout moment.',
-          );
+          if (data.ref) setStep({ ref: data.ref, email });
+          else
+            setState(
+              data.already
+                ? 'Cette adresse est déjà inscrite : vous serez prévenu à l’ouverture des ventes.'
+                : 'C’est noté. Vous recevrez un e-mail à l’ouverture des ventes. Vous pouvez vous désinscrire à tout moment.',
+            );
           setEmail('');
         } catch (err) {
           setState(

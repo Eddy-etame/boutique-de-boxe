@@ -61,7 +61,8 @@ export async function GuidesIndex() {
                   );
                 return p ? (
                   <img
-                    src={p.images[0].small}
+                    src={p.cut?.small ?? p.images[0].small}
+                    data-cut={p.cut?.mode}
                     width={480}
                     height={480}
                     alt={p.images[0].alt}

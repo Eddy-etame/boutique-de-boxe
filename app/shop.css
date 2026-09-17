@@ -3159,6 +3159,145 @@ html[data-motion='reduce'] .button:hover {
 .seo-faq summary::after { content: '+'; font-weight: 400; }
 .seo-faq details[open] summary::after { content: '−'; }
 .seo-faq details p { padding: 0 0 18px; max-width: 70ch; line-height: 1.6; }
+/* Accueil : deux actions, l’inscription d’abord. */
+.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.button-tape { background: var(--tape); color: var(--ink); border-color: var(--tape); }
+.button-tape:hover { background: var(--ink); color: var(--tape); border-color: var(--ink); }
+@media (max-width: 540px) { .hero-actions .button { flex: 1 1 100%; justify-content: space-between; } }
+/* La scène commune, version Ring (choix du propriétaire, 17 septembre 2026) : le noir de la salle, un
+   projecteur au-dessus, une flaque de lumière au sol, le modèle détouré seul dans la lumière. L’image
+   porte sa ligne de sol et son ombre. Un modèle vif reçoit un halo de sa propre couleur ; un modèle
+   sombre, plus de projecteur et un liseré. Sans découpe, la photo d’origine est posée comme un tirage. */
+/* Sélecteurs qualifiés par l’élément : refinement.css, chargé après, redonnait un fond clair aux tuiles. */
+a.product-image, div.kit-picture, div.gallery-main {
+  color: var(--paper);
+  background:
+    radial-gradient(ellipse 46% 9% at 50% 93%, rgba(255, 255, 255, 0.16), transparent 70%),
+    radial-gradient(ellipse 66% 56% at 50% 36%, rgba(255, 255, 255, 0.17), transparent 72%),
+    linear-gradient(#1d211c 0 74%, #141711 74% 100%);
+  isolation: isolate;
+}
+a.product-image[data-dark], div.kit-picture[data-dark], div.gallery-main[data-dark] {
+  background:
+    radial-gradient(ellipse 50% 10% at 50% 93%, rgba(255, 255, 255, 0.26), transparent 70%),
+    radial-gradient(ellipse 72% 62% at 50% 38%, rgba(255, 255, 255, 0.34), transparent 74%),
+    linear-gradient(#262b24 0 74%, #181c15 74% 100%);
+}
+.product-image[data-cut] img, .kit-picture[data-cut] img, .gallery-main[data-cut] > img {
+  padding: 0;
+  mix-blend-mode: normal;
+  object-fit: contain;
+  object-position: center bottom;
+  transform-origin: 50% 90%;
+  filter: drop-shadow(0 0 26px rgba(255, 255, 255, 0.1));
+}
+@supports (color: oklch(from red l c h)) {
+  .product-image[data-vivid] img, .kit-picture[data-vivid] img, .gallery-main[data-vivid] > img {
+    filter: drop-shadow(0 0 30px oklch(from var(--tint) 0.72 c h / 0.34));
+  }
+}
+.product-image[data-dark] img, .kit-picture[data-dark] img, .gallery-main[data-dark] > img {
+  filter: drop-shadow(0 -1px 0 rgba(255, 255, 255, 0.35)) drop-shadow(0 0 24px rgba(255, 255, 255, 0.16)) brightness(1.12) contrast(1.04);
+}
+/* Sujet cadré : il reste collé au bord qu’il touche. Haut et bas à la fois : l’image remplit la tuile. */
+[data-cut='cadre'] img { transform-origin: 50% 100%; }
+[data-cut='cadre'][data-edges~='top']:not([data-edges~='bottom']) img { object-position: center top; transform-origin: 50% 0; }
+[data-cut='cadre'][data-edges~='top'][data-edges~='bottom'] img { object-fit: cover; object-position: center; }
+.kit-picture[data-cut] img { padding-top: 22px; }
+.kit-picture { outline: 1px solid rgba(255, 255, 255, 0.08); outline-offset: -1px; }
+.product-image .product-index, .product-image .product-status, .gallery-main .tiny-label, .kit-picture > .tiny-label { color: #e8eadf; }
+/* Le ruban jaune file sous le modèle au survol. */
+.product-image::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  z-index: 2;
+  background: var(--tape);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 0.55s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.product-card:hover .product-image::after, .product-card:focus-within .product-image::after { transform: scaleX(1); }
+.product-card:hover .product-image[data-cut] img,
+.product-card:focus-within .product-image[data-cut] img { transform: scale(1.055); }
+/* Sans découpe (objet trop fin pour être détouré proprement) : la photo d’origine, posée comme un tirage. */
+.product-image:not([data-cut]) img, .kit-picture:not([data-cut]) img, .gallery-main:not([data-cut]) > img {
+  mix-blend-mode: normal;
+  background: #fff;
+  box-sizing: border-box;
+  width: 82%;
+  height: auto;
+  aspect-ratio: 1;
+  margin: 13% 9% 0;
+  padding: 5%;
+  box-shadow: 0 22px 34px rgba(0, 0, 0, 0.5);
+}
+.gallery-main:not([data-cut]) > img { width: 86%; margin: 7% 7% 0; }
+.guide-cover > img[data-cut] { mix-blend-mode: normal; object-position: center bottom; }
+@media (prefers-reduced-motion: reduce) {
+  .product-card:hover .product-image[data-cut] img { transform: none; }
+  .product-image::after { transition: none; }
+}
+html[data-motion='reduce'] .product-card:hover .product-image[data-cut] img { transform: none; }
+/* Fiche : le billet d’ouverture. Avant l’ouverture des ventes, c’est lui l’appel à l’action. */
+.launch-ticket { position: relative; margin: 26px 0 20px; padding: 28px 24px 22px; background: var(--ink); color: var(--paper); }
+.launch-ticket::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 6px; background: var(--tape); }
+/* Les deux encoches du billet, à la couleur de la page. */
+.launch-ticket::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at 0 96px, var(--paper) 9px, transparent 10px), radial-gradient(circle at 100% 96px, var(--paper) 9px, transparent 10px); }
+.launch-ticket .eyebrow { color: var(--tape); }
+.launch-ticket-title { font: 800 clamp(24px, 2.2vw, 32px) / 1.04 Barlow, Impact, sans-serif; text-transform: uppercase; margin: 10px 0 0; max-width: 22ch; }
+.launch-ticket-copy { font-size: 14px; line-height: 1.6; margin: 22px 0 16px; padding-top: 18px; border-top: 1px dashed rgba(255, 255, 255, 0.3); color: #d5d9c9; max-width: 46ch; }
+.launch-ticket .alert-form { margin: 0; padding: 0; border: 0; background: transparent; }
+.launch-ticket .alert-form > label { color: var(--paper); }
+.launch-ticket .alert-input button { background: var(--tape); color: var(--ink); }
+.trial-lead { font-size: 13px; color: var(--muted); margin: 0 0 10px; }
+.sticky-alert { background: var(--tape); color: var(--ink); border-color: var(--tape); }
+@media (max-width: 540px) {
+  .launch-ticket { padding: 24px 18px 18px; }
+  .sticky-buy .sticky-add { padding-inline: 14px; font-size: 0; gap: 0; }
+  .sticky-buy .sticky-add svg { width: 20px; height: 20px; }
+}
+/* Sac de séance : tout le sac au panier en un geste, et la note quand un modèle manque au catalogue. */
+.pack-add { margin-top: 22px; padding: 22px 24px; border: 1px solid #68725d; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px 28px; align-items: end; }
+.pack-add-title { grid-column: 1 / -1; font: 800 22px/1 Barlow, Impact, sans-serif; letter-spacing: 0.01em; text-transform: uppercase; }
+.pack-add-sizes { display: flex; flex-wrap: wrap; gap: 12px 18px; }
+.pack-add-sizes label, .pack-add-fixed { display: grid; gap: 6px; font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; color: #c9cdbd; }
+.pack-add-sizes select { min-width: 150px; min-height: 46px; padding: 0 12px; background: transparent; color: var(--paper); border: 1px solid #8a937c; font: inherit; font-size: 15px; text-transform: none; letter-spacing: 0; }
+.pack-add-sizes select:focus-visible { outline: 2px solid var(--tape); outline-offset: 2px; }
+.pack-add-sizes option { color: var(--ink); background: var(--paper); }
+.pack-add-fixed b { min-height: 46px; display: flex; align-items: center; font-size: 15px; font-weight: 600; text-transform: none; letter-spacing: 0; color: var(--paper); }
+.pack-add-button { min-height: 52px; background: var(--tape); color: var(--ink); border-color: var(--tape); }
+.pack-add-button:disabled { opacity: 0.45; cursor: not-allowed; }
+.pack-add-help, .pack-add .form-status { grid-column: 1 / -1; font-size: 13px; color: #c9cdbd; }
+.pack-add .form-status:empty { display: none; }
+.pack-add .form-status a { text-decoration: underline; text-underline-offset: 3px; }
+.kit-notice { margin-top: 22px; padding: 22px 24px; border: 1px solid #68725d; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+.kit-notice > p { font-size: 14px; line-height: 1.6; max-width: 52ch; }
+/* Sur le fond sombre du sac de séance, le formulaire d’alerte reprend les tons clairs. */
+:is(.kit-notice, .launch-ticket) .alert-form .consent, :is(.kit-notice, .launch-ticket) .alert-form .consent a, :is(.kit-notice, .launch-ticket) .alert-done, :is(.kit-notice, .launch-ticket) .form-status, :is(.kit-notice, .launch-ticket) .text-button { color: #d5d9c9; }
+:is(.kit-notice, .launch-ticket) .alert-input { border-bottom: 1px solid #8a937c; }
+:is(.kit-notice, .launch-ticket) .alert-input input { color: var(--paper); background: transparent; }
+:is(.kit-notice, .launch-ticket) .alert-input input::placeholder { color: #b3b9a5; }
+.kit-notice .alert-input button { color: var(--paper); }
+@media (max-width: 800px) {
+  .pack-add, .kit-notice { grid-template-columns: minmax(0, 1fr); padding: 18px; }
+  .pack-add-button { width: 100%; }
+  .pack-add-sizes select { min-width: 0; width: 100%; }
+  .pack-add-sizes label, .pack-add-fixed { flex: 1 1 140px; }
+}
+/* Alerte d’ouverture, deuxième temps : le numéro de mobile, facultatif. */
+.alert-done { font-size: 14px; line-height: 1.55; margin: 0 0 14px; }
+.alert-done strong { display: block; }
+.alert-form-phone .text-button { margin-top: 12px; font-size: 13px; text-decoration: underline; text-underline-offset: 3px; color: inherit; opacity: 0.8; }
+.alert-form-phone .text-button:hover, .alert-form-phone .text-button:focus-visible { opacity: 1; }
+/* FAQ de l’accueil : la gouttière des sections, l’intro à gauche, les questions à droite. */
+.home-faq { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2.2fr); gap: 9%; align-items: start; }
+.home-faq-intro p { font-size: 15px; line-height: 1.65; max-width: 38ch; margin: 18px 0 22px; color: var(--muted); }
+.home-faq .seo-faq { padding: 0; }
+@media (max-width: 800px) { .home-faq { grid-template-columns: minmax(0, 1fr); gap: 28px; } }
 .subfamily-links { display: flex; flex-wrap: wrap; gap: 10px; padding: 0 0 40px; }
 .subfamily-links a { border: 1px solid var(--ink); padding: 9px 14px; font-size: 13px; text-decoration: none; color: var(--ink); transition: background .25s, color .25s; }
 .subfamily-links a:hover, .subfamily-links a:focus-visible { background: var(--ink); color: #fff; }

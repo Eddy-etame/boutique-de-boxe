@@ -788,14 +788,24 @@
       "discipline": "mma",
       "context": "enfant",
       "name": "Un enfant en MMA",
-      "text": "Nous n’avons pas encore de modèle enfant vérifié pour le MMA.",
+      "text": "Un rashguard et un protège-dents à la taille de l’enfant : la tenue du tapis et la protection demandée dès le premier cours.",
       "guide": "debuter-mma",
-      "products": [],
-      "emptyAction": {
-        "label": "Transmettre la liste du club",
-        "href": "/contact/"
-      },
-      "editorialNote": "Keep a useful, truthful empty state. Never substitute adult The Shell, ONE boxing gloves or a generically child-tagged product to populate this result."
+      "products": [
+        {
+          "id": "lcdr-a9b0321c62210220",
+          "label": "Le rashguard enfant",
+          "reason": "Un haut près du corps pour le travail au sol, en trois tailles de 6 à 12 ans.",
+          "condition": "Trois tailles, à choisir sur la stature de l’enfant."
+        },
+        {
+          "id": "bs-8748",
+          "label": "Le protège-dents junior",
+          "reason": "Un modèle junior à mouler dans l’eau chaude. Suivez la notice pour le moulage.",
+          "condition": "À mouler en suivant la notice."
+        }
+      ],
+      "editorialNote": "Child-sized items only. Never substitute adult The Shell or ONE boxing gloves for the missing child MMA glove; the notice and the alert capture cover that gap.",
+      "notice": "Les gants MMA enfant ne sont pas encore au catalogue, et nous ne proposons pas un gant adulte à la place. Beaucoup de clubs les prêtent aux enfants : demandez la liste du club."
     }
   ]
 }

@@ -2,7 +2,8 @@ import { db, isAdmin, readCatalog, bustCatalog } from '@/lib/database';
 
 import { validateProduct } from '@/lib/product-input';
 
-import { shop } from '@/lib/catalog';
+import { shop, listItem } from '@/lib/catalog';
+import { listingFor } from '@/lib/listing';
 
 import { getSessionUser } from '@/lib/auth';
 import { clientIp } from '@/lib/request';
@@ -24,6 +25,27 @@ const emailValid = (value: unknown): value is string =>
   typeof value === 'string' &&
   value.length <= 254 &&
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
+/** Numéro ramené au format international : « 06 12 34 56 78 » devient « +33612345678 ». Vide si invalide. */
+function normalisePhone(value: unknown): string {
+  if (typeof value !== 'string' || value.length > 30) return '';
+  const digits = value.replace(/[\s().-]/g, '');
+  if (/^0[1-9]\d{8}$/.test(digits)) return '+33' + digits.slice(1);
+  if (/^00[1-9]\d{7,13}$/.test(digits)) return '+' + digits.slice(2);
+  return /^\+[1-9]\d{7,14}$/.test(digits) ? digits : '';
+}
+
+// Colonnes de contact des alertes, ajoutées sans étape de migration manuelle (même principe que
+// la table des événements) : téléphone facultatif, accord SMS, et l’endroit où l’inscription s’est faite.
+let alertContactReady = false;
+async function ensureAlertContact() {
+  if (alertContactReady) return;
+  const database = await db();
+  await database.prepare("ALTER TABLE alerts ADD COLUMN IF NOT EXISTS phone text NOT NULL DEFAULT ''").run();
+  await database.prepare('ALTER TABLE alerts ADD COLUMN IF NOT EXISTS sms_consent integer NOT NULL DEFAULT 0').run();
+  await database.prepare("ALTER TABLE alerts ADD COLUMN IF NOT EXISTS source text NOT NULL DEFAULT ''").run();
+  alertContactReady = true;
+}
 
 async function body(request: Request) {
   const formEncoded = request.headers
@@ -149,17 +171,38 @@ export async function GET(
       },
     );
 
+  // La liste complète d’une page de catalogue, en forme allégée : demandée par le navigateur au
+  // premier geste (recherche, filtre, tri, page), jamais au chargement (lib/listing.ts).
+  if (action === 'catalog-list') {
+    const scope = new URL(request.url).searchParams.get('scope') || '';
+    const list = /^[a-z0-9-]{1,80}$/.test(scope)
+      ? listingFor(scope, await readCatalog())
+      : null;
+    if (!list) return response({ error: 'Liste introuvable.' }, 404);
+    return Response.json(
+      { items: list.map(listItem) },
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=86400',
+          'X-Content-Type-Options': 'nosniff',
+          'X-Robots-Tag': 'noindex',
+        },
+      },
+    );
+  }
+
   if (action === 'admin') {
     if (!(await isAdmin()))
       return response({ error: 'Accès réservé à l’administration.' }, 403);
 
+    await ensureAlertContact();
     const database = await db();
 
     const [alerts, contacts, overrides] = await Promise.all([
       database
 
         .prepare(
-          "SELECT a.id,a.email,a.product_id,a.variant,a.created_at,a.unsubscribe_token,COALESCE(o.name,(c.payload::jsonb->>'name')) AS product_name,c.archived AS product_archived FROM alerts a LEFT JOIN catalog_entries c ON c.id=a.product_id LEFT JOIN product_overrides o ON o.product_id=a.product_id ORDER BY a.created_at DESC LIMIT 300",
+          "SELECT a.id,a.email,a.phone,a.sms_consent,a.source,a.product_id,a.variant,a.created_at,a.unsubscribe_token,COALESCE(o.name,(c.payload::jsonb->>'name')) AS product_name,c.archived AS product_archived FROM alerts a LEFT JOIN catalog_entries c ON c.id=a.product_id LEFT JOIN product_overrides o ON o.product_id=a.product_id ORDER BY a.created_at DESC LIMIT 300",
         )
 
         .all(),
@@ -413,6 +456,31 @@ export async function POST(
     const email = data.email.trim().toLowerCase();
 
     if (action === 'alerts') {
+      await ensureAlertContact();
+
+      // Deuxième temps, facultatif : le numéro pour un SMS le jour de l’ouverture. Il ne s’ajoute
+      // qu’à l’inscription qui vient d’être créée (référence rendue une seule fois, à son auteur).
+      if (data.ref !== undefined) {
+        const phone = normalisePhone(data.phone);
+        if (
+          typeof data.ref !== 'string' ||
+          !/^[0-9a-f-]{36}$/.test(data.ref) ||
+          data.smsConsent !== true ||
+          !phone
+        )
+          return response(
+            { error: 'Vérifiez le numéro : 06 12 34 56 78 ou +33 6 12 34 56 78.' },
+            400,
+          );
+        const updated = await (await db())
+          .prepare("UPDATE alerts SET phone=?, sms_consent=1 WHERE id=? AND email=? AND phone='' RETURNING id")
+          .bind(phone, data.ref, email)
+          .first<string>('id');
+        return updated
+          ? response({ ok: true })
+          : response({ error: 'Inscription introuvable. Recommencez avec votre e-mail.' }, 404);
+      }
+
       const p = (await readCatalog()).find((p) => p.id === data.productId);
 
       if (
@@ -427,12 +495,17 @@ export async function POST(
           400,
         );
 
-      await (
+      const source =
+        typeof data.source === 'string' && /^[a-z0-9-]{1,40}$/.test(data.source)
+          ? data.source
+          : '';
+      // La référence n’est rendue qu’à la création : une adresse déjà inscrite ne révèle rien.
+      const ref = await (
         await db()
       )
 
         .prepare(
-          'INSERT INTO alerts (id,email,product_id,variant,created_at,consent_version,unsubscribe_token) VALUES (?,?,?,?,?,?,?) ON CONFLICT(email,product_id,variant) DO NOTHING',
+          'INSERT INTO alerts (id,email,product_id,variant,created_at,consent_version,unsubscribe_token,source) VALUES (?,?,?,?,?,?,?,?) ON CONFLICT(email,product_id,variant) DO NOTHING RETURNING id',
         )
 
         .bind(
@@ -441,11 +514,12 @@ export async function POST(
           data.productId,
           data.variant,
           new Date().toISOString(),
-          '2026-09-09',
+          '2026-09-17',
           crypto.randomUUID(),
+          source,
         )
 
-        .run();
+        .first<string>('id');
 
       return request.headers
         .get('content-type')
@@ -457,7 +531,7 @@ export async function POST(
               'Cache-Control': 'no-store',
             },
           })
-        : response({ ok: true }, 201);
+        : response(ref ? { ok: true, ref } : { ok: true, already: true }, 201);
     }
 
     if (

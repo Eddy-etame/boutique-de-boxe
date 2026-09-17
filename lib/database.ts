@@ -3,9 +3,13 @@ import type { PayplugEnvironment } from './payplug';
 import type { Product } from './catalog';
 import original from './data/products.json';
 import imported from './data/imported-products.json';
-const products = [...original,...imported] as unknown as Product[];
+// Les fichiers gardent le prix public relevé ; la règle de prix du propriétaire s’applique à la lecture (lib/pricing.ts).
+const products = ([...original, ...imported] as unknown as Product[]).map(withOurPrice);
 import { getSessionUser, DEV_OWNER_EMAIL } from './auth';
 import { d1Compat, type D1Database } from '@/db';
+import { withCutout } from './cutouts';
+import { withOurPrice } from './pricing';
+import { applyClub } from './club-sync';
 export async function runtime() {
   return process.env as unknown as PayplugEnvironment & {
     ADMIN_EMAIL?: string;
@@ -92,13 +96,15 @@ export const readCatalog = cache(async function readCatalogOnce(): Promise<Produ
   const memo = globalThis.__catalogMemo;
   if (memo && Date.now() - memo.at < CATALOG_TTL) return memo.data;
   try {
-    const data = await readCatalogFromDb();
+    // Chaque modèle emporte sa photo détourée quand elle existe (lib/cutouts.ts).
+    // Les treize références du club suivent son prix (lib/club-sync.ts).
+    const data = applyClub(await readCatalogFromDb()).map(withCutout);
     globalThis.__catalogMemo = { at: Date.now(), data };
     return data;
   } catch (error) {
     // Base injoignable ou non migrée : le dernier catalogue connu, sinon celui des fichiers.
     // Panier, alertes, demandes et atelier répondent 503 tant que la base manque.
     console.error('Catalogue storage unavailable, serving the file catalogue', error instanceof Error ? error.name : 'StorageError');
-    return globalThis.__catalogMemo?.data ?? products;
+    return globalThis.__catalogMemo?.data ?? applyClub(products).map(withCutout);
   }
 });

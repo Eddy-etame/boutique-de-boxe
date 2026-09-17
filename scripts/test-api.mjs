@@ -95,6 +95,27 @@ await check('Alert stored and duplicate prevented', async () => {
   const data = await (await request('admin', undefined, admin)).json();
   assert.equal(data.alerts.filter((a) => a.email === email).length, 1);
 });
+await check('Optional phone step: one-time reference, consent, normalised number, first write wins', async () => {
+  const mail = 'boutique-qa-tel-' + Date.now() + '@example.invalid';
+  const first = await request('alerts', { email: mail, productId: 'launch', variant: '', consent: true, source: 'test-api' });
+  const { ref } = await first.json();
+  assert.equal(first.status, 201);
+  assert.match(ref, /^[0-9a-f-]{36}$/);
+  // Une adresse déjà inscrite ne rend aucune référence : rien à détourner.
+  const again = await (await request('alerts', { email: mail, productId: 'launch', variant: '', consent: true })).json();
+  assert.equal(again.already, true);
+  assert.equal(again.ref, undefined);
+  assert.equal((await request('alerts', { email: mail, ref, phone: '12345', smsConsent: true })).status, 400);
+  assert.equal((await request('alerts', { email: mail, ref, phone: '06 12 34 56 78' })).status, 400);
+  assert.equal((await request('alerts', { email: 'autre-' + mail, ref, phone: '06 12 34 56 78', smsConsent: true })).status, 404);
+  assert.equal((await request('alerts', { email: mail, ref, phone: '06 12 34 56 78', smsConsent: true })).status, 200);
+  assert.equal((await request('alerts', { email: mail, ref, phone: '07 00 00 00 00', smsConsent: true })).status, 404);
+  const row = (await (await request('admin', undefined, admin)).json()).alerts.find((a) => a.email === mail);
+  assert.equal(row.phone, '+33612345678');
+  assert.equal(Number(row.sms_consent), 1);
+  assert.equal(row.source, 'test-api');
+  await request('admin-delete', { kind: 'alerts', id: row.id }, admin);
+});
 await check('Contact stored', async () => {
   assert.equal(
     (
@@ -112,7 +133,8 @@ await check('Contact stored', async () => {
 });
 await check('Admin edit persists and public page uses it', async () => {
   const data = await (await request('admin', undefined, admin)).json();
-  const p = data.products[0];
+  // Une référence hors club : les treize références « mat- » suivent le prix de la boutique du club.
+  const p = data.products.find((x) => !x.id.startsWith('mat-'));
   const old = data.overrides.find((o) => o.product_id === p.id);
   const payload = {
     productId: p.id,
@@ -134,10 +156,29 @@ await check('Admin edit persists and public page uses it', async () => {
       200,
     );
     const publicData = await (await request('catalog')).json();
-    assert.equal(publicData.products[0].price, 1881);
+    assert.equal(publicData.products.find((x) => x.id === p.id).price, 1881);
     const html = await (await fetch(base + '/produits/' + p.slug + '/')).text();
     assert.ok(html.includes(p.name + ' QA'));
     assert.ok(!JSON.stringify(publicData).includes('internal_stock'));
+  } finally {
+    assert.equal((await request('admin', payload, admin)).status, 200);
+  }
+});
+await check('Club products follow the club shop price, even after an Atelier edit', async () => {
+  const data = await (await request('admin', undefined, admin)).json();
+  const p = data.products.find((x) => x.id === 'mat-blade-gold');
+  const old = data.overrides.find((o) => o.product_id === p.id);
+  const payload = { productId: p.id, name: p.name, description: p.description, priceCents: p.price, internalStock: old?.internal_stock || 0, plannedDiscount: old?.planned_discount || 0 };
+  let club = null;
+  try {
+    const live = await (await fetch('https://boutique.boxingcenter.fr/api/materiel', { signal: AbortSignal.timeout(10000) })).json();
+    club = live.products.find((x) => x.id === p.id)?.price_cents ?? null;
+  } catch {}
+  try {
+    assert.equal((await request('admin', { ...payload, priceCents: 1881 }, admin)).status, 200);
+    const seen = (await (await request('catalog')).json()).products.find((x) => x.id === p.id).price;
+    // Boutique du club joignable : son prix gagne. Injoignable : le prix saisi reste, rien n’est inventé.
+    assert.ok(club === null ? [1881, p.price].includes(seen) : seen === club, `prix public ${seen}, club ${club}`);
   } finally {
     assert.equal((await request('admin', payload, admin)).status, 200);
   }

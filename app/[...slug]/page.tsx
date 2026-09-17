@@ -12,6 +12,7 @@ import {
   categories,
   shop,
   money,
+  listItem,
 } from '@/lib/catalog';
 import { readCatalog, isAdmin } from '@/lib/database';
 import { guides, services } from '@/lib/editorial';
@@ -405,7 +406,7 @@ export default async function Page({ params, searchParams }: Props) {
             <h2>Modèles proches.</h2>
             <div className="product-grid">
               {related.map((x, i) => (
-                <ProductCard key={x.id} product={x} index={i} />
+                <ProductCard key={x.id} product={listItem(x)} index={i} />
               ))}
             </div>
           </section>
@@ -440,7 +441,9 @@ export default async function Page({ params, searchParams }: Props) {
           ))}
         </nav>
         <Catalog
-          items={data.map((p) => ({ ...p, description: p.description.slice(0, 180), use: undefined, care: undefined, specs: {}, notes: [], images: p.images.slice(0, 1) }))}
+          items={data.slice(0, 36).map(listItem)}
+          total={data.length}
+          scope={sub.slug}
           initialPage={1}
           showFamilies={false}
         />
@@ -525,15 +528,9 @@ export default async function Page({ params, searchParams }: Props) {
           ) : null;
         })()}
         <Catalog
-          items={data.map((p) => ({
-            ...p,
-            description: p.description.slice(0, 180),
-            use: undefined,
-            care: undefined,
-            specs: {},
-            notes: [],
-            images: p.images.slice(0, 1),
-          }))}
+          items={data.slice((currentPage - 1) * 36, currentPage * 36).map(listItem)}
+          total={data.length}
+          scope={path}
           initialPage={currentPage}
           showFamilies={!cat || cat.families.length > 1}
         />

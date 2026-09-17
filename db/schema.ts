@@ -19,6 +19,10 @@ export const alerts = pgTable(
     createdAt: text('created_at').notNull(),
     consentVersion: text('consent_version').notNull(),
     unsubscribeToken: text('unsubscribe_token').notNull(),
+    // Mobile facultatif, accord SMS et endroit de l’inscription (drizzle/0005).
+    phone: text('phone').notNull().default(''),
+    smsConsent: integer('sms_consent').notNull().default(0),
+    source: text('source').notNull().default(''),
   },
   (t) => [
     uniqueIndex('alerts_email_product_variant').on(

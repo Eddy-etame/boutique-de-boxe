@@ -18,6 +18,16 @@ export type Product = {
     height: number;
     alt: string;
   }[];
+  /** Photo principale détourée, posée sur la scène commune (lib/cutouts.ts). Absente : la photo d’origine sert. */
+  cut?: {
+    small: string;
+    large: string;
+    mode: 'pose' | 'cadre';
+    edges: string[];
+    tint: string;
+    vivid: boolean;
+    lum: number;
+  };
   notes: string[];
   audience: string;
   status: string;
@@ -199,6 +209,38 @@ export const getCategoryProducts = (c: Category, all: Product[]) =>
   c.families.length ? all.filter((p) => c.families.includes(p.category)) : all;
 /** Nom affiché sur les cartes et en titre : le nom lui-même. Seules les 19 fiches
  *  d’origine (sans `sourceName`) raccourcissent leur variante sur la carte. */
+/**
+ * Un modèle tel qu’une carte, un filtre ou la recherche en ont besoin, et rien d’autre. Les listes
+ * partent dans le navigateur : avec la fiche entière (description, caractéristiques, toutes les
+ * déclinaisons), une famille de 183 gants pesait 525 Ko de HTML. Le contrôle de vitesse
+ * (scripts/check-speed.mjs) tient ce poids sous budget.
+ */
+export function listItem(p: Product): Product {
+  const other = p.variants?.find((v) => v.price !== p.price);
+  return {
+    id: p.id,
+    slug: p.slug,
+    name: p.name,
+    brand: p.brand,
+    category: p.category,
+    price: p.price,
+    short: p.short.slice(0, 140),
+    description: '',
+    sizes: p.sizes,
+    specs: {},
+    images: p.images.slice(0, 1),
+    cut: p.cut,
+    notes: [],
+    audience: p.audience,
+    status: p.status,
+    sourceRef: p.sourceRef,
+    dateAdded: p.dateAdded,
+    // cleanName() ne regarde que la présence du nom d’origine ; « Dès » ne demande qu’un autre prix.
+    sourceName: p.sourceName ? '1' : undefined,
+    variants: other ? [{ id: '', reference: '', label: '', attributes: {}, price: other.price }] : undefined,
+  };
+}
+
 export function cleanName(p: Product) {
   if (p.sourceName) return p.name;
   return p.name

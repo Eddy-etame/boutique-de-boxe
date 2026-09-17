@@ -234,6 +234,13 @@ export function Admin() {
                 </select>
               </label>
             </div>
+            {p.id.startsWith('mat-') && (
+              <p className="form-privacy">
+                <strong>Référence vendue aussi à la boutique du club.</strong> Son
+                prix suit boutique.boxingcenter.fr, relu toutes les quinze minutes :
+                un prix saisi ici ne s’affiche pas tant que le club en publie un autre.
+              </p>
+            )}
             <p className="form-privacy">
               Stock et remise restent internes. Les références gardent le statut
               « Bientôt disponible ». Modifiez les photos et déclinaisons dans «
