@@ -285,7 +285,7 @@ function productCore(p: Product) {
 }
 
 /** Fiche produit : WebPage (ItemPage), Product, ProductGroup des tailles, modèles proches, fil d’Ariane. */
-export function productGraph(p: Product, related: Product[], opts: { description?: string } = {}) {
+export function productGraph(p: Product, related: Product[], opts: { description?: string; faq?: SeoFaq[] } = {}) {
   const path = '/produits/' + p.slug + '/';
   const family = categoryFor(p.category);
   const product = {
@@ -312,6 +312,7 @@ export function productGraph(p: Product, related: Product[], opts: { description
     webPageNode({ path, name: p.name, description: p.short, type: 'ItemPage', image: p.images[0]?.src, dateModified: (p.updatedAt || p.dateAdded || EDITORIAL_DATE).slice(0, 10), about: family ? (CATEGORY_ENTITY[family.slug] || []).map(thing) : [], keywords: productKeywords(p), mainEntity: product['@id'] }),
     product,
     ...(group ? [group] : []),
+    ...(opts.faq?.length ? [faqNode(path, opts.faq)] : []),
   ]);
 }
 
@@ -384,7 +385,7 @@ export function articleGraph(g: Guide) {
 }
 
 /** Accueil : la page elle-même, ses familles en liste. */
-export function homeGraph(products: Product[]) {
+export function homeGraph(products: Product[], faq: SeoFaq[] = []) {
   const fam = familiesWithCounts(products);
   const list = {
     '@type': 'ItemList',
@@ -394,8 +395,18 @@ export function homeGraph(products: Product[]) {
     itemListElement: fam.map((f, i) => ({ '@type': 'ListItem', position: i + 1, name: `${f.name} (${f.count})`, url: f.url })),
   };
   return graph([
-    webPageNode({ path: '/', name: 'Boutique de Boxe : matériel de boxe, MMA et sports de combat', description: `${products.length.toLocaleString('fr-FR')} modèles : gants, bandes, protections, textile, sacs de frappe, chaussures. Tailles réelles, prix prévus, livraison dans toute la France.`, image: '/og/home.png', about: [ENTITY.boxe, ENTITY.mma, ENTITY.sportsDeCombat].map(thing), keywords: PAGE_KEYWORDS[''], mainEntity: list['@id'], breadcrumb: false }),
+    webPageNode({ path: '/', name: 'Boutique de Boxe : matériel de boxe, MMA et sports de combat', description: `${products.length.toLocaleString('fr-FR')} modèles : gants, bandes, protections, textile, sacs de frappe, chaussures. Tailles réelles, prix prévus, livraison dans toute la France.`, image: '/vignette/x/home.png', about: [ENTITY.boxe, ENTITY.mma, ENTITY.sportsDeCombat].map(thing), keywords: PAGE_KEYWORDS[''], mainEntity: list['@id'], breadcrumb: false }),
     list,
+    ...(faq.length ? [faqNode('/', faq)] : []),
+  ]);
+}
+
+/** Page de service (livraison, retours, questions fréquentes…) : WebPage + FAQPage quand la page porte des questions. */
+export function serviceGraph(slug: string, service: { title: string; description: string; faq?: SeoFaq[] }) {
+  const path = '/' + slug + '/';
+  return graph([
+    webPageNode({ path, name: service.title, description: service.description, image: '/vignette/x/' + slug + '.png', keywords: PAGE_KEYWORDS[slug] || pageKeywords(slug), ...(service.faq?.length ? { mainEntity: urlOf(path) + '#faq' } : {}) }),
+    ...(service.faq?.length ? [faqNode(path, service.faq)] : []),
   ]);
 }
 

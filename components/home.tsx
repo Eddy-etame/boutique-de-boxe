@@ -1,5 +1,7 @@
 import { ArrowUpRight, ArrowDown } from 'lucide-react';
 import { categories, type Product } from '@/lib/catalog';
+import { HOME_FAQ } from '@/lib/seo-copy';
+import { SeoBody } from './seo-body';
 import {
   HeroStage,
   ProductCard,
@@ -200,6 +202,7 @@ export default function Home({ items }: { items: Product[] }) {
         </div>
         <AlertForm />
       </section>
+      <SeoBody sections={[]} faq={HOME_FAQ} heading="Questions fréquentes" />
     </main>
   );
 }

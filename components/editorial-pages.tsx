@@ -5,6 +5,7 @@ import { readCatalog } from '@/lib/database';
 import selection from '@/lib/data/selection.json';
 import { Breadcrumb, ArrowLink } from './shop-shell';
 import { AlertForm } from './shop-interactions';
+import { SeoBody } from './seo-body';
 const covers = [
   'LE GANT.',
   'LE POIDS.',
@@ -259,6 +260,7 @@ export function ServicePage({
             </section>
           ))}
           {slug === 'offres-de-lancement' && <AlertForm />}
+          {s.faq?.length ? <SeoBody sections={[]} faq={s.faq} heading={slug === 'faq' ? 'Vos questions, nos réponses' : 'Questions fréquentes'} /> : null}
         </div>
       </div>
     </main>

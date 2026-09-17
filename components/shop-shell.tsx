@@ -232,6 +232,7 @@ export function Footer() {
         </nav>
         <nav aria-labelledby="footer-service">
           <h3 id="footer-service">Vos questions</h3>
+          <a href="/faq/">Questions fréquentes</a>
           <a href="/livraison/">Livraison et frais prévus</a>
           <a href="/retours/">Retours</a>
           <a href="/contact/">Nous contacter</a>

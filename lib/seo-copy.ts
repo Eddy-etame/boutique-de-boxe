@@ -570,3 +570,13 @@ export const QUERY_MAP: { query: string; path: string; answer: string }[] = [
   { query: 'Sac de frappe', path: '/sacs-de-frappe/', answer: 'Sac de frappe : il se choisit par hauteur et poids, 1 m à 1,20 m pour les poings, 1,50 m à 1,80 m pour les coups de pied, environ la moitié de votre poids ; sur pied si vous ne pouvez pas percer.' },
   { query: 'Chaussures de boxe', path: '/chaussures-boxe/', answer: 'Chaussures de boxe montantes pour la cheville sur le ring, basses pour l’entraînement, chaussures de lutte pour le MMA. La pointure suit la grille de la marque.' },
 ];
+
+/** Questions de l’accueil : les six réponses qu’un visiteur cherche avant d’entrer dans le catalogue. */
+export const HOME_FAQ: SeoFaq[] = [
+  { question: 'Qu’est-ce que Boutique de Boxe ?', answer: 'Boutique de Boxe est la boutique en ligne de matériel de boxe, de MMA et de sports de combat des salles Boxing Center : plus de 1 000 modèles de gants, bandes, protections, textile, sacs de frappe et chaussures, avec leurs tailles réelles et leurs prix prévus, livrés dans toute la France.' },
+  { question: 'Quand ouvrent les ventes ?', answer: 'La date n’est pas encore publiée. Laissez votre e-mail sur la page d’ouverture ou sur une fiche : nous vous écrivons le jour J, sans autre message.' },
+  { question: 'Peut-on déjà commander ?', answer: 'Vous pouvez essayer la commande de bout en bout, sans payer : panier, coordonnées, livraison et reçu en PDF. Rien n’est débité ni réservé.' },
+  { question: 'Livrez-vous dans toute la France ?', answer: 'Oui, France métropolitaine, à domicile ou en point relais : 6,90 € en relais, offerts dès 69 € d’achats, 8,90 € à domicile, tarif spécifique pour le matériel lourd.' },
+  { question: 'Comment choisir la taille de mes gants ?', answer: 'Par l’usage : 10 oz pour le sac, 12 oz pour la technique, 14 à 16 oz avec un partenaire. Les onces sont un poids, pas une taille de main ; le guide des tailles détaille gants, textile, chaussures et enfants.' },
+  { question: 'Quelles marques proposez-vous ?', answer: 'Metal Boxe, Elion, Fairtex, Twins, Cleto Reyes, Adidas, Everlast, Venum, Manto, Athena Fightwear, Century, Shock Doctor, Under Armour : le matériel des salles, avec ses références fabricant.' },
+];

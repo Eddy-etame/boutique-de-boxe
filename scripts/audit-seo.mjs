@@ -165,6 +165,11 @@ for (let i = 0; i < locations.length; i += 4) {
           'mot-clé absent du visible ' + path + ' : ' + head.join(' / '),
         );
       }
+      // Questions frequentes : visibles et en FAQPage sur l'accueil, chaque fiche et les pages de service qui en portent.
+      if (path === '/' || path.startsWith('/produits/') || ['/faq/', '/livraison/', '/retours/'].includes(path)) {
+        assert.ok(structured.some((x) => x['@type'] === 'FAQPage'), 'FAQPage ' + path);
+        assert.ok(html.includes('class="seo-faq"'), 'FAQ visible ' + path);
+      }
       if (path !== '/')
         assert.ok(
           structured.some((x) => x['@type'] === 'BreadcrumbList'),

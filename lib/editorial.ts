@@ -6,9 +6,44 @@ export type Service = {
   description: string;
   eyebrow: string;
   sections: { title: string; paragraphs: string[] }[];
+  /** Questions visibles en bas de page, publiées en FAQPage pour les moteurs et les assistants. */
+  faq?: { question: string; answer: string }[];
 };
 export const services: Record<string, Service> = {
+  faq: {
+    title: 'Questions fréquentes : essai, livraison, tailles, retours',
+    description: 'Les réponses de Boutique de Boxe : ouverture des ventes, prix prévus, commande d’essai sans paiement, livraison dans toute la France, tailles et onces, retours, paiement sécurisé, alerte par e-mail, données.',
+    eyebrow: 'QUESTIONS FRÉQUENTES',
+    sections: [
+      {
+        title: 'Tout ce qu’on nous demande, avant même l’ouverture.',
+        paragraphs: [
+          'Boutique de Boxe prépare son ouverture : le catalogue est complet, avec les tailles réelles et les prix prévus, et la commande peut déjà être essayée de bout en bout, sans paiement. Voici les réponses aux questions que vous nous posez le plus, par e-mail comme en salle.',
+        ],
+      },
+    ],
+    faq: [
+      { question: 'Quand la boutique ouvre-t-elle ses ventes ?', answer: 'La date n’est pas encore publiée. Laissez votre e-mail sur la page « Ouverture de la boutique » ou sur n’importe quelle fiche : nous vous écrivons le jour J, et vous ne recevez rien d’autre.' },
+      { question: 'Les prix affichés sont-ils définitifs ?', answer: 'Ce sont les prix prévus à l’ouverture, TTC, hors livraison. Ils peuvent bouger à la marge d’ici là ; le prix payé sera celui affiché le jour de la commande.' },
+      { question: 'À quoi sert la commande d’essai ?', answer: 'À parcourir tout le tunnel comme un vrai achat : panier, coordonnées, livraison, reçu, sans qu’aucun paiement ne soit demandé ni aucun article réservé. Le reçu se télécharge en PDF et rappelle qu’il s’agit d’une simulation.' },
+      { question: 'Livrez-vous partout en France ?', answer: 'Oui, dans toute la France métropolitaine, à domicile ou en point relais. Les frais prévus sont de 6,90 € en point relais, offerts dès 69 € d’achats, et de 8,90 € à domicile. Le matériel lourd, comme les sacs de frappe, a un tarif spécifique indiqué avant validation.' },
+      { question: 'Comment choisir la taille de mes gants ?', answer: 'Par l’usage, pas par la main : 10 oz pour le sac, 12 oz pour la technique, 14 à 16 oz avec un partenaire. Les onces sont un poids de rembourrage. Le guide des tailles et le guide des onces détaillent chaque cas, gants, textile, chaussures et enfants compris.' },
+      { question: 'Puis-je retourner ou échanger un article ?', answer: 'Oui. À l’ouverture des ventes, vous disposerez du délai légal de rétractation de quatorze jours, article non porté et dans son emballage. Les conditions exactes et les frais de retour seront précisés dans les conditions générales de vente.' },
+      { question: 'Le paiement est-il sécurisé ?', answer: 'Le paiement passera par PayPlug, prestataire français agréé : la carte est saisie sur sa page sécurisée, jamais sur la boutique, qui ne conserve aucun numéro de carte.' },
+      { question: 'Quelles marques trouve-t-on ?', answer: 'Metal Boxe, Elion, Fairtex, Twins, Cleto Reyes, Adidas, Everlast, Venum, Manto, Athena Fightwear, Century, Shock Doctor, Under Armour, entre autres : le matériel des salles Boxing Center, avec ses références fabricant.' },
+      { question: 'Y a-t-il du matériel pour les enfants ?', answer: 'Oui : gants du 4 au 8 oz, protège-dents et casques enfant, packs de démarrage, kimonos M0 à M4. Chaque fiche indique si le modèle est prévu pour un enfant.' },
+      { question: 'Équipez-vous les clubs, les coachs et les salles ?', answer: 'Oui. Pour un équipement de club ou une commande groupée, écrivez-nous via la page contact avec les quantités et les tailles : nous répondons par e-mail avec une proposition.' },
+      { question: 'Que faites-vous de mes données ?', answer: 'Vos coordonnées servent à la commande, au reçu et, si vous l’acceptez, à l’alerte d’ouverture. La mesure d’audience n’est activée qu’avec votre accord, sans outil tiers. La politique de confidentialité détaille durées et droits, dont l’effacement.' },
+      { question: 'Comment vous joindre ?', answer: 'Par la page contact, ou par e-mail à boxingcenter31@gmail.com. Nous répondons par e-mail, en général sous un jour ouvré.' },
+    ],
+  },
   livraison: {
+    faq: [
+      { question: 'Quels sont les frais de livraison prévus ?', answer: 'Point relais : 6,90 €, offerts dès 69 € d’achats. Domicile : 8,90 €. Matériel lourd (sacs de frappe, bases de frappe) : tarif spécifique affiché avant validation. Ces montants sont ceux prévus à l’ouverture des ventes.' },
+      { question: 'Livrez-vous en dehors de la France métropolitaine ?', answer: 'Pas à l’ouverture : la boutique livre la France métropolitaine, à domicile ou en point relais. Les autres destinations seront étudiées ensuite.' },
+      { question: 'Quels sont les délais de livraison ?', answer: 'Les délais seront confirmés à l’ouverture avec le transporteur retenu ; comptez en général deux à quatre jours ouvrés après expédition pour un colis standard.' },
+      { question: 'Un sac de frappe se livre-t-il à domicile ?', answer: 'Oui, à domicile uniquement, avec un tarif de matériel lourd indiqué avant validation ; le point relais n’accepte pas les colis lourds ou encombrants.' },
+    ],
     title: 'Livraison en France',
     description:
       'Les conditions de livraison envisagées : point relais, domicile, seuil de gratuité et matériel lourd. Vente et expédition à venir.',
@@ -41,6 +76,12 @@ export const services: Record<string, Service> = {
     ],
   },
   retours: {
+    faq: [
+      { question: 'Quel est le délai pour retourner un article ?', answer: 'Quatorze jours à compter de la réception, délai légal de rétractation, article non porté, non lavé, dans son emballage d’origine. Applicable dès l’ouverture des ventes.' },
+      { question: 'Comment échanger une taille ?', answer: 'Écrivez-nous depuis la page contact avec la référence de la commande et la taille souhaitée : nous organisons l’échange par e-mail.' },
+      { question: 'Qui paie les frais de retour ?', answer: 'Les conditions générales de vente le préciseront à l’ouverture. Un article défectueux ou non conforme est repris à nos frais.' },
+      { question: 'Quand suis-je remboursé ?', answer: 'Après réception et contrôle de l’article, sous quatorze jours au plus tard, sur le moyen de paiement utilisé.' },
+    ],
     title: 'Retours et échanges',
     description:
       'Informations sur les retours et échanges de la future boutique : phase catalogue, contact et conditions à consulter avant ouverture des ventes.',

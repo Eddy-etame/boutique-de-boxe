@@ -1,8 +1,8 @@
 import { catalogPage } from '@/lib/pagination';
-import { productGraph, collectionGraph, subfamilyGraph, subfamilyKeywords, productKeywords, categoryKeywords, guideKeywords, pageKeywords } from '@/lib/seo';
+import { productGraph, collectionGraph, subfamilyGraph, serviceGraph, subfamilyKeywords, productKeywords, categoryKeywords, guideKeywords, pageKeywords } from '@/lib/seo';
 import { SEO_COPY } from '@/lib/seo-copy';
 import { subfamilyFor, subfamiliesOf, subfamilyProducts } from '@/lib/subfamilies';
-import { longDescription, practiceLevel, disciplinesOf, careAdvice } from '@/lib/describe';
+import { longDescription, practiceLevel, disciplinesOf, careAdvice, productFaq } from '@/lib/describe';
 import { SeoBody } from '@/components/seo-body';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
@@ -218,7 +218,12 @@ export default async function Page({ params, searchParams }: Props) {
     return <GuidePage guide={g} />;
   }
   if (services[path])
-    return <ServicePage service={services[path]} slug={path} />;
+    return (
+      <>
+        <ServicePage service={services[path]} slug={path} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serviceGraph(path, services[path]) }} />
+      </>
+    );
   if (path === 'contact')
     return (
       <main id="contenu" className="page-wrap">
@@ -394,6 +399,7 @@ export default async function Page({ params, searchParams }: Props) {
             </table>
           </div>
         </section>
+        <SeoBody sections={[]} faq={productFaq(p)} heading="Questions sur ce modèle" />
         {related.length > 0 && (
           <section className="related-section">
             <h2>Modèles proches.</h2>
@@ -404,7 +410,7 @@ export default async function Page({ params, searchParams }: Props) {
             </div>
           </section>
         )}
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: productGraph(p, related, { description: longDescription(p) }) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: productGraph(p, related, { description: longDescription(p), faq: productFaq(p) }) }} />
       </main>
     );
   }

@@ -1,3 +1,4 @@
+import { guides } from './editorial';
 /**
  * Description longue et originale de chaque modèle, écrite depuis ses faits :
  * objet, marque, famille, tailles, couleurs, matières, usage. Les tournures
@@ -102,4 +103,30 @@ export function careAdvice(p: Product): string {
   if (['sacs-de-frappe'].includes(p.category)) return 'Essuyez la surface après usage, vérifiez la fixation et les sangles chaque mois, gardez le sac au sec.';
   if (['chaussures-boxe'].includes(p.category)) return 'Réservez-les à l’intérieur, aérez-les après la séance, nettoyez la semelle pour garder l’adhérence.';
   return 'Nettoyez selon la notice du fabricant et laissez sécher à l’air après chaque séance.';
+}
+
+/** Questions d’une fiche : taille, pratique, entretien, prix et disponibilité, livraison, retour. Tout vient des faits du modèle. */
+export function productFaq(p: Product): { question: string; answer: string }[] {
+  const family = categoryFor(p.category);
+  // Nom court dans les questions (sans le coloris), nom complet une fois dans la première réponse.
+  const short = p.name.split(' — ')[0];
+  const guideTitle = family?.guide === 'guide-des-tailles' || !family?.guide ? 'Guide des tailles' : guides.find((g) => g.slug === family.guide)?.title || 'Guide des tailles';
+  const sizes = p.sizes.map((s) => s.split(',')[0]);
+  const disciplines = disciplinesOf(p);
+  const level = practiceLevel(p).charAt(0).toLowerCase() + practiceLevel(p).slice(1);
+  const heavy = /sac de frappe|base de frappe|poire|punching|mannequin|bob\b/i.test(p.name + ' ' + p.category);
+  const size =
+    sizes.length > 1
+      ? `${p.name} existe en ${sizes.length} tailles : ${sizes.join(', ')}. Choisissez d’après l’usage, avec le guide « ${guideTitle} » lié sur cette fiche ; en cas de doute entre deux tailles, écrivez-nous depuis la page contact.`
+      : sizes.length === 1
+        ? `${p.name} existe en une seule taille : ${sizes[0]}. Le guide « ${guideTitle} » donne les repères de la famille.`
+        : `${p.name} est en taille unique. Les repères de la famille sont dans le guide « ${guideTitle} ».`;
+  return [
+    { question: `Quelle taille choisir pour ${short} ?`, answer: size },
+    { question: `Pour quelle pratique et quel niveau ?`, answer: `${disciplines.join(', ')}, niveau ${level}. ${p.short}` },
+    { question: `Comment entretenir ${short} ?`, answer: careAdvice(p) },
+    { question: `Quel est le prix, et quand sera-t-il disponible ?`, answer: `Le prix prévu à l’ouverture est de ${(p.price / 100).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}, TTC hors livraison. Les ventes ne sont pas encore ouvertes : laissez votre e-mail sur la fiche pour être prévenu le jour J ; vous pouvez déjà essayer la commande sans payer.` },
+    { question: `Comment est-il livré ?`, answer: heavy ? 'À domicile uniquement, dans toute la France métropolitaine, avec un tarif de matériel lourd indiqué avant validation ; le point relais n’accepte pas les colis lourds.' : 'Dans toute la France métropolitaine, en point relais (6,90 €, offerts dès 69 € d’achats) ou à domicile (8,90 €), aux tarifs prévus à l’ouverture.' },
+    { question: `Peut-on le retourner ou l’échanger ?`, answer: 'Oui, dès l’ouverture des ventes : quatorze jours de rétractation, article non porté et dans son emballage ; pour un échange de taille, écrivez-nous avec la référence de la commande.' },
+  ];
 }
