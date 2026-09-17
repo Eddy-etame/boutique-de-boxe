@@ -1,6 +1,6 @@
 # Référencement — moteurs de recherche et moteurs de réponse
 
-Mise à jour : 16 septembre 2026. Code : `lib/seo.ts`, `lib/seo-text.ts`. Contrôle : `node scripts/audit-seo.mjs` (serveur local ou `QA_ORIGIN`).
+Mise à jour : 17 septembre 2026 (domaine canonique `boutique-de-boxe.com`, aucune redirection d’hôte). Code : `lib/seo.ts`, `lib/seo-text.ts`. Contrôle : `node scripts/audit-seo.mjs` (serveur local ou `QA_ORIGIN`).
 
 ## Ce que lit un robot, page par page
 
@@ -42,8 +42,8 @@ Ces fichiers servent la citabilité et les outils tiers. Ils ne sont pas présen
 
 ## Passage au domaine final
 
-1. Raccorder `boutique-de-boxe.fr` et `www` dans Vercel, vérifier DNS/HTTPS, puis redéployer. `shop.origin` fixe déjà les canonicals, sitemap, graphes et fichiers agents sur `https://boutique-de-boxe.fr`. Aligner aussi `NEXT_PUBLIC_SITE_ORIGIN` et `PAYPLUG_PUBLIC_BASE_URL` sur cette valeur, sans changer le mode simulation.
-2. Google Search Console : propriété du domaine `boutique-de-boxe.fr`, vérifiée par le propriétaire ; sitemap `https://boutique-de-boxe.fr/sitemap.xml`. La décision de le soumettre appartient au propriétaire. Bing Webmaster Tools reste facultatif.
+1. Raccorder `boutique-de-boxe.com` et `www` dans Vercel, vérifier DNS/HTTPS, puis redéployer. `shop.origin` fixe déjà les canonicals, sitemap, graphes et fichiers agents sur `https://boutique-de-boxe.com`. Aligner aussi `NEXT_PUBLIC_SITE_ORIGIN` et `PAYPLUG_PUBLIC_BASE_URL` sur cette valeur, sans changer le mode simulation.
+2. Google Search Console : propriété du domaine `boutique-de-boxe.com`, vérifiée par le propriétaire ; sitemap `https://boutique-de-boxe.com/sitemap.xml`. La décision de le soumettre appartient au propriétaire. Bing Webmaster Tools reste facultatif.
 3. IndexNow : la clé publique est `public/b7d1f0a3e9c24f6b8a5d3c1e7f9b2a4c.txt` ; sur décision explicite du propriétaire, `node scripts/indexnow.mjs` soumet les URL du sitemap à Bing, Yandex, Naver et Seznam.
 4. Renseigner `SAME_AS` dans `lib/seo.ts` dès qu’un profil officiel existe (Instagram, Facebook, YouTube) : rien n’est inventé d’ici là.
 5. À l’ouverture des ventes : `offers` sur chaque Product, `priceValidUntil`, `shippingDetails`, puis Google Merchant Center avec `/catalogue.json` comme base de flux.
@@ -62,7 +62,7 @@ Chaque requête a sa page canonique dans `QUERY_MAP` (`lib/seo-copy.ts`), publi�
 
 ## Citabilité par les moteurs de réponse
 
-Les pages et interfaces publiques présentent les mêmes faits : identité de la boutique, réponses directes, noms de modèles, guides et état simulé des ventes. Les 20 intentions de `QUERY_MAP` renvoient à leurs destinations sur `boutique-de-boxe.fr`. Les entités structurées et les fichiers agents facilitent la compréhension par les outils qui les lisent ; ils ne garantissent ni citation ni classement. `hreflang="fr-FR"` identifie une version linguistique ; `x-default` indique une version de repli, sans promettre une couverture géographique. La zone commerciale décrite reste la France, distincte de l’adresse de l’entreprise à Toulouse.
+Les pages et interfaces publiques présentent les mêmes faits : identité de la boutique, réponses directes, noms de modèles, guides et état simulé des ventes. Les 20 intentions de `QUERY_MAP` renvoient à leurs destinations sur `boutique-de-boxe.com`. Les entités structurées et les fichiers agents facilitent la compréhension par les outils qui les lisent ; ils ne garantissent ni citation ni classement. `hreflang="fr-FR"` identifie une version linguistique ; `x-default` indique une version de repli, sans promettre une couverture géographique. La zone commerciale décrite reste la France, distincte de l’adresse de l’entreprise à Toulouse.
 
 ## Première position sur les mots-clés du brief : ce qui est fait, ce qui reste
 
@@ -70,7 +70,7 @@ Ce que le code garantit, vérifié par `node scripts/audit-seo.mjs` à chaque li
 
 Ce qu’aucun code ne remplace, dans l’ordre d’effet :
 
-1. **Le domaine.** Le domaine retenu est `boutique-de-boxe.fr`. Raccorder DNS et HTTPS puis publier la version alignée. Le nom de domaine et le choix d’un hébergeur ne garantissent aucune position ; les données Search Console permettront de mesurer l’indexation et les résultats réels.
+1. **Le domaine.** Le domaine retenu est `boutique-de-boxe.com`. Raccorder DNS et HTTPS puis publier la version alignée. Le nom de domaine et le choix d’un hébergeur ne garantissent aucune position ; les données Search Console permettront de mesurer l’indexation et les résultats réels.
 2. **Search Console et Bing Webmaster.** Vérifier le domaine (`NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION`, `NEXT_PUBLIC_BING_SITE_VERIFICATION`), soumettre `/sitemap.xml`, puis lire les positions moyennes par requête. `node scripts/indexnow.mjs` prévient Bing, Yandex, Naver et Seznam à chaque mise à jour.
 3. **Les liens entrants.** Le levier le plus fort est déjà dans la maison : les sites des salles Boxing Center (Portet, Minimes, Saint-Cyprien, Ramonville, L’Union, Tournefeuille) doivent pointer vers la boutique avec les phrases du brief en texte de lien (« vente matériel boxe » → `/boutique-boxe/`, « gants de boxe » → `/gants-de-boxe/`, etc.), depuis leur pied de page et leurs pages matériel. Ensuite : fédérations, clubs partenaires, marques distribuées (Metal Boxe, Elion, Fairtex), annuaires spécialisés.
 4. **Les profils.** Renseigner `SAME_AS` (Instagram, Facebook, YouTube, TikTok) dans `lib/seo.ts` pour que l’entité soit reconnue par Google et par les moteurs de réponse.
@@ -79,6 +79,6 @@ Ce qu’aucun code ne remplace, dans l’ordre d’effet :
 
 ## Contrôle du domaine canonique
 
-`node scripts/audit-seo.mjs` vérifie désormais explicitement l’origine `.fr` du sitemap, des photos hébergées localement, des canonicals, des hreflang et des métadonnées sociales. Les photos externes conservent leur URL HTTPS d’origine et les doubles préfixes sont refusés. Il refuse les anciennes origines `.com`, Vercel et Sites dans le HTML et les interfaces publiques vérifiées. Les références JSON-LD sont résolues par rapport au domaine canonique, même pendant une recette localhost.
+`node scripts/audit-seo.mjs` vérifie désormais explicitement l’origine `boutique-de-boxe.com` du sitemap, des photos hébergées localement, des canonicals, des hreflang et des métadonnées sociales. Les photos externes conservent leur URL HTTPS d’origine et les doubles préfixes sont refusés. Il refuse les anciennes origines `.com`, Vercel et Sites dans le HTML et les interfaces publiques vérifiées. Les références JSON-LD sont résolues par rapport au domaine canonique, même pendant une recette localhost.
 
-Le changement de domaine ne justifie pas de répéter « boutique-de-boxe.fr » dans chaque titre : les familles, usages, marques et modèles restent les intentions des visiteurs. La balise `keywords` est un inventaire interne ; Google n’en tient pas compte pour le classement. Références : [guide SEO Google](https://developers.google.com/search/docs/fundamentals/seo-starter-guide), [balises prises en charge](https://developers.google.com/search/docs/crawling-indexing/special-tags).
+Le changement de domaine ne justifie pas de répéter « boutique-de-boxe.com » dans chaque titre : les familles, usages, marques et modèles restent les intentions des visiteurs. La balise `keywords` est un inventaire interne ; Google n’en tient pas compte pour le classement. Références : [guide SEO Google](https://developers.google.com/search/docs/fundamentals/seo-starter-guide), [balises prises en charge](https://developers.google.com/search/docs/crawling-indexing/special-tags).

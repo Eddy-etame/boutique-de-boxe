@@ -345,7 +345,7 @@ export function Admin() {
             <article>
               <h3>Search Console</h3>
               <p>
-                Propriété à connecter pour boutique-de-boxe.fr : indexation,
+                Propriété à connecter pour boutique-de-boxe.com : indexation,
                 requêtes, clics, impressions et position. Aucune donnée de
                 performance n’est simulée.
               </p>

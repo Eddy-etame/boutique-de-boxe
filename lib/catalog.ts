@@ -39,9 +39,10 @@ export type Product = {
 };
 export const shop = {
   name: 'Boutique de Boxe',
-  // Identité publique fixe : un aperçu ou une ancienne variable ne change pas les canonicals.
-  origin: 'https://boutique-de-boxe.fr',
-  intendedDomain: 'https://boutique-de-boxe.fr',
+  // Identité publique fixe, décidée par le propriétaire le 17 septembre 2026 : boutique-de-boxe.com.
+  // Ni un aperçu ni une variable d’environnement périmée ne changent les canonicals (le .fr du 16 était une erreur).
+  origin: 'https://boutique-de-boxe.com',
+  intendedDomain: 'https://boutique-de-boxe.com',
   email: 'boxingcenter31@gmail.com',
   phone: '09 54 14 74 72',
   entity: 'SAS BOXING CENTER',

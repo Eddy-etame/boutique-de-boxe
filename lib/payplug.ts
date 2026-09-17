@@ -5,8 +5,8 @@ export const PAYPLUG_API_VERSION = '2019-08-06';
 export const LIVE_PAYMENT_RELEASED = false;
 const API_ORIGIN = 'https://api.payplug.com/v1';
 export const PAYPLUG_OWNED_ORIGINS = [
-  'https://boutique-de-boxe.fr',
-  'https://www.boutique-de-boxe.fr',
+  'https://boutique-de-boxe.com',
+  'https://www.boutique-de-boxe.com',
 ] as const;
 
 export type CommerceMode = 'simulation' | 'payplug_test' | 'payplug_live';

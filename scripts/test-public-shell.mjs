@@ -47,20 +47,17 @@ for (const cookie of [
   );
   assert.match(
     html,
-    /<link rel="canonical" href="https:\/\/boutique-de-boxe.fr\/"/,
+    /<link rel="canonical" href="https:\/\/boutique-de-boxe.com\/"/,
   );
 }
-for (const host of ['www.boutique-de-boxe.fr', 'boutique-de-boxe.vercel.app']) {
+// Aucune redirection d'hote : www, l'alias Vercel et l'apex servent tous la page.
+for (const host of ['www.boutique-de-boxe.com', 'boutique-de-boxe.vercel.app', 'boutique-de-boxe.com']) {
   const r = await hostRequest('/gants-de-boxe/?page=2', host);
-  assert.equal(r.status, 308, host);
-  assert.equal(
-    r.location,
-    'https://boutique-de-boxe.fr/gants-de-boxe/?page=2',
-    host,
-  );
+  assert.equal(r.status, 200, host);
+  assert.equal(r.location, undefined, 'no redirect for ' + host);
 }
-const apex = await hostRequest('/robots.txt', 'boutique-de-boxe.fr');
-assert.equal(apex.status, 200, 'No apex redirect loop');
+const apex = await hostRequest('/robots.txt', 'boutique-de-boxe.com');
+assert.equal(apex.status, 200, 'apex serves robots');
 console.log(
-  'PASS: 4 SSR cookie states, no-JS fallback markup, .fr canonical, 2 permanent redirects retaining path/query, apex without loop. Local requests only.',
+  'PASS: 4 SSR cookie states, no-JS fallback markup, .com canonical, no host redirect (www, alias, apex all serve), robots on apex. Local requests only.',
 );

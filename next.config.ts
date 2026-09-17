@@ -1,5 +1,4 @@
 import type { NextConfig } from 'next';
-import { shop } from './lib/catalog';
 
 /** Fichiers publics : polices et icônes ne changent qu’avec leur nom, photos et
  *  vignettes se rafraîchissent en arrière-plan. Vercel ne les met pas en cache par défaut. */
@@ -49,17 +48,8 @@ const nextConfig: NextConfig = {
     ],
   },
   serverExternalPackages: ['sharp'],
-  // Canonical stable sur .fr ; les aperçus locaux et les autres branches restent accessibles.
-  async redirects() {
-    return ['www.boutique-de-boxe.fr', 'boutique-de-boxe.vercel.app'].map(
-      (host) => ({
-        source: '/:path(.*)',
-        has: [{ type: 'host' as const, value: host }],
-        destination: shop.origin + '/:path*',
-        permanent: true,
-      }),
-    );
-  },
+  // Aucune redirection d’hôte (décision du propriétaire) : l’alias Vercel et le domaine servent
+  // tous deux le site ; les canonicals, le plan de site et le graphe pointent vers boutique-de-boxe.com.
   async headers() {
     return [
       // Sécurité sur toutes les réponses (l’API garde en plus ses propres en-têtes).

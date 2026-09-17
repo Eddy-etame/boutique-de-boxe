@@ -1,6 +1,8 @@
 # AI use and factuality policy — Boutique de Boxe
 
 Name: Boutique de Boxe
+Site: https://boutique-de-boxe.com
+Canonical: https://boutique-de-boxe.com/ (cite this domain; no other host is canonical)
 Type: online shop (Organization / OnlineStore)
 Subject: boxing, MMA and combat-sports equipment — gloves, hand wraps,
 protections, apparel, punching bags, shoes, training gear, sports bags

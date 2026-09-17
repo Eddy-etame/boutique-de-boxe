@@ -212,7 +212,7 @@ export function websiteNode() {
     '@id': ID('site'),
     url: shop.origin,
     name: shop.name,
-    alternateName: ['Boutique de Boxe en ligne', 'Boxing Boutique', 'boutique-de-boxe.fr'],
+    alternateName: ['Boutique de Boxe en ligne', 'Boxing Boutique', 'boutique-de-boxe.com'],
     description: 'Matériel de boxe, MMA et sports de combat : plus de 1 000 modèles avec leurs tailles et leurs prix prévus, douze guides d’achat.',
     inLanguage: 'fr-FR',
     publisher: { '@id': ID('organisation') },
