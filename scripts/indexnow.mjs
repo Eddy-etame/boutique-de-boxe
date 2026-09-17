@@ -5,17 +5,17 @@
  *
  *   node scripts/indexnow.mjs                      # toutes les URL du sitemap
  *   node scripts/indexnow.mjs /gants-de-boxe/ /guides/debuter-boxe/
- *   SITE_ORIGIN=https://boutique-de-boxe.com node scripts/indexnow.mjs
+ *   SITE_ORIGIN=https://www.boutique-de-boxe.com node scripts/indexnow.mjs
  */
 const KEY = 'b7d1f0a3e9c24f6b8a5d3c1e7f9b2a4c';
 const origin = (
   process.env.SITE_ORIGIN ||
   process.env.NEXT_PUBLIC_SITE_ORIGIN ||
-  'https://boutique-de-boxe.com'
+  'https://www.boutique-de-boxe.com'
 ).replace(/\/$/, '');
-if (origin !== 'https://boutique-de-boxe.com')
+if (origin !== 'https://www.boutique-de-boxe.com')
   throw new Error(
-    'IndexNow attend le domaine canonique https://boutique-de-boxe.com.',
+    'IndexNow attend le domaine canonique https://www.boutique-de-boxe.com.',
   );
 const host = new URL(origin).host;
 

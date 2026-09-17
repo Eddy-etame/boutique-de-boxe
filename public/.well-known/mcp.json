@@ -2,8 +2,8 @@
   "schema_version": "1.0",
   "name": "boutique-de-boxe-information-server",
   "description": "Faits en lecture seule sur Boutique de Boxe : identité, état des ventes, familles de produits, modèles (nom, marque, tailles, couleurs, prix prévu), guides d’achat.",
-  "url": "https://boutique-de-boxe.com",
-  "endpoint": "https://boutique-de-boxe.com/api/mcp",
+  "url": "https://www.boutique-de-boxe.com",
+  "endpoint": "https://www.boutique-de-boxe.com/api/mcp",
   "transport": "streamable-http",
   "subject": {
     "name": "Boutique de Boxe",
@@ -37,11 +37,11 @@
     "technicalLead": "Eddy Etame Etame"
   },
   "related": {
-    "llms": "https://boutique-de-boxe.com/llms.txt",
-    "llmsFull": "https://boutique-de-boxe.com/llms-full.txt",
-    "catalogue": "https://boutique-de-boxe.com/catalogue.json",
-    "policy": "https://boutique-de-boxe.com/ai.txt",
-    "humans": "https://boutique-de-boxe.com/humans.txt",
-    "sitemap": "https://boutique-de-boxe.com/sitemap.xml"
+    "llms": "https://www.boutique-de-boxe.com/llms.txt",
+    "llmsFull": "https://www.boutique-de-boxe.com/llms-full.txt",
+    "catalogue": "https://www.boutique-de-boxe.com/catalogue.json",
+    "policy": "https://www.boutique-de-boxe.com/ai.txt",
+    "humans": "https://www.boutique-de-boxe.com/humans.txt",
+    "sitemap": "https://www.boutique-de-boxe.com/sitemap.xml"
   }
 }

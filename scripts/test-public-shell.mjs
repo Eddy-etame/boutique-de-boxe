@@ -47,7 +47,7 @@ for (const cookie of [
   );
   assert.match(
     html,
-    /<link rel="canonical" href="https:\/\/boutique-de-boxe.com\/"/,
+    /<link rel="canonical" href="https:\/\/www\.boutique-de-boxe\.com\/"/,
   );
 }
 // Aucune redirection d'hote : www, l'alias Vercel et l'apex servent tous la page.

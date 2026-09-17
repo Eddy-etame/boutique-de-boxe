@@ -1,6 +1,6 @@
 # Raccordement PayPlug — Boutique de Boxe
 
-**Consigne actuelle — 17 septembre 2026 :** `COMMERCE_MODE=simulation` dans `.env.local`, `.env.vercel` et `.env.example`. Origine publique préparée : `https://boutique-de-boxe.com`. Les essais du 11 septembre ci-dessous sont historiques ; ils ne décrivent plus le mode local actuel. Aucun paiement ni appel PayPlug n’a été effectué pendant cette passe. Vérifier DNS, HTTPS, callbacks et IPN après le déploiement avant tout nouvel essai autorisé.
+**Consigne actuelle — 17 septembre 2026 :** `COMMERCE_MODE=simulation` dans `.env.local`, `.env.vercel` et `.env.example`. Origine publique préparée : `https://www.boutique-de-boxe.com`. Les essais du 11 septembre ci-dessous sont historiques ; ils ne décrivent plus le mode local actuel. Aucun paiement ni appel PayPlug n’a été effectué pendant cette passe. Vérifier DNS, HTTPS, callbacks et IPN après le déploiement avant tout nouvel essai autorisé.
 
 État au 11 septembre 2026, tard : **la boutique reste en simulation pour le public**, aucun débit réel n’est autorisé (verrou `LIVE_PAYMENT_RELEASED = false`). Le **test bac à sable** a été exécuté en local, à la demande du propriétaire, avec la clé de test du compte PayPlug de box-plus :
 
@@ -37,7 +37,7 @@
 | `PAYPLUG_TEST_SECRET_KEY` | Clé `sk_test_…` du compte box-plus, posée en local et dans `.env.vercel` le 11 septembre 2026 | Secret du compte PayPlug de test. Ne pas utiliser une clé réelle ici ; à remplacer par la clé du compte propre à la boutique quand il existera. |
 | `PAYPLUG_LIVE_SECRET_KEY` | Vide maintenant | Réservée à une future activation explicite. Sa seule présence n’active rien. |
 | `PAYPLUG_API_VERSION` | `2019-08-06` | Version explicitement prise en charge et testée. Une autre valeur est refusée. |
-| `PAYPLUG_PUBLIC_BASE_URL` | `https://boutique-de-boxe.com` | Sert à construire les retours et notifications ; ne vient jamais de l’en-tête Host ou d’une saisie client. Doit figurer dans la liste stricte des origines autorisées de l’adaptateur. |
+| `PAYPLUG_PUBLIC_BASE_URL` | `https://www.boutique-de-boxe.com` | Sert à construire les retours et notifications ; ne vient jamais de l’en-tête Host ou d’une saisie client. Doit figurer dans la liste stricte des origines autorisées de l’adaptateur. |
 | `ADMIN_EMAIL` | Adresse du propriétaire, variable Vercel | Accès à l’atelier et aux tests PayPlug. |
 | `RESEND_API_KEY` | À configurer si Resend est retenu | Envoi transactionnel des reçus de simulation ; indépendant de PayPlug. |
 | `MAIL_FROM` | À configurer sur un domaine expéditeur vérifié | Exemple de forme : `Boutique de Boxe <reçus@votre-domaine-verifie.fr>` ; ne pas utiliser cet exemple tel quel. |
@@ -45,7 +45,7 @@
 
 Le fichier `.env.example` contient des noms et valeurs de référence sans secret. En local, les secrets se placent dans **`.env.local`**, ignoré par Git ; sur Vercel, dans Settings → Environment Variables (voir DEPLOY-VERCEL.md). Ne pas mettre de clé dans `NEXT_PUBLIC_*`, dans le catalogue, dans un formulaire ou dans Git. Ne pas modifier les secrets de box-plus.
 
-Les origines autorisées dans l’adaptateur sont `https://boutique-de-boxe.com` et `https://www.boutique-de-boxe.com` uniquement ; une ancienne variable d’environnement n’élargit plus cette liste. Cette liste est une restriction technique ; elle ne prouve pas que le domaine personnalisé est connecté. Un changement de domaine nécessite de vérifier son contrôle, son HTTPS, puis de mettre à jour la liste et les canonicals ensemble.
+Les origines autorisées dans l’adaptateur sont `https://www.boutique-de-boxe.com` et `https://www.boutique-de-boxe.com` uniquement ; une ancienne variable d’environnement n’élargit plus cette liste. Cette liste est une restriction technique ; elle ne prouve pas que le domaine personnalisé est connecté. Un changement de domaine nécessite de vérifier son contrôle, son HTTPS, puis de mettre à jour la liste et les canonicals ensemble.
 
 ## Routes préparées
 

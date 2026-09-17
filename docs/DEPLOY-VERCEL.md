@@ -6,8 +6,8 @@ Mise à jour domaine : 17 septembre 2026 (`boutique-de-boxe.com` ; le `.fr` du 1
 
 1. Projet dédié à la boutique (créé le 10 septembre). Ne pas partager le projet box-plus.
 2. **Authentication → URL Configuration** :
-   - Site URL : `https://boutique-de-boxe.com`.
-   - Redirect URLs : `https://boutique-de-boxe.com/api/auth/callback`, `https://www.boutique-de-boxe.com/api/auth/callback`, l’URL Vercel `/api/auth/callback`, et `http://localhost:3000/api/auth/callback` pour le poste de travail.
+   - Site URL : `https://www.boutique-de-boxe.com`.
+   - Redirect URLs : `https://www.boutique-de-boxe.com/api/auth/callback`, `https://www.boutique-de-boxe.com/api/auth/callback`, l’URL Vercel `/api/auth/callback`, et `http://localhost:3000/api/auth/callback` pour le poste de travail.
 3. **Authentication → Providers → Email** : laisser « Enable email provider » actif ; « Confirm email » peut rester actif, le lien magique crée le compte du propriétaire à la première connexion.
 4. **Settings → Database → Connection string** :
    - *Transaction pooler* (port 6543) → valeur de `DATABASE_URL` sur Vercel.
@@ -40,10 +40,10 @@ Les migrations sont dans `drizzle/` (`0000_slim_masque.sql` crée les huit table
 | `NEXT_PUBLIC_SUPABASE_URL` | URL du projet Supabase |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clé anon (publique) |
 | `ADMIN_EMAIL` | Adresse du propriétaire, seule autorisée dans l’atelier |
-| `NEXT_PUBLIC_SITE_ORIGIN` | `https://boutique-de-boxe.com` ; les métadonnées publiques restent fixées sur ce domaine même sur un aperçu |
+| `NEXT_PUBLIC_SITE_ORIGIN` | `https://www.boutique-de-boxe.com` ; les métadonnées publiques restent fixées sur ce domaine même sur un aperçu |
 | `COMMERCE_MODE` | `simulation` |
 | `PAYPLUG_API_VERSION` | `2019-08-06` |
-| `PAYPLUG_PUBLIC_BASE_URL` | `https://boutique-de-boxe.com` ; aucun appel en mode simulation |
+| `PAYPLUG_PUBLIC_BASE_URL` | `https://www.boutique-de-boxe.com` ; aucun appel en mode simulation |
 | `PAYPLUG_TEST_SECRET_KEY`, `PAYPLUG_LIVE_SECRET_KEY` | Secrets privés selon PAYPLUG-WIRING.md ; conserver le mode simulation |
 | `RESEND_API_KEY`, `MAIL_FROM` | Vides ; aucun fournisseur de reçus retenu |
 
@@ -72,12 +72,12 @@ pnpm dev             # http://localhost:3000
 - `lib/auth.ts` : session Supabase ; cookie `__sites_local_auth` uniquement en développement. `app/chatgpt-auth.ts` supprimé.
 - `lib/request.ts` : adresse client (`x-real-ip`, puis `cf-connecting-ip` des tests, puis `x-forwarded-for`).
 - Requêtes : `json_extract` → `payload::jsonb->>'…'` ; `SET hits=hits+1` → `SET hits=rate_limits.hits+1` (ambiguïté Postgres) ; validation de commande verrouillée par `SELECT … FOR UPDATE` sur le panier.
-- `lib/catalog.ts` : identité SEO publique fixée sur `https://boutique-de-boxe.com` ; une variable d’aperçu ne la remplace pas.
+- `lib/catalog.ts` : identité SEO publique fixée sur `https://www.boutique-de-boxe.com` ; une variable d’aperçu ne la remplace pas.
 - `next.config.ts` : `trailingSlash` conservé, `skipTrailingSlashRedirect` pour ne pas rediriger les routes API en 308.
 
 ## Domaine : boutique-de-boxe.com (décidé le 17 septembre 2026)
 
-`https://boutique-de-boxe.com` est l’origine publique unique : métadonnées, canonicals, hreflang, images sociales, sitemap, graphes et flux pour les moteurs suivent `shop.origin`. **Aucune redirection d’hôte** : `www`, l’alias `boutique-de-boxe.vercel.app` et l’apex servent tous le site ; les canonicals suffisent à la consolidation.
+`https://www.boutique-de-boxe.com` est l’origine publique unique : métadonnées, canonicals, hreflang, images sociales, sitemap, graphes et flux pour les moteurs suivent `shop.origin`. **Aucune redirection d’hôte** : `www`, l’alias `boutique-de-boxe.vercel.app` et l’apex servent tous le site ; les canonicals suffisent à la consolidation.
 
 À appliquer sur les comptes : ajouter le domaine et www dans Vercel, poser les DNS indiqués, vérifier HTTPS, garder `COMMERCE_MODE=simulation`, puis redéployer. Si une variable `NEXT_PUBLIC_SITE_ORIGIN` traîne dans le tableau de bord Vercel, la retirer : elle est ignorée par le code mais prête à confusion.
 

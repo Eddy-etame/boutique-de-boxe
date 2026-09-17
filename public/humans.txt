@@ -10,7 +10,7 @@ dans le dépôt du site et ne remplace pas une preuve juridique externe.
 
 /* SITE */
 Nom : Boutique de Boxe
-Adresse : https://boutique-de-boxe.com
+Adresse : https://www.boutique-de-boxe.com
 Objet : boutique en ligne de matériel de boxe, de MMA et de sports de combat
 Langue : français
 Statut : ventes non ouvertes ; prix prévus à l’ouverture ; commande d’essai sans paiement

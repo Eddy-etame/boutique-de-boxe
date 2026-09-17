@@ -42,8 +42,8 @@ Ces fichiers servent la citabilité et les outils tiers. Ils ne sont pas présen
 
 ## Passage au domaine final
 
-1. Raccorder `boutique-de-boxe.com` et `www` dans Vercel, vérifier DNS/HTTPS, puis redéployer. `shop.origin` fixe déjà les canonicals, sitemap, graphes et fichiers agents sur `https://boutique-de-boxe.com`. Aligner aussi `NEXT_PUBLIC_SITE_ORIGIN` et `PAYPLUG_PUBLIC_BASE_URL` sur cette valeur, sans changer le mode simulation.
-2. Google Search Console : propriété du domaine `boutique-de-boxe.com`, vérifiée par le propriétaire ; sitemap `https://boutique-de-boxe.com/sitemap.xml`. La décision de le soumettre appartient au propriétaire. Bing Webmaster Tools reste facultatif.
+1. Raccorder `boutique-de-boxe.com` et `www` dans Vercel, vérifier DNS/HTTPS, puis redéployer. `shop.origin` fixe déjà les canonicals, sitemap, graphes et fichiers agents sur `https://www.boutique-de-boxe.com`. Aligner aussi `NEXT_PUBLIC_SITE_ORIGIN` et `PAYPLUG_PUBLIC_BASE_URL` sur cette valeur, sans changer le mode simulation.
+2. Google Search Console : propriété du domaine `boutique-de-boxe.com`, vérifiée par le propriétaire ; sitemap `https://www.boutique-de-boxe.com/sitemap.xml`. La décision de le soumettre appartient au propriétaire. Bing Webmaster Tools reste facultatif.
 3. IndexNow : la clé publique est `public/b7d1f0a3e9c24f6b8a5d3c1e7f9b2a4c.txt` ; sur décision explicite du propriétaire, `node scripts/indexnow.mjs` soumet les URL du sitemap à Bing, Yandex, Naver et Seznam.
 4. Renseigner `SAME_AS` dans `lib/seo.ts` dès qu’un profil officiel existe (Instagram, Facebook, YouTube) : rien n’est inventé d’ici là.
 5. À l’ouverture des ventes : `offers` sur chaque Product, `priceValidUntil`, `shippingDetails`, puis Google Merchant Center avec `/catalogue.json` comme base de flux.

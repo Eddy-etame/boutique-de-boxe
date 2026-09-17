@@ -1,11 +1,11 @@
 // Budget de vitesse du site en ligne. À lancer après chaque mise en ligne, et avant de dire « c’est rapide ».
-//   node scripts/check-speed.mjs                 (alias Vercel)
-//   QA_ORIGIN=https://boutique-de-boxe.com node scripts/check-speed.mjs
+//   node scripts/check-speed.mjs                 (le domaine : l’alias vercel.app redirige désormais)
+//   QA_ORIGIN=https://www.boutique-de-boxe.com node scripts/check-speed.mjs
 //
 // Le réseau de la machine qui mesure compte dans chaque chiffre : on le retire en mesurant d’abord un
 // fichier servi par le bord du réseau (favicon). Ce qui reste est le temps du serveur : c’est lui
 // qu’on tient sous budget. Trois mesures par adresse, on garde la médiane. Code de sortie 1 si dépassé.
-const origin = process.env.QA_ORIGIN || 'https://boutique-de-boxe.vercel.app';
+const origin = process.env.QA_ORIGIN || 'https://www.boutique-de-boxe.com';
 const BUDGET_MS = { page: 450, api: 400, weightKB: 260 };
 const pages = [
   ['/', 'page'],

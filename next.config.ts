@@ -18,7 +18,10 @@ const csp = [
   "frame-ancestors 'none'",
   "frame-src 'none'",
   "form-action 'self'",
-  "img-src 'self' data:",
+  // Les vues secondaires des fiches viennent encore des serveurs des fournisseurs (1 854 photos sur deux
+  // hôtes ; le premier redirige vers son stockage). Sans ces hôtes, la politique bloquait les galeries.
+  // À retirer le jour où ces photos seront servies par le site.
+  "img-src 'self' data: https://api.ecommercio.com https://ypnjjowtudmpxoqopzta.supabase.co https://media.cdnws.com",
   "font-src 'self'",
   "style-src 'self' 'unsafe-inline'",
   "script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com" + (isProd ? '' : " 'unsafe-eval'"),

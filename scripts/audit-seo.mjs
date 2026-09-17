@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import { writeFileSync, mkdirSync } from 'node:fs';
 const base = process.env.QA_ORIGIN || 'http://localhost:3000';
-const expectedOrigin = 'https://boutique-de-boxe.com';
+const expectedOrigin = 'https://www.boutique-de-boxe.com';
 const obsoleteOrigin =
-  /https?:\/\/(?:www\.)?boutique-de-boxe\.(?:fr|vercel\.app)|https?:\/\/boutique-de-boxe\.etame-eddy01\.chatgpt\.site/;
+  /https?:\/\/(?:www\.)?boutique-de-boxe\.(?:fr|vercel\.app)|https?:\/\/boutique-de-boxe\.com|https?:\/\/boutique-de-boxe\.etame-eddy01\.chatgpt\.site/;
 const assertPublicOrigin = (value, label) =>
   assert.equal(new URL(value).origin, expectedOrigin, label);
 const sitemap = await (await fetch(base + '/sitemap.xml')).text();
