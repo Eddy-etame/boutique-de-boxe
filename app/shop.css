@@ -2211,6 +2211,11 @@ html[data-scrolled] .site-header {
   gap: 55px 28px;
   padding: 10px 0 55px;
 }
+@media (max-width: 960px) {
+  .guides-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
 .guide-cover {
   aspect-ratio: 1.12;
   padding: 22px;
@@ -2701,9 +2706,6 @@ html[data-scrolled] .site-header {
   .service-layout {
     gap: 6%;
     grid-template-columns: 1fr 2fr;
-  }
-  .guides-grid {
-    grid-template-columns: repeat(2, 1fr);
   }
   .article-heading > p {
     font-size: 18px;

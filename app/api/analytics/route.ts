@@ -36,12 +36,20 @@ async function ensureTable() {
 // Seules ces cles sont conservees ; les nombres sont bornes, les textes coupes.
 const NUM_KEYS = new Set(['w', 'h', 'dwell', 'depth', 'results']);
 const STR_KEYS = new Set(['lang', 'label', 'href', 'kind', 'zone', 'source', 'product', 'q', 'value']);
+// Fleches et pictogrammes des libelles de boutons : du bruit dans les rapports, et un caractere
+// qu'une base non UTF-8 refuse, ce qui ferait echouer tout le lot d'evenements.
+const tidy = (v: string) =>
+  v
+    .replace(/[\u2190-\u21ff\u2600-\u27bf\u2b00-\u2bff]|[\u{1f000}-\u{1faff}]|\ufe0f|\p{Cc}/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 160);
 function clean(d: unknown): string {
   if (!d || typeof d !== 'object') return '{}';
   const out: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(d as Record<string, unknown>)) {
     if (NUM_KEYS.has(k) && typeof v === 'number' && Number.isFinite(v)) out[k] = Math.max(0, Math.min(Math.round(v), 86400000));
-    else if (STR_KEYS.has(k) && typeof v === 'string') out[k] = v.slice(0, 160);
+    else if (STR_KEYS.has(k) && typeof v === 'string') out[k] = tidy(v);
     else if (k === 'first' && v === true) out[k] = true;
   }
   return JSON.stringify(out);
@@ -107,10 +115,16 @@ export async function POST(request: Request) {
   }
   if (rows.length) {
     const ph = rows.map(() => '(?,?,?,?,?,?,?,?,?)').join(',');
-    await database
-      .prepare(`INSERT INTO events(id,vid,sid,type,path,referrer,data,device,created_at) VALUES ${ph}`)
-      .bind(...rows.flat())
-      .run();
+    // La mesure ne doit jamais produire d’erreur chez le visiteur : un lot refusé est journalisé, pas renvoyé en 500.
+    try {
+      await database
+        .prepare(`INSERT INTO events(id,vid,sid,type,path,referrer,data,device,created_at) VALUES ${ph}`)
+        .bind(...rows.flat())
+        .run();
+    } catch (error) {
+      console.error('analytics store', (error as Error).message);
+      return reply({ ok: false, stored: 0 }, 202);
+    }
   }
   return reply({ ok: true, stored: rows.length });
 }

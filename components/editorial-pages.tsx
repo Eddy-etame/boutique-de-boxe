@@ -1,6 +1,6 @@
 import { guides, type Guide, type Service } from '@/lib/editorial';
 import { articleGraph } from '@/lib/seo';
-import { categories } from '@/lib/catalog';
+import { categories, categoryFor, getCategoryProducts } from '@/lib/catalog';
 import { readCatalog } from '@/lib/database';
 import selection from '@/lib/data/selection.json';
 import { Breadcrumb, ArrowLink } from './shop-shell';
@@ -47,19 +47,26 @@ export async function GuidesIndex() {
             key={g.slug}
           >
             <div className={'guide-cover cover-' + (i % 3)}>
-              <span>LE CARNET / 0{i + 1}</span>
+              <span>LE CARNET / {String(i + 1).padStart(2, '0')}</span>
               {(() => {
                 const id = selection.guides.find(
                   (x) => x.slug === g.slug,
                 )?.imageProductId;
-                const p = products.find((p) => p.id === id);
+                // Référence retirée du catalogue : la première photo de la famille liée, jamais une couverture vide.
+                const family = categoryFor(g.relatedCategories[0]);
+                const p =
+                  products.find((p) => p.id === id) ||
+                  (family ? getCategoryProducts(family, products) : []).find(
+                    (p) => p.images[0],
+                  );
                 return p ? (
                   <img
                     src={p.images[0].small}
                     width={480}
                     height={480}
                     alt={p.images[0].alt}
-                    loading="lazy"
+                    loading={i < 3 ? 'eager' : 'lazy'}
+                    decoding="async"
                   />
                 ) : null;
               })()}

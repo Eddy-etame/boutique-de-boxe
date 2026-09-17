@@ -1,6 +1,6 @@
 {
-  "version": "2026-09-10",
-  "scope": "Draft derived from the existing 19 product records and nine guide texts. No new technical claim, certification or coach review is asserted.",
+  "version": "2026-09-17",
+  "scope": "Draft derived from the existing 19 product records and twelve guide texts. No new technical claim, certification or coach review is asserted.",
   "implementationNotes": [
     "Use these criteria beneath the category introduction instead of repeating the introduction.",
     "SourceSection and editorialNote are internal evidence; do not render them as customer-facing copy.",
@@ -403,7 +403,7 @@
     },
     {
       "slug": "choisir-gants-mma",
-      "imageProductId": "mat-shell-mma",
+      "imageProductId": "bs-9807",
       "visualPattern": "open-hand-inspection",
       "briefAnswer": "Pour des gants MMA, commencez par le format du cours : technique, sparring ou compétition. Examinez ensuite les ouvertures de la main, le pouce et la fermeture, puis utilisez le guide de taille de la référence exacte.",
       "decisionPoints": [
@@ -454,7 +454,7 @@
     },
     {
       "slug": "debuter-mma",
-      "imageProductId": "mat-shell-mma",
+      "imageProductId": "bs-9441",
       "visualPattern": "training-week-branches",
       "briefAnswer": "Préparez votre équipement MMA par type de séance. Frappes debout, grappling et travail mixte peuvent demander des gants, des protections et des tenues différents. Faites confirmer la liste du cours avant de composer votre panier.",
       "decisionPoints": [
@@ -580,6 +580,75 @@
         }
       ],
       "editorialNote": "The Athena photograph illustrates the rashguard cut only; it must not be used as an illustration of a sports bra, which is not in this catalogue snapshot."
+    },
+    {
+      "slug": "boxe-anglaise-materiel-indispensable",
+      "imageProductId": "bs-10038",
+      "visualPattern": "kit-in-order-of-need",
+      "briefAnswer": "Achetez dans l’ordre où le matériel sert : les bandes d’abord, une paire de gants de 12 oz ensuite, le protège-dents dès le premier travail à deux. Casque, chaussures et coquille arrivent avec le sparring. Votre salle prête souvent le reste à la découverte.",
+      "decisionPoints": [
+        {
+          "label": "Les bandes d’abord",
+          "explanation": "4,50 m pour un adulte, 2,50 m pour un enfant. Elles servent à chaque séance, au sac comme avec un partenaire.",
+          "sourceSection": "Les bandes : le premier achat"
+        },
+        {
+          "label": "Les gants selon l’usage",
+          "explanation": "10 oz au sac, 12 oz pour la technique, 14 à 16 oz avec un partenaire. Essayez avec les bandes, poing fermé.",
+          "sourceSection": "Les gants : le poids selon l’usage"
+        },
+        {
+          "label": "Le reste avec le contact",
+          "explanation": "Le protège-dents dès le travail à deux ; le casque et la coquille quand le sparring commence et que votre salle les demande.",
+          "sourceSection": "Le protège-dents : dès le premier travail à deux"
+        }
+      ]
+    },
+    {
+      "slug": "mma-equipement-obligatoire-debuter",
+      "imageProductId": "bs-8735",
+      "visualPattern": "mandatory-then-later",
+      "briefAnswer": "Dès le premier cours de MMA : un protège-dents, un short sans poche ni fermeture et un t-shirt ou un rashguard. Les gants dépendent de la séance ; demandez à votre salle avant d’acheter. Protège-tibias et coquille deviennent obligatoires dès qu’il y a contact.",
+      "decisionPoints": [
+        {
+          "label": "Le minimum du premier cours",
+          "explanation": "Un protège-dents moulé à la maison, un short sans poche, un haut près du corps : c’est la tenue minimale de toute salle.",
+          "sourceSection": "Obligatoire dès le premier cours"
+        },
+        {
+          "label": "Le bon gant pour la séance",
+          "explanation": "Gants MMA rembourrés pour les exercices qui mêlent frappes et saisies, gants de boxe de 14 ou 16 oz pour le sparring debout. Beaucoup de salles en prêtent à la découverte.",
+          "sourceSection": "Les gants : lesquels, et quand"
+        },
+        {
+          "label": "Ce qui peut attendre",
+          "explanation": "Casque, gants de compétition 4 oz et chaussures de lutte viennent avec le sparring appuyé ou la compétition, sur indication de votre entraîneur.",
+          "sourceSection": "Ce qui peut attendre"
+        }
+      ]
+    },
+    {
+      "slug": "quelle-taille-gants-de-boxe",
+      "imageProductId": "bs-2000526",
+      "visualPattern": "weight-then-cut",
+      "briefAnswer": "Un gant de boxe a deux tailles : son poids en onces, choisi selon la séance et le gabarit, et sa coupe, vérifiée à l’essai avec vos bandes. 10 oz au sac, 12 oz en technique, 14 à 16 oz avec un partenaire ; votre salle peut imposer un poids pour le sparring.",
+      "decisionPoints": [
+        {
+          "label": "Le poids suit la séance",
+          "explanation": "Sac et pattes d’ours : 10 oz. Technique : 12 oz. Partenaire : 14, 16 ou 18 oz selon le gabarit. Demandez à votre salle avant d’acheter.",
+          "sourceSection": "Le poids selon la séance"
+        },
+        {
+          "label": "Le gabarit et l’âge affinent",
+          "explanation": "Moins de 55 kg : 10 à 12 oz. De 55 à 75 kg : 12 à 14 oz. Au-delà : 14 à 16 oz. Enfants : de 4 à 8 oz selon l’âge. Des repères, pas des règles.",
+          "sourceSection": "Le poids selon le gabarit et l’âge"
+        },
+        {
+          "label": "La coupe se vérifie à l’essai",
+          "explanation": "Enfilez les deux gants avec vos bandes et fermez le poing : les doigts ne flottent pas, le pouce se place sans forcer. Deux paires de 14 oz peuvent avoir une coupe très différente.",
+          "sourceSection": "La coupe : essayer avec les bandes"
+        }
+      ]
     }
   ],
   "sessions": [

@@ -343,22 +343,53 @@ export function Motion() {
     stage?.addEventListener('pointerleave', onLeave);
     if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator)
       navigator.serviceWorker.register('/sw.js').catch(() => {});
+    // Un seul élément peut porter « product-hero » : à deux, Chrome annule la transition
+    // (InvalidStateError). La photo cliquée ne prend le nom que si l’on part vers sa fiche,
+    // et la photo principale de la fiche courante le lui cède.
     let chosen: HTMLImageElement | null = null;
+    let chosenPath = '';
+    const heroes = () =>
+      document.querySelectorAll<HTMLElement>('.gallery-main > img');
+    const release = () => {
+      if (chosen) chosen.style.viewTransitionName = '';
+      chosen = null;
+      chosenPath = '';
+    };
     const onClick = (e: MouseEvent) => {
-      const link = (e.target as Element | null)?.closest?.(
+      const link = (e.target as Element | null)?.closest?.<HTMLAnchorElement>(
         '.product-card a, .kit-picture a, .session-products a',
       );
+      release();
       if (!link) return;
       const card = link.closest('.product-card, .kit-piece') ?? link;
       chosen = card.querySelector('img');
+      chosenPath = new URL(link.href, location.href).pathname;
     };
     const onSwap = (e: Event) => {
-      const swap = e as Event & { viewTransition?: unknown };
-      if (swap.viewTransition && chosen)
-        chosen.style.viewTransitionName = 'product-hero';
+      const swap = e as Event & {
+        viewTransition?: unknown;
+        activation?: { entry?: { url?: string | null } | null } | null;
+      };
+      const to = swap.activation?.entry?.url;
+      if (
+        !swap.viewTransition ||
+        !chosen ||
+        !to ||
+        new URL(to).pathname !== chosenPath
+      )
+        return release();
+      heroes().forEach((img) => (img.style.viewTransitionName = 'none'));
+      chosen.style.viewTransitionName = 'product-hero';
+    };
+    // Retour arrière servi par le cache du navigateur : la page revient avec les noms posés au départ.
+    const onShow = (e: PageTransitionEvent) => {
+      if (!e.persisted) return;
+      release();
+      heroes().forEach((img) => (img.style.viewTransitionName = ''));
     };
     document.addEventListener('click', onClick);
     window.addEventListener('pageswap', onSwap);
+    window.addEventListener('pageshow', onShow);
     // Après la carte des cookies, la page rejoue son entrée : animations d’arrivée, révélations visibles, compteurs.
     const replay = () => {
       if (prefersStill()) return;
@@ -409,6 +440,7 @@ export function Motion() {
       stage?.removeEventListener('pointerleave', onLeave);
       document.removeEventListener('click', onClick);
       window.removeEventListener('pageswap', onSwap);
+      window.removeEventListener('pageshow', onShow);
       window.removeEventListener('boutique:replay-entry', replay);
       document.removeEventListener('focusin', revealFocus);
     };

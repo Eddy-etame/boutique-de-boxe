@@ -77,6 +77,9 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+// Exécuté dans le <head>, avant le premier rendu : « pagereveal » part avant l’hydratation.
+const VIEW_TRANSITION_GUARD = `(function(){function q(e){var t=e.viewTransition;if(t)[t.ready,t.finished,t.updateCallbackDone].forEach(function(p){if(p)p.catch(function(){})})}addEventListener('pageswap',q);addEventListener('pagereveal',q);addEventListener('unhandledrejection',function(e){var r=e.reason;if(r&&/^(InvalidStateError|AbortError|TimeoutError)$/.test(r.name)&&/transition/i.test(String(r.message))){e.preventDefault();e.stopImmediatePropagation()}})})();`;
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -101,6 +104,12 @@ export default async function RootLayout({
           type="font/woff2"
           crossOrigin="anonymous"
         />
+        {/* Transitions entre pages : l’accord est posé ici, en ligne, et non dans une feuille que le
+            navigateur peut recharger (Chrome annule alors la transition en cours). Une transition
+            sautée (onglet masqué, fenêtre redimensionnée, page lente) rejette ses promesses alors que
+            la page s’affiche normalement : elles sont marquées comme traitées, sans erreur console. */}
+        <style>{`@view-transition{navigation:auto}`}</style>
+        <script dangerouslySetInnerHTML={{ __html: VIEW_TRANSITION_GUARD }} />
         <noscript>
           <style>{`.consent-veil{display:none!important}html[data-consent-open] body{overflow:auto!important}[data-reveal]{opacity:1!important;transform:none!important;animation:none!important}`}</style>
         </noscript>

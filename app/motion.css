@@ -111,8 +111,7 @@
 .kit-piece { transition: opacity var(--m-fast) var(--m-ease), transform var(--m-fast) var(--m-ease); }
 .kit-piece.is-owned { transform: scale(0.985); }
 
-/* Passage carte → fiche : la photo continue, le reste arrive. */
-@view-transition { navigation: auto; }
+/* Passage carte → fiche : la photo continue, le reste arrive. L’accord @view-transition est posé en ligne dans app/layout.tsx. */
 .gallery-main > img { view-transition-name: product-hero; }
 ::view-transition-group(product-hero) {
   animation-duration: var(--m-base);
