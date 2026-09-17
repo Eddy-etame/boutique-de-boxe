@@ -1,5 +1,6 @@
 import { categoryFor, getCategoryProducts, type Product } from './catalog';
 import { SUBFAMILIES, subfamilyProducts } from './subfamilies';
+import { brandFor } from './brands';
 
 /**
  * La liste complète d’une page de catalogue, dans son ordre « notre sélection ».
@@ -13,6 +14,7 @@ export function listingFor(scope: string, products: Product[]): Product[] | null
   if (cat) return getCategoryProducts(cat, products);
   if (scope === 'nouveautes') return [...products].reverse();
   if (scope === 'recherche') return products;
+  if (scope.startsWith('marque-')) return brandFor(scope.slice(7), products)?.products ?? null;
   const sub = SUBFAMILIES.find((s) => s.slug === scope);
   return sub ? subfamilyProducts(sub, products) : null;
 }

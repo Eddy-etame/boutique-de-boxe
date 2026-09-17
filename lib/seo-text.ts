@@ -8,6 +8,7 @@ import { guides, services } from './editorial';
 import { ATTRIBUTION, EDITORIAL_DATE, familiesWithCounts, urlOf } from './seo';
 import { QUERY_MAP } from './seo-copy';
 import { SUBFAMILIES, subfamilyProducts } from './subfamilies';
+import { brandsOf } from './brands';
 
 const fr = (n: number) => n.toLocaleString('fr-FR');
 
@@ -36,6 +37,10 @@ function queries() {
     'Pour chacune de ces recherches, la page qui répond est celle-ci et aucune autre :',
     ...QUERY_MAP.map((q) => `- « ${q.query} » → ${urlOf(q.path)} — ${q.answer}`),
   ].join('\n');
+}
+
+function brands(products: Product[]) {
+  return ['## Marques (pages dédiées)', `- [Toutes les marques](${urlOf('/marques/')})`, ...brandsOf(products).map((b) => `- [${b.name}](${urlOf('/marques/' + b.slug + '/')}) : ${b.products.length} modèles, ${b.families.slice(0, 3).map((f) => f.name.toLowerCase()).join(', ')}.`)].join('\n');
 }
 
 function subfamilies(products: Product[]) {
@@ -81,6 +86,7 @@ export function llmsTxt(products: Product[]) {
     queries(),
     '',
     subfamilies(products),
+    brands(products),
     '',
     delivery(),
     '',
@@ -113,6 +119,7 @@ export function llmsFullTxt(products: Product[]) {
     queries(),
     '',
     subfamilies(products),
+    brands(products),
     '',
     ...fam.flatMap((f) => [`## ${f.name} (${fr(f.count)} modèles) — ${f.url}`, f.label, '', ...(byFamily.get(f.slug) || []).map(line), '']),
     '## Guides d’achat',

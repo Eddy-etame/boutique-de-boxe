@@ -228,6 +228,7 @@ export function Footer() {
           <h3 className="footer-subheading">Pour bien choisir</h3>
           <a href="/guides/">Guides d’achat</a>
           <a href="/guide-des-tailles/">Guide des tailles</a>
+          <a href="/marques/">Les marques</a>
           <a href="/nouveautes/">Nouveautés</a>
         </nav>
         <nav aria-labelledby="footer-service">

@@ -8,6 +8,7 @@ import { guides, services, type Guide } from './editorial';
 import { SEO_COPY } from './seo-copy';
 import { SUBFAMILIES, subfamilyProducts, type Subfamily } from './subfamilies';
 import selection from './data/selection.json';
+import { brandFor, brandsOf } from './brands';
 
 export const OG_WIDTH = 1200;
 export const OG_HEIGHT = 630;
@@ -170,6 +171,37 @@ export function cardFor(kind: CardKind, key: string, products: Product[]): Card 
   if (kind === 's') { const s = SUBFAMILIES.find((x) => x.slug === key); return s ? subfamilyCard(s, products) : null; }
   if (kind === 'g') { const g = guides.find((x) => x.slug === key); return g ? guideCard(g, products) : null; }
   if (kind === 'x') {
+    if (key === 'marques') {
+      const brands = brandsOf(products);
+      return {
+        title: 'Les marques de la boutique.',
+        eyebrow: 'MARQUES · BOXE, MMA, SPORTS DE COMBAT',
+        facts: [
+          { label: 'MARQUES', value: fr(brands.length) },
+          { label: 'MODÈLES', value: fr(brands.reduce((a, b) => a + b.products.length, 0)) },
+          { label: 'LES PLUS FOURNIES', value: brands.slice(0, 3).map((b) => b.name).join(' · ') },
+        ],
+        photos: photosOf(brands[0]?.products || []),
+        photoLabel: 'LES MODÈLES',
+        path: '/marques/',
+      };
+    }
+    if (key.startsWith('marques/')) {
+      const b = brandFor(key.slice(8), products);
+      if (!b) return null;
+      return {
+        title: b.name,
+        eyebrow: 'MARQUE · ' + b.families.slice(0, 2).map((f) => f.name.toUpperCase()).join(' · '),
+        facts: [
+          { label: 'MODÈLES', value: fr(b.products.length) },
+          { label: 'DÈS', value: money(b.min) },
+          { label: 'JUSQU’À', value: money(b.max) },
+        ],
+        photos: photosOf(b.products.filter((p) => p.cut?.mode === 'pose')),
+        photoLabel: 'UN MODÈLE ' + b.name.toUpperCase(),
+        path: '/marques/' + b.slug + '/',
+      };
+    }
     if (PAGES[key]) return PAGES[key](products);
     const s = services[key];
     if (s) return { title: s.title, eyebrow: s.eyebrow.replace(/\s*\/\s*/g, ' · '), facts: s.sections.slice(0, 3).map((sec) => ({ label: sec.title.replace(/\.$/, '').toUpperCase().slice(0, 28), value: '' })), photos: [], photoLabel: '', path: '/' + key + '/' };

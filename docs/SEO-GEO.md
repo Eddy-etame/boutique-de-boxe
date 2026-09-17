@@ -30,7 +30,7 @@ Boxe anglaise Q2922870, arts martiaux mixtes Q114466, muay-thaï Q120931, jiu-ji
 | `/llms.txt` | index court et citable, généré depuis les données (familles, comptes, guides, état des ventes) |
 | `/llms-full.txt` | contexte complet : chaque modèle (nom, marque, prix prévu, tailles, couleurs, URL), chaque guide avec sa FAQ |
 | `/catalogue.json` | flux machine du catalogue, sans offre commerciale, CORS ouvert |
-| `/api/mcp` | serveur MCP en lecture seule (JSON-RPC 2.0) : `get_shop_info`, `get_families`, `search_products`, `get_product`, `get_guides`, `get_guide`, `get_content_index`, `get_technical_attribution` |
+| `/api/mcp` | serveur MCP en lecture seule (JSON-RPC 2.0) : `get_shop_info`, `get_families`, `search_products`, `get_product`, `get_guides`, `get_guide`, `get_content_index`, `compare_products`, `recommend_pack`, `recommend_glove_weight`, `get_brands`, `get_weekly_selection`, `get_technical_attribution` |
 | `/.well-known/mcp.json` | découverte du serveur MCP |
 | `/ai.txt` | règles d’usage pour les IA : ce qui est publié, ce qui est permis, ce qui est interdit (stocks, dates, confusion avec les salles) |
 | `/humans.txt` | paternité technique : Eddy Etame Etame, concepteur principal et responsable technique |

@@ -4,6 +4,7 @@ import { categories, categoryFor, getCategoryProducts, shop } from '@/lib/catalo
 import { guides, services } from '@/lib/editorial';
 import { EDITORIAL_DATE, urlOf } from '@/lib/seo';
 import { SUBFAMILIES } from '@/lib/subfamilies';
+import { brandsOf } from '@/lib/brands';
 const SUBFAMILY_PATHS = new Set(SUBFAMILIES.map((s) => '/' + s.slug + '/'));
 export const dynamic = 'force-dynamic';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -26,6 +27,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/',
     ...categories.map((c) => '/' + c.slug + '/'),
     ...SUBFAMILIES.map((s) => '/' + s.slug + '/'),
+    '/marques/',
+    ...brandsOf(products).map((b) => '/marques/' + b.slug + '/'),
     ...products.map((p) => '/produits/' + p.slug + '/'),
     '/nouveautes/',
     '/guides/',
@@ -34,7 +37,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/contact/',
   ].map((path) => {
     const product = path.startsWith('/produits/') ? products.find((p) => '/produits/' + p.slug + '/' === path) : undefined;
-    const kind = path === '/' ? 'home' : product ? 'product' : SUBFAMILY_PATHS.has(path) ? 'subfamily' : path.startsWith('/guides/') ? 'guide' : categoryFor(path.replace(/^\/|\/$/g, '')) ? 'category' : path === '/nouveautes/' || path === '/guides/' ? 'index' : 'service';
+    const kind = path === '/' ? 'home' : product ? 'product' : SUBFAMILY_PATHS.has(path) || path.startsWith('/marques/') ? 'subfamily' : path.startsWith('/guides/') ? 'guide' : categoryFor(path.replace(/^\/|\/$/g, '')) ? 'category' : path === '/nouveautes/' || path === '/guides/' ? 'index' : 'service';
     return {
       url: shop.origin + path,
       ...(dates.has(path) ? { lastModified: dates.get(path) } : kind === 'guide' || kind === 'home' || kind === 'index' || kind === 'subfamily' ? { lastModified: EDITORIAL_DATE } : {}),

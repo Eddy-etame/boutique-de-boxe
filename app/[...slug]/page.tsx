@@ -4,6 +4,7 @@ import { SEO_COPY } from '@/lib/seo-copy';
 import { subfamilyFor, subfamiliesOf, subfamilyProducts } from '@/lib/subfamilies';
 import { longDescription, practiceLevel, disciplinesOf, careAdvice, productFaq } from '@/lib/describe';
 import { SeoBody } from '@/components/seo-body';
+import { KeywordHub } from '@/components/keyword-hub';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import {
@@ -447,6 +448,7 @@ export default async function Page({ params, searchParams }: Props) {
           initialPage={1}
           showFamilies={false}
         />
+        <KeywordHub scope={sub.slug} name={sub.name} items={data} all={products} />
         <SeoBody sections={sub.sections} faq={sub.faq} />
         <section className="spec-section">
           <div>
@@ -534,6 +536,7 @@ export default async function Page({ params, searchParams }: Props) {
           initialPage={currentPage}
           showFamilies={!cat || cat.families.length > 1}
         />
+        {cat && currentPage === 1 && <KeywordHub scope={cat.slug} name={cat.name} items={data} all={products} />}
         {cat && (
           <section className="spec-section">
             <div>

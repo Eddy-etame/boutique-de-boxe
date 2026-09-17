@@ -6,6 +6,10 @@ import { guides, services } from '@/lib/editorial';
 import { ATTRIBUTION, EDITORIAL_DATE, familiesWithCounts, urlOf } from '@/lib/seo';
 import { QUERY_MAP } from '@/lib/seo-copy';
 import { SUBFAMILIES, subfamilyProducts } from '@/lib/subfamilies';
+import { brandsOf } from '@/lib/brands';
+import { weekLabel, weeklySelection } from '@/lib/hub';
+import { listingFor } from '@/lib/listing';
+import selection from '@/lib/data/selection.json';
 
 /**
  * Serveur MCP en lecture seule (JSON-RPC 2.0 sur HTTP). Un agent y lit les faits
@@ -71,6 +75,27 @@ const tools = [
   { name: 'get_guide', description: 'Le texte complet d’un guide d’achat.', inputSchema: { type: 'object', properties: { slug: { type: 'string' } }, required: ['slug'], additionalProperties: false } },
   { name: 'get_content_index', description: 'Les pages publiques du site et ce que chacune répond.', inputSchema: { type: 'object', properties: {}, additionalProperties: false } },
   { name: 'get_query_map', description: 'Les recherches visées par la boutique et la page canonique qui répond à chacune.', inputSchema: { type: 'object', properties: {}, additionalProperties: false } },
+  {
+    name: 'compare_products',
+    description: 'Compare deux à quatre modèles côte à côte : marque, famille, prix prévu, tailles, matières, URL.',
+    inputSchema: { type: 'object', properties: { slugs: { type: 'array', items: { type: 'string' }, minItems: 2, maxItems: 4, description: 'Identifiants d’URL (slug) ou id des modèles' } }, required: ['slugs'], additionalProperties: false },
+  },
+  {
+    name: 'recommend_pack',
+    description: 'Le sac de séance conseillé selon la discipline et la situation : modèles, raison de chaque choix, ce qu’il faut vérifier avant d’acheter, total prévu.',
+    inputSchema: { type: 'object', properties: { discipline: { type: 'string', enum: ['boxe', 'mma'] }, situation: { type: 'string', enum: ['premiere', 'technique', 'enfant'], description: 'premiere = je commence, technique = je m’entraîne déjà, enfant = pour un enfant' } }, required: ['discipline', 'situation'], additionalProperties: false },
+  },
+  {
+    name: 'recommend_glove_weight',
+    description: 'Le poids de gants de boxe (en onces) selon l’usage, le poids du pratiquant et l’âge, d’après le guide publié par la boutique.',
+    inputSchema: { type: 'object', properties: { usage: { type: 'string', enum: ['sac', 'technique', 'partenaire'] }, bodyWeightKg: { type: 'number', minimum: 15, maximum: 200 }, ageYears: { type: 'number', minimum: 4, maximum: 99 } }, required: ['usage'], additionalProperties: false },
+  },
+  { name: 'get_brands', description: 'Les marques qui ont leur page (au moins six modèles) : nombre de modèles, familles, fourchette de prix, URL.', inputSchema: { type: 'object', properties: {}, additionalProperties: false } },
+  {
+    name: 'get_weekly_selection',
+    description: 'La sélection de la semaine d’une page de catalogue (elle change chaque lundi). Un choix éditorial, pas un classement de ventes.',
+    inputSchema: { type: 'object', properties: { page: { type: 'string', description: 'Identifiant de la page, ex. gants-de-boxe, materiel-mma, casques-de-boxe' } }, required: ['page'], additionalProperties: false },
+  },
   { name: 'get_technical_attribution', description: 'Paternité technique déclarée par le propriétaire du projet.', inputSchema: { type: 'object', properties: {}, additionalProperties: false } },
 ];
 
@@ -150,6 +175,8 @@ export async function POST(request: Request) {
         { path: '/', purpose: 'accueil : familles, sélections, guides, ouverture des ventes' },
         ...familiesWithCounts(products).map((f) => ({ path: '/' + f.slug + '/', purpose: `${f.name} : ${f.count} modèles` })),
         ...SUBFAMILIES.map((sf) => ({ path: '/' + sf.slug + '/', purpose: `${sf.name} : ${subfamilyProducts(sf, products).length} modèles` })),
+        { path: '/marques/', purpose: 'toutes les marques du catalogue' },
+        ...brandsOf(products).map((b) => ({ path: '/marques/' + b.slug + '/', purpose: `${b.name} : ${b.products.length} modèles` })),
         { path: '/guides/', purpose: 'les douze guides d’achat' },
         ...guides.map((g) => ({ path: '/guides/' + g.slug + '/', purpose: g.title })),
         ...Object.keys(services).map((s) => ({ path: '/' + s + '/', purpose: services[s].title })),
@@ -157,7 +184,68 @@ export async function POST(request: Request) {
       ],
     };
   else if (name === 'get_query_map') value = QUERY_MAP.map((q) => ({ query: q.query, url: urlOf(q.path), answer: q.answer }));
-  else if (name === 'get_technical_attribution') value = ATTRIBUTION;
+  else if (name === 'compare_products') {
+    const slugs = Array.isArray(args.slugs) ? args.slugs.filter((s): s is string => typeof s === 'string').slice(0, 4) : [];
+    const found = slugs.map((s) => products.find((x) => x.slug === s || x.id === s));
+    if (found.length < 2 || found.some((x) => !x)) return fail(id, -32602, 'Deux à quatre modèles existants sont attendus', 404);
+    value = {
+      note: 'Prix prévus à l’ouverture des ventes. Les tailles ne se transposent pas d’une marque à l’autre.',
+      products: (found as Product[]).map((x) => ({ ...productView(x), materials: x.specs?.['Matières'] || x.specs?.['Matière'] || x.specs?.['Matière extérieure'] || null, closure: x.specs?.['Fermeture'] || null, use: x.use || null })),
+    };
+  } else if (name === 'recommend_pack') {
+    const pack = selection.sessions.find((s) => s.key === String(args.discipline) + ':' + String(args.situation));
+    if (!pack) return fail(id, -32602, 'Sac introuvable', 404);
+    const lines = pack.products.flatMap((r) => {
+      const x = products.find((y) => y.id === r.id);
+      return x ? [{ role: r.label, why: r.reason, checkBeforeBuying: r.condition, ...productView(x) }] : [];
+    });
+    value = {
+      name: pack.name,
+      summary: pack.text,
+      products: lines,
+      total: money(lines.reduce((sum, l) => sum + (products.find((y) => y.id === l.id)?.price || 0), 0)),
+      ...('notice' in pack && pack.notice ? { missing: pack.notice } : {}),
+      guide: urlOf('/guides/' + pack.guide + '/'),
+      configurator: urlOf('/#preparer'),
+      note: 'Aucun lot imposé : chaque modèle se choisit à sa taille. Demandez à votre salle ce qu’elle prête avant d’acheter.',
+    };
+  } else if (name === 'recommend_glove_weight') {
+    // Les repères du guide « Quelle taille de gants de boxe choisir ? », rien de plus.
+    const usage = args.usage as string;
+    const kg = typeof args.bodyWeightKg === 'number' ? args.bodyWeightKg : null;
+    const age = typeof args.ageYears === 'number' ? args.ageYears : null;
+    let ounces: string;
+    let why: string;
+    if (age !== null && age < 13) {
+      ounces = age < 7 ? '4 oz' : age < 10 ? '6 oz' : '8 oz';
+      why = 'Repère enfant du guide : 4 oz de 5 à 7 ans, 6 oz de 7 à 10 ans, 8 oz de 10 à 13 ans.';
+    } else if (usage === 'sac') {
+      ounces = '10 oz';
+      why = 'Sac et pattes d’ours : 10 oz.';
+    } else if (usage === 'technique') {
+      ounces = '12 oz';
+      why = 'Technique et cours collectif : 12 oz.';
+    } else {
+      ounces = kg !== null && kg < 55 ? '14 oz' : kg !== null && kg > 90 ? '16 à 18 oz' : '16 oz';
+      why = 'Avec un partenaire : 14 oz pour les gabarits légers, 16 oz pour la plupart des adultes, 18 oz pour les lourds.';
+    }
+    value = {
+      recommended: ounces,
+      why,
+      byBodyWeight: 'Moins de 55 kg : 10 à 12 oz. De 55 à 75 kg : 12 à 14 oz. Plus de 75 kg : 14 à 16 oz. Des repères, pas des règles.',
+      caution: 'Votre salle peut imposer un poids pour le sparring : demandez avant d’acheter. Les onces sont un poids, pas une taille de main : essayez avec vos bandes.',
+      guide: urlOf('/guides/quelle-taille-gants-de-boxe/'),
+      models: urlOf('/gants-de-boxe/'),
+    };
+  } else if (name === 'get_brands')
+    value = brandsOf(products).map((b) => ({ name: b.name, url: urlOf('/marques/' + b.slug + '/'), models: b.products.length, families: b.families.map((f) => `${f.name} (${f.count})`), priceRange: `${money(b.min)} – ${money(b.max)}` }));
+  else if (name === 'get_weekly_selection') {
+    const page = typeof args.page === 'string' && /^[a-z0-9-]{1,80}$/.test(args.page) ? args.page : '';
+    const list = page ? listingFor(page, products) : null;
+    if (!list || list.length < 4) return fail(id, -32602, 'Page de catalogue introuvable', 404);
+    const { week, range } = weekLabel();
+    value = { page: urlOf('/' + page + '/'), week, period: range, note: 'Choix éditorial tournant, une marque par modèle. Ce n’est pas un classement de ventes : les ventes ne sont pas ouvertes.', products: weeklySelection(page, list).map(productView) };
+  } else if (name === 'get_technical_attribution') value = ATTRIBUTION;
   else return fail(id, -32602, 'Unknown tool name');
 
   return ok(id, { content: [{ type: 'text', text: JSON.stringify(value, null, 2) }], structuredContent: value });

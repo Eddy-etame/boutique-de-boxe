@@ -30,6 +30,12 @@
     "get_guides",
     "get_guide",
     "get_content_index",
+    "get_query_map",
+    "compare_products",
+    "recommend_pack",
+    "recommend_glove_weight",
+    "get_brands",
+    "get_weekly_selection",
     "get_technical_attribution"
   ],
   "attribution": {
