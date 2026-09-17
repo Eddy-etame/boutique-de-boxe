@@ -69,8 +69,14 @@ type Payload = {
 };
 let queue: Payload[] = [];
 let timer: ReturnType<typeof setTimeout> | null = null;
+// Le serveur a dit « trop de demandes » : on se tait dix minutes au lieu d’insister.
+let mutedUntil = 0;
 function flush(sync = false) {
   if (!queue.length) return;
+  if (Date.now() < mutedUntil) {
+    queue = [];
+    return;
+  }
   const body = JSON.stringify({ events: queue });
   queue = [];
   if (sync && navigator.sendBeacon)
@@ -84,7 +90,11 @@ function flush(sync = false) {
       headers: { 'Content-Type': 'application/json' },
       body,
       keepalive: true,
-    }).catch(() => undefined);
+    })
+      .then((r) => {
+        if (r.status === 429) mutedUntil = Date.now() + 600000;
+      })
+      .catch(() => undefined);
 }
 // L'atelier et les pages de connexion ne comptent pas : ce sont les visites de l'equipe.
 const PRIVATE = /^\/(atelier|connexion|api)(\/|$)/;
@@ -148,19 +158,26 @@ export function ConsentTracker() {
     };
     onScroll();
     track('view', { w: innerWidth, h: innerHeight, lang: navigator.language });
-    const leave = () => {
-      track('leave', { dwell: Date.now() - start, depth });
+    // Un départ par absence réelle, pas un par changement d’onglet : dix allers-retours en une minute
+    // envoyaient dix « départs » pour une seule page vue et faussaient les durées de l’atelier.
+    let lastLeave = 0;
+    const leave = (minGap = 3000) => {
+      const now = Date.now();
+      if (lastLeave && now - lastLeave < minGap) return;
+      lastLeave = now;
+      track('leave', { dwell: now - start, depth });
       flush(true);
     };
     const onHide = () => {
-      if (document.visibilityState === 'hidden') leave();
+      if (document.visibilityState === 'hidden') leave(30000);
     };
+    const onPageHide = () => leave();
     addEventListener('scroll', onScroll, { passive: true });
-    addEventListener('pagehide', leave);
+    addEventListener('pagehide', onPageHide);
     document.addEventListener('visibilitychange', onHide);
     return () => {
       removeEventListener('scroll', onScroll);
-      removeEventListener('pagehide', leave);
+      removeEventListener('pagehide', onPageHide);
       document.removeEventListener('visibilitychange', onHide);
       leave();
     };
