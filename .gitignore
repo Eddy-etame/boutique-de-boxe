@@ -47,3 +47,9 @@ next-env.d.ts
 # Vercel / Postgres local
 /.vercel
 /.postgres-local/
+
+# Notes de recherche et de veille : internes, jamais sur GitHub
+.research/
+
+# Caches Python des scripts
+__pycache__/
