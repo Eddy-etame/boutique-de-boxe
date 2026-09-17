@@ -15,6 +15,13 @@ const Clients = dynamic(() => import('./clients').then((m) => m.Clients), { ssr:
 const PayplugSettings = dynamic(() => import('./payplug-settings').then((m) => m.PayplugSettings), { ssr: false, loading });
 const CatalogueImports = dynamic(() => import('./catalogue-imports').then((m) => m.CatalogueImports), { ssr: false, loading });
 type RecordRow = Record<string, string | number>;
+// La navigation de l’atelier, par métier : ce qu’on vend, ce qu’on encaisse, qui nous écrit, ce qu’on mesure.
+const SECTIONS: { title: string; items: [string, string][] }[] = [
+  { title: 'Catalogue', items: [['products', 'Produits'], ['imports', 'Imports du catalogue']] },
+  { title: 'Commerce', items: [['orders', 'Commandes d’essai'], ['payments', 'Réglages PayPlug'], ['clients', 'Clients & ventes']] },
+  { title: 'Public', items: [['alerts', 'Inscrits à l’ouverture'], ['contacts', 'Contacts']] },
+  { title: 'Pilotage', items: [['audience', 'Audience'], ['seo', 'Suivi SEO']] },
+];
 type AdminData = {
   products: Product[];
   alerts: RecordRow[];
@@ -55,6 +62,7 @@ export function Admin() {
   if (error) return <p role="alert">{error}</p>;
   if (!data) return <p role="status">Chargement des demandes…</p>;
   const p = data.products.find((p) => p.id === selected) || data.products[0];
+  const phones = data.alerts.filter((a) => a.phone).length;
   const override = data.overrides.find((o) => o.product_id === p?.id);
   async function remove(kind: string, id: string) {
     if (
@@ -73,7 +81,7 @@ export function Admin() {
     await refresh();
   }
   return (
-    <div className="admin-dashboard">
+    <div className="admin-dashboard atelier">
       <div className="admin-stats">
         <div>
           <strong>{data.products.length}</strong>
@@ -81,42 +89,45 @@ export function Admin() {
         </div>
         <div>
           <strong>{data.alerts.length}</strong>
-          <span>alertes enregistrées</span>
+          <span>
+            inscrits à l’ouverture
+            {phones > 0 && <b> · {phones} mobile{phones > 1 ? 's' : ''}</b>}
+          </span>
         </div>
         <div>
           <strong>{data.contacts.length}</strong>
           <span>demandes de contact</span>
         </div>
+        <div>
+          <strong>{data.alerts.filter((a) => a.product_id !== 'launch').length}</strong>
+          <span>modèles attendus par un inscrit</span>
+        </div>
       </div>
-      <CatalogEditor onSaved={refresh} />
-      <div
-        className="admin-tabs"
-        role="group"
-        aria-label="Sections de l’administration"
-      >
-        {[
-          ['products', 'Produits'],
-          ['orders', 'Commandes d’essai'],
-          ['payments', 'Réglages PayPlug'],
-          ['imports', 'Imports du catalogue'],
-          ['alerts', 'Alertes'],
-          ['contacts', 'Contacts'],
-          ['seo', 'Suivi SEO'],
-          ['audience', 'Audience'],
-          ['clients', 'Clients & ventes'],
-        ].map(([id, label]) => (
-          <button
-            key={id}
-            aria-pressed={tab === id}
-            onClick={() => {
-              setTab(id);
-              setSaved('');
-            }}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
+      <div className="atelier-body">
+        <nav className="atelier-nav" aria-label="Sections de l’atelier">
+          {SECTIONS.map((group) => (
+            <div key={group.title}>
+              <h3>{group.title}</h3>
+              {group.items.map(([id, label]) => (
+                <button
+                  key={id}
+                  aria-current={tab === id ? 'page' : undefined}
+                  onClick={() => {
+                    setTab(id);
+                    setSaved('');
+                  }}
+                >
+                  {label}
+                  {id === 'alerts' && data.alerts.length > 0 && <span>{data.alerts.length}</span>}
+                  {id === 'contacts' && data.contacts.length > 0 && <span>{data.contacts.length}</span>}
+                </button>
+              ))}
+            </div>
+          ))}
+        </nav>
+        <div className="atelier-panel">
+          <h2 className="atelier-title">{SECTIONS.flatMap((g) => g.items).find(([id]) => id === tab)?.[1]}</h2>
+          {tab === 'products' && <CatalogEditor onSaved={refresh} />}
       {tab === 'orders' && <OrdersAdmin />}
       {tab === 'clients' && <Clients />}
       {tab === 'payments' && <PayplugSettings />}
@@ -261,18 +272,95 @@ export function Admin() {
           </form>
         </div>
       )}
-      {(tab === 'alerts' || tab === 'contacts') && (
+      {tab === 'alerts' && (
         <div className="admin-inbox">
           <p>
-            {tab === 'alerts'
-              ? 'Les inscriptions sont enregistrées. Aucun envoi automatique d’e-mail n’est activé. Avant tout envoi, inclure le lien de désinscription individuel.'
-              : 'Demandes enregistrées dans la boutique. Traitez-les depuis votre messagerie habituelle.'}{' '}
+            Les inscriptions à l’ouverture des ventes : l’e-mail, le mobile quand il a été laissé
+            (avec l’accord SMS), le modèle attendu et l’endroit de l’inscription. Aucun envoi
+            automatique n’est activé ; avant tout envoi, inclure le lien de désinscription individuel.
+            Les 300 plus récentes sont affichées.
+          </p>
+          <a className="button button-dark" href="/api/commerce/admin-export?kind=alertes">
+            Exporter les inscrits (CSV) ↗
+          </a>
+          {data.alerts.length === 0 ? (
+            <p className="empty-state">Aucune inscription enregistrée.</p>
+          ) : (
+            <div className="atelier-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">E-mail</th>
+                    <th scope="col">Mobile</th>
+                    <th scope="col">Modèle attendu</th>
+                    <th scope="col">Depuis</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">
+                      <span className="sr-only">Actions</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.alerts.map((row) => (
+                    <tr key={row.id}>
+                      <td>
+                        <a href={'mailto:' + row.email}>{row.email}</a>
+                      </td>
+                      <td>
+                        {row.phone ? (
+                          <>
+                            {String(row.phone)} {Number(row.sms_consent) ? <em>SMS ok</em> : null}
+                          </>
+                        ) : (
+                          <span className="atelier-muted">—</span>
+                        )}
+                      </td>
+                      <td>
+                        {row.product_id === 'launch'
+                          ? 'Ouverture de la boutique'
+                          : row.product_name ||
+                            data.products.find((p) => p.id === row.product_id)?.name ||
+                            'Référence ' + row.product_id}
+                        {row.product_archived ? ' (retirée)' : ''}
+                        {row.variant ? ' · ' + row.variant : ''}
+                      </td>
+                      <td>{String(row.source || '') || <span className="atelier-muted">—</span>}</td>
+                      <td>{new Date(row.created_at).toLocaleDateString('fr-FR')}</td>
+                      <td className="atelier-actions">
+                        <button
+                          className="text-button"
+                          type="button"
+                          onClick={() => {
+                            const link = window.location.origin + '/desinscription/?token=' + row.unsubscribe_token;
+                            void navigator.clipboard?.writeText(link);
+                            setSaved('Lien de désinscription copié pour ' + row.email);
+                          }}
+                        >
+                          Copier le lien de désinscription
+                        </button>
+                        <button className="text-button" type="button" onClick={() => remove('alerts', String(row.id))}>
+                          Supprimer
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          {saved && <p role="status">{saved}</p>}
+        </div>
+      )}
+      {tab === 'contacts' && (
+        <div className="admin-inbox">
+          <p>
+            Demandes enregistrées dans la boutique. Traitez-les depuis votre messagerie habituelle.{' '}
             Les 300 demandes les plus récentes sont affichées.
           </p>
-          {data[tab as 'alerts' | 'contacts'].length === 0 ? (
+          {data.contacts.length === 0 ? (
             <p className="empty-state">Aucune demande enregistrée.</p>
           ) : (
-            data[tab as 'alerts' | 'contacts'].map((row) => (
+            data.contacts.map((row) => (
               <article key={row.id}>
                 <div>
                   <strong>{String(row.name || row.email)}</strong>
@@ -281,33 +369,7 @@ export function Admin() {
                   </span>
                 </div>
                 <a href={'mailto:' + row.email}>{row.email}</a>
-                {tab === 'alerts' ? (
-                  <>
-                    <p>
-                      {row.product_id === 'launch'
-                        ? 'Ouverture de la boutique'
-                        : row.product_name ||
-                          data.products.find((p) => p.id === row.product_id)
-                            ?.name ||
-                          'Référence ' + row.product_id}{' '}
-                      {row.product_archived ? '(retirée du catalogue) ' : ''}
-                      {row.variant}
-                    </p>
-                    <label>
-                      Lien de désinscription
-                      <input
-                        readOnly
-                        value={
-                          typeof window === 'undefined'
-                            ? ''
-                            : window.location.origin +
-                              '/desinscription/?token=' +
-                              row.unsubscribe_token
-                        }
-                      />
-                    </label>
-                  </>
-                ) : (
+                {(
                   <>
                     <p className="message-text">{row.message}</p>
                     <small>
@@ -328,7 +390,7 @@ export function Admin() {
                 )}
                 <button
                   className="text-button"
-                  onClick={() => remove(tab, String(row.id))}
+                  onClick={() => remove('contacts', String(row.id))}
                 >
                   Supprimer les données de cette demande
                 </button>
@@ -378,6 +440,8 @@ export function Admin() {
           </a>
         </div>
       )}
+        </div>
+      </div>
     </div>
   );
 }

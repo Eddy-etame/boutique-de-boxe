@@ -204,6 +204,22 @@ const cell = (v: string | number | null | undefined) => {
 const euros = (cents: number) => (cents / 100).toFixed(2).replace('.', ',');
 
 /** CSV lisible par Excel en France : UTF-8 avec BOM, point-virgule, montants en euros à virgule. */
+/** Les inscrits à l’ouverture : e-mail, mobile et accord SMS, modèle suivi, endroit de l’inscription. */
+export async function alertsCsv() {
+  const products = await readCatalog();
+  const rows = (
+    await (await db())
+      .prepare('SELECT email, phone, sms_consent, product_id, variant, source, created_at FROM alerts ORDER BY created_at DESC')
+      .all<{ email: string; phone: string; sms_consent: number; product_id: string; variant: string; source: string; created_at: string }>()
+  ).results;
+  const lines = [['E-mail', 'Mobile', 'Accord SMS', 'Modèle', 'Taille', 'Inscription depuis', 'Date'].join(';')];
+  for (const a of rows) {
+    const p = products.find((x) => x.id === a.product_id);
+    lines.push([a.email, a.phone || '', a.sms_consent ? 'oui' : 'non', a.product_id === 'launch' ? 'Ouverture de la boutique' : p?.name || a.product_id, a.variant || '', a.source || '', a.created_at.slice(0, 19).replace('T', ' ')].map(cell).join(';'));
+  }
+  return '\ufeff' + lines.join('\r\n') + '\r\n';
+}
+
 export async function clientsCsv(kind: 'clients' | 'ventes', days: number) {
   const r = await clientsReport(days);
   const lines: string[] = [];

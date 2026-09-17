@@ -1,5 +1,6 @@
 import { clientIp } from '@/lib/request';
-import { clientsReport, clientsCsv, ensureBuyerColumns } from '@/lib/clients';
+import { clientsReport, clientsCsv,
+  alertsCsv, ensureBuyerColumns } from '@/lib/clients';
 import { receiptPdf } from '@/lib/receipt-pdf';
 import { db, isAdmin, readCatalog } from '@/lib/database';
 import { after } from 'next/server';
@@ -102,9 +103,10 @@ export async function GET(request: Request, context: Context) {
     if (action === 'admin-export') {
       if (!(await isAdmin())) return reply({ error: 'Accès réservé.' }, 403);
       const url = new URL(request.url);
-      const kind = url.searchParams.get('kind') === 'ventes' ? 'ventes' : 'clients';
+      const wanted = url.searchParams.get('kind');
+      const kind = wanted === 'ventes' ? 'ventes' : wanted === 'alertes' ? 'alertes' : 'clients';
       const days = Math.min(Math.max(Number(url.searchParams.get('days')) || 365, 1), 3650);
-      return new Response(await clientsCsv(kind, days), {
+      return new Response(kind === 'alertes' ? await alertsCsv() : await clientsCsv(kind, days), {
         headers: {
           'Content-Type': 'text/csv; charset=utf-8',
           'Content-Disposition': `attachment; filename="${kind}-boutique-de-boxe-${new Date().toISOString().slice(0, 10)}.csv"`,

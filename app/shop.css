@@ -3211,6 +3211,42 @@ html[data-motion='reduce'] .button:hover {
   .hub-prices th, .hub-prices td { font-size: 14px; padding: 11px 10px 11px 0; }
 }
 @media (prefers-reduced-motion: reduce) { .brand-tile-stage img { transition: none; } .brand-tile:hover .brand-tile-stage img { transform: none !important; } }
+/* L’atelier : quatre chiffres, une navigation par métier en colonne, le panneau à droite. */
+.atelier .admin-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.atelier .admin-stats > div { background: var(--ink); color: var(--paper); padding: 22px 22px 18px; position: relative; }
+.atelier .admin-stats > div::before { content: ''; position: absolute; left: 0; top: 0; width: 46px; height: 4px; background: var(--tape); }
+.atelier .admin-stats strong { font-size: clamp(40px, 4vw, 60px); }
+.atelier .admin-stats span { font-size: 13px; color: #c9cdbd; }
+.atelier .admin-stats span b { color: var(--tape); font-weight: 700; }
+.atelier-body { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 40px; margin-top: 34px; align-items: start; }
+.atelier-nav { position: sticky; top: 96px; display: grid; gap: 22px; }
+.atelier-nav h3 { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.atelier-nav button { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; min-height: 40px; padding: 8px 12px; border: 0; border-left: 2px solid transparent; background: transparent; text-align: left; font: inherit; font-size: 14px; cursor: pointer; transition: background 0.2s, border-color 0.2s; }
+.atelier-nav button:hover { background: #e6e7e1; }
+.atelier-nav button[aria-current] { border-left-color: var(--ink); background: #e6e7e1; font-weight: 700; }
+.atelier-nav button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.atelier-nav button span { font-size: 11px; font-weight: 700; padding: 2px 7px; background: var(--tape); color: var(--ink); font-variant-numeric: tabular-nums; }
+.atelier-panel { min-width: 0; }
+.atelier-title { font-size: clamp(30px, 3vw, 44px); line-height: 1; margin: 0 0 22px; padding-bottom: 16px; border-bottom: 1px solid var(--ink); }
+.atelier-table { overflow-x: auto; margin-top: 22px; }
+.atelier-table table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 760px; }
+.atelier-table th, .atelier-table td { padding: 11px 14px 11px 0; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+.atelier-table thead th { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--ink); }
+.atelier-table td em { font-style: normal; font-size: 11px; font-weight: 700; padding: 1px 6px; background: var(--tape); margin-left: 6px; }
+.atelier-muted { color: var(--muted); }
+.atelier-actions { white-space: nowrap; }
+.atelier-actions .text-button { margin-right: 14px; font-size: 13px; }
+.admin-inbox > .button { margin-bottom: 8px; }
+@media (max-width: 1000px) {
+  .atelier .admin-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .atelier-body { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .atelier-nav { position: static; display: flex; gap: 0; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--line); }
+  .atelier-nav::-webkit-scrollbar { display: none; }
+  .atelier-nav > div { display: flex; flex: none; }
+  .atelier-nav h3 { display: none; }
+  .atelier-nav button { width: auto; white-space: nowrap; border-left: 0; border-bottom: 2px solid transparent; }
+  .atelier-nav button[aria-current] { border-bottom-color: var(--ink); background: transparent; }
+}
 /* Accueil : deux actions, l’inscription d’abord. */
 .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
 .button-tape { background: var(--tape); color: var(--ink); border-color: var(--tape); }
