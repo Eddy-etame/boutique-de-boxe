@@ -152,7 +152,7 @@ export default function Home({ items }: { items: Product[] }) {
                   </span>
                   {p && (
                     <img
-                      src={p.images[0].small}
+                      src={p.cut?.small ?? p.images[0].small}
                       width={100}
                       height={100}
                       alt=""

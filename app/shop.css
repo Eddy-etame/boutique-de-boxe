@@ -3294,6 +3294,10 @@ a.product-image[data-dark], div.kit-picture[data-dark], div.gallery-main[data-da
   .product-image::after { transition: none; }
 }
 html[data-motion='reduce'] .product-card:hover .product-image[data-cut] img { transform: none; }
+/* Fiche : la photo suit le doigt pendant le glissement (variable posée par le composant), puis change de vue. */
+div.gallery-main { touch-action: pan-y; }
+div.gallery-main > img { transform: translateX(var(--drag, 0px)); transition: transform 0.25s; }
+div.gallery-main[style*='--drag'] > img { transition: none; }
 /* Fiche : le billet d’ouverture. Avant l’ouverture des ventes, c’est lui l’appel à l’action. */
 .launch-ticket { position: relative; margin: 26px 0 20px; padding: 28px 24px 22px; background: var(--ink); color: var(--paper); }
 .launch-ticket::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 6px; background: var(--tape); }

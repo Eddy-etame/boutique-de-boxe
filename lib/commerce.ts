@@ -71,7 +71,7 @@ export function buildCart(
       ...line,
       name: p.name,
       slug: p.slug,
-      image: p.images[0].small,
+      image: p.cut?.small ?? p.images[0].small,
       price: variantPrice(p, line.variant),
       sizes: p.sizes,
     });

@@ -786,6 +786,31 @@ export function ProductDetails({ product: p }: { product: Product }) {
   };
   const step = (delta: number) =>
     setImage((i) => (i + delta + p.images.length) % p.images.length);
+  // Au doigt, la photo suit la main puis passe à la vue voisine : le même geste que partout ailleurs.
+  const swipe = useRef({ x: 0, y: 0, on: false });
+  const swipeStart = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === 'mouse' || p.images.length < 2) return;
+    swipe.current = { x: e.clientX, y: e.clientY, on: true };
+  };
+  const swipeMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!swipe.current.on) return;
+    const dx = e.clientX - swipe.current.x;
+    const dy = e.clientY - swipe.current.y;
+    // Le geste vertical reste au défilement de la page.
+    if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 12) {
+      swipe.current.on = false;
+      e.currentTarget.style.removeProperty('--drag');
+      return;
+    }
+    e.currentTarget.style.setProperty('--drag', dx + 'px');
+  };
+  const swipeEnd = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!swipe.current.on) return;
+    swipe.current.on = false;
+    const dx = e.clientX - swipe.current.x;
+    e.currentTarget.style.removeProperty('--drag');
+    if (Math.abs(dx) > 48) step(dx < 0 ? 1 : -1);
+  };
   const stickyAdd = () => {
     if (sizeChosen) {
       buyRef.current
@@ -806,7 +831,13 @@ export function ProductDetails({ product: p }: { product: Product }) {
           className="gallery-main"
           data-loupe={p.images.length ? '' : undefined}
           {...stageProps(p, image === 0)}
-          onPointerMove={loupe}
+          onPointerMove={(e) => {
+            loupe(e);
+            swipeMove(e);
+          }}
+          onPointerDown={swipeStart}
+          onPointerUp={swipeEnd}
+          onPointerCancel={swipeEnd}
         >
           <span className="tiny-label">
             {p.brand} / {p.reference || p.sourceRef}

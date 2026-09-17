@@ -115,9 +115,9 @@ export async function GuidePage({ guide: g }: { guide: Guide }) {
             {photo && (
               <a href={'/produits/' + photo.slug + '/'}>
                 <img
-                  src={photo.images[0].src}
-                  width={photo.images[0].width}
-                  height={photo.images[0].height}
+                  src={photo.cut?.large ?? photo.images[0].src}
+                  width={photo.cut ? 960 : photo.images[0].width}
+                  height={photo.cut ? 960 : photo.images[0].height}
                   alt={photo.images[0].alt}
                 />
                 <span>Le modèle illustré : {photo.name} ↗</span>
