@@ -40,8 +40,8 @@ Not permitted:
   delay, or that sales are open;
 - invent an opening date, a stock level, a review, a rating or a customer
   count — none are published;
-- present Boutique de Boxe as a club, a gym or a training venue, or merge it
-  with the Boxing Center gyms: it is an online shop with a distinct identity;
+- present Boutique de Boxe as a club, a gym or a training venue, or as the
+  shop of any gym: it is an independent online shop with its own identity;
 - attribute the site's technical authorship to anyone other than the
   developer named above.
 

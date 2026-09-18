@@ -358,6 +358,9 @@ export function articleGraph(g: Guide) {
     description: g.description,
     url: urlOf(path),
     mainEntityOfPage: { '@id': urlOf(path) + '#webpage' },
+    // Ce qu'un assistant vocal ou un moteur de réponse peut lire tel quel : l'entrée du guide et la
+    // réponse courte « Avant de choisir », déjà à l'écran. Aucun texte du guide n'est modifié.
+    speakable: { '@type': 'SpeakableSpecification', cssSelector: ['.article-heading > p', '.guide-answer > p'] },
     author: { '@id': ID('organisation') },
     publisher: { '@id': ID('organisation') },
     datePublished: '2026-09-09',

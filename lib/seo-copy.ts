@@ -46,7 +46,7 @@ export const SEO_COPY: Record<string, SeoCopy> = {
         h2: 'Vente matériel boxe : ce que vous trouvez ici',
         paragraphs: [
           'Gants de boxe du 4 au 20 oz, à velcro ou à lacets. Bandes de 2,50 m et 4,50 m. Casques, protège-dents, protège-tibias et coquilles. Shorts, t-shirts, rashguards et sweats. Sacs de frappe, poires de vitesse et pattes d’ours. Chaussures de boxe et de lutte.',
-          'Les marques sont celles des salles : Fairtex, Twins, Cleto Reyes, Elion, Adidas, Everlast, Venum, Metal Boxe, Wicked One, Shock Doctor, Century. Le matos boxe de chaque marque est présenté avec ses propres tailles, jamais converties d’une marque à l’autre.',
+          'Les marques : Fairtex, Twins, Cleto Reyes, Elion, Adidas, Everlast, Venum, Metal Boxe, Wicked One, Shock Doctor, Century. Le matos boxe de chaque marque est présenté avec ses propres tailles, jamais converties d’une marque à l’autre.',
         ],
       },
       {
@@ -550,7 +550,7 @@ export const SEO_COPY: Record<string, SeoCopy> = {
 /** Requêtes du cahier des charges, page canonique et réponse citable en une phrase. Lu par llms.txt, ai.txt et le serveur MCP. */
 export const QUERY_MAP: { query: string; path: string; answer: string }[] = [
   { query: 'Vente matériel boxe', path: '/boutique-boxe/', answer: 'Vente matériel boxe en ligne : Boutique de Boxe propose plus de 1 000 modèles de gants, bandes, protections, textile, sacs de frappe et chaussures, avec leurs tailles réelles et leurs prix prévus, livrés dans toute la France à l’ouverture des ventes.' },
-  { query: 'Boutique boxe', path: '/boutique-boxe/', answer: 'Boutique boxe en ligne française, Boutique de Boxe vend le matériel de boxe des salles Boxing Center : gants, bandes, protections, textile, sacs de frappe, chaussures, du 4 oz enfant au 20 oz sparring, livrés dans toute la France.' },
+  { query: 'Boutique boxe', path: '/boutique-boxe/', answer: 'Boutique boxe en ligne française et indépendante, Boutique de Boxe vend le matériel de boxe : gants, bandes, protections, textile, sacs de frappe, chaussures, du 4 oz enfant au 20 oz sparring, livrés dans toute la France.' },
   { query: 'Matos boxe', path: '/boutique-boxe/', answer: 'Matos boxe : gants du 4 au 20 oz, bandes, protège-dents, casques, sacs de frappe et chaussures, des marques Fairtex, Twins, Cleto Reyes, Elion, Adidas et Everlast, chez Boutique de Boxe, livrés dans toute la France.' },
   { query: 'Matériel boxe', path: '/materiel-boxe/', answer: 'Matériel boxe anglaise dans l’ordre d’achat : bandes et gants d’abord, protège-dents ensuite, casque et chaussures avec le sparring, sac de frappe pour la maison. Boutique de Boxe donne les tailles réelles et les prix prévus de chaque modèle.' },
   { query: 'Équipement boxe anglaise', path: '/materiel-boxe/', answer: 'Équipement boxe anglaise pour débuter : des bandes de 4,50 m, des gants de 12 oz, un protège-dents et une corde à sauter ; le casque et les chaussures arrivent avec le sparring. Boutique de Boxe les vend en ligne, livrés dans toute la France.' },
@@ -573,7 +573,7 @@ export const QUERY_MAP: { query: string; path: string; answer: string }[] = [
 
 /** Questions de l’accueil : les six réponses qu’un visiteur cherche avant d’entrer dans le catalogue. */
 export const HOME_FAQ: SeoFaq[] = [
-  { question: 'Qu’est-ce que Boutique de Boxe ?', answer: 'Boutique de Boxe est la boutique en ligne de matériel de boxe, de MMA et de sports de combat des salles Boxing Center : plus de 1 000 modèles de gants, bandes, protections, textile, sacs de frappe et chaussures, avec leurs tailles réelles et leurs prix prévus, livrés dans toute la France.' },
+  { question: 'Qu’est-ce que Boutique de Boxe ?', answer: 'Boutique de Boxe est une boutique en ligne indépendante de matériel de boxe, de MMA et de sports de combat : plus de 1 000 modèles de gants, bandes, protections, textile, sacs de frappe et chaussures, avec leurs tailles réelles et leurs prix prévus, livrés dans toute la France.' },
   { question: 'Quand ouvrent les ventes ?', answer: 'La date n’est pas encore publiée. Laissez votre e-mail sur la page d’ouverture ou sur une fiche : nous vous écrivons le jour J, sans autre message.' },
   { question: 'Peut-on déjà commander ?', answer: 'Vous pouvez essayer la commande de bout en bout, sans payer : panier, coordonnées, livraison et reçu en PDF. Rien n’est débité ni réservé.' },
   { question: 'Livrez-vous dans toute la France ?', answer: 'Oui, France métropolitaine, à domicile ou en point relais : 6,90 € en relais, offerts dès 69 € d’achats, 8,90 € à domicile, tarif spécifique pour le matériel lourd.' },

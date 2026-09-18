@@ -406,7 +406,7 @@ await check('Analytics stored with consent, private paths and junk dropped', asy
   const r = await request('analytics', {
     events: [
       ev('view', '/gants-de-boxe/', { w: 1440, evil: '<script>', dwell: 'x' }),
-      ev('view', '/atelier/'),
+      ev('view', '/admin/'),
       ev('nope', '/'),
       ev('leave', '/gants-de-boxe/', { dwell: 12000, depth: 70 }),
     ],
@@ -422,7 +422,7 @@ await check('Analytics report aggregates the session', async () => {
   assert.ok(d.totals.views >= 1);
   const page = d.pages.find((p) => p.path === '/gants-de-boxe/');
   assert.ok(page && page.views >= 1 && page.name === 'Gants de boxe');
-  assert.ok(!d.pages.some((p) => p.path === '/atelier/'));
+  assert.ok(!d.pages.some((p) => p.path === '/admin/' || p.path === '/atelier/'));
 });
 console.log(
   JSON.stringify({ passed: results.length, date: new Date().toISOString() }),

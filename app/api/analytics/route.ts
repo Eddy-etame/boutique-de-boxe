@@ -107,7 +107,7 @@ export async function POST(request: Request) {
     const path = str(e.p);
     const sid = str(e.sid);
     const vid = cookie(request, 'bdb_vid') || str(e.vid);
-    if (!TYPES.has(type) || !/^\/[^\s<>"']{0,200}$/.test(path) || /^\/(atelier|connexion|api)(\/|$)/.test(path) || !/^[a-z0-9-]{8,40}$/.test(sid) || !/^[a-z0-9-]{8,40}$/.test(vid)) continue;
+    if (!TYPES.has(type) || !/^\/[^\s<>"']{0,200}$/.test(path) || /^\/(admin|atelier|connexion|api)(\/|$)/.test(path) || !/^[a-z0-9-]{8,40}$/.test(sid) || !/^[a-z0-9-]{8,40}$/.test(vid)) continue;
     const referrer = typeof e.r === 'string' ? e.r.slice(0, 300) : '';
     const data = clean(e.d);
     const now = new Date(base + rows.length).toISOString();

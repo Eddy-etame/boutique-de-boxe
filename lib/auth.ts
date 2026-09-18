@@ -84,12 +84,12 @@ export function isOwnerEmail(email: string): boolean {
 }
 
 export function safeRelativePath(value: string | null | undefined): string {
-  if (!value || !value.startsWith('/') || value.startsWith('//')) return '/atelier/';
+  if (!value || !value.startsWith('/') || value.startsWith('//')) return '/admin/';
   try {
     const url = new URL(value, 'https://app.local');
-    if (url.origin !== 'https://app.local') return '/atelier/';
+    if (url.origin !== 'https://app.local') return '/admin/';
     return `${url.pathname}${url.search}`;
   } catch {
-    return '/atelier/';
+    return '/admin/';
   }
 }

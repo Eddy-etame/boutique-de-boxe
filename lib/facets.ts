@@ -18,7 +18,7 @@ import { brandsOf, brandSlug, type Brand } from './brands';
 export const MIN_FACET_PRODUCTS = 6;
 
 export type Facet = {
-  kind: 'oz' | 'marque-famille';
+  kind: 'oz' | 'marque-famille' | 'couleur';
   /** identifiant de liste (scope du catalogue en fenêtre) */
   scope: string;
   path: string;
@@ -67,6 +67,96 @@ export function ouncesOf(p: Product): number[] {
 }
 
 const gloves = (products: Product[]) => products.filter((p) => p.category === 'gants-de-boxe');
+
+/* ------------------------------------------------------------------ les couleurs */
+
+/** Une teinte par famille de couleur : « bleu marine », « bleu roi » et « bleu clair » sont bleus ; « noir mat » est noir. */
+export const COLOURS: { key: string; slug: string; label: string; plural: string }[] = [
+  { key: 'noir', slug: 'noirs', label: 'Noir', plural: 'noirs' },
+  { key: 'blanc', slug: 'blancs', label: 'Blanc', plural: 'blancs' },
+  { key: 'rouge', slug: 'rouges', label: 'Rouge', plural: 'rouges' },
+  { key: 'bleu', slug: 'bleus', label: 'Bleu', plural: 'bleus' },
+  { key: 'or', slug: 'dores', label: 'Doré', plural: 'dorés' },
+  { key: 'argent', slug: 'argentes', label: 'Argenté', plural: 'argentés' },
+  { key: 'gris', slug: 'gris', label: 'Gris', plural: 'gris' },
+  { key: 'vert', slug: 'verts', label: 'Vert', plural: 'verts' },
+  { key: 'kaki', slug: 'kaki', label: 'Kaki', plural: 'kaki' },
+  { key: 'rose', slug: 'roses', label: 'Rose', plural: 'roses' },
+  { key: 'orange', slug: 'orange', label: 'Orange', plural: 'orange' },
+  { key: 'bordeaux', slug: 'bordeaux', label: 'Bordeaux', plural: 'bordeaux' },
+  { key: 'violet', slug: 'violets', label: 'Violet', plural: 'violets' },
+  { key: 'jaune', slug: 'jaunes', label: 'Jaune', plural: 'jaunes' },
+  { key: 'marron', slug: 'marron', label: 'Marron', plural: 'marron' },
+  { key: 'turquoise', slug: 'turquoise', label: 'Turquoise', plural: 'turquoise' },
+  { key: 'camo', slug: 'camouflage', label: 'Camouflage', plural: 'camouflage' },
+];
+const COLOUR_ALIASES: Record<string, string> = { 'bleu marine': 'bleu', 'bleu roi': 'bleu', 'bleu clair': 'bleu', 'bleu ciel': 'bleu', marine: 'bleu', navy: 'bleu', charbon: 'noir', anthracite: 'gris', crème: 'blanc', creme: 'blanc', écru: 'blanc', ivoire: 'blanc', sable: 'marron', beige: 'marron', olive: 'kaki', doré: 'or', dore: 'or', gold: 'or', silver: 'argent', argenté: 'argent', cerise: 'rouge', fuchsia: 'rose', camouflage: 'camo' };
+
+/** La famille de couleur d'une teinte du catalogue, ou null si elle n'en a pas (« réfléchissant », « fluo »). */
+export function colourKey(colour: string): string | null {
+  const c = colour.toLowerCase().trim();
+  if (COLOUR_ALIASES[c]) return COLOUR_ALIASES[c];
+  const first = c.replace(/\s+(mat|clair|foncé|fonce|brillant|pâle|pale)$/, '').split(/[\s/·-]+/)[0];
+  if (COLOUR_ALIASES[first]) return COLOUR_ALIASES[first];
+  return COLOURS.some((x) => x.key === first) ? first : null;
+}
+
+/** Les familles de couleur d'un modèle, sans doublon. */
+export const coloursOf = (p: Product) => [...new Set((p.colors || []).map(colourKey).filter((x): x is string => Boolean(x)))];
+
+/** Une matière lisible pour trier : le premier composant de « Cuir · Nylon ». */
+export function materialOf(p: Product): string | null {
+  const m = p.specs?.['Matières'];
+  if (!m) return null;
+  const first = m.split(' · ')[0].trim();
+  if (/^cuir/i.test(first)) return 'Cuir';
+  if (/^(pu|synth|simili|polyuréthane|vinyle|skaï|skai)/i.test(first)) return 'Synthétique';
+  if (/^(coton|lycra|élasthanne|elasthanne|polyester|nylon|mesh|laine|microfibre|néoprène|neoprene)/i.test(first)) return first.charAt(0).toUpperCase() + first.slice(1).toLowerCase();
+  return first.length <= 16 ? first : null;
+}
+
+/** La fermeture, en trois mots : auto-agrippant, lacets, zip. */
+export function closureOf(p: Product): string | null {
+  const f = p.specs?.['Fermeture'];
+  if (!f) return null;
+  if (/lacet/i.test(f)) return 'Lacets';
+  if (/zip|éclair|eclair/i.test(f)) return 'Zip';
+  if (/agrippant|velcro|scratch/i.test(f)) return 'Auto-agrippant';
+  return null;
+}
+
+export function colourFacet(slug: string, products: Product[]): Facet | null {
+  const colour = COLOURS.find((c) => c.slug === slug);
+  if (!colour) return null;
+  const items = gloves(products).filter((p) => coloursOf(p).includes(colour.key));
+  if (items.length < MIN_FACET_PRODUCTS) return null;
+  const prices = items.map((p) => p.price).filter((n) => n > 0).sort((a, b) => a - b);
+  const brands = [...new Set(items.map((p) => p.brand).filter((b) => b && !/pr[ée]ciser|^Sélection /i.test(b)))].slice(0, 6);
+  const weights = [...new Set(items.flatMap(ouncesOf))].sort((a, b) => a - b);
+  const name = `Gants de boxe ${colour.plural}`;
+  const scope = `gants-de-boxe-${colour.slug}`;
+  return {
+    kind: 'couleur',
+    scope,
+    path: '/' + scope + '/',
+    name,
+    eyebrow: `GANTS DE BOXE · ${colour.label.toUpperCase()} · ${items.length} MODÈLES`,
+    title: `Gants de boxe ${colour.plural} : ${items.length} modèles, de ${money(prices[0])} à ${money(prices.at(-1)!)}`.slice(0, 60),
+    description: `Gants de boxe ${colour.plural} : ${items.length} modèles ${list(brands.slice(0, 4))}, de ${money(prices[0])} à ${money(prices.at(-1)!)}${weights.length ? `, de ${weights[0]} à ${weights.at(-1)} oz` : ''}. Photos, tailles réelles et prix prévus à l'ouverture des ventes.`.slice(0, 158),
+    intro: `${items.length} paires de gants de boxe ${colour.plural} au catalogue, chez ${list(brands)}${weights.length ? `, proposées de ${weights[0]} à ${weights.at(-1)} oz` : ''}. La couleur ne change ni le poids ni la coupe : choisissez d'abord la séance et le poids, la teinte ensuite.`,
+    keywords: [`gants de boxe ${colour.plural}`, `gants de boxe ${colour.key}`, `gant de boxe ${colour.key}`, `gants ${colour.key} boxe`, ...brands.slice(0, 3).map((b) => `gants de boxe ${b} ${colour.key}`)],
+    faq: [
+      { question: `Quels gants de boxe ${colour.plural} proposez-vous ?`, answer: `${items.length} modèles, listés sur cette page avec leur photo, leurs poids et leur prix prévu. Le filtre permet de choisir le poids, la marque et le budget.` },
+      { question: `Combien coûtent des gants de boxe ${colour.plural} ?`, answer: `De ${money(prices[0])} à ${money(prices.at(-1)!)}, prix médian ${money(prices[Math.floor(prices.length / 2)])}. Ce sont les prix prévus à l'ouverture des ventes.` },
+      { question: `La couleur change-t-elle quelque chose ?`, answer: 'Rien au gant : le poids, la coupe et la matière font le gant, la couleur fait le style. Certaines salles demandent une couleur précise en compétition ; demandez avant d\'acheter.' },
+    ],
+    guide: 'choisir-gants-boxe',
+    parent: { path: '/gants-de-boxe/', name: 'Gants de boxe' },
+    products: items,
+  };
+}
+
+export const colourFacets = (products: Product[]) => COLOURS.map((c) => colourFacet(c.slug, products)).filter((f): f is Facet => Boolean(f));
 
 export function ozFacet(oz: number, products: Product[]): Facet | null {
   const copy = OZ_COPY[oz];
@@ -139,12 +229,14 @@ export function brandFamilyFacets(products: Product[]): Facet[] {
 }
 
 /** Toutes les pages de longue traîne qui existent aujourd’hui, pour le plan du site et les index. */
-export const allFacets = (products: Product[]) => [...ozFacets(products), ...brandFamilyFacets(products)];
+export const allFacets = (products: Product[]) => [...ozFacets(products), ...colourFacets(products), ...brandFamilyFacets(products)];
 
 /** Résolution d’un chemin de page ou d’un scope de liste vers sa page, s’il y en a une. */
 export function facetFor(key: string, products: Product[]): Facet | null {
   const oz = /^gants-de-boxe-(\d{1,2})-oz$/.exec(key);
   if (oz) return ozFacet(Number(oz[1]), products);
+  const colour = /^gants-de-boxe-([a-z]+)$/.exec(key);
+  if (colour && COLOURS.some((c) => c.slug === colour[1])) return colourFacet(colour[1], products);
   const bf = /^marque-([a-z0-9-]+?)--([a-z0-9-]+)$/.exec(key) || /^marques\/([a-z0-9-]+)\/([a-z0-9-]+)$/.exec(key);
   if (bf) {
     const b = brandsOf(products).find((x) => x.slug === bf[1]);
@@ -156,6 +248,7 @@ export function facetFor(key: string, products: Product[]): Facet | null {
 /** Les pages voisines d’une page : les autres poids, ou les autres familles de la marque et les autres marques de la famille. */
 export function facetSiblings(f: Facet, products: Product[]): { path: string; name: string }[] {
   if (f.kind === 'oz') return ozFacets(products).filter((x) => x.scope !== f.scope).map((x) => ({ path: x.path, name: x.name }));
+  if (f.kind === 'couleur') return colourFacets(products).filter((x) => x.scope !== f.scope).map((x) => ({ path: x.path, name: x.name }));
   const [, brand, family] = /^marque-([a-z0-9-]+?)--([a-z0-9-]+)$/.exec(f.scope) || [];
   const b = brandsOf(products).find((x) => x.slug === brand);
   const sameBrand = b ? b.families.map((x) => brandFamilyFacet(b, x.slug)).filter((x): x is Facet => x !== null && x.scope !== f.scope) : [];

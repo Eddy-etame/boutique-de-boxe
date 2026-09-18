@@ -1,5 +1,6 @@
 'use client';
 import { pageWindow } from '@/lib/pagination';
+import { COLOURS, closureOf, coloursOf, materialOf } from '@/lib/facets';
 import {
   useMemo,
   useState,
@@ -280,10 +281,30 @@ export function Catalog({
   const [size, setSize] = useState('all');
   const [family, setFamily] = useState('all');
   const [budget, setBudget] = useState('all');
+  const [colour, setColour] = useState('all');
+  const [material, setMaterial] = useState('all');
+  const [closure, setClosure] = useState('all');
   const [filters, setFilters] = useState(false);
+  const [more, setMore] = useState(false);
   const [page, setPage] = useState(initialPage);
 
   const brands = [...new Set(items.map((p) => p.brand))];
+  // Les couleurs présentes, dans l'ordre de la palette ; une teinte seule ne trie rien.
+  const colourCounts = new Map<string, number>();
+  for (const p of items) for (const c of coloursOf(p)) colourCounts.set(c, (colourCounts.get(c) || 0) + 1);
+  const colours = COLOURS.filter((c) => (colourCounts.get(c.key) || 0) >= 2);
+  // Les sous-filtres : seulement quand au moins deux valeurs départagent trois modèles chacune.
+  const facetValues = (of: (p: Product) => string | null) => {
+    const counts = new Map<string, number>();
+    for (const p of items) {
+      const v = of(p);
+      if (v) counts.set(v, (counts.get(v) || 0) + 1);
+    }
+    const values = [...counts.entries()].filter(([, n]) => n >= 3).sort((a, b) => b[1] - a[1]).map(([v]) => v);
+    return values.length >= 2 ? values : [];
+  };
+  const materials = facetValues(materialOf);
+  const closures = facetValues(closureOf);
   const sizes = [...new Set(items.flatMap((p) => p.sizes.map(sizeKey)))].filter(
     (s) => s.length <= 16,
   );
@@ -294,6 +315,9 @@ export function Catalog({
         (size === 'all' || p.sizes.some((s) => sizeKey(s) === size)) &&
         (family === 'all' || p.category === family) &&
         (budget === 'all' || p.price <= Number(budget) * 100) &&
+        (colour === 'all' || coloursOf(p).includes(colour)) &&
+        (material === 'all' || materialOf(p) === material) &&
+        (closure === 'all' || closureOf(p) === closure) &&
         matchesSearch(p, query),
     );
     return out.sort(
@@ -305,7 +329,7 @@ export function Catalog({
             ? (a, b) => a.name.localeCompare(b.name, 'fr')
             : () => 0,
     );
-  }, [items, query, sort, brand, size, family, budget]);
+  }, [items, query, sort, brand, size, family, budget, colour, material, closure]);
   const count = all ? result.length : total;
   useEffect(
     () =>
@@ -317,6 +341,9 @@ export function Catalog({
         setSize('all');
         setFamily('all');
         setBudget('all');
+        setColour('all');
+        setMaterial('all');
+        setClosure('all');
       }),
     [items],
   );
@@ -408,6 +435,11 @@ export function Catalog({
           { value: '50', label: 'Jusqu’à 50 €' },
           { value: '100', label: 'Jusqu’à 100 €' },
         ])}
+        {colours.length >= 2 &&
+          picker('Couleur', colour, setColour, [
+            { value: 'all', label: 'Toutes les couleurs' },
+            ...colours.map((c) => ({ value: c.key, label: c.label })),
+          ])}
         {showFamilies &&
           picker('Équipement', family, setFamily, [
             { value: 'all', label: 'Tout le matériel' },
@@ -418,6 +450,28 @@ export function Catalog({
                 (value === 'arts-martiaux' ? 'Arts martiaux' : value),
             })),
           ])}
+        {(materials.length > 0 || closures.length > 0) && (
+          <div className="filter-more">
+            <button type="button" className="text-button" aria-expanded={more} onClick={() => setMore(!more)}>
+              {more ? 'Moins de critères' : 'Plus de critères'}
+              {!more && (material !== 'all' || closure !== 'all') ? ' · actifs' : ''}
+            </button>
+            {more && (
+              <div className="filter-more-fields">
+                {materials.length > 0 &&
+                  picker('Matière', material, setMaterial, [
+                    { value: 'all', label: 'Toutes les matières' },
+                    ...materials.map((v) => ({ value: v, label: v })),
+                  ])}
+                {closures.length > 0 &&
+                  picker('Fermeture', closure, setClosure, [
+                    { value: 'all', label: 'Toutes les fermetures' },
+                    ...closures.map((v) => ({ value: v, label: v })),
+                  ])}
+              </div>
+            )}
+          </div>
+        )}
         <button
           className="text-button"
           onClick={() => {
@@ -426,6 +480,9 @@ export function Catalog({
             setBrand('all');
             setFamily('all');
             setBudget('all');
+            setColour('all');
+            setMaterial('all');
+            setClosure('all');
             setQuery('');
           }}
         >
@@ -443,7 +500,7 @@ export function Catalog({
           <div
             className="product-grid"
             aria-busy={loading || undefined}
-            key={[query, sort, brand, size, family, budget, page, all ? 1 : 0].join('|')}
+            key={[query, sort, brand, size, family, budget, colour, material, closure, page, all ? 1 : 0].join('|')}
           >
             {(all
               ? result.slice(

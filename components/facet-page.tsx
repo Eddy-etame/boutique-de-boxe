@@ -29,7 +29,7 @@ export function FacetPage({ facet: f, all }: { facet: Facet; all: Product[] }) {
   const siblings = facetSiblings(f, all);
   const prices = f.products.map((p) => p.price).filter((n) => n > 0).sort((a, b) => a - b);
   const crumbs =
-    f.kind === 'oz'
+    f.kind === 'oz' || f.kind === 'couleur'
       ? [{ label: f.parent.name, href: f.parent.path }, { label: f.name }]
       : [{ label: 'Marques', href: '/marques/' }, { label: f.parent.name, href: f.parent.path }, { label: f.name }];
   return (
@@ -54,7 +54,7 @@ export function FacetPage({ facet: f, all }: { facet: Facet; all: Product[] }) {
         </div>
       </section>
       <nav className="subfamily-links" aria-label="Pages voisines">
-        <a href={f.parent.path}>{f.kind === 'oz' ? 'Tous les poids : ' : 'Toute la marque : '}{f.parent.name}</a>
+        <a href={f.parent.path}>{f.kind === 'oz' ? 'Tous les poids : ' : f.kind === 'couleur' ? 'Toutes les couleurs : ' : 'Toute la marque : '}{f.parent.name}</a>
         {siblings.slice(0, 12).map((x) => (
           <a key={x.path} href={x.path}>{x.name}</a>
         ))}

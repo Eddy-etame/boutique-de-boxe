@@ -4,7 +4,7 @@ import { mostViewed, weekLabel, weeklySelection } from '@/lib/hub';
 import { QUERY_MAP } from '@/lib/seo-copy';
 import { urlOf } from '@/lib/seo';
 import { SUBFAMILIES, subfamilyProducts } from '@/lib/subfamilies';
-import { ozFacets, brandFamilyFacet } from '@/lib/facets';
+import { ozFacets, colourFacets, brandFamilyFacet } from '@/lib/facets';
 import { ProductCard } from './shop-interactions';
 
 /**
@@ -59,6 +59,9 @@ export async function KeywordHub({
   // Les poids de gants : sur les pages de gants de boxe seulement, chaque poids qui a sa page.
   const weights = items.some((p) => p.category === 'gants-de-boxe')
     ? ozFacets(all).map((f) => ({ f, n: f.products.filter((p) => ids.has(p.id)).length })).filter((x) => x.n >= 4 && x.f.scope !== scope)
+    : [];
+  const colours = items.some((p) => p.category === 'gants-de-boxe')
+    ? colourFacets(all).map((f) => ({ f, n: f.products.filter((p) => ids.has(p.id)).length })).filter((x) => x.n >= 4 && x.f.scope !== scope).slice(0, 8)
     : [];
   const subs = SUBFAMILIES.map((s) => ({ s, n: subfamilyProducts(s, all).filter((p) => ids.has(p.id)).length }))
     .filter((x) => x.n >= 4 && x.s.slug !== scope)
@@ -177,6 +180,18 @@ export async function KeywordHub({
               <li>
                 <a href="/outils/poids-de-gants/">Quel poids pour moi ?</a>
               </li>
+            </ul>
+          </div>
+        )}
+        {colours.length > 0 && (
+          <div>
+            <h3>Par couleur</h3>
+            <ul>
+              {colours.map(({ f, n }) => (
+                <li key={f.scope}>
+                  <a href={f.path}>{f.name}</a> <span>{n}</span>
+                </li>
+              ))}
             </ul>
           </div>
         )}

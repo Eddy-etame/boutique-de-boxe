@@ -464,7 +464,7 @@ export function PayplugReturn({ id }: { id: string }) {
       >
         Revérifier le statut
       </button>
-      <a className="inline-link" href="/atelier/">
+      <a className="inline-link" href="/admin/">
         Revenir aux réglages ↗
       </a>
     </section>

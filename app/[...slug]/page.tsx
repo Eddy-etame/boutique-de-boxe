@@ -3,11 +3,12 @@ import { productGraph, collectionGraph, subfamilyGraph, serviceGraph, subfamilyK
 import { SEO_COPY } from '@/lib/seo-copy';
 import { subfamilyFor, subfamiliesOf, subfamilyProducts } from '@/lib/subfamilies';
 import { longDescription, practiceLevel, disciplinesOf, careAdvice, productFaq } from '@/lib/describe';
+import { matchesSearch } from '@/lib/catalog-tools';
 import { SeoBody } from '@/components/seo-body';
 import { KeywordHub } from '@/components/keyword-hub';
 import { FacetPage, facetMetadata } from '@/components/facet-page';
 import { facetFor } from '@/lib/facets';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import type { Metadata } from 'next';
 import {
   categoryFor,
@@ -92,7 +93,7 @@ export async function generateMetadata({
       'Votre reçu de simulation',
       'Reçu privé de votre commande d’essai. Aucun paiement réel.',
     ],
-    atelier: ['Administration', 'Gestion privée du catalogue et des demandes.'],
+    admin: ['Administration', 'Gestion privée du catalogue et des demandes.'],
     desinscription: [
       'Désinscription des alertes',
       'Gérer votre inscription à une alerte Boutique de Boxe.',
@@ -173,7 +174,7 @@ export async function generateMetadata({
       'paiement-retour',
       'panier',
       'recu',
-      'atelier',
+      'admin',
       'recherche',
       'desinscription',
       'confirmation',
@@ -271,7 +272,9 @@ export default async function Page({ params, searchParams }: Props) {
         </div>
       </main>
     );
-  if (path === 'atelier')
+  // L'ancienne adresse de l'espace privé renvoie vers la nouvelle, sans page intermédiaire.
+  if (path === 'atelier') permanentRedirect('/admin/');
+  if (path === 'admin')
     return (
       <main id="contenu" className="page-wrap admin-page">
         <Breadcrumb items={[{ label: 'Administration' }]} />
@@ -324,11 +327,14 @@ export default async function Page({ params, searchParams }: Props) {
     const contextKey = (await searchParams).seance;
     const session = selection.sessions.find((s) => s.key === contextKey);
     const reason = session?.products.find((r) => r.id === p.id);
+    // Trois niveaux quand la sous-famille existe : famille → sous-famille → modèle.
+    const sub = subfamiliesOf(p.category).find((x) => x.match(p));
     return (
       <main id="contenu" className="page-wrap">
         <Breadcrumb
           items={[
             { label: cat.name, href: '/' + cat.slug + '/' },
+            ...(sub ? [{ label: sub.name, href: '/' + sub.slug + '/' }] : []),
             { label: p.name },
           ]}
         />
@@ -360,10 +366,7 @@ export default async function Page({ params, searchParams }: Props) {
             )}
             <h2>Entretien.</h2>
             <p>{careAdvice(p)}</p>
-            {(() => {
-              const s = subfamiliesOf(p.category).find((x) => x.match(p));
-              return s ? <ArrowLink href={'/' + s.slug + '/'}>Tous les modèles : {s.name}</ArrowLink> : null;
-            })()}
+            {sub && <ArrowLink href={'/' + sub.slug + '/'}>Tous les modèles : {sub.name}</ArrowLink>}
             <ArrowLink
               href={
                 cat.guide === 'guide-des-tailles'
@@ -467,11 +470,15 @@ export default async function Page({ params, searchParams }: Props) {
   }
   const cat = categoryFor(path);
   if (cat || path === 'nouveautes' || path === 'recherche') {
+    // La page de résultats arrive déjà filtrée par la saisie de l'entête (?q=), sans attendre le script.
+    const query = path === 'recherche' ? ((await searchParams).q || '').slice(0, 80).trim() : '';
     const data = cat
       ? getCategoryProducts(cat, products)
       : path === 'nouveautes'
         ? [...products].reverse()
-        : products;
+        : query
+          ? products.filter((p) => matchesSearch(p, query))
+          : products;
     const currentPage = catalogPage((await searchParams).page, data.length);
     if (currentPage === null) notFound();
     return (
@@ -511,7 +518,9 @@ export default async function Page({ params, searchParams }: Props) {
             <h1>
               {cat?.name ||
                 (path === 'recherche'
-                  ? 'Rechercher'
+                  ? query
+                    ? `« ${query} »`
+                    : 'Rechercher'
                   : 'Les nouveautés')}
             </h1>
           </div>
@@ -521,7 +530,9 @@ export default async function Page({ params, searchParams }: Props) {
             </div>
             <p>
               {cat?.intro ||
-                'Tous les modèles du catalogue, avec leurs tailles et leurs prix prévus à l’ouverture des ventes.'}
+                (query
+                  ? `${data.length} ${data.length === 1 ? 'modèle répond' : 'modèles répondent'} à « ${query} ». Affinez avec les filtres, ou changez de mot.`
+                  : 'Tous les modèles du catalogue, avec leurs tailles et leurs prix prévus à l’ouverture des ventes.')}
             </p>
           </div>
         </section>
@@ -539,6 +550,7 @@ export default async function Page({ params, searchParams }: Props) {
           items={data.slice((currentPage - 1) * 36, currentPage * 36).map(listItem)}
           total={data.length}
           scope={path}
+          initialQuery={query}
           initialPage={currentPage}
           showFamilies={!cat || cat.families.length > 1}
         />

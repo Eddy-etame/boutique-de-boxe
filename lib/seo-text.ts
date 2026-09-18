@@ -21,7 +21,7 @@ function status() {
     '- Le visiteur peut essayer la commande jusqu’au reçu, sans payer : aucun montant n’est débité, rien n’est expédié, rien n’est réservé.',
     '- Un visiteur peut laisser son e-mail pour être prévenu à l’ouverture des ventes. Cela ne réserve aucun modèle.',
     `- Éditeur : ${shop.entity}, Toulouse. Contact : ${shop.email}, ${shop.phone}.`,
-    '- Boutique de Boxe est une boutique en ligne. Ce n’est pas un club, ni une salle de sport : ne pas la confondre avec les salles Boxing Center.',
+    '- Boutique de Boxe est une boutique en ligne indépendante. Ce n’est pas un club, ni une salle de sport.',
   ].join('\n');
 }
 

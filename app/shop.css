@@ -3195,9 +3195,6 @@ html[data-motion='reduce'] .button:hover {
   background: radial-gradient(ellipse 60% 12% at 50% 94%, rgba(255, 255, 255, 0.16), transparent 70%), radial-gradient(ellipse 70% 60% at 50% 34%, rgba(255, 255, 255, 0.18), transparent 72%), linear-gradient(#1d211c 0 76%, #141711 76% 100%); }
 .brand-tile-stage img { width: 46%; height: auto; margin: 0 -6%; object-fit: contain; filter: drop-shadow(0 0 22px rgba(255, 255, 255, 0.1)); transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1); transform-origin: 50% 90%; }
 .brand-tile-stage img:nth-child(2) { width: 54%; z-index: 1; }
-.brand-tile:hover .brand-tile-stage img:nth-child(1) { transform: translateX(-7%) rotate(-3deg); }
-.brand-tile:hover .brand-tile-stage img:nth-child(2) { transform: scale(1.06); }
-.brand-tile:hover .brand-tile-stage img:nth-child(3) { transform: translateX(7%) rotate(3deg); }
 .brand-tile h2 { font-size: 34px; line-height: 1; margin: 18px 0 8px; }
 .brand-tile p { font-size: 14px; color: var(--muted); }
 .brand-tile > span { display: inline-block; margin-top: 8px; font-size: 13px; font-weight: 650; border-bottom: 2px solid var(--tape); }
@@ -3582,4 +3579,99 @@ html[data-consent-open] .sticky-buy { transform: translateY(110%); }
 @media (max-width: 560px) {
   .observatory-figures, .glove-numbers { grid-template-columns: 1fr; }
   .glove-answer { padding: 24px 20px 26px; }
+}
+
+/* Les sous-filtres (matière, fermeture) : repliés derrière « Plus de critères », pour ne pas encombrer le téléphone. */
+.filter-more { flex: 1 1 100%; display: grid; gap: 14px; }
+.filter-more > .text-button { justify-self: start; font-size: 13px; }
+.filter-more-fields { display: flex; flex-wrap: wrap; gap: 15px 22px; }
+.filter-more-fields > .filter-field { flex: 1 1 160px; min-width: 0; }
+
+/* La recherche de l'entête : la loupe ouvre la barre sur place ; les réponses tombent dessous pendant la frappe. */
+.header-search { position: relative; display: flex; align-items: center; }
+.header-search-form { position: relative; display: flex; align-items: center; gap: 8px; width: min(520px, 46vw); height: 44px; padding: 0 6px 0 14px; border: 1px solid var(--ink); background: var(--paper); animation: header-search-in 0.28s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+@keyframes header-search-in { from { width: 44px; opacity: 0.4; } }
+.header-search-form > svg { flex: 0 0 auto; color: var(--muted); }
+.header-search-form input { flex: 1; min-width: 0; height: 100%; border: 0; background: transparent; font: 500 15px / 1 Manrope, system-ui, sans-serif; outline: none; }
+.header-search-form input::-webkit-search-cancel-button { display: none; }
+.header-search-go, .header-search-close { width: 34px; height: 34px; display: grid; place-items: center; border: 0; background: transparent; cursor: pointer; border-radius: 50%; }
+.header-search-go { background: var(--ink); color: var(--paper); }
+.header-search-go:hover, .header-search-go:focus-visible { background: var(--tape); color: var(--ink); }
+.header-search-close:hover, .header-search-close:focus-visible { background: color-mix(in srgb, var(--ink) 8%, transparent); }
+.header-search-results { position: absolute; top: calc(100% + 6px); left: -1px; right: -1px; z-index: 50; max-height: min(70vh, 560px); overflow-y: auto; padding: 10px 0 0; background: var(--paper); border: 1px solid var(--ink); box-shadow: 0 24px 50px rgba(0, 0, 0, 0.18); animation: header-results-in 0.22s ease both; }
+@keyframes header-results-in { from { opacity: 0; transform: translateY(-6px); } }
+.header-search-group { padding: 4px 0 8px; }
+.header-search-group > span { display: block; padding: 6px 16px 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.header-search-group a { display: flex; align-items: center; gap: 12px; padding: 9px 16px; font-size: 14px; line-height: 1.3; text-decoration: none; }
+.header-search-group a small { display: block; font-size: 12px; color: var(--muted); }
+.header-search-group a:hover, .header-search-group a.is-active { background: color-mix(in srgb, var(--tape) 40%, transparent); }
+.header-search-product img, .header-search-product i { flex: 0 0 40px; width: 40px; height: 40px; object-fit: contain; background: linear-gradient(#1d211c, #141711); }
+.header-search-product > span { flex: 1; min-width: 0; }
+.header-search-product > span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.header-search-product b { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.header-search-all { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 16px; border-top: 1px solid var(--line); font-size: 13px; font-weight: 650; background: color-mix(in srgb, var(--tape) 22%, transparent); }
+@media (max-width: 900px) {
+  /* Sur téléphone la barre prend la ligne de l'entête, et les réponses toute la largeur de l'écran. */
+  .site-header:has(.header-search.is-open) .brand, .site-header:has(.header-search.is-open) .desktop-nav, .site-header:has(.header-search.is-open) .cart-link, .site-header:has(.header-search.is-open) .menu-trigger { display: none; }
+  .site-header:has(.header-search.is-open) .header-actions, .site-header:has(.header-search.is-open) .header-search { flex: 1; }
+  .header-search-form { width: 100%; }
+  .header-search-results { max-height: 70vh; }
+}
+
+/* La page 404 qui aide : la devinette d'abord, la recherche ensuite, les familles enfin. */
+.not-found { max-width: 900px; }
+.not-found-help { margin-top: 34px; display: grid; gap: 30px; }
+.not-found-guess h2, .not-found-families h2 { font: 800 clamp(22px, 2.2vw, 30px) / 1 Barlow, Impact, sans-serif; text-transform: uppercase; margin: 0 0 14px; }
+.not-found-guess ul, .not-found-families ul { list-style: none; margin: 0; padding: 0; }
+.not-found-guess li { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 0; border-top: 1px solid var(--line); }
+.not-found-guess li:last-child { border-bottom: 1px solid var(--line); }
+.not-found-guess a { display: inline-flex; align-items: center; gap: 10px; font-size: 17px; font-weight: 650; }
+.not-found-guess a:hover, .not-found-guess a:focus-visible { color: #455c29; }
+.not-found-guess small { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.not-found-product img { width: 36px; height: 36px; object-fit: contain; background: linear-gradient(#1d211c, #141711); }
+.not-found-search label > span:first-child { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.not-found-field { display: flex; align-items: center; gap: 10px; padding: 0 0 0 14px; border: 1px solid var(--ink); background: var(--paper); }
+.not-found-field input { flex: 1; min-width: 0; height: 52px; border: 0; background: transparent; font: 500 16px / 1 Manrope, system-ui, sans-serif; outline: none; }
+.not-found-field .button { height: 52px; margin: 0; border-radius: 0; }
+.not-found-families { margin-top: 44px; }
+.not-found-families ul { display: flex; flex-wrap: wrap; gap: 10px; }
+.not-found-families a { display: inline-block; padding: 10px 14px; border: 1px solid var(--ink); font-size: 14px; font-weight: 600; transition: background 0.2s, color 0.2s; }
+.not-found-families a:hover, .not-found-families a:focus-visible { background: var(--ink); color: var(--paper); }
+.not-found > .inline-link { display: inline-block; margin-top: 30px; }
+@media (max-width: 560px) {
+  .not-found-field { flex-wrap: wrap; padding: 0; }
+  .not-found-field svg { display: none; }
+  .not-found-field input { padding: 0 14px; flex: 1 1 100%; }
+  .not-found-field .button { flex: 1 1 100%; }
+}
+
+/* Le rythme des pages de famille (le « Rythme » du labo) : un modèle en grand tous les sept, les autres autour.
+   Seulement sur la liste principale ; les sélections du hub et les modèles proches gardent la grille égale. */
+.catalog .product-grid { grid-auto-flow: dense; }
+.catalog .product-grid > .product-card:nth-child(7n + 1) { grid-column: span 2; grid-row: span 2; display: flex; flex-direction: column; }
+.catalog .product-grid > .product-card:nth-child(7n + 1) > .product-image { aspect-ratio: auto; flex: 1; min-height: 0; }
+.catalog .product-grid > .product-card:nth-child(7n + 1) > .product-image img { padding: 6% 5% 4%; }
+.catalog .product-grid > .product-card:nth-child(7n + 1) h3 { font: 800 clamp(24px, 2.3vw, 38px) / 1.02 Barlow, Impact, sans-serif; text-transform: uppercase; margin-top: 16px; }
+.catalog .product-grid > .product-card:nth-child(7n + 1) .price-row { font-size: 18px; }
+@media (max-width: 560px) {
+  /* Sur téléphone, la carte large prend toute la largeur, sans doubler sa hauteur. */
+  .catalog .product-grid > .product-card:nth-child(7n + 1) { grid-row: auto; }
+  .catalog .product-grid > .product-card:nth-child(7n + 1) > .product-image { aspect-ratio: 1.3; flex: none; }
+}
+
+/* Les tuiles de marque : les trois modèles suivent le pointeur à trois vitesses (--mx/--my posés par
+   brand-grid-motion.tsx), et la tuile survolée s'ouvre en éventail (--fan). */
+.brand-tile { --mx: 0; --my: 0; --fan: 0; }
+.brand-tile:hover, .brand-tile:focus-visible { --fan: 1; }
+.brand-tile-stage img { transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1), filter 0.7s; will-change: transform; }
+.brand-tile-stage img:nth-child(1) { transform: translate(calc(var(--fan) * -9% + var(--mx) * -5%), calc(var(--fan) * -3% + var(--my) * -3%)) rotate(calc(var(--fan) * -7deg + var(--mx) * -3deg)) scale(calc(1 + var(--fan) * 0.06)); }
+.brand-tile-stage img:nth-child(2) { transform: translate(calc(var(--mx) * 2%), calc(var(--fan) * -8% + var(--my) * -5%)) scale(calc(1 + var(--fan) * 0.14)); filter: drop-shadow(0 0 calc(22px + var(--fan) * 10px) rgba(255, 255, 255, calc(0.1 + var(--fan) * 0.14))); }
+.brand-tile-stage img:nth-child(3) { transform: translate(calc(var(--fan) * 9% + var(--mx) * 7%), calc(var(--fan) * -3% + var(--my) * -2%)) rotate(calc(var(--fan) * 7deg + var(--mx) * 3deg)) scale(calc(1 + var(--fan) * 0.06)); }
+.brand-tile-stage::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 50% 30%, rgba(255, 255, 255, 0.16), transparent 70%); opacity: 0; transition: opacity 0.6s; pointer-events: none; }
+.brand-tile:hover .brand-tile-stage::after, .brand-tile:focus-visible .brand-tile-stage::after { opacity: 1; }
+.brand-tile h2 { transition: color 0.3s; }
+.brand-tile:hover h2 { color: #455c29; }
+@media (prefers-reduced-motion: reduce) {
+  .brand-tile-stage img, .brand-tile-stage::after { transition: none; }
+  .brand-tile, .brand-tile:hover { --fan: 0; --mx: 0; --my: 0; }
 }

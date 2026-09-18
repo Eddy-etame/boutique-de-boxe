@@ -30,7 +30,7 @@ export const services: Record<string, Service> = {
       { question: 'Comment choisir la taille de mes gants ?', answer: 'Par l’usage, pas par la main : 10 oz pour le sac, 12 oz pour la technique, 14 à 16 oz avec un partenaire. Les onces sont un poids de rembourrage. Le guide des tailles et le guide des onces détaillent chaque cas, gants, textile, chaussures et enfants compris.' },
       { question: 'Puis-je retourner ou échanger un article ?', answer: 'Oui. À l’ouverture des ventes, vous disposerez du délai légal de rétractation de quatorze jours, article non porté et dans son emballage. Les conditions exactes et les frais de retour seront précisés dans les conditions générales de vente.' },
       { question: 'Le paiement est-il sécurisé ?', answer: 'Le paiement passera par PayPlug, prestataire français agréé : la carte est saisie sur sa page sécurisée, jamais sur la boutique, qui ne conserve aucun numéro de carte.' },
-      { question: 'Quelles marques trouve-t-on ?', answer: 'Metal Boxe, Elion, Fairtex, Twins, Cleto Reyes, Adidas, Everlast, Venum, Manto, Athena Fightwear, Century, Shock Doctor, Under Armour, entre autres : le matériel des salles Boxing Center, avec ses références fabricant.' },
+      { question: 'Quelles marques trouve-t-on ?', answer: 'Metal Boxe, Elion, Fairtex, Twins, Cleto Reyes, Adidas, Everlast, Venum, Manto, Athena Fightwear, Century, Shock Doctor, Under Armour, entre autres, chacune avec ses références fabricant.' },
       { question: 'Y a-t-il du matériel pour les enfants ?', answer: 'Oui : gants du 4 au 8 oz, protège-dents et casques enfant, packs de démarrage, kimonos M0 à M4. Chaque fiche indique si le modèle est prévu pour un enfant.' },
       { question: 'Équipez-vous les clubs, les coachs et les salles ?', answer: 'Oui. Pour un équipement de club ou une commande groupée, écrivez-nous via la page contact avec les quantités et les tailles : nous répondons par e-mail avec une proposition.' },
       { question: 'Que faites-vous de mes données ?', answer: 'Vos coordonnées servent à la commande, au reçu et, si vous l’acceptez, à l’alerte d’ouverture. La mesure d’audience n’est activée qu’avec votre accord, sans outil tiers. La politique de confidentialité détaille durées et droits, dont l’effacement.' },
@@ -206,7 +206,7 @@ export const services: Record<string, Service> = {
       {
         title: 'Destinataires et conservation',
         paragraphs: [
-          'L’équipe autorisée de Boxing Center peut consulter les demandes. L’hébergement et le stockage reposent sur OpenAI Sites et Cloudflare. Des traitements peuvent avoir lieu hors de l’Union européenne dans le cadre des garanties contractuelles des prestataires. Les demandes sont conservées pendant leur traitement, puis revues et supprimées lorsqu’elles ne sont plus nécessaires. Les inscriptions aux alertes sont supprimées en cas de retrait du consentement.',
+          'L’équipe autorisée de la boutique peut consulter les demandes. L’hébergement repose sur Vercel (rendu en France) et la base de données sur Supabase (Union européenne). Des traitements peuvent avoir lieu hors de l’Union européenne dans le cadre des garanties contractuelles des prestataires. Les demandes sont conservées pendant leur traitement, puis revues et supprimées lorsqu’elles ne sont plus nécessaires. Les inscriptions aux alertes sont supprimées en cas de retrait du consentement.',
         ],
       },
       {

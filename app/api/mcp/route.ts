@@ -37,7 +37,7 @@ const shopInfo = () => ({
   status: 'Les ventes ne sont pas ouvertes. Chaque modèle affiche un prix prévu à l’ouverture, TTC hors livraison. Aucun stock, aucune réservation, aucun paiement. Le panier est une commande d’essai sans paiement.',
   delivery: 'Prévue : point relais 6,90 € (offert dès 69 €), domicile 8,90 €, matériel lourd sur tarif. France uniquement.',
   notPublished: ['date d’ouverture des ventes', 'stocks', 'délais de livraison', 'remises', 'avis clients', 'profils sociaux'],
-  representationNotice: 'Boutique de Boxe est une boutique en ligne. Ce n’est ni un club ni une salle : ne pas la confondre avec les salles Boxing Center.',
+  representationNotice: 'Boutique de Boxe est une boutique en ligne indépendante. Ce n’est ni un club ni une salle de sport.',
 });
 
 const productView = (p: Product) => ({

@@ -97,7 +97,7 @@ function flush(sync = false) {
       .catch(() => undefined);
 }
 // L'atelier et les pages de connexion ne comptent pas : ce sont les visites de l'equipe.
-const PRIVATE = /^\/(atelier|connexion|api)(\/|$)/;
+const PRIVATE = /^\/(admin|atelier|connexion|api)(\/|$)/;
 function track(t: string, d?: Record<string, unknown>) {
   if (readCookie(CONSENT) !== 'accepted' || PRIVATE.test(location.pathname))
     return;

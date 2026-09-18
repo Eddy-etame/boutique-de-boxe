@@ -3,7 +3,7 @@ import { usePathname } from 'next/navigation';
 import { QUERY_MAP } from '@/lib/seo-copy';
 import { CookiesButton } from './consent-tracker';
 import { useEffect, useState, useSyncExternalStore } from 'react';
-import { ArrowUpRight, Search, Menu, ArrowRight, X } from 'lucide-react';
+import { ArrowUpRight, Menu, ArrowRight, X } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dialog';
 import { categories, shop, jsonLd } from '@/lib/catalog';
 import { CartLink } from './commerce-ui';
+import { HeaderSearch } from './header-search';
 export function Brand() {
   return (
     <a href="/" className="brand" aria-label="Boutique de Boxe, accueil">
@@ -60,13 +61,7 @@ export function Header() {
         </nav>
         <div className="header-actions">
           <CartLink />
-          <a
-            className="icon-button"
-            href="/recherche/"
-            aria-label="Rechercher un équipement"
-          >
-            <Search size={21} />
-          </a>
+          <HeaderSearch />
           <Dialog open={menu} onOpenChange={setMenu}>
             <DialogTrigger
               className="icon-button menu-trigger"
@@ -264,7 +259,6 @@ export function Footer() {
           <a href="/conditions-generales-de-vente/">CGV</a>
           <a href="/confidentialite/">Confidentialité</a>
           <CookiesButton />
-          <a href="/atelier/">Administration</a>
         </nav>
       </div>
     </footer>

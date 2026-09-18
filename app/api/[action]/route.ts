@@ -4,6 +4,7 @@ import { validateProduct } from '@/lib/product-input';
 
 import { shop, listItem } from '@/lib/catalog';
 import { listingFor } from '@/lib/listing';
+import { nearest, suggest } from '@/lib/suggest';
 
 import { getSessionUser } from '@/lib/auth';
 import { emailValid, ensureAlertContact, insertAlert, normalisePhone } from '@/lib/alerts';
@@ -148,6 +149,21 @@ export async function GET(
 
   // La liste complète d’une page de catalogue, en forme allégée : demandée par le navigateur au
   // premier geste (recherche, filtre, tri, page), jamais au chargement (lib/listing.ts).
+  if (action === 'suggest') {
+    // La barre de recherche pendant la frappe (q), ou la page 404 devant une adresse introuvable (path).
+    const url = new URL(request.url);
+    const q = (url.searchParams.get('q') || '').slice(0, 80);
+    const path = (url.searchParams.get('path') || '').slice(0, 200);
+    const products = await readCatalog();
+    const value = path ? nearest(path, products) : suggest(q, products);
+    return Response.json(value, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=86400',
+        'X-Content-Type-Options': 'nosniff',
+        'X-Robots-Tag': 'noindex',
+      },
+    });
+  }
   if (action === 'catalog-list') {
     const scope = new URL(request.url).searchParams.get('scope') || '';
     const list = /^[a-z0-9-]{1,80}$/.test(scope)

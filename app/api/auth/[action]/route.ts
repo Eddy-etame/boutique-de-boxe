@@ -15,7 +15,7 @@ export const dynamic = 'force-dynamic';
 type Params = { params: Promise<{ action: string }> };
 
 function page(title: string, body: string, status = 200) {
-  const html = `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>${title} | Boutique de Boxe</title><style>body{font-family:system-ui,sans-serif;max-width:32rem;margin:4rem auto;padding:0 1.5rem;color:#111;line-height:1.5}a{color:#111}</style></head><body><h1>${title}</h1><p>${body}</p><p><a href="/atelier/">Retour à l’atelier</a></p></body></html>`;
+  const html = `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>${title} | Boutique de Boxe</title><style>body{font-family:system-ui,sans-serif;max-width:32rem;margin:4rem auto;padding:0 1.5rem;color:#111;line-height:1.5}a{color:#111}</style></head><body><h1>${title}</h1><p>${body}</p><p><a href="/admin/">Retour à l’administration</a></p></body></html>`;
   return new NextResponse(html, {
     status,
     headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' },
@@ -78,7 +78,7 @@ export async function POST(request: Request, { params }: Params) {
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: origin + '/api/auth/callback?next=/atelier/',
+        emailRedirectTo: origin + '/api/auth/callback?next=/admin/',
         shouldCreateUser: true,
       },
     });
@@ -113,7 +113,7 @@ export async function GET(request: Request, { params }: Params) {
     return NextResponse.redirect(new URL(next, request.url), 303);
   }
   if (action === 'dev-login' && process.env.NODE_ENV === 'development') {
-    const response = NextResponse.redirect(new URL('/atelier/', request.url), 303);
+    const response = NextResponse.redirect(new URL('/admin/', request.url), 303);
     response.cookies.set(DEV_OWNER_COOKIE, '1', {
       httpOnly: true,
       sameSite: 'lax',

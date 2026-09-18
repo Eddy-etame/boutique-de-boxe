@@ -695,6 +695,7 @@ function apiHarness({ forceKeyReadRace = false } = {}) {
         return { getSessionUser: async () => null, DEV_OWNER_EMAIL: 'seedy@sites.test' };
       // La liste en fenêtre et les inscriptions ne sont pas exercées ici ; la validation d’adresse l’est.
       if (specifier === '@/lib/listing') return { listingFor: () => null };
+      if (specifier === '@/lib/suggest') return { suggest: () => ({ pages: [], products: [], total: 0 }), nearest: () => ({ pages: [], products: [] }) };
       if (specifier === '@/lib/alerts')
         return {
           emailValid: (value) => typeof value === 'string' && value.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),

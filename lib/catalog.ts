@@ -229,7 +229,9 @@ export function listItem(p: Product): Product {
     short: p.short.slice(0, 140),
     description: '',
     sizes: p.sizes,
-    specs: {},
+    // Deux caractéristiques seulement, pour les sous-filtres (matière, fermeture) ; le reste attend la fiche.
+    specs: Object.fromEntries(Object.entries(p.specs || {}).filter(([k]) => k === 'Matières' || k === 'Fermeture')),
+    colors: p.colors,
     images: p.images.slice(0, 1),
     cut: p.cut,
     notes: [],

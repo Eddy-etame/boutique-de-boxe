@@ -5,6 +5,7 @@ import { brandsOf } from '@/lib/brands';
 import { graph, urlOf, webPageNode, breadcrumbNode } from '@/lib/seo';
 import { ogImage } from '@/lib/og';
 import { Breadcrumb } from '@/components/shop-shell';
+import { BrandGridMotion } from '@/components/brand-grid-motion';
 
 export const dynamic = 'force-dynamic';
 const TITLE = 'Marques de boxe et de MMA : Elion, Fairtex, Cleto Reyes, Venum';
@@ -57,6 +58,7 @@ export default async function BrandsIndex() {
           porte au moins six modèles.
         </p>
       </section>
+      <BrandGridMotion />
       <div className="brand-grid">
         {brands.map((b) => {
           // Trois modèles détourés, la famille la plus fournie de la marque d’abord : une tuile Cleto Reyes montre des gants, pas une boîte.
