@@ -693,6 +693,17 @@ function apiHarness({ forceKeyReadRace = false } = {}) {
       if (specifier === '@/lib/request') return { clientIp: () => 'unit-test' };
       if (specifier === '@/lib/auth')
         return { getSessionUser: async () => null, DEV_OWNER_EMAIL: 'seedy@sites.test' };
+      // La liste en fenêtre et les inscriptions ne sont pas exercées ici ; la validation d’adresse l’est.
+      if (specifier === '@/lib/listing') return { listingFor: () => null };
+      if (specifier === '@/lib/alerts')
+        return {
+          emailValid: (value) => typeof value === 'string' && value.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+          normalisePhone: () => '',
+          ensureAlertContact: async () => {},
+          insertAlert() {
+            throw new Error('Not used by these tests');
+          },
+        };
       throw new Error(`Unmocked dependency is forbidden: ${specifier}`);
     },
     fetch() {
@@ -745,6 +756,7 @@ function receiptHarness(email_status) {
         };
       if (specifier === './catalog')
         return { money: (cents) => String(cents), shop: {} };
+      if (specifier === './boxtal') return { parseRelay: () => null, relayLabel: () => '' };
       throw new Error(`Unmocked receipt dependency: ${specifier}`);
     },
     fetch() {

@@ -664,6 +664,32 @@ try {
     },
   );
 
+  await check('Relay token endpoint is honest without Boxtal keys', async () => {
+    const s = session();
+    const r = await s.request('/api/commerce/relay-token');
+    assert.equal(r.status, 200);
+    assert.equal(typeof r.body.configured, 'boolean');
+    if (!r.body.configured) assert.ok(!('accessToken' in r.body), 'no token without keys');
+  });
+
+  await check('A chosen relay point travels with the order and shows on the receipt', async () => {
+    const s = session();
+    await add(s, product, 1);
+    const relay = { code: 'FR-12345', network: 'MONR_NETWORK', name: 'Tabac du Ring', address: '4 rue des Cordes', postcode: '31000', city: 'Toulouse' };
+    const bad = await s.request('/api/commerce/checkout', await checkoutBody(s, { relay: { code: 'x' } }));
+    assert.equal(bad.status, 400, 'an incomplete relay point is refused');
+    const home = await s.request('/api/commerce/checkout', await checkoutBody(s, { delivery: 'home', relay }));
+    assert.equal(home.status, 400, 'a relay point with home delivery is refused');
+    const ok = await s.request('/api/commerce/checkout', await checkoutBody(s, { relay }));
+    assert.equal(ok.status, 201, JSON.stringify(ok.body));
+    const receipt = await s.request('/api/commerce/receipt?id=' + encodeURIComponent(contract.orderId(ok.body)));
+    assert.equal(receipt.status, 200);
+    const order = contract.order(receipt.body);
+    assert.equal(order.relay?.code, relay.code);
+    assert.equal(order.relay?.city, 'Toulouse');
+    assert.ok(!('relay_point' in order) || typeof order.relay_point === 'string');
+  });
+
   console.log(
     JSON.stringify(
       {

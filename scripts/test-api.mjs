@@ -495,6 +495,49 @@ await check('Checkout rejects a malformed phone', async () => {
   }, jar);
   assert.equal(r.status, 400, 'postcode must be five digits');
 });
+await check('Long-tail listings answer for glove weights and brand-by-family scopes', async () => {
+  for (const scope of ['gants-de-boxe-16-oz', 'marque-fairtex--gants-de-boxe']) {
+    const r = await fetch(base + '/api/catalog-list?scope=' + scope);
+    assert.equal(r.status, 200, scope);
+    const body = await r.json();
+    assert.ok(body.items.length >= 6, scope + ' has at least six models');
+  }
+  assert.equal((await fetch(base + '/api/catalog-list?scope=gants-de-boxe-20-oz')).status, 404, 'a weight under six models has no page');
+});
+
+await check('Observatory feeds are public, dated and consistent', async () => {
+  const json = await (await fetch(base + '/observatoire-des-prix.json')).json();
+  assert.ok(json.products > 500 && json.families.length >= 6 && json.weights.length >= 6, 'series present');
+  assert.ok(json.summary.length >= 3, 'citable sentences');
+  const g = json.families.find((r) => r.key === 'gants-de-boxe');
+  assert.ok(g.min <= g.median && g.median <= g.max, 'ordered statistics');
+  const csv = await (await fetch(base + '/observatoire-des-prix.csv')).text();
+  assert.ok(csv.includes('serie;cle;libelle') && csv.split('\n').length > 20, 'csv rows');
+});
+
+const rpc = async (name, args) => {
+  const r = await fetch(base + '/api/mcp', { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json, text/event-stream' }, body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name, arguments: args } }) });
+  return { status: r.status, body: await r.json() };
+};
+
+await check('MCP: glove weight, observatory and consenting sign-up', async () => {
+  const weight = await rpc('recommend_glove_weight', { usage: 'partenaire', bodyWeightKg: 70 });
+  assert.equal(weight.body.result?.structuredContent?.recommended, '16 oz');
+  assert.ok(String(weight.body.result?.structuredContent?.calculator).includes('/outils/poids-de-gants/?usage=partenaire&poids=70'));
+  const obs = await rpc('get_price_observatory', { series: 'gloveWeights' });
+  assert.ok(obs.body.result?.structuredContent?.gloveWeights?.length >= 6);
+  assert.ok(!('families' in obs.body.result.structuredContent), 'only the asked series');
+  const refused = await rpc('subscribe_opening_alert', { email: 'mcp-test@example.invalid', consent: false });
+  assert.ok(refused.body.error, 'no sign-up without explicit consent');
+  const unknown = await rpc('subscribe_opening_alert', { email: 'mcp-test@example.invalid', consent: true, slug: 'modele-inexistant' });
+  assert.ok(unknown.body.error, 'unknown model refused');
+  const email = 'mcp-' + Date.now() + '@example.invalid';
+  const first = await rpc('subscribe_opening_alert', { email, consent: true });
+  assert.equal(first.body.result?.structuredContent?.registered, true, JSON.stringify(first.body));
+  const again = await rpc('subscribe_opening_alert', { email, consent: true });
+  assert.equal(again.body.result?.structuredContent?.registered, false, 'a second call reveals nothing and adds nothing');
+});
+
 console.log(
   JSON.stringify({ passed: results.length, date: new Date().toISOString() }),
 );

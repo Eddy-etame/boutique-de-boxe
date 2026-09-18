@@ -4,6 +4,7 @@ import { mostViewed, weekLabel, weeklySelection } from '@/lib/hub';
 import { QUERY_MAP } from '@/lib/seo-copy';
 import { urlOf } from '@/lib/seo';
 import { SUBFAMILIES, subfamilyProducts } from '@/lib/subfamilies';
+import { ozFacets, brandFamilyFacet } from '@/lib/facets';
 import { ProductCard } from './shop-interactions';
 
 /**
@@ -21,14 +22,17 @@ export async function KeywordHub({
   name,
   items,
   all,
+  path: givenPath,
 }: {
   scope: string;
   name: string;
   items: Product[];
   all: Product[];
+  /** le chemin de la page quand il ne se déduit pas du scope (pages de marque) */
+  path?: string;
 }) {
   if (items.length < 4) return null;
-  const path = '/' + scope + '/';
+  const path = givenPath || '/' + scope + '/';
   const { week, range } = weekLabel();
   const selection = weeklySelection(scope, items);
   const viewed = await mostViewed(items);
@@ -37,15 +41,25 @@ export async function KeywordHub({
   const byBrand = families.length < 2;
   const brandList = brandsOf(items);
   const brands = brandList.slice(0, 8);
+  // Une marque dans cette famille : la page « gants de boxe Fairtex » plutôt que toute la marque, quand elle existe.
+  const family = families.length === 1 ? families[0].slug : null;
+  const brandHref = (b: (typeof brandList)[number]) => {
+    const f = family ? brandFamilyFacet(b, family) : null;
+    return f && f.scope !== scope ? f.path : '/marques/' + b.slug + '/';
+  };
   const rows = byBrand
     ? brandList
         .slice(0, 8)
         .map((b) => {
           const s = b.products.map((p) => p.price).filter((n) => n > 0).sort((a, b) => a - b);
-          return { key: b.slug, label: b.name, href: '/marques/' + b.slug + '/', count: s.length, min: s[0], median: s[Math.floor(s.length / 2)], max: s[s.length - 1] };
+          return { key: b.slug, label: b.name, href: brandHref(b), count: s.length, min: s[0], median: s[Math.floor(s.length / 2)], max: s[s.length - 1] };
         })
     : families.slice(0, 8).map((f) => ({ key: f.slug, label: f.name, href: undefined as string | undefined, count: f.count, min: f.min, median: f.median, max: f.max }));
   const ids = new Set(items.map((p) => p.id));
+  // Les poids de gants : sur les pages de gants de boxe seulement, chaque poids qui a sa page.
+  const weights = items.some((p) => p.category === 'gants-de-boxe')
+    ? ozFacets(all).map((f) => ({ f, n: f.products.filter((p) => ids.has(p.id)).length })).filter((x) => x.n >= 4 && x.f.scope !== scope)
+    : [];
   const subs = SUBFAMILIES.map((s) => ({ s, n: subfamilyProducts(s, all).filter((p) => ids.has(p.id)).length }))
     .filter((x) => x.n >= 4 && x.s.slug !== scope)
     .sort((a, b) => b.n - a.n)
@@ -151,13 +165,28 @@ export async function KeywordHub({
             </ul>
           </div>
         )}
+        {weights.length > 0 && (
+          <div>
+            <h3>Par poids</h3>
+            <ul>
+              {weights.map(({ f, n }) => (
+                <li key={f.scope}>
+                  <a href={f.path}>{f.name}</a> <span>{n}</span>
+                </li>
+              ))}
+              <li>
+                <a href="/outils/poids-de-gants/">Quel poids pour moi ?</a>
+              </li>
+            </ul>
+          </div>
+        )}
         {brands.length > 0 && (
           <div>
             <h3>Par marque</h3>
             <ul>
               {brands.map((b) => (
                 <li key={b.slug}>
-                  <a href={'/marques/' + b.slug + '/'}>{b.name}</a> <span>{b.products.length}</span>
+                  <a href={brandHref(b)}>{family && brandHref(b) !== '/marques/' + b.slug + '/' ? `${families[0].name} ${b.name}` : b.name}</a> <span>{b.products.length}</span>
                 </li>
               ))}
               <li>

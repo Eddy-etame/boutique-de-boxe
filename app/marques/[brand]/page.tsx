@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { readCatalog } from '@/lib/database';
 import { listItem, money } from '@/lib/catalog';
 import { brandCopy, brandFor, brandsOf, priceTable } from '@/lib/brands';
+import { brandFamilyFacet } from '@/lib/facets';
 import { collectionGraph } from '@/lib/seo';
 import { ogImage } from '@/lib/og';
 import { Breadcrumb } from '@/components/shop-shell';
@@ -37,6 +38,8 @@ export default async function BrandPage({ params }: Props) {
   const path = '/marques/' + b.slug + '/';
   const prices = priceTable(b.products);
   const others = brandsOf(products).filter((x) => x.slug !== b.slug).slice(0, 12);
+  // Les familles de la marque qui ont leur propre page (six modèles et plus) : « gants de boxe Fairtex ».
+  const familyPages = new Map(b.families.map((f) => [f.slug, brandFamilyFacet(b, f.slug)] as const));
   return (
     <main id="contenu" className="page-wrap">
       <Breadcrumb items={[{ label: 'Marques', href: '/marques/' }, { label: b.name }]} />
@@ -58,6 +61,18 @@ export default async function BrandPage({ params }: Props) {
           <p>{copy.intro}</p>
         </div>
       </section>
+      {[...familyPages.values()].some(Boolean) && (
+        <nav className="subfamily-links" aria-label={'Les équipements ' + b.name}>
+          {b.families.map((f) => {
+            const page = familyPages.get(f.slug);
+            return page ? (
+              <a key={f.slug} href={page.path}>
+                {f.name} {b.name} · {f.count}
+              </a>
+            ) : null;
+          })}
+        </nav>
+      )}
       <Catalog items={b.products.slice(0, 36).map(listItem)} total={b.products.length} scope={'marque-' + b.slug} showFamilies={b.families.length > 1} />
       {prices.length >= 2 && (
         <section className="keyword-hub">
@@ -76,7 +91,7 @@ export default async function BrandPage({ params }: Props) {
               <tbody>
                 {prices.map((r) => (
                   <tr key={r.slug}>
-                    <th scope="row">{r.name}</th>
+                    <th scope="row">{familyPages.get(r.slug) ? <a href={familyPages.get(r.slug)!.path}>{r.name}</a> : r.name}</th>
                     <td>{r.count}</td>
                     <td>{money(r.min)}</td>
                     <td>{money(r.median)}</td>

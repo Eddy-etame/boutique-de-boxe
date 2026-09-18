@@ -2,6 +2,7 @@ import { clientIp } from '@/lib/request';
 import { clientsReport, clientsCsv,
   alertsCsv, ensureBuyerColumns } from '@/lib/clients';
 import { receiptPdf } from '@/lib/receipt-pdf';
+import { boxtalConfigured, boxtalMapToken, parseRelay, validateRelayPoint } from '@/lib/boxtal';
 import { db, isAdmin, readCatalog } from '@/lib/database';
 import { after } from 'next/server';
 import {
@@ -62,6 +63,16 @@ export async function GET(request: Request, context: Context) {
           : { items: [], subtotal: 0, notices: [], revision: 0 },
       );
     }
+    if (action === 'relay-token') {
+      // Le jeton d’une heure de la carte Boxtal ; sans clés, la réponse le dit et la carte ne s’affiche pas.
+      const token = await boxtalMapToken();
+      return reply(
+        // configured sans jeton : les clés sont là mais Boxtal n’a pas répondu ; la carte réessaie plus tard.
+        token ? { configured: true, ...token } : { configured: false, keys: boxtalConfigured() },
+        200,
+        { 'Cache-Control': 'private, max-age=300' },
+      );
+    }
     if (action === 'receipt') {
       const order = await ownedOrder(request);
       if (!order || order.status !== 'simulated_paid')
@@ -90,7 +101,7 @@ export async function GET(request: Request, context: Context) {
         ...safe
       } = order;
       return reply(
-        { order: { ...safe, lines: JSON.parse(order.lines) } },
+        { order: { ...safe, lines: JSON.parse(order.lines), relay: parseRelay(order.relay_point) } },
         200,
         { 'X-Robots-Tag': 'noindex, nofollow' },
       );
@@ -355,6 +366,10 @@ export async function POST(request: Request, context: Context) {
       return reply({ error: 'Rechargez le panier avant de confirmer.' }, 400);
     const phone = typeof data.phone === 'string' ? data.phone.trim() : '';
     const optin = data.optin === true ? 1 : 0;
+    // Le point relais est facultatif tant que la carte n’est pas ouverte ; s’il est envoyé, il doit être complet.
+    if (data.relay !== undefined && (data.delivery !== 'relay' || !validateRelayPoint(data.relay)))
+      return reply({ error: 'Le point relais envoyé est incomplet. Choisissez-le à nouveau sur la carte.' }, 400);
+    const relay = data.delivery === 'relay' && data.relay !== undefined ? validateRelayPoint(data.relay) : null;
     const address = {
       address1: data.address1.trim(),
       address2: typeof data.address2 === 'string' ? data.address2.trim() : '',
@@ -371,6 +386,7 @@ export async function POST(request: Request, context: Context) {
       phone,
       optin,
       address,
+      relay,
     ]);
     await ensureBuyerColumns();
     const previous = await database
@@ -424,7 +440,7 @@ export async function POST(request: Request, context: Context) {
       database.prepare('SELECT revision FROM carts WHERE id=? FOR UPDATE').bind(token),
       database
         .prepare(
-          'INSERT INTO simulation_orders(id,cart_id,idempotency_key,fingerprint,name,email,lines,subtotal,shipping,total,delivery,status,created_at,email_status,phone,optin,address1,address2,postcode,city) SELECT ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? FROM carts WHERE id=? AND revision=? AND expires_at>?',
+          'INSERT INTO simulation_orders(id,cart_id,idempotency_key,fingerprint,name,email,lines,subtotal,shipping,total,delivery,status,created_at,email_status,phone,optin,address1,address2,postcode,city,relay_point) SELECT ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? FROM carts WHERE id=? AND revision=? AND expires_at>?',
         )
         .bind(
           id,
@@ -447,6 +463,7 @@ export async function POST(request: Request, context: Context) {
           address.address2,
           address.postcode,
           address.city,
+          relay ? JSON.stringify(relay) : '',
           token,
           cart.revision,
           Date.now(),

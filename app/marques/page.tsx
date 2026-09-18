@@ -59,7 +59,12 @@ export default async function BrandsIndex() {
       </section>
       <div className="brand-grid">
         {brands.map((b) => {
-          const heroes = b.products.filter((p) => p.cut?.mode === 'pose').slice(0, 3);
+          // Trois modèles détourés, la famille la plus fournie de la marque d’abord : une tuile Cleto Reyes montre des gants, pas une boîte.
+          const order = new Map(b.families.map((f, i) => [f.slug, i]));
+          const heroes = b.products
+            .filter((p) => p.cut?.mode === 'pose')
+            .sort((x, y) => (order.get(x.category) ?? 99) - (order.get(y.category) ?? 99))
+            .slice(0, 3);
           return (
             <a key={b.slug} className="brand-tile" href={'/marques/' + b.slug + '/'}>
               <div className="brand-tile-stage" aria-hidden="true">

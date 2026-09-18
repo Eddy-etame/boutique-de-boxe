@@ -109,7 +109,11 @@ export function careAdvice(p: Product): string {
 export function productFaq(p: Product): { question: string; answer: string }[] {
   const family = categoryFor(p.category);
   // Nom court dans les questions (sans le coloris), nom complet une fois dans la première réponse.
-  const short = p.name.split(' — ')[0];
+  // Les noms importés portent le coloris après une virgule et peuvent dépasser soixante signes :
+  // au-delà de 48, la question dit « ce modèle Cleto Reyes » plutôt que de répéter tout le nom.
+  const trimmed = p.name.split(' — ')[0].replace(/,\s[^,]{1,30}$/, '');
+  const brand = p.brand && !/pr[ée]ciser|^Sélection /i.test(p.brand) ? p.brand : '';
+  const short = trimmed.length <= 48 ? trimmed : 'ce modèle' + (brand ? ' ' + brand : '');
   const guideTitle = family?.guide === 'guide-des-tailles' || !family?.guide ? 'Guide des tailles' : guides.find((g) => g.slug === family.guide)?.title || 'Guide des tailles';
   const sizes = p.sizes.map((s) => s.split(',')[0]);
   const disciplines = disciplinesOf(p);

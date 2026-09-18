@@ -1,6 +1,7 @@
 import { PDFDocument, StandardFonts, rgb, type PDFFont } from 'pdf-lib';
 import { money, shop } from './catalog';
 import type { CartLine, Order } from './commerce';
+import { parseRelay, relayLabel } from './boxtal';
 
 /**
  * Reçu de simulation en PDF, fidèle au reçu HTML téléchargeable : même masthead,
@@ -160,7 +161,8 @@ export async function receiptPdf(order: Order): Promise<Uint8Array> {
   for (const l of lines) {
     drawRow(l.name, `${l.variant || 'Sans déclinaison'} · ${l.quantity} × ${money(l.price)}`, money(l.price * l.quantity));
   }
-  drawRow(`Livraison ${order.delivery === 'home' ? 'à domicile' : 'en point relais'} (simulation)`, null, money(order.shipping), false);
+  const relay = parseRelay(order.relay_point);
+  drawRow(`Livraison ${order.delivery === 'home' ? 'à domicile' : relay ? 'en point relais : ' + relayLabel(relay) : 'en point relais'} (simulation)`, null, money(order.shipping), false);
 
   // Total, aligné à droite.
   y -= 12;

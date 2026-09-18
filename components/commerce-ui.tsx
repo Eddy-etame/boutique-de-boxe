@@ -23,6 +23,8 @@ import {
   Trash2,
 } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { RelayPicker } from './relay-picker';
+import { relayLabel, type RelayPoint } from '@/lib/boxtal';
 import { money, type Product } from '@/lib/catalog';
 import type { Cart, CartLine, Order } from '@/lib/commerce';
 
@@ -521,6 +523,7 @@ type CheckoutPayload = {
   postcode: string;
   city: string;
   delivery: Delivery;
+  relay?: RelayPoint;
   paymentOutcome: PaymentOutcome;
   consent: true;
   quotedTotal: number;
@@ -612,6 +615,7 @@ export function CartPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [delivery, setDelivery] = useState<Delivery>('relay');
+  const [relay, setRelay] = useState<RelayPoint | null>(null);
   const [paymentOutcome, setPaymentOutcome] =
     useState<PaymentOutcome>('approved');
   const [consent, setConsent] = useState(false);
@@ -689,6 +693,7 @@ export function CartPage() {
         postcode: postcode.trim(),
         city: city.trim(),
         delivery,
+        ...(delivery === 'relay' && relay ? { relay } : {}),
         paymentOutcome,
         consent: true,
         quotedTotal: total,
@@ -1162,10 +1167,10 @@ export function CartPage() {
                         <b>{money(890)}</b>
                       </label>
                     </RadioGroup>
+                    {delivery === 'relay' && <RelayPicker postcode={postcode} city={city} value={relay} onChange={setRelay} disabled={locked} />}
                     <p className="commerce-caption">
-                      Aucune adresse postale n’est demandée : cet essai ne
-                      déclenche aucune expédition. Les frais réels, notamment
-                      pour le matériel lourd, restent à confirmer.
+                      Cet essai ne déclenche aucune expédition. Les frais réels,
+                      notamment pour le matériel lourd, restent à confirmer.
                     </p>
                   </fieldset>
                   <fieldset disabled={locked} className="checkout-fields">
@@ -1275,7 +1280,7 @@ export function CartPage() {
                   <dt>
                     Livraison simulée
                     <small>
-                      {delivery === 'relay' ? 'Point relais' : 'À domicile'}
+                      {delivery === 'relay' ? (relay ? 'Point relais · ' + relay.name : 'Point relais') : 'À domicile'}
                     </small>
                   </dt>
                   <dd>{money(shipping)}</dd>
@@ -1382,6 +1387,7 @@ type PublicOrder = Omit<
   'cart_id' | 'idempotency_key' | 'fingerprint' | 'lines'
 > & {
   lines: CartLine[];
+  relay?: RelayPoint | null;
 };
 
 export function ReceiptPage({ id }: { id: string }) {
@@ -1538,7 +1544,7 @@ export function ReceiptPage({ id }: { id: string }) {
                 <dt>
                   Livraison simulée
                   <small>
-                    {order.delivery === 'home' ? 'À domicile' : 'Point relais'}
+                    {order.delivery === 'home' ? 'À domicile' : order.relay ? 'Point relais · ' + relayLabel(order.relay) : 'Point relais'}
                   </small>
                 </dt>
                 <dd>{money(order.shipping)}</dd>

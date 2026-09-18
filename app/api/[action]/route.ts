@@ -6,6 +6,7 @@ import { shop, listItem } from '@/lib/catalog';
 import { listingFor } from '@/lib/listing';
 
 import { getSessionUser } from '@/lib/auth';
+import { emailValid, ensureAlertContact, insertAlert, normalisePhone } from '@/lib/alerts';
 import { clientIp } from '@/lib/request';
 
 export const dynamic = 'force-dynamic';
@@ -20,32 +21,6 @@ const response = (value: unknown, status = 200) =>
       'X-Content-Type-Options': 'nosniff',
     },
   });
-
-const emailValid = (value: unknown): value is string =>
-  typeof value === 'string' &&
-  value.length <= 254 &&
-  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-
-/** Numéro ramené au format international : « 06 12 34 56 78 » devient « +33612345678 ». Vide si invalide. */
-function normalisePhone(value: unknown): string {
-  if (typeof value !== 'string' || value.length > 30) return '';
-  const digits = value.replace(/[\s().-]/g, '');
-  if (/^0[1-9]\d{8}$/.test(digits)) return '+33' + digits.slice(1);
-  if (/^00[1-9]\d{7,13}$/.test(digits)) return '+' + digits.slice(2);
-  return /^\+[1-9]\d{7,14}$/.test(digits) ? digits : '';
-}
-
-// Colonnes de contact des alertes, ajoutées sans étape de migration manuelle (même principe que
-// la table des événements) : téléphone facultatif, accord SMS, et l’endroit où l’inscription s’est faite.
-let alertContactReady = false;
-async function ensureAlertContact() {
-  if (alertContactReady) return;
-  const database = await db();
-  await database.prepare("ALTER TABLE alerts ADD COLUMN IF NOT EXISTS phone text NOT NULL DEFAULT ''").run();
-  await database.prepare('ALTER TABLE alerts ADD COLUMN IF NOT EXISTS sms_consent integer NOT NULL DEFAULT 0').run();
-  await database.prepare("ALTER TABLE alerts ADD COLUMN IF NOT EXISTS source text NOT NULL DEFAULT ''").run();
-  alertContactReady = true;
-}
 
 async function body(request: Request) {
   const formEncoded = request.headers
@@ -500,26 +475,7 @@ export async function POST(
           ? data.source
           : '';
       // La référence n’est rendue qu’à la création : une adresse déjà inscrite ne révèle rien.
-      const ref = await (
-        await db()
-      )
-
-        .prepare(
-          'INSERT INTO alerts (id,email,product_id,variant,created_at,consent_version,unsubscribe_token,source) VALUES (?,?,?,?,?,?,?,?) ON CONFLICT(email,product_id,variant) DO NOTHING RETURNING id',
-        )
-
-        .bind(
-          crypto.randomUUID(),
-          email,
-          data.productId,
-          data.variant,
-          new Date().toISOString(),
-          '2026-09-17',
-          crypto.randomUUID(),
-          source,
-        )
-
-        .first<string>('id');
+      const ref = await insertAlert({ email, productId: data.productId, variant: data.variant, source });
 
       return request.headers
         .get('content-type')

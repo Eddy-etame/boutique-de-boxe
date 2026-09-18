@@ -16,7 +16,8 @@ const csp = [
   "base-uri 'none'",
   "object-src 'none'",
   "frame-ancestors 'none'",
-  "frame-src 'none'",
+  // La carte des points relais (Boxtal) est un cadre servi par maps.boxtal.com, avec son script.
+  "frame-src https://maps.boxtal.com",
   "form-action 'self'",
   // Les vues secondaires des fiches viennent encore des serveurs des fournisseurs (1 854 photos sur deux
   // hôtes ; le premier redirige vers son stockage). Sans ces hôtes, la politique bloquait les galeries.
@@ -24,8 +25,8 @@ const csp = [
   "img-src 'self' data: https://api.ecommercio.com https://ypnjjowtudmpxoqopzta.supabase.co https://media.cdnws.com",
   "font-src 'self'",
   "style-src 'self' 'unsafe-inline'",
-  "script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com" + (isProd ? '' : " 'unsafe-eval'"),
-  "connect-src 'self' https://inlett.vercel.app https://va.vercel-scripts.com https://vitals.vercel-insights.com" + (isProd ? '' : ' ws: wss:'),
+  "script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com https://maps.boxtal.com" + (isProd ? '' : " 'unsafe-eval'"),
+  "connect-src 'self' https://inlett.vercel.app https://va.vercel-scripts.com https://vitals.vercel-insights.com https://maps.boxtal.com" + (isProd ? '' : ' ws: wss:'),
   "worker-src 'self'",
   "manifest-src 'self'",
   ...(isProd ? ['upgrade-insecure-requests'] : []),

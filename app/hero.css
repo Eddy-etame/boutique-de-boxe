@@ -69,7 +69,8 @@
   position: absolute;
   left: -9%;
   right: 0;
-  top: -11%;
+  /* Le haut du modèle garde de l’air sous le bord du cadre : à -11 % il affleurait le bord et semblait coupé. */
+  top: -6%;
   bottom: 5%;
   z-index: 2;
   display: flex;

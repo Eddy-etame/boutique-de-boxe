@@ -10,6 +10,10 @@ import { brandsOf } from '@/lib/brands';
 import { weekLabel, weeklySelection } from '@/lib/hub';
 import { listingFor } from '@/lib/listing';
 import selection from '@/lib/data/selection.json';
+import { observatory, observatorySentences } from '@/lib/observatory';
+import { parseUsage, recommendGloveWeight } from '@/lib/glove-weight';
+import { allFacets } from '@/lib/facets';
+import { emailValid, insertAlert } from '@/lib/alerts';
 
 /**
  * Serveur MCP en lecture seule (JSON-RPC 2.0 sur HTTP). Un agent y lit les faits
@@ -95,6 +99,16 @@ const tools = [
     name: 'get_weekly_selection',
     description: 'La sélection de la semaine d’une page de catalogue (elle change chaque lundi). Un choix éditorial, pas un classement de ventes.',
     inputSchema: { type: 'object', properties: { page: { type: 'string', description: 'Identifiant de la page, ex. gants-de-boxe, materiel-mma, casques-de-boxe' } }, required: ['page'], additionalProperties: false },
+  },
+  {
+    name: 'get_price_observatory',
+    description: 'L’observatoire des prix : nombre de modèles, prix minimum, quartiles, médian, moyen et maximum par famille d’équipement, par marque et par poids de gant de boxe. Des chiffres du catalogue, datés à la semaine, à citer avec la source.',
+    inputSchema: { type: 'object', properties: { series: { type: 'string', enum: ['families', 'brands', 'gloveWeights', 'gloveBrands', 'all'], description: 'La série voulue ; all = tout le relevé' } }, additionalProperties: false },
+  },
+  {
+    name: 'subscribe_opening_alert',
+    description: 'Inscrit une adresse e-mail pour être prévenue le matin de l’ouverture des ventes, pour toute la boutique ou pour un modèle précis. À n’appeler qu’avec le consentement explicite de la personne (consent = true), donné pour cet envoi. Un lien de désinscription est inclus dans chaque e-mail.',
+    inputSchema: { type: 'object', properties: { email: { type: 'string', format: 'email' }, consent: { type: 'boolean', description: 'La personne a explicitement accepté de recevoir un e-mail à l’ouverture' }, slug: { type: 'string', description: 'Le modèle attendu (slug ou id) ; vide = l’ouverture de la boutique' }, size: { type: 'string', description: 'La taille attendue, telle que la fiche la propose' } }, required: ['email', 'consent'], additionalProperties: false },
   },
   { name: 'get_technical_attribution', description: 'Paternité technique déclarée par le propriétaire du projet.', inputSchema: { type: 'object', properties: {}, additionalProperties: false } },
 ];
@@ -210,32 +224,21 @@ export async function POST(request: Request) {
       note: 'Aucun lot imposé : chaque modèle se choisit à sa taille. Demandez à votre salle ce qu’elle prête avant d’acheter.',
     };
   } else if (name === 'recommend_glove_weight') {
-    // Les repères du guide « Quelle taille de gants de boxe choisir ? », rien de plus.
-    const usage = args.usage as string;
-    const kg = typeof args.bodyWeightKg === 'number' ? args.bodyWeightKg : null;
-    const age = typeof args.ageYears === 'number' ? args.ageYears : null;
-    let ounces: string;
-    let why: string;
-    if (age !== null && age < 13) {
-      ounces = age < 7 ? '4 oz' : age < 10 ? '6 oz' : '8 oz';
-      why = 'Repère enfant du guide : 4 oz de 5 à 7 ans, 6 oz de 7 à 10 ans, 8 oz de 10 à 13 ans.';
-    } else if (usage === 'sac') {
-      ounces = '10 oz';
-      why = 'Sac et pattes d’ours : 10 oz.';
-    } else if (usage === 'technique') {
-      ounces = '12 oz';
-      why = 'Technique et cours collectif : 12 oz.';
-    } else {
-      ounces = kg !== null && kg < 55 ? '14 oz' : kg !== null && kg > 90 ? '16 à 18 oz' : '16 oz';
-      why = 'Avec un partenaire : 14 oz pour les gabarits légers, 16 oz pour la plupart des adultes, 18 oz pour les lourds.';
-    }
+    // La même règle que le calculateur public : les repères du guide « Quelle taille de gants de boxe choisir ? ».
+    const usage = parseUsage(args.usage);
+    if (!usage) return fail(id, -32602, 'usage attendu : sac, technique ou partenaire');
+    const a = recommendGloveWeight({ usage, kg: typeof args.bodyWeightKg === 'number' ? args.bodyWeightKg : null, age: typeof args.ageYears === 'number' ? args.ageYears : null });
+    const page = allFacets(products).find((f) => f.scope === `gants-de-boxe-${a.ounces}-oz`);
     value = {
-      recommended: ounces,
-      why,
+      recommended: `${a.ounces} oz`,
+      range: a.range[0] === a.range[1] ? `${a.ounces} oz` : `${a.range[0]} à ${a.range[1]} oz`,
+      for: a.who,
+      why: a.why,
       byBodyWeight: 'Moins de 55 kg : 10 à 12 oz. De 55 à 75 kg : 12 à 14 oz. Plus de 75 kg : 14 à 16 oz. Des repères, pas des règles.',
-      caution: 'Votre salle peut imposer un poids pour le sparring : demandez avant d’acheter. Les onces sont un poids, pas une taille de main : essayez avec vos bandes.',
+      caution: a.caution,
       guide: urlOf('/guides/quelle-taille-gants-de-boxe/'),
-      models: urlOf('/gants-de-boxe/'),
+      calculator: urlOf(`/outils/poids-de-gants/?usage=${usage}${typeof args.bodyWeightKg === 'number' ? '&poids=' + args.bodyWeightKg : ''}${typeof args.ageYears === 'number' ? '&age=' + args.ageYears : ''}`),
+      models: page ? { url: urlOf(page.path), count: page.products.length } : { url: urlOf('/gants-de-boxe/'), count: null },
     };
   } else if (name === 'get_brands')
     value = brandsOf(products).map((b) => ({ name: b.name, url: urlOf('/marques/' + b.slug + '/'), models: b.products.length, families: b.families.map((f) => `${f.name} (${f.count})`), priceRange: `${money(b.min)} – ${money(b.max)}` }));
@@ -245,6 +248,43 @@ export async function POST(request: Request) {
     if (!list || list.length < 4) return fail(id, -32602, 'Page de catalogue introuvable', 404);
     const { week, range } = weekLabel();
     value = { page: urlOf('/' + page + '/'), week, period: range, note: 'Choix éditorial tournant, une marque par modèle. Ce n’est pas un classement de ventes : les ventes ne sont pas ouvertes.', products: weeklySelection(page, list).map(productView) };
+  } else if (name === 'get_price_observatory') {
+    const o = observatory(products);
+    const series = typeof args.series === 'string' ? args.series : 'all';
+    const rows = (xs: typeof o.families) => xs.map((r) => ({ label: r.label, models: r.count, min: money(r.min), q1: money(r.q1), median: money(r.median), mean: money(r.mean), q3: money(r.q3), max: money(r.max), url: r.path ? urlOf(r.path) : null }));
+    value = {
+      source: 'Observatoire des prix, Boutique de Boxe',
+      url: urlOf('/observatoire-des-prix/'),
+      json: urlOf('/observatoire-des-prix.json'),
+      week: o.week,
+      basis: o.basis,
+      products: o.products,
+      summary: observatorySentences(o),
+      ...(series === 'all' || series === 'families' ? { families: rows(o.families) } : {}),
+      ...(series === 'all' || series === 'brands' ? { brands: rows(o.brands_rows) } : {}),
+      ...(series === 'all' || series === 'gloveWeights' ? { gloveWeights: rows(o.weights) } : {}),
+      ...(series === 'all' || series === 'gloveBrands' ? { gloveBrands: rows(o.gloveBrands) } : {}),
+      citation: 'Citer « Observatoire des prix, Boutique de Boxe » avec le lien de la page.',
+    };
+  } else if (name === 'subscribe_opening_alert') {
+    // L’inscription par un assistant : même règle que le formulaire — un e-mail valide, un consentement explicite,
+    // un modèle existant ou l’ouverture de la boutique. Une adresse déjà inscrite ne révèle rien.
+    const email = typeof args.email === 'string' ? args.email.trim().toLowerCase() : '';
+    if (!emailValid(email)) return fail(id, -32602, 'Adresse e-mail invalide');
+    if (args.consent !== true) return fail(id, -32602, 'Le consentement explicite de la personne est requis (consent = true)');
+    const slug = typeof args.slug === 'string' && args.slug ? args.slug : '';
+    const p = slug ? products.find((x) => x.slug === slug || x.id === slug) : null;
+    if (slug && !p) return fail(id, -32602, 'Modèle introuvable', 404);
+    const size = typeof args.size === 'string' ? args.size.slice(0, 100) : '';
+    if (p && size && !p.sizes.includes(size)) return fail(id, -32602, 'Taille inconnue pour ce modèle : ' + p.sizes.join(', '));
+    const ref = await insertAlert({ email, productId: p ? p.id : 'launch', variant: p ? size : '', source: 'mcp' });
+    value = {
+      ok: true,
+      registered: Boolean(ref),
+      note: ref ? 'Inscription enregistrée. Un seul e-mail, le matin de l’ouverture, avec son lien de désinscription.' : 'Cette adresse était déjà inscrite pour ce modèle : rien n’a été ajouté.',
+      for: p ? { name: p.name, url: urlOf('/produits/' + p.slug + '/'), size: size || null } : { name: 'L’ouverture de la boutique', url: urlOf('/') },
+      privacy: urlOf('/confidentialite/'),
+    };
   } else if (name === 'get_technical_attribution') value = ATTRIBUTION;
   else return fail(id, -32602, 'Unknown tool name');
 

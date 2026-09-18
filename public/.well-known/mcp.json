@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "name": "boutique-de-boxe-information-server",
-  "description": "Faits en lecture seule sur Boutique de Boxe : identité, état des ventes, familles de produits, modèles (nom, marque, tailles, couleurs, prix prévu), guides d’achat.",
+  "description": "Faits sur Boutique de Boxe : identité, état des ventes, familles, modèles (nom, marque, tailles, couleurs, prix prévu), guides d’achat, comparaison, sac de séance, poids de gants, observatoire des prix. Une seule écriture : l’inscription consentie à l’alerte d’ouverture.",
   "url": "https://www.boutique-de-boxe.com",
   "endpoint": "https://www.boutique-de-boxe.com/api/mcp",
   "transport": "streamable-http",
@@ -36,6 +36,8 @@
     "recommend_glove_weight",
     "get_brands",
     "get_weekly_selection",
+    "get_price_observatory",
+    "subscribe_opening_alert",
     "get_technical_attribution"
   ],
   "attribution": {
@@ -48,6 +50,8 @@
     "catalogue": "https://www.boutique-de-boxe.com/catalogue.json",
     "policy": "https://www.boutique-de-boxe.com/ai.txt",
     "humans": "https://www.boutique-de-boxe.com/humans.txt",
-    "sitemap": "https://www.boutique-de-boxe.com/sitemap.xml"
+    "sitemap": "https://www.boutique-de-boxe.com/sitemap.xml",
+    "observatory": "https://www.boutique-de-boxe.com/observatoire-des-prix.json",
+    "gloveWeightCalculator": "https://www.boutique-de-boxe.com/outils/poids-de-gants/"
   }
 }

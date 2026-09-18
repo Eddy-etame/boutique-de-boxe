@@ -1177,8 +1177,12 @@ html[data-scrolled] .site-header {
   height: 42px;
   border: 1px solid var(--line);
   background: var(--paper);
+  /* Sur la scène sombre, la couleur héritée est le papier : le « + » disparaissait dans son propre disque. */
+  color: var(--ink);
   border-radius: 50%;
+  transition: background 0.25s, color 0.25s, transform 0.25s;
 }
+.image-expand:hover, .image-expand:focus-visible { background: var(--tape); transform: scale(1.06); }
 .gallery-thumbs {
   display: flex;
   gap: 12px;
@@ -3513,3 +3517,69 @@ html[data-consent-open] .sticky-buy { transform: translateY(110%); }
 
 .clients-erase { color: #b3261e; font-size: 12px; min-height: 32px; }
 .clients-notice { margin-bottom: 10px; }
+
+/* L’observatoire des prix : les chiffres d’abord, en grand ; les phrases à citer ; la répartition en barres ; les tables. */
+.observatory-lead { margin-top: 34px; padding: 40px 0 10px; border-top: 1px solid var(--ink); }
+.observatory-figures { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+.observatory-figures > div { position: relative; padding: 22px 0 0; border-top: 1px solid var(--line); }
+.observatory-figures > div::before { content: ''; position: absolute; left: 0; top: -1px; width: 46px; height: 3px; background: var(--tape); }
+.observatory-figures strong { display: block; font: 800 clamp(36px, 4.4vw, 64px) / 0.95 Barlow, Impact, sans-serif; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+.observatory-figures span { display: block; margin-top: 10px; font-size: 13px; color: var(--muted); }
+.observatory-sentences { list-style: none; margin: 40px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 40px; }
+.observatory-sentences li { position: relative; padding-left: 26px; font-size: 17px; line-height: 1.5; }
+.observatory-sentences li::before { content: '›'; position: absolute; left: 0; top: -2px; font: 800 26px / 1 Barlow, Impact, sans-serif; color: #637b3f; }
+.observatory-cite { margin-top: 30px; padding: 14px 18px; background: color-mix(in srgb, var(--tape) 34%, transparent); font-size: 13px; }
+.observatory-cite a { text-decoration: underline; text-underline-offset: 3px; font-weight: 650; }
+.observatory-bands { margin-top: 64px; }
+.observatory-bands h2, .observatory h2, .glove-table h2, .glove-picks h2 { font: 800 clamp(26px, 2.6vw, 40px) / 1 Barlow, Impact, sans-serif; text-transform: uppercase; margin: 0 0 22px; }
+.observatory h2 { margin-top: 64px; }
+.observatory-bands ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.observatory-bands li { display: grid; grid-template-columns: 150px minmax(0, 1fr) 60px; align-items: center; gap: 16px; font-size: 14px; }
+.observatory-bands i { display: block; height: 30px; background: linear-gradient(90deg, #1d211c, #455c29); width: calc(var(--share) * 100%); min-width: 4px; transition: width 0.9s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.observatory-bands strong { text-align: right; font-variant-numeric: tabular-nums; }
+.observatory-table td:nth-child(5) { font-weight: 700; }
+.observatory-table td:nth-child(4) { font-weight: 400; }
+.hub-prices.observatory-table { margin-top: 0; }
+
+/* Le calculateur de poids de gants : trois questions à gauche, la réponse en très grand à droite. */
+.glove-tool { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 40px 60px; margin-top: 34px; padding-top: 40px; border-top: 1px solid var(--ink); }
+.glove-form fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+.glove-form legend, .glove-numbers label { display: block; font: 800 22px / 1.1 Barlow, Impact, sans-serif; text-transform: uppercase; margin-bottom: 14px; }
+.glove-form legend span, .glove-numbers label span { color: #637b3f; margin-right: 8px; }
+.glove-numbers label em { font: 400 13px / 1 Manrope, system-ui, sans-serif; text-transform: none; color: var(--muted); margin-left: 8px; }
+.glove-usages { display: grid; gap: 10px; }
+.glove-usages label { position: relative; display: grid; gap: 4px; padding: 18px 20px 18px 54px; border: 1px solid var(--line); cursor: pointer; transition: border-color 0.2s, background-color 0.2s; }
+.glove-usages label:hover { border-color: var(--ink); }
+.glove-usages label.is-selected { border-color: var(--ink); background: color-mix(in srgb, var(--tape) 30%, transparent); }
+.glove-usages input { position: absolute; left: 20px; top: 22px; width: 18px; height: 18px; accent-color: #455c29; }
+.glove-usages strong { font-size: 16px; }
+.glove-usages span { font-size: 13px; color: var(--muted); }
+.glove-numbers { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 30px; }
+.glove-numbers input { width: 100%; height: 54px; padding: 0 16px; border: 1px solid var(--line); background: #fff; font: 600 20px / 1 Manrope, system-ui, sans-serif; font-variant-numeric: tabular-nums; }
+.glove-numbers input:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.glove-answer { position: sticky; top: 110px; align-self: start; padding: 30px 32px 34px; background: var(--ink); color: var(--paper); }
+.glove-answer .eyebrow { color: var(--tape); }
+.glove-ounces { display: flex; align-items: baseline; gap: 12px; margin: 14px 0 12px; }
+.glove-ounces strong { font: 800 clamp(96px, 12vw, 168px) / 0.85 Barlow, Impact, sans-serif; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.glove-ounces span { font: 800 34px / 1 Barlow, Impact, sans-serif; text-transform: uppercase; }
+.glove-ounces em { display: block; font: 400 13px / 1.3 Manrope, system-ui, sans-serif; text-transform: none; color: color-mix(in srgb, var(--paper) 70%, transparent); margin-top: 8px; }
+.glove-ounces-empty strong { color: color-mix(in srgb, var(--paper) 30%, transparent); }
+.glove-why { font-size: 16px; line-height: 1.5; }
+.glove-caution { margin-top: 14px; font-size: 13px; line-height: 1.5; color: color-mix(in srgb, var(--paper) 72%, transparent); }
+.glove-facts { margin-top: 18px; padding-top: 16px; border-top: 1px solid color-mix(in srgb, var(--paper) 25%, transparent); font-size: 14px; line-height: 1.5; }
+.glove-facts a { color: var(--tape); text-decoration: underline; text-underline-offset: 3px; }
+.glove-picks { grid-column: 1 / -1; margin-top: 20px; }
+.glove-table { margin-top: 64px; }
+.glove-table .hub-prices { margin-top: 0; }
+.glove-table td { font-weight: 400; }
+@media (max-width: 900px) {
+  .observatory-figures, .observatory-sentences, .glove-numbers { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .observatory-sentences { grid-template-columns: 1fr; }
+  .glove-tool { grid-template-columns: 1fr; }
+  .glove-answer { position: static; }
+  .observatory-bands li { grid-template-columns: 110px minmax(0, 1fr) 50px; }
+}
+@media (max-width: 560px) {
+  .observatory-figures, .glove-numbers { grid-template-columns: 1fr; }
+  .glove-answer { padding: 24px 20px 26px; }
+}

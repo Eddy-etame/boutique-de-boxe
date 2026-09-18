@@ -5,6 +5,8 @@ import { subfamilyFor, subfamiliesOf, subfamilyProducts } from '@/lib/subfamilie
 import { longDescription, practiceLevel, disciplinesOf, careAdvice, productFaq } from '@/lib/describe';
 import { SeoBody } from '@/components/seo-body';
 import { KeywordHub } from '@/components/keyword-hub';
+import { FacetPage, facetMetadata } from '@/components/facet-page';
+import { facetFor } from '@/lib/facets';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import {
@@ -52,6 +54,8 @@ export async function generateMetadata({
       : undefined;
   const cat = categoryFor(path);
   const sub = subfamilyFor(path);
+  const facet = slug.length === 1 ? facetFor(path, products) : null;
+  if (facet) return facetMetadata(facet);
   const guide =
     slug[0] === 'guides' ? guides.find((g) => g.slug === slug[1]) : undefined;
   const service = services[path];
@@ -416,6 +420,8 @@ export default async function Page({ params, searchParams }: Props) {
       </main>
     );
   }
+  const facet = slug.length === 1 ? facetFor(path, products) : null;
+  if (facet) return <FacetPage facet={facet} all={products} />;
   const sub = subfamilyFor(path);
   if (sub) {
     const data = subfamilyProducts(sub, products);

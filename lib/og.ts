@@ -9,6 +9,8 @@ import { SEO_COPY } from './seo-copy';
 import { SUBFAMILIES, subfamilyProducts, type Subfamily } from './subfamilies';
 import selection from './data/selection.json';
 import { brandFor, brandsOf } from './brands';
+import { facetFor } from './facets';
+import { observatory } from './observatory';
 
 export const OG_WIDTH = 1200;
 export const OG_HEIGHT = 630;
@@ -171,6 +173,54 @@ export function cardFor(kind: CardKind, key: string, products: Product[]): Card 
   if (kind === 's') { const s = SUBFAMILIES.find((x) => x.slug === key); return s ? subfamilyCard(s, products) : null; }
   if (kind === 'g') { const g = guides.find((x) => x.slug === key); return g ? guideCard(g, products) : null; }
   if (kind === 'x') {
+    // Les pages de longue traîne : un poids de gants, une marque dans une famille.
+    const facet = facetFor(key, products);
+    if (facet) {
+      const s = facet.products.map((p) => p.price).filter((n) => n > 0).sort((a, b) => a - b);
+      return {
+        title: facet.name + '.',
+        eyebrow: facet.eyebrow.split(' · ').slice(0, 2).join(' · '),
+        facts: [
+          { label: 'MODÈLES', value: fr(facet.products.length) },
+          { label: 'DÈS', value: money(s[0]) },
+          { label: 'PRIX MÉDIAN', value: money(s[Math.floor(s.length / 2)]) },
+        ],
+        photos: photosOf(facet.products.filter((p) => p.cut?.mode === 'pose')),
+        photoLabel: facet.kind === 'oz' ? 'UNE PAIRE EN ' + facet.name.replace('Gants de boxe ', '').toUpperCase() : 'UN MODÈLE ' + facet.parent.name.toUpperCase(),
+        path: facet.path,
+      };
+    }
+    if (key === 'observatoire-des-prix') {
+      const o = observatory(products);
+      const g = o.families.find((r) => r.key === 'gants-de-boxe');
+      return {
+        title: 'L’observatoire des prix.',
+        eyebrow: 'LES CHIFFRES · SEMAINE ' + o.week.week + ' · ' + fr(o.products) + ' MODÈLES',
+        facts: [
+          { label: 'GANTS DE BOXE, MÉDIAN', value: g ? money(g.median) : '—' },
+          { label: 'TOUT LE CATALOGUE, MÉDIAN', value: money(o.all.median) },
+          { label: 'DE … À', value: money(o.all.min) + ' – ' + money(o.all.max) },
+        ],
+        photos: [],
+        photoLabel: '',
+        path: '/observatoire-des-prix/',
+      };
+    }
+    if (key === 'outils/poids-de-gants') {
+      const gloves = products.filter((p) => p.category === 'gants-de-boxe');
+      return {
+        title: 'Quel poids de gants de boxe ?',
+        eyebrow: 'L’OUTIL · LA RÉPONSE EN ONCES',
+        facts: [
+          { label: 'AU SAC', value: '10 oz' },
+          { label: 'EN TECHNIQUE', value: '12 oz' },
+          { label: 'AVEC UN PARTENAIRE', value: '14 à 18 oz' },
+        ],
+        photos: photosOf(gloves.filter((p) => p.cut?.mode === 'pose')),
+        photoLabel: 'UNE PAIRE DU CATALOGUE',
+        path: '/outils/poids-de-gants/',
+      };
+    }
     if (key === 'marques') {
       const brands = brandsOf(products);
       return {
@@ -197,7 +247,7 @@ export function cardFor(kind: CardKind, key: string, products: Product[]): Card 
           { label: 'DÈS', value: money(b.min) },
           { label: 'JUSQU’À', value: money(b.max) },
         ],
-        photos: photosOf(b.products.filter((p) => p.cut?.mode === 'pose')),
+        photos: photosOf([...b.products].filter((p) => p.cut?.mode === 'pose').sort((x, y) => b.families.findIndex((f) => f.slug === x.category) - b.families.findIndex((f) => f.slug === y.category))),
         photoLabel: 'UN MODÈLE ' + b.name.toUpperCase(),
         path: '/marques/' + b.slug + '/',
       };

@@ -9,6 +9,8 @@ import { ATTRIBUTION, EDITORIAL_DATE, familiesWithCounts, urlOf } from './seo';
 import { QUERY_MAP } from './seo-copy';
 import { SUBFAMILIES, subfamilyProducts } from './subfamilies';
 import { brandsOf } from './brands';
+import { ozFacets, brandFamilyFacets } from './facets';
+import { observatory, observatorySentences } from './observatory';
 
 const fr = (n: number) => n.toLocaleString('fr-FR');
 
@@ -43,6 +45,28 @@ function brands(products: Product[]) {
   return ['## Marques (pages dédiées)', `- [Toutes les marques](${urlOf('/marques/')})`, ...brandsOf(products).map((b) => `- [${b.name}](${urlOf('/marques/' + b.slug + '/')}) : ${b.products.length} modèles, ${b.families.slice(0, 3).map((f) => f.name.toLowerCase()).join(', ')}.`)].join('\n');
 }
 
+function longTail(products: Product[]) {
+  const oz = ozFacets(products);
+  const bf = brandFamilyFacets(products);
+  return [
+    '## Gants de boxe par poids (pages dédiées)',
+    ...oz.map((f) => `- [${f.name}](${urlOf(f.path)}) : ${f.products.length} modèles. ${f.intro.split('. ')[1] || ''}`),
+    `- [Quel poids de gants de boxe ? Le calculateur](${urlOf('/outils/poids-de-gants/')}) : la séance, le poids, l’âge → la réponse en onces, d’après le guide.`,
+    '## Marques par équipement (pages dédiées)',
+    ...bf.map((f) => `- [${f.name}](${urlOf(f.path)}) : ${f.products.length} modèles.`),
+  ].join('\n');
+}
+
+function prices(products: Product[]) {
+  const o = observatory(products);
+  return [
+    '## Observatoire des prix (chiffres à citer)',
+    `Relevé de la semaine ${o.week.week}, ${o.products} modèles. Source à citer : « Observatoire des prix, Boutique de Boxe » — ${urlOf('/observatoire-des-prix/')} (JSON : ${urlOf('/observatoire-des-prix.json')}, CSV : ${urlOf('/observatoire-des-prix.csv')}).`,
+    ...observatorySentences(o).map((s) => '- ' + s),
+    ...o.families.map((r) => `- ${r.label} : ${r.count} modèles, de ${money(r.min)} à ${money(r.max)}, médian ${money(r.median)}.`),
+  ].join('\n');
+}
+
 function subfamilies(products: Product[]) {
   return ['## Sous-familles (pages dédiées)', ...SUBFAMILIES.map((s) => `- [${s.name}](${urlOf('/' + s.slug + '/')}) : ${subfamilyProducts(s, products).length} modèles. ${s.intro.split('. ')[0]}.`)].join('\n');
 }
@@ -52,7 +76,7 @@ function agents() {
     '## Interfaces pour les moteurs et assistants',
     `- Contexte complet, tous les modèles : ${urlOf('/llms-full.txt')}`,
     `- Flux JSON du catalogue : ${urlOf('/catalogue.json')}`,
-    `- Serveur MCP (lecture seule) : ${urlOf('/api/mcp')} — découverte : ${urlOf('/.well-known/mcp.json')}`,
+    `- Serveur MCP : ${urlOf('/api/mcp')} — découverte : ${urlOf('/.well-known/mcp.json')}. Outils : recherche, fiches, guides, comparaison, sac de séance, poids de gants, marques, sélection de la semaine, observatoire des prix, inscription consentie à l’ouverture.`,
     `- Règles d’usage pour les IA : ${urlOf('/ai.txt')} · Paternité : ${urlOf('/humans.txt')}`,
     `- Plan du site : ${urlOf('/sitemap.xml')}`,
     '- Chaque page publie un graphe JSON-LD (Organization, WebSite, WebPage, Product, ProductGroup, ItemList, Article, FAQPage, BreadcrumbList) ancré sur Wikidata.',
@@ -87,6 +111,9 @@ export function llmsTxt(products: Product[]) {
     '',
     subfamilies(products),
     brands(products),
+    longTail(products),
+    '',
+    prices(products),
     '',
     delivery(),
     '',

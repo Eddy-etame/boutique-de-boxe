@@ -1,5 +1,6 @@
 import { db, readCatalog } from '@/lib/database';
 import { categoryFor } from '@/lib/catalog';
+import { parseRelay, relayLabel } from '@/lib/boxtal';
 
 /**
  * Clients et ventes de la boutique, lus depuis les commandes d’essai approuvées
@@ -22,6 +23,7 @@ type OrderRow = {
   shipping: number;
   total: number;
   delivery: string;
+  relay_point?: string | null;
   status: string;
   created_at: string;
   source: 'essai' | 'payplug';
@@ -35,7 +37,7 @@ export async function ensureBuyerColumns() {
   const database = await db();
   await database.prepare("ALTER TABLE simulation_orders ADD COLUMN IF NOT EXISTS phone text DEFAULT '' NOT NULL").run();
   await database.prepare('ALTER TABLE simulation_orders ADD COLUMN IF NOT EXISTS optin integer DEFAULT 0 NOT NULL').run();
-  for (const column of ['address1', 'address2', 'postcode', 'city'])
+  for (const column of ['address1', 'address2', 'postcode', 'city', 'relay_point'])
     await database.prepare(`ALTER TABLE simulation_orders ADD COLUMN IF NOT EXISTS ${column} text DEFAULT '' NOT NULL`).run();
   await database.prepare('CREATE INDEX IF NOT EXISTS orders_email ON simulation_orders (email)').run();
   await database.prepare('CREATE INDEX IF NOT EXISTS orders_created ON simulation_orders (created_at)').run();
@@ -49,7 +51,7 @@ async function orders(days: number): Promise<OrderRow[]> {
   const essais = (
     await database
       .prepare(
-        'SELECT id,name,email,phone,optin,address1,address2,postcode,city,lines,subtotal,shipping,total,delivery,status,created_at FROM simulation_orders WHERE created_at>=? ORDER BY created_at DESC LIMIT 5000',
+        'SELECT id,name,email,phone,optin,address1,address2,postcode,city,relay_point,lines,subtotal,shipping,total,delivery,status,created_at FROM simulation_orders WHERE created_at>=? ORDER BY created_at DESC LIMIT 5000',
       )
       .bind(since)
       .all<Omit<OrderRow, 'source'>>()
@@ -191,7 +193,7 @@ export async function clientsReport(days: number) {
     brands: [...byBrand.entries()].map(([name, v]) => ({ name, ...v })).sort((a, b) => b.revenue - a.revenue).slice(0, 15),
     deliveries: [...byDelivery.entries()].map(([mode, n]) => ({ mode, n })),
     funnel,
-    recent: rows.slice(0, 50).map((o) => ({ id: o.id, name: o.name, email: o.email, phone: o.phone || '', address: [o.address1, o.address2, [o.postcode, o.city].filter(Boolean).join(' ')].filter(Boolean).join(', '), delivery: o.delivery, total: o.total, status: o.status, source: o.source, createdAt: o.created_at, items: parseLines(o).map((l) => nameOf(l.productId, l.name) + (l.variant ? ' · ' + l.variant : '') + ' × ' + l.quantity) })),
+    recent: rows.slice(0, 50).map((o) => ({ id: o.id, name: o.name, email: o.email, phone: o.phone || '', address: [o.address1, o.address2, [o.postcode, o.city].filter(Boolean).join(' ')].filter(Boolean).join(', '), delivery: o.delivery + (parseRelay(o.relay_point) ? ' · ' + relayLabel(parseRelay(o.relay_point)!) : ''), total: o.total, status: o.status, source: o.source, createdAt: o.created_at, items: parseLines(o).map((l) => nameOf(l.productId, l.name) + (l.variant ? ' · ' + l.variant : '') + ' × ' + l.quantity) })),
   };
 }
 
