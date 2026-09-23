@@ -506,7 +506,7 @@ export async function POST(
         ? new Response(null, {
             status: 303,
             headers: {
-              Location: '/confirmation/?objet=' + action,
+              Location: ref ? '/merci/?ref=' + ref + '&email=' + encodeURIComponent(email) : '/merci/?deja=1',
               'Cache-Control': 'no-store',
             },
           })

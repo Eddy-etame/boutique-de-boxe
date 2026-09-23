@@ -1273,14 +1273,18 @@ export function AlertForm({
             throw new Error(
               data.error || 'L’inscription n’a pas pu être enregistrée.',
             );
-          if (data.ref) setStep({ ref: data.ref, email });
-          else
-            setState(
-              data.already
-                ? 'Cette adresse est déjà inscrite : vous serez prévenu à l’ouverture des ventes.'
-                : 'C’est noté. Vous recevrez un e-mail à l’ouverture des ventes. Vous pouvez vous désinscrire à tout moment.',
-            );
-          setEmail('');
+          // L'inscription conduit à la page merci : elle dit merci, propose le mobile, et remet en route.
+          const params = new URLSearchParams();
+          if (data.ref) {
+            params.set('ref', data.ref);
+            params.set('email', email);
+          } else params.set('deja', '1');
+          if (productId && productId !== 'launch') {
+            const slug = document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.href.match(/\/produits\/([^/]+)\//)?.[1];
+            if (slug) params.set('modele', slug);
+          }
+          window.location.assign('/merci/?' + params.toString());
+          return;
         } catch (err) {
           setState(
             err instanceof Error

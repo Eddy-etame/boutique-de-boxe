@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { shop } from '@/lib/catalog';
 
-const disallow = ['/api/', '/admin/', '/atelier/', '/panier/', '/recu/', '/paiement-retour/', '/desinscription/', '/hors-ligne/', '/recherche/'];
+const disallow = ['/api/', '/admin/', '/atelier/', '/merci/', '/panier/', '/recu/', '/paiement-retour/', '/desinscription/', '/hors-ligne/', '/recherche/'];
 
 export default function robots(): MetadataRoute.Robots {
   return {

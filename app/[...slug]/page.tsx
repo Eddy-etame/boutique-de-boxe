@@ -185,6 +185,7 @@ export async function generateMetadata({
       'panier',
       'recu',
       'admin',
+      'merci',
       'recherche',
       'desinscription',
       'confirmation',

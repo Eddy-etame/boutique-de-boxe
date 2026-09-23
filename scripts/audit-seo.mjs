@@ -221,6 +221,7 @@ assert.equal((await fetch(base + '/page-qui-n-existe-pas/')).status, 404);
 for (const path of [
   '/recherche/',
   '/admin/',
+  '/merci/',
   '/desinscription/',
   '/panier/',
   '/recu/',
