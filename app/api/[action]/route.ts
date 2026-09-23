@@ -9,8 +9,15 @@ import { nearest, suggest } from '@/lib/suggest';
 import { getSessionUser } from '@/lib/auth';
 import { emailValid, ensureAlertContact, insertAlert, normalisePhone } from '@/lib/alerts';
 import { clientIp } from '@/lib/request';
+import { revalidatePath } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
+
+const refreshCatalogPages = () => {
+  bustCatalog();
+  // Une édition touche la fiche, ses listes, les marques, l'observatoire et le sitemap.
+  revalidatePath('/', 'layout');
+};
 
 const response = (value: unknown, status = 200) =>
   Response.json(value, {
@@ -298,7 +305,7 @@ export async function POST(
             product.id,
           ),
       ]);
-      bustCatalog();
+      refreshCatalogPages();
       return request.headers
         .get('content-type')
         ?.includes('application/x-www-form-urlencoded')
@@ -328,7 +335,7 @@ export async function POST(
         )
         .bind(product.id, JSON.stringify(product), new Date().toISOString())
         .run();
-      bustCatalog();
+      refreshCatalogPages();
       return response({ ok: true });
     }
 
@@ -402,7 +409,7 @@ export async function POST(
 
         .run();
 
-      bustCatalog();
+      refreshCatalogPages();
       return response({ ok: true });
     }
 

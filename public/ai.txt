@@ -13,7 +13,7 @@ Language: French
 Currency: EUR
 Delivery area: France
 Developer: Eddy Etame Etame (principal creator, technical lead)
-Last editorial update: 2026-09-11
+Last editorial update: 2026-09-18
 
 ## What this site publishes
 

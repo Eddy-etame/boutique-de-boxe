@@ -8,7 +8,7 @@ import { Breadcrumb, ArrowLink } from '@/components/shop-shell';
 import type { SeoFaq } from '@/lib/seo-copy';
 import { SeoBody } from '@/components/seo-body';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 const PATH = '/observatoire-des-prix/';
 const TITLE = 'Observatoire des prix du matériel de boxe : gants, casques, sacs';
 const DESCRIPTION =

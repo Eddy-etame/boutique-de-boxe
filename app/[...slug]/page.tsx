@@ -1,4 +1,4 @@
-import { catalogPage } from '@/lib/pagination';
+import { catalogPage, PAGE_SIZE } from '@/lib/pagination';
 import { productGraph, collectionGraph, subfamilyGraph, serviceGraph, subfamilyKeywords, productKeywords, categoryKeywords, guideKeywords, pageKeywords } from '@/lib/seo';
 import { SEO_COPY } from '@/lib/seo-copy';
 import { subfamilyFor, subfamiliesOf, subfamilyProducts } from '@/lib/subfamilies';
@@ -8,7 +8,7 @@ import { SeoBody } from '@/components/seo-body';
 import { KeywordHub } from '@/components/keyword-hub';
 import { FacetPage, facetMetadata } from '@/components/facet-page';
 import { facetFor } from '@/lib/facets';
-import { notFound, permanentRedirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import {
   categoryFor,
@@ -18,7 +18,7 @@ import {
   money,
   listItem,
 } from '@/lib/catalog';
-import { readCatalog, isAdmin } from '@/lib/database';
+import { readCatalog } from '@/lib/database';
 import { guides, services } from '@/lib/editorial';
 import { Breadcrumb, ArrowLink } from '@/components/shop-shell';
 import {
@@ -32,12 +32,11 @@ import {
   ServicePage,
 } from '@/components/editorial-pages';
 import { ContactForm, Unsubscribe } from '@/components/contact-form';
-import { Admin } from '@/components/admin';
 import { PayplugReturn } from '@/components/payplug-settings';
 import { CartPage, ReceiptPage } from '@/components/commerce-ui';
 import selection from '@/lib/data/selection.json';
 import { ogImage } from '@/lib/og';
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 type Props = {
   params: Promise<{ slug: string[] }>;
   searchParams: Promise<Record<string, string | undefined>>;
@@ -56,7 +55,21 @@ export async function generateMetadata({
   const cat = categoryFor(path);
   const sub = subfamilyFor(path);
   const facet = slug.length === 1 ? facetFor(path, products) : null;
-  if (facet) return facetMetadata(facet);
+  const paginationCount = facet
+    ? facet.products.length
+    : sub
+      ? subfamilyProducts(sub, products).length
+      : cat
+        ? getCategoryProducts(cat, products).length
+        : path === 'nouveautes'
+          ? products.length
+          : null;
+  const paginated = paginationCount !== null;
+  const page = paginated
+    ? catalogPage((await searchParams).page, paginationCount)
+    : 1;
+  if (page === null) notFound();
+  if (facet) return facetMetadata(facet, page);
   const guide =
     slug[0] === 'guides' ? guides.find((g) => g.slug === slug[1]) : undefined;
   const service = services[path];
@@ -107,14 +120,6 @@ export async function generateMetadata({
     service?.title ||
     special[path]?.[0] ||
     'Page introuvable';
-  const paginated = Boolean(cat || path === 'nouveautes');
-  const page = paginated
-    ? catalogPage(
-        (await searchParams).page,
-        cat ? getCategoryProducts(cat, products).length : products.length,
-      )
-    : 1;
-  if (page === null) notFound();
   const canonical =
     '/' + path + '/' + (paginated && page > 1 ? '?page=' + page : '');
   const pageTitle = title + (paginated && page > 1 ? ' — Page ' + page : '');
@@ -153,7 +158,12 @@ export async function generateMetadata({
     service?.description ||
     special[path]?.[1] ||
     'Cette page n’existe pas.';
-  const description = trimmed(rawDescription, 158);
+  const description = trimmed(
+    paginated && page > 1
+      ? `Page ${page} sur ${Math.ceil(paginationCount / PAGE_SIZE)}. ${rawDescription}`
+      : rawDescription,
+    158,
+  );
   const seoTitle = pageTitle.length > 41 ? { absolute: pageTitle } : pageTitle;
   return {
     title: seoTitle,
@@ -270,34 +280,6 @@ export default async function Page({ params, searchParams }: Props) {
           </aside>
           <ContactForm />
         </div>
-      </main>
-    );
-  // L'ancienne adresse de l'espace privé renvoie vers la nouvelle, sans page intermédiaire.
-  if (path === 'atelier') permanentRedirect('/admin/');
-  if (path === 'admin')
-    return (
-      <main id="contenu" className="page-wrap admin-page">
-        <Breadcrumb items={[{ label: 'Administration' }]} />
-        <header className="article-heading">
-          <span className="eyebrow">L’ATELIER / ACCÈS PRIVÉ</span>
-          <h1>Préparer la suite.</h1>
-        </header>
-        {(await isAdmin()) ? (
-          <Admin />
-        ) : (
-          <div className="empty-state">
-            <h2>Accès réservé.</h2>
-            <p>
-              Connectez-vous avec le compte administrateur autorisé de cette
-              boutique.
-            </p>
-            <form method="post" action="/api/auth/magic-link" className="atelier-signin">
-              <label htmlFor="owner-email">Adresse e-mail du propriétaire</label>
-              <input id="owner-email" name="email" type="email" required autoComplete="email" />
-              <button type="submit" className="button button-dark">Recevoir le lien de connexion</button>
-            </form>
-          </div>
-        )}
       </main>
     );
   if (path === 'desinscription')
@@ -424,16 +406,26 @@ export default async function Page({ params, searchParams }: Props) {
     );
   }
   const facet = slug.length === 1 ? facetFor(path, products) : null;
-  if (facet) return <FacetPage facet={facet} all={products} />;
+  if (facet) {
+    const currentPage = catalogPage((await searchParams).page, facet.products.length);
+    if (currentPage === null) notFound();
+    return <FacetPage facet={facet} all={products} page={currentPage} />;
+  }
   const sub = subfamilyFor(path);
   if (sub) {
     const data = subfamilyProducts(sub, products);
+    const currentPage = catalogPage((await searchParams).page, data.length);
+    if (currentPage === null) notFound();
+    const pageItems = data.slice(
+      (currentPage - 1) * PAGE_SIZE,
+      currentPage * PAGE_SIZE,
+    );
     const parent = categoryFor(sub.parent);
     const siblings = subfamiliesOf(sub.parent).filter((x) => x.slug !== sub.slug);
     return (
       <main id="contenu" className="page-wrap">
         <Breadcrumb items={[...(parent ? [{ label: parent.name, href: '/' + parent.slug + '/' }] : []), { label: sub.name }]} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: subfamilyGraph(sub, data) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: subfamilyGraph(sub, data, currentPage) }} />
         <section className="page-heading">
           <div>
             <span className="eyebrow">{sub.eyebrow}</span>
@@ -451,20 +443,22 @@ export default async function Page({ params, searchParams }: Props) {
           ))}
         </nav>
         <Catalog
-          items={data.slice(0, 36).map(listItem)}
+          items={pageItems.map(listItem)}
           total={data.length}
           scope={sub.slug}
-          initialPage={1}
+          initialPage={currentPage}
           showFamilies={false}
         />
-        <KeywordHub scope={sub.slug} name={sub.name} items={data} all={products} />
-        <SeoBody sections={sub.sections} faq={sub.faq} />
-        <section className="spec-section">
-          <div>
-            <h2>Pour choisir sans se tromper.</h2>
-            <ArrowLink href={sub.guide === 'guide-des-tailles' ? '/guide-des-tailles/' : '/guides/' + sub.guide + '/'}>Lire le guide d’achat</ArrowLink>
-          </div>
-        </section>
+        {currentPage === 1 && <KeywordHub scope={sub.slug} name={sub.name} items={data} all={products} />}
+        {currentPage === 1 && <SeoBody sections={sub.sections} faq={sub.faq} />}
+        {currentPage === 1 && (
+          <section className="spec-section">
+            <div>
+              <h2>Pour choisir sans se tromper.</h2>
+              <ArrowLink href={sub.guide === 'guide-des-tailles' ? '/guide-des-tailles/' : '/guides/' + sub.guide + '/'}>Lire le guide d’achat</ArrowLink>
+            </div>
+          </section>
+        )}
       </main>
     );
   }
@@ -500,10 +494,10 @@ export default async function Page({ params, searchParams }: Props) {
                 path: '/' + path + '/',
                 name: cat?.name || 'Nouveautés',
                 description: cat?.description || 'Les derniers modèles ajoutés au catalogue Boutique de Boxe.',
-                items: data.slice((currentPage - 1) * 36, currentPage * 36),
+                items: data.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE),
                 total: data.length,
                 page: currentPage,
-                perPage: 36,
+                perPage: PAGE_SIZE,
                 category: cat,
                 faq: cat ? SEO_COPY[cat.slug]?.faq : undefined,
               }),
@@ -547,7 +541,7 @@ export default async function Page({ params, searchParams }: Props) {
           ) : null;
         })()}
         <Catalog
-          items={data.slice((currentPage - 1) * 36, currentPage * 36).map(listItem)}
+          items={data.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map(listItem)}
           total={data.length}
           scope={path}
           initialQuery={query}

@@ -6,18 +6,42 @@ const obsoleteOrigin =
   /https?:\/\/(?:www\.)?boutique-de-boxe\.(?:fr|vercel\.app)|https?:\/\/boutique-de-boxe\.com|https?:\/\/boutique-de-boxe\.etame-eddy01\.chatgpt\.site/;
 const assertPublicOrigin = (value, label) =>
   assert.equal(new URL(value).origin, expectedOrigin, label);
-const sitemap = await (await fetch(base + '/sitemap.xml')).text();
+const sitemapResponse = await fetch(base + '/sitemap.xml');
+assert.equal(sitemapResponse.status, 200, 'sitemap status');
+assert.match(
+  sitemapResponse.headers.get('content-type') || '',
+  /(?:application|text)\/xml/,
+  'sitemap XML content type',
+);
+const sitemap = await sitemapResponse.text();
+assert.match(sitemap, /^<\?xml[^>]*>\s*<urlset[\s>]/, 'sitemap XML root');
+assert.match(sitemap, /<\/urlset>\s*$/, 'sitemap XML closing root');
+assert.doesNotMatch(
+  sitemap,
+  /&(?!amp;|lt;|gt;|quot;|apos;|#\d+;|#x[\dA-Fa-f]+;)/,
+  'sitemap contains an unescaped XML entity',
+);
 const locations = [...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map((x) => {
   assertPublicOrigin(x[1], 'sitemap origin');
+  const url = new URL(x[1]);
+  assert.equal(url.search, '', 'parameter URL in sitemap');
+  assert.equal(url.hash, '', 'fragment URL in sitemap');
   return new URL(x[1]).pathname;
 });
 assert.ok(locations.length >= 40);
+assert.ok(locations.length <= 50000, 'sitemap URL limit');
+assert.equal(new Set(locations).size, locations.length, 'duplicate sitemap URL');
 for (const image of sitemap.matchAll(/<image:loc>(.*?)<\/image:loc>/g)) {
   const url = new URL(image[1]);
   assert.equal(url.protocol, 'https:', 'sitemap image HTTPS');
   assert.ok(!url.hostname.includes('https') && !url.hostname.includes('http:'), 'double image origin');
-  if (url.hostname.includes('boutique-de-boxe')) assertPublicOrigin(url.href, 'sitemap owned image origin');
+  assertPublicOrigin(url.href, 'third-party sitemap image');
   assert.ok(!obsoleteOrigin.test(url.href), 'obsolete image origin');
+}
+for (const lastmod of sitemap.matchAll(/<lastmod>(.*?)<\/lastmod>/g)) {
+  const timestamp = Date.parse(lastmod[1]);
+  assert.ok(Number.isFinite(timestamp), 'invalid sitemap lastmod ' + lastmod[1]);
+  assert.ok(timestamp <= Date.now(), 'future sitemap lastmod ' + lastmod[1]);
 }
 const reports = [],
   titles = new Set(),
@@ -351,14 +375,38 @@ assert.ok(
 );
 assert.ok(robots.includes('Host: ' + expectedOrigin), 'robots host');
 assert.ok(!robots.includes('Disallow: /\n'));
-for (const page of ['0', '-1', '1.5', 'Infinity', '99999'])
-  assert.equal(
-    (await fetch(base + '/gants-de-boxe/?page=' + page)).status,
-    404,
-    'invalid catalogue page ' + page,
-  );
-const page2 = await (await fetch(base + '/gants-de-boxe/?page=2')).text();
-assert.match(page2, /<link rel="canonical" href="[^"]+\?page=2"/);
+const paginationSamples = [
+  '/gants-de-boxe/',
+  '/bandes-de-boxe/',
+  '/marques/elion/',
+  '/marques/elion/textile-boxe/',
+  '/gants-de-boxe-noirs/',
+];
+for (const path of paginationSamples) {
+  for (const page of ['0', '-1', '1.5', 'Infinity', '99999'])
+    assert.equal(
+      (await fetch(base + path + '?page=' + page)).status,
+      404,
+      'invalid catalogue page ' + path + '?page=' + page,
+    );
+  const response = await fetch(base + path + '?page=2');
+  assert.equal(response.status, 200, 'pagination status ' + path);
+  const html = await response.text();
+  const canonical = html.match(/<link rel="canonical" href="([^"]+)"/)?.[1];
+  assert.equal(canonical, expectedOrigin + path + '?page=2', 'pagination canonical ' + path);
+  assert.match(html, /<title>[^<]*Page 2[^<]*<\/title>/, 'pagination title ' + path);
+  assert.match(html, /"position":37/, 'pagination first item position ' + path);
+  assert.doesNotMatch(html, /href="\?page=1"/, 'duplicate page-one link ' + path);
+}
+const slashRedirect = await fetch(base + '/gants-de-boxe', {
+  redirect: 'manual',
+});
+assert.equal(slashRedirect.status, 308, 'missing trailing slash redirect');
+assert.equal(
+  new URL(slashRedirect.headers.get('location'), base).pathname,
+  '/gants-de-boxe/',
+  'missing trailing slash destination',
+);
 mkdirSync(new URL('../outputs/', import.meta.url), { recursive: true });
 writeFileSync(
   new URL('../outputs/seo.json', import.meta.url),

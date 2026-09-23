@@ -521,7 +521,7 @@ export function Catalog({
                       <span aria-hidden="true">…</span>
                     )}
                     <a
-                      href={'?page=' + n}
+                      href={n === 1 ? './' : '?page=' + n}
                       aria-label={'Page ' + n}
                       aria-current={page === n ? 'page' : undefined}
                       onClick={(e) => {

@@ -14,9 +14,10 @@ import { shop, categories, categoryFor, getCategoryProducts, money, jsonLd, type
 import type { Guide } from './editorial';
 import { SEO_COPY, type SeoFaq } from './seo-copy';
 import type { Subfamily } from './subfamilies';
+import { PAGE_SIZE } from './pagination';
 
 /** Date de la dernière révision éditoriale, publiée dans les fichiers agents et les pages. */
-export const EDITORIAL_DATE = '2026-09-11';
+export const EDITORIAL_DATE = '2026-09-18';
 
 /** Paternité technique déclarée par le propriétaire du projet. */
 export const ATTRIBUTION = {
@@ -269,8 +270,9 @@ function productCore(p: Product) {
     description: p.description || p.short,
     image: p.images.map((i) => abs(i.src)),
     url: urlOf('/produits/' + p.slug + '/'),
-    sku: p.reference || p.sourceRef,
-    ...(p.reference && p.referenceLabel === 'Référence' ? { mpn: p.reference } : {}),
+    // Identifiant marchand unique. La référence fabricant reste visible sur la fiche, mais elle
+    // n'est pas un MPN fiable : certains imports la partagent entre de nombreux coloris/modèles.
+    sku: p.sourceRef || p.id,
     ...(!badBrand(p.brand) ? { brand: { '@type': 'Brand', name: p.brand } } : {}),
     ...(p.colors?.length ? { color: p.colors.join(', ') } : {}),
     ...(p.sizes.length ? { size: p.sizes.map((s) => s.split(',')[0]) } : {}),
@@ -305,11 +307,11 @@ export function productGraph(p: Product, related: Product[], opts: { description
           url: urlOf(path),
           ...(!badBrand(p.brand) ? { brand: { '@type': 'Brand', name: p.brand } } : {}),
           variesBy: ['https://schema.org/size'],
-          hasVariant: p.sizes.map((s) => ({ '@type': 'Product', name: `${p.name} — ${s}`, size: s.split(',')[0], sku: `${p.reference || p.sourceRef}-${s.replace(/[^\p{L}\p{N}]+/gu, '-')}` })),
+          hasVariant: p.sizes.map((s) => ({ '@type': 'Product', name: `${p.name} — ${s}`, size: s.split(',')[0], sku: `${p.sourceRef || p.id}-${s.replace(/[^\p{L}\p{N}]+/gu, '-')}` })),
         }
       : null;
   return graph([
-    webPageNode({ path, name: p.name, description: p.short, type: 'ItemPage', image: p.images[0]?.src, dateModified: (p.updatedAt || p.dateAdded || EDITORIAL_DATE).slice(0, 10), about: family ? (CATEGORY_ENTITY[family.slug] || []).map(thing) : [], keywords: productKeywords(p), mainEntity: product['@id'] }),
+    webPageNode({ path, name: p.name, description: p.short, type: 'ItemPage', image: p.images[0]?.src, dateModified: [EDITORIAL_DATE, p.updatedAt || p.dateAdded || EDITORIAL_DATE].sort().at(-1)!.slice(0, 10), about: family ? (CATEGORY_ENTITY[family.slug] || []).map(thing) : [], keywords: productKeywords(p), mainEntity: product['@id'] }),
     product,
     ...(group ? [group] : []),
     ...(opts.faq?.length ? [faqNode(path, opts.faq)] : []),
@@ -318,9 +320,10 @@ export function productGraph(p: Product, related: Product[], opts: { description
 
 /** Page famille : CollectionPage, ItemList paginée, fil d’Ariane. */
 export function collectionGraph(o: { path: string; name: string; description: string; items: Product[]; total: number; page: number; perPage: number; category?: Category; faq?: SeoFaq[]; keywords?: string[]; about?: unknown[] }) {
+  const pagePath = o.path + (o.page > 1 ? '?page=' + o.page : '');
   const list = {
     '@type': 'ItemList',
-    '@id': urlOf(o.path) + '#list',
+    '@id': urlOf(pagePath) + '#list',
     name: o.name,
     numberOfItems: o.total,
     itemListOrder: 'https://schema.org/ItemListOrderAscending',
@@ -335,16 +338,16 @@ export function collectionGraph(o: { path: string; name: string; description: st
   const about = o.about || (o.category ? (CATEGORY_ENTITY[o.category.slug] || []).map(thing) : []);
   const keywords = o.keywords || (o.category ? categoryKeywords(o.category) : []);
   return graph([
-    webPageNode({ path: o.path + (o.page > 1 ? '?page=' + o.page : ''), name: o.name, description: o.description, type: 'CollectionPage', about, keywords, mainEntity: list['@id'] }),
+    webPageNode({ path: pagePath, name: o.name, description: o.description, type: 'CollectionPage', about, keywords, mainEntity: list['@id'] }),
     list,
-    ...(o.faq?.length ? [faqNode(o.path, o.faq)] : []),
+    ...(o.page === 1 && o.faq?.length ? [faqNode(o.path, o.faq)] : []),
   ]);
 }
 
 /** Sous-famille : CollectionPage, liste, questions ; renvoie à la famille parente par `about`. */
-export function subfamilyGraph(sub: Subfamily, items: Product[]) {
+export function subfamilyGraph(sub: Subfamily, items: Product[], page = 1) {
   const parent = categoryFor(sub.parent);
-  return collectionGraph({ path: '/' + sub.slug + '/', name: sub.name, description: sub.description, items: items.slice(0, 36), total: items.length, page: 1, perPage: 36, category: parent, faq: sub.faq, keywords: subfamilyKeywords(sub), about: parent ? (CATEGORY_ENTITY[parent.slug] || []).map(thing) : [] });
+  return collectionGraph({ path: '/' + sub.slug + '/', name: sub.name, description: sub.description, items: items.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE), total: items.length, page, perPage: PAGE_SIZE, category: parent, faq: sub.faq, keywords: subfamilyKeywords(sub), about: parent ? (CATEGORY_ENTITY[parent.slug] || []).map(thing) : [] });
 }
 
 /** Guide : Article + FAQPage, auteur et éditeur = la boutique. */

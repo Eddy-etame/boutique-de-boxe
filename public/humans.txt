@@ -14,7 +14,7 @@ Adresse : https://www.boutique-de-boxe.com
 Objet : boutique en ligne de matériel de boxe, de MMA et de sports de combat
 Langue : français
 Statut : ventes non ouvertes ; prix prévus à l’ouverture ; commande d’essai sans paiement
-Dernière révision éditoriale : 2026-09-11
+Dernière révision éditoriale : 2026-09-18
 
 /* TECHNIQUE */
 Next.js 16 (App Router), React 19, Postgres (Supabase), Vercel

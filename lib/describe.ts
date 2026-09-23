@@ -124,7 +124,7 @@ export function productFaq(p: Product): { question: string; answer: string }[] {
       ? `${p.name} existe en ${sizes.length} tailles : ${sizes.join(', ')}. Choisissez d’après l’usage, avec le guide « ${guideTitle} » lié sur cette fiche ; en cas de doute entre deux tailles, écrivez-nous depuis la page contact.`
       : sizes.length === 1
         ? `${p.name} existe en une seule taille : ${sizes[0]}. Le guide « ${guideTitle} » donne les repères de la famille.`
-        : `${p.name} est en taille unique. Les repères de la famille sont dans le guide « ${guideTitle} ».`;
+        : `Les tailles de ${p.name} ne sont pas encore renseignées dans le catalogue. Cela ne signifie pas que le modèle est en taille unique : vérifiez le guide « ${guideTitle} » ou écrivez-nous avant l’ouverture des ventes.`;
   return [
     { question: `Quelle taille choisir pour ${short} ?`, answer: size },
     { question: `Pour quelle pratique et quel niveau ?`, answer: `${disciplines.join(', ')}, niveau ${level}. ${p.short}` },

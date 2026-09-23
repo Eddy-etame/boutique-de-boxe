@@ -41,6 +41,8 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   trailingSlash: true,
+  // Le proxy normalise seulement les pages HTML ; les callbacks et POST d'API ne doivent jamais
+  // recevoir la redirection automatique de Next.
   skipTrailingSlashRedirect: true,
   agentRules: false,
   // Le rendu des vignettes lit les polices sur le disque et charge sharp à l’exécution.

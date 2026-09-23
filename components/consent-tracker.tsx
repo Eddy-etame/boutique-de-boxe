@@ -120,8 +120,8 @@ export function ConsentTracker() {
   const consent = useSyncExternalStore(subscribe, snapshot, () => 'pending');
   const [forced, setForced] = useState(false);
   const pathname = usePathname();
-  // La carte s’ouvre tant qu’aucun choix n’est fait : rendue dès le serveur ('pending'), cachée par le CSS
-  // quand html[data-consent-open] manque (choix déjà fait), et rouverte depuis le pied de page.
+  // La carte s’ouvre tant qu’aucun choix n’est fait : le petit garde du <head> pose ou retire
+  // html[data-consent-open] avant le premier rendu, puis elle peut être rouverte depuis le pied de page.
   const open = forced || consent === '' || consent === 'pending';
 
   // Tant que la carte est ouverte, la barre d’achat des fiches reste rentrée (html[data-consent-open]).

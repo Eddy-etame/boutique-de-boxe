@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { cookies } from 'next/headers';
 import { Header, Footer, Motion } from '@/components/shop-shell';
 import { shop } from '@/lib/catalog';
 import { siteGraph, KEYWORDS, ATTRIBUTION } from '@/lib/seo';
@@ -81,16 +80,19 @@ export const viewport: Viewport = {
 // Exécuté dans le <head>, avant le premier rendu : « pagereveal » part avant l’hydratation.
 const VIEW_TRANSITION_GUARD = `(function(){function q(e){var t=e.viewTransition;if(t)[t.ready,t.finished,t.updateCallbackDone].forEach(function(p){if(p)p.catch(function(){})})}addEventListener('pageswap',q);addEventListener('pagereveal',q);addEventListener('unhandledrejection',function(e){var r=e.reason;if(r&&/^(InvalidStateError|AbortError|TimeoutError)$/.test(r.name)&&/transition/i.test(String(r.message))){e.preventDefault();e.stopImmediatePropagation()}})})();`;
 
-export default async function RootLayout({
+// Lu avant le rendu du <body> : le choix de cookies ne rend pas toutes les pages privées/non
+// cacheables, et un visiteur ayant déjà répondu ne voit pas le voile pendant l’hydratation.
+const CONSENT_GUARD = `(function(){var c=/(?:^|;\\s*)bdb_consent=(?:accepted|refused)(?:;|$)/.test(document.cookie);document.documentElement.toggleAttribute('data-consent-open',!c)})();`;
+
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const consent = (await cookies()).get('bdb_consent')?.value;
-  const consentOpen = consent !== 'accepted' && consent !== 'refused';
   return (
-    <html lang="fr" data-consent-open={consentOpen ? '' : undefined}>
+    <html lang="fr" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: CONSENT_GUARD }} />
         <link
           rel="preload"
           href="/fonts/barlow-condensed-extrabold.woff2"

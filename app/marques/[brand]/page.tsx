@@ -9,31 +9,48 @@ import { ogImage } from '@/lib/og';
 import { Breadcrumb } from '@/components/shop-shell';
 import { Catalog } from '@/components/shop-interactions';
 import { SeoBody } from '@/components/seo-body';
+import { catalogPage, PAGE_SIZE } from '@/lib/pagination';
 
-export const dynamic = 'force-dynamic';
-type Props = { params: Promise<{ brand: string }> };
+export const revalidate = 60;
+type Props = {
+  params: Promise<{ brand: string }>;
+  searchParams: Promise<Record<string, string | undefined>>;
+};
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { brand } = await params;
   const b = brandFor(brand, await readCatalog());
   if (!b) return { title: 'Page introuvable', robots: { index: false } };
+  const page = catalogPage((await searchParams).page, b.products.length);
+  if (page === null) notFound();
   const copy = brandCopy(b);
-  const canonical = '/marques/' + b.slug + '/';
+  const canonical = '/marques/' + b.slug + '/' + (page > 1 ? '?page=' + page : '');
+  const title = copy.title + (page > 1 ? ` — Page ${page}` : '');
+  const description =
+    page > 1
+      ? `Page ${page} sur ${Math.ceil(b.products.length / PAGE_SIZE)}. ${copy.description}`.slice(0, 158)
+      : copy.description;
   return {
-    title: { absolute: copy.title },
-    description: copy.description,
+    title: { absolute: title },
+    description,
     keywords: [b.name, ...b.families.slice(0, 4).map((f) => `${f.name.toLowerCase()} ${b.name}`), `${b.name} France`, `boutique ${b.name}`],
     alternates: { canonical, languages: { 'fr-FR': canonical, 'x-default': canonical } },
-    openGraph: { title: copy.title, description: copy.description, url: canonical, type: 'website', images: ogImage('x', 'marques/' + b.slug, b.name) },
-    twitter: { card: 'summary_large_image', title: copy.title, description: copy.description },
+    openGraph: { title, description, url: canonical, type: 'website', images: ogImage('x', 'marques/' + b.slug, b.name) },
+    twitter: { card: 'summary_large_image', title, description },
   };
 }
 
-export default async function BrandPage({ params }: Props) {
+export default async function BrandPage({ params, searchParams }: Props) {
   const { brand } = await params;
   const products = await readCatalog();
   const b = brandFor(brand, products);
   if (!b) notFound();
+  const currentPage = catalogPage((await searchParams).page, b.products.length);
+  if (currentPage === null) notFound();
+  const pageItems = b.products.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  );
   const copy = brandCopy(b);
   const path = '/marques/' + b.slug + '/';
   const prices = priceTable(b.products);
@@ -46,7 +63,7 @@ export default async function BrandPage({ params }: Props) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: collectionGraph({ path, name: b.name, description: copy.description, items: b.products.slice(0, 36), total: b.products.length, page: 1, perPage: 36, faq: copy.faq }),
+          __html: collectionGraph({ path, name: b.name, description: copy.description, items: pageItems, total: b.products.length, page: currentPage, perPage: PAGE_SIZE, faq: copy.faq }),
         }}
       />
       <section className="page-heading">
@@ -73,8 +90,8 @@ export default async function BrandPage({ params }: Props) {
           })}
         </nav>
       )}
-      <Catalog items={b.products.slice(0, 36).map(listItem)} total={b.products.length} scope={'marque-' + b.slug} showFamilies={b.families.length > 1} />
-      {prices.length >= 2 && (
+      <Catalog items={pageItems.map(listItem)} total={b.products.length} scope={'marque-' + b.slug} initialPage={currentPage} showFamilies={b.families.length > 1} />
+      {currentPage === 1 && prices.length >= 2 && (
         <section className="keyword-hub">
           <div className="hub-prices">
             <table>
@@ -104,15 +121,17 @@ export default async function BrandPage({ params }: Props) {
           </div>
         </section>
       )}
-      <SeoBody sections={[]} faq={copy.faq} heading={`Questions sur ${b.name}`} />
-      <nav className="subfamily-links" aria-label="Autres marques">
-        <a href="/marques/">Toutes les marques</a>
-        {others.map((x) => (
-          <a key={x.slug} href={'/marques/' + x.slug + '/'}>
-            {x.name}
-          </a>
-        ))}
-      </nav>
+      {currentPage === 1 && <SeoBody sections={[]} faq={copy.faq} heading={`Questions sur ${b.name}`} />}
+      {currentPage === 1 && (
+        <nav className="subfamily-links" aria-label="Autres marques">
+          <a href="/marques/">Toutes les marques</a>
+          {others.map((x) => (
+            <a key={x.slug} href={'/marques/' + x.slug + '/'}>
+              {x.name}
+            </a>
+          ))}
+        </nav>
+      )}
     </main>
   );
 }

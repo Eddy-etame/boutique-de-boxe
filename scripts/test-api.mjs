@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-const base = 'http://localhost:3000';
+const base = process.env.API_TEST_BASE || 'http://localhost:3000';
 const runIP = '203.0.113.' + (10 + Math.floor(Math.random() * 200));
 const admin = { Cookie: '__sites_local_auth=1' };
 async function request(path, data, headers = {}) {
