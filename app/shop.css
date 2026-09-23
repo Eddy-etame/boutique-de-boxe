@@ -3685,3 +3685,26 @@ html[data-consent-open] .sticky-buy { transform: translateY(110%); }
 .merci-next { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 34px; }
 .merci-picks { padding: 30px 0 80px; }
 .merci-picks h2 { font: 800 clamp(26px, 2.6vw, 40px) / 1 Barlow, Impact, sans-serif; text-transform: uppercase; margin: 0 0 24px; }
+
+/* La lettre d'ouverture dans l'administration. */
+.newsletter-stats { grid-template-columns: repeat(4, 1fr); margin-bottom: 26px; }
+.newsletter-editor { display: grid; gap: 16px; max-width: 760px; }
+.newsletter-editor label { display: grid; gap: 6px; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.newsletter-editor input, .newsletter-editor textarea { font: 500 15px / 1.5 Manrope, system-ui, sans-serif; text-transform: none; letter-spacing: 0; color: var(--ink); padding: 12px 14px; border: 1px solid var(--line); background: #fff; }
+.newsletter-editor textarea { resize: vertical; min-height: 220px; }
+.newsletter-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.newsletter-preview { margin-top: 6px; padding: 28px 32px; background: #fff; border: 1px solid var(--line); max-width: 600px; }
+.newsletter-preview-subject { font: 800 26px / 1.05 Barlow, Impact, sans-serif; margin-bottom: 14px; }
+.newsletter-preview p { margin: 0 0 12px; font-size: 15px; line-height: 1.6; }
+.newsletter-send { margin-top: 34px; padding: 22px 24px; border: 1px solid var(--ink); max-width: 760px; display: grid; gap: 12px; }
+.newsletter-send h3 { font: 800 20px / 1 Barlow, Impact, sans-serif; text-transform: uppercase; margin: 0; }
+.newsletter-send label { display: grid; gap: 6px; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); max-width: 320px; }
+.newsletter-send input { font: 600 16px / 1 Manrope, system-ui, sans-serif; letter-spacing: 0.1em; padding: 12px 14px; border: 1px solid var(--line); background: #fff; }
+.newsletter-send .button { justify-self: start; }
+/* Les pages par équipement d'une marque, sous sa tuile. */
+.brand-tile-wrap { min-width: 0; }
+.brand-tile-families { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 10px; font-size: 12px; }
+.brand-tile-families a { text-decoration: underline; text-underline-offset: 3px; color: var(--muted); }
+.brand-tile-families a:hover { color: var(--ink); }
+/* Les guides voisins. */
+.guide-neighbours { margin-top: 40px; }

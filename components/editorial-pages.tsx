@@ -218,6 +218,20 @@ export async function GuidePage({ guide: g }: { guide: Guide }) {
           </section>
         </article>
       </div>
+      <section className="guide-neighbours" aria-label="Guides voisins">
+        <span className="eyebrow">À LIRE ENSUITE</span>
+        <div className="category-crosslinks">
+          {(() => {
+            const i = guides.findIndex((x) => x.slug === g.slug);
+            const around = [guides[(i + guides.length - 1) % guides.length], guides[(i + 1) % guides.length], guides[(i + 2) % guides.length]];
+            return around.filter((x, k, arr) => x.slug !== g.slug && arr.findIndex((y) => y.slug === x.slug) === k).map((x) => (
+              <a href={'/guides/' + x.slug + '/'} key={x.slug}>
+                {x.title} ↗
+              </a>
+            ));
+          })()}
+        </div>
+      </section>
       <section className="guide-related">
         <span className="eyebrow">PASSER DU CONSEIL AU MODÈLE</span>
         <h2>Les modèles à regarder.</h2>

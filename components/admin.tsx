@@ -1,5 +1,6 @@
 'use client';
 import { BriefBoard } from './brief-board';
+import { NewsletterAdmin } from './newsletter-admin';
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { CatalogEditor } from './catalog-editor';
@@ -19,7 +20,7 @@ type RecordRow = Record<string, string | number>;
 const SECTIONS: { title: string; items: [string, string][] }[] = [
   { title: 'Catalogue', items: [['products', 'Produits'], ['imports', 'Imports du catalogue']] },
   { title: 'Commerce', items: [['orders', 'Commandes d’essai'], ['payments', 'Réglages PayPlug'], ['clients', 'Clients & ventes']] },
-  { title: 'Public', items: [['alerts', 'Inscrits à l’ouverture'], ['contacts', 'Contacts']] },
+  { title: 'Public', items: [['alerts', 'Inscrits à l’ouverture'], ['newsletter', 'Lettre d’ouverture'], ['contacts', 'Contacts']] },
   { title: 'Pilotage', items: [['audience', 'Audience'], ['seo', 'Suivi SEO']] },
 ];
 type AdminData = {
@@ -272,6 +273,7 @@ export function Admin() {
           </form>
         </div>
       )}
+      {tab === 'newsletter' && <NewsletterAdmin />}
       {tab === 'alerts' && (
         <div className="admin-inbox">
           <p>

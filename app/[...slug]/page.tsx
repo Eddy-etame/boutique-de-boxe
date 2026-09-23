@@ -7,7 +7,8 @@ import { matchesSearch } from '@/lib/catalog-tools';
 import { SeoBody } from '@/components/seo-body';
 import { KeywordHub } from '@/components/keyword-hub';
 import { FacetPage, facetMetadata } from '@/components/facet-page';
-import { facetFor } from '@/lib/facets';
+import { facetFor, brandFamilyFacet } from '@/lib/facets';
+import { brandFor, brandSlug } from '@/lib/brands';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import {
@@ -286,7 +287,7 @@ export default async function Page({ params, searchParams }: Props) {
   if (path === 'desinscription')
     return (
       <main id="contenu" className="page-wrap">
-        <Unsubscribe token={(await searchParams).token || ''} />
+        <Unsubscribe token={(await searchParams).token || ''} all={(await searchParams).tout === '1'} />
       </main>
     );
   const products = await readCatalog();
@@ -298,15 +299,22 @@ export default async function Page({ params, searchParams }: Props) {
     const score = (x: (typeof products)[number]) =>
       (x.brand === p.brand ? 2 : 0) +
       ((x.disciplines || []).some((d) => (p.disciplines || []).includes(d)) ? 1 : 0);
-    const related = products
-      .filter(
-        (x) =>
-          x.id !== p.id &&
-          x.category === p.category &&
-          x.audience === p.audience,
-      )
-      .sort((a, b) => score(b) - score(a))
-      .slice(0, 4);
+    const family = products.filter((x) => x.category === p.category);
+    // Quatre modèles proches par affinité (marque, discipline), et quatre voisins de rang dans la
+    // famille (les deux avant, les deux après, par nom) : chaque fiche reçoit ainsi des liens de
+    // ses voisines, jamais seulement des mêmes modèles très liés.
+    const byName = [...family].sort((a, b) => a.name.localeCompare(b.name, 'fr'));
+    const at = byName.findIndex((x) => x.id === p.id);
+    const neighbours = byName.length > 1 ? [-2, -1, 1, 2].map((d) => byName[(at + d + byName.length) % byName.length]).filter((x, i, arr) => x.id !== p.id && arr.findIndex((y) => y.id === x.id) === i) : [];
+    const related = [
+      ...family
+        .filter((x) => x.id !== p.id && x.audience === p.audience && !neighbours.some((n) => n.id === x.id))
+        .sort((a, b) => score(b) - score(a))
+        .slice(0, 4),
+      ...neighbours,
+    ];
+    const brand = !p.brand || /pr[ée]ciser|^Sélection /i.test(p.brand) ? null : brandFor(brandSlug(p.brand), products);
+    const brandFamily = brand ? brandFamilyFacet(brand, p.category) : null;
     const contextKey = (await searchParams).seance;
     const session = selection.sessions.find((s) => s.key === contextKey);
     const reason = session?.products.find((r) => r.id === p.id);
@@ -337,6 +345,12 @@ export default async function Page({ params, searchParams }: Props) {
               <div><span>Discipline</span>{disciplinesOf(p).join(', ')}</div>
               <div><span>Niveau conseillé</span>{practiceLevel(p)}</div>
               <div><span>Famille</span><a href={'/' + p.category + '/'}>{cat.name}</a></div>
+              {brand && (
+                <div>
+                  <span>Marque</span>
+                  <a href={brandFamily ? brandFamily.path : '/marques/' + brand.slug + '/'}>{brandFamily ? brandFamily.name : 'Tout ' + brand.name}</a>
+                </div>
+              )}
               {p.reference && <div><span>{p.referenceLabel || 'Référence'}</span>{p.reference}</div>}
             </div>
             <h2>En détail.</h2>

@@ -40,7 +40,7 @@ export async function KeywordHub({
   // Une seule famille : le tableau se lit par marque, c’est là que les prix diffèrent.
   const byBrand = families.length < 2;
   const brandList = brandsOf(items);
-  const brands = brandList.slice(0, 8);
+  const brands = brandList.slice(0, 12);
   // Une marque dans cette famille : la page « gants de boxe Fairtex » plutôt que toute la marque, quand elle existe.
   const family = families.length === 1 ? families[0].slug : null;
   const brandHref = (b: (typeof brandList)[number]) => {
@@ -234,6 +234,18 @@ export async function KeywordHub({
             </li>
             <li>
               <a href="/guides/">Les guides d’achat</a>
+            </li>
+            <li>
+              <a href="/nouveautes/">Les nouveautés</a>
+            </li>
+            <li>
+              <a href="/observatoire-des-prix/">L’observatoire des prix</a>
+            </li>
+            <li>
+              <a href="/materiel-boxe-femme/">Matériel de boxe femme</a>
+            </li>
+            <li>
+              <a href="/materiel-boxe-enfant/">Matériel de boxe enfant</a>
             </li>
             <li>
               <a href="/#ouverture">Être prévenu à l’ouverture des ventes</a>

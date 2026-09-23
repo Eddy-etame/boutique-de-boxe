@@ -6,6 +6,7 @@ import { graph, urlOf, webPageNode, breadcrumbNode } from '@/lib/seo';
 import { ogImage } from '@/lib/og';
 import { Breadcrumb } from '@/components/shop-shell';
 import { BrandGridMotion } from '@/components/brand-grid-motion';
+import { brandFamilyFacet } from '@/lib/facets';
 
 export const revalidate = 60;
 const TITLE = 'Marques de boxe et de MMA : Elion, Fairtex, Cleto Reyes, Venum';
@@ -68,7 +69,8 @@ export default async function BrandsIndex() {
             .sort((x, y) => (order.get(x.category) ?? 99) - (order.get(y.category) ?? 99))
             .slice(0, 3);
           return (
-            <a key={b.slug} className="brand-tile" href={'/marques/' + b.slug + '/'}>
+            <div key={b.slug} className="brand-tile-wrap">
+            <a className="brand-tile" href={'/marques/' + b.slug + '/'}>
               <div className="brand-tile-stage" aria-hidden="true">
                 {heroes.map((p) => (
                   <img key={p.id} src={p.cut!.small} alt="" width={480} height={480} loading="lazy" decoding="async" />
@@ -82,6 +84,12 @@ export default async function BrandsIndex() {
                 de {money(b.min)} à {money(b.max)}
               </span>
             </a>
+            <p className="brand-tile-families">
+              {b.families.map((f) => brandFamilyFacet(b, f.slug)).filter((x): x is NonNullable<typeof x> => Boolean(x)).map((f) => (
+                <a key={f.path} href={f.path}>{f.name}</a>
+              ))}
+            </p>
+            </div>
           );
         })}
       </div>

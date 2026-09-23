@@ -52,7 +52,9 @@ await Promise.all(
 );
 
 const rows = pages.map((path) => ({ path, inbound: inbound.get(path).size, outbound: outbound.get(path) ?? 0, from: [...inbound.get(path)].slice(0, 12) }));
-const orphans = rows.filter((r) => r.inbound < MIN && r.path !== '/');
+// Les pages de service liées depuis le pied de page et le bandeau de tout le site : le corps des autres pages n'a pas à les répéter.
+const SITEWIDE = new Set(['/', '/mentions-legales/', '/conditions-generales-de-vente/', '/offres-de-lancement/']);
+const orphans = rows.filter((r) => r.inbound < MIN && !SITEWIDE.has(r.path));
 const byKind = (p) => (p.startsWith('/produits/') ? 'produit' : p.startsWith('/guides/') ? 'guide' : p.startsWith('/marques/') ? 'marque' : 'page');
 const summary = {};
 for (const r of rows) {

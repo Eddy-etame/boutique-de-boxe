@@ -8,6 +8,7 @@ import { nearest, suggest } from '@/lib/suggest';
 
 import { getSessionUser } from '@/lib/auth';
 import { emailValid, ensureAlertContact, insertAlert, normalisePhone } from '@/lib/alerts';
+import { unsubscribeAll } from '@/lib/newsletter';
 import { clientIp } from '@/lib/request';
 import { revalidatePath } from 'next/cache';
 
@@ -435,16 +436,12 @@ export async function POST(
       if (typeof data.token !== 'string' || !/^[0-9a-f-]{36}$/.test(data.token))
         return response({ error: 'Lien de désinscription invalide.' }, 400);
 
-      await (
-        await db()
-      )
-
-        .prepare('DELETE FROM alerts WHERE unsubscribe_token=?')
-
-        .bind(data.token)
-
-        .run();
-
+      // « tout » : la lettre d'ouverture désinscrit l'adresse entière, pas seulement un modèle.
+      if (data.all === true) {
+        await unsubscribeAll(data.token);
+        return response({ ok: true });
+      }
+      await (await db()).prepare('DELETE FROM alerts WHERE unsubscribe_token=?').bind(data.token).run();
       return response({ ok: true });
     }
 

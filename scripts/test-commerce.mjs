@@ -690,6 +690,27 @@ try {
     assert.ok(!('relay_point' in order) || typeof order.relay_point === 'string');
   });
 
+  await check('Newsletter: anonymous callers are refused, drafts need a test and the confirmation word', async () => {
+    const s = session();
+    assert.equal((await s.request('/api/commerce/admin-newsletter')).status, 403, 'anonymous status refused');
+    assert.equal((await s.request('/api/commerce/admin-newsletter-save', { subject: 'x', body: 'y' })).status, 403, 'anonymous save refused');
+    // L'administration locale (cookie de développement) : sinon, rien de plus à vérifier ici.
+    const admin = { Cookie: '__sites_local_auth=1' };
+    const status = await s.request('/api/commerce/admin-newsletter', undefined, admin);
+    if (status.status !== 200) return;
+    assert.equal(typeof status.body.configured, 'boolean');
+    assert.ok(Array.isArray(status.body.campaigns));
+    const bad = await s.request('/api/commerce/admin-newsletter-save', { subject: 'x', body: 'trop court' }, admin);
+    assert.equal(bad.status, 400, 'a short draft is refused');
+    const saved = await s.request('/api/commerce/admin-newsletter-save', { subject: 'Essai automatique', body: ['Bonjour,', '', 'Un texte de brouillon assez long pour passer la barre des quarante signes.'].join(String.fromCharCode(10)) }, admin);
+    assert.equal(saved.status, 200, JSON.stringify(saved.body));
+    const id = saved.body.id;
+    assert.equal((await s.request('/api/commerce/admin-newsletter-send', { id, confirm: 'oui' }, admin)).status, 400, 'no send without the confirmation word');
+    const untested = await s.request('/api/commerce/admin-newsletter-send', { id, confirm: 'ENVOYER' }, admin);
+    assert.equal(untested.status, 409, 'no send before a test message');
+    assert.match(String(untested.body.error), /essai/i);
+  });
+
   console.log(
     JSON.stringify(
       {

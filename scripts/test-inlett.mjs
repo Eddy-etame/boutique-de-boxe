@@ -696,6 +696,7 @@ function apiHarness({ forceKeyReadRace = false } = {}) {
       // La liste en fenêtre et les inscriptions ne sont pas exercées ici ; la validation d’adresse l’est.
       if (specifier === '@/lib/listing') return { listingFor: () => null };
       if (specifier === 'next/cache') return { revalidatePath: () => {} };
+      if (specifier === '@/lib/newsletter') return { unsubscribeAll: async () => true };
       if (specifier === '@/lib/suggest') return { suggest: () => ({ pages: [], products: [], total: 0 }), nearest: () => ({ pages: [], products: [] }) };
       if (specifier === '@/lib/alerts')
         return {

@@ -193,7 +193,7 @@ export function ContactForm() {
   );
 }
 
-export function Unsubscribe({ token }: { token: string }) {
+export function Unsubscribe({ token, all = false }: { token: string; all?: boolean }) {
   const [status, setStatus] = useState('');
   return (
     <div className="unsubscribe-panel">
@@ -209,7 +209,7 @@ export function Unsubscribe({ token }: { token: string }) {
           const r = await fetch('/api/unsubscribe', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token }),
+            body: JSON.stringify({ token, all }),
           });
           setStatus(
             r.ok

@@ -3,6 +3,8 @@ import { clientsReport, clientsCsv,
   alertsCsv, ensureBuyerColumns } from '@/lib/clients';
 import { receiptPdf } from '@/lib/receipt-pdf';
 import { boxtalConfigured, boxtalMapToken, parseRelay, validateRelayPoint } from '@/lib/boxtal';
+import { newsletterStatus, saveCampaign, sendBatch, sendTest } from '@/lib/newsletter';
+import { getSessionUser } from '@/lib/auth';
 import { db, isAdmin, readCatalog } from '@/lib/database';
 import { after } from 'next/server';
 import {
@@ -105,6 +107,10 @@ export async function GET(request: Request, context: Context) {
         200,
         { 'X-Robots-Tag': 'noindex, nofollow' },
       );
+    }
+    if (action === 'admin-newsletter') {
+      if (!(await isAdmin())) return reply({ error: 'Accès réservé.' }, 403);
+      return reply(await newsletterStatus());
     }
     if (action === 'admin-clients') {
       if (!(await isAdmin())) return reply({ error: 'Accès réservé.' }, 403);
@@ -222,6 +228,34 @@ export async function POST(request: Request, context: Context) {
         .all();
       const alerts = await database.prepare('DELETE FROM alerts WHERE lower(email)=? RETURNING id').bind(email).all();
       return reply({ ok: true, orders: orders.results.length, attempts: attempts.results.length, alerts: alerts.results.length });
+    }
+    if (action === 'admin-newsletter-save') {
+      try {
+        return reply(await saveCampaign({ id: uuid(data.id) ? data.id : undefined, subject: data.subject, body: data.body }));
+      } catch (error) {
+        return reply({ error: (error as Error).message }, 400);
+      }
+    }
+    if (action === 'admin-newsletter-test') {
+      if (!uuid(data.id)) return reply({ error: 'Brouillon invalide.' }, 400);
+      // L'essai part à l'administrateur connecté, jamais à une adresse saisie : rien à détourner.
+      const to = (await getSessionUser())?.email || process.env.ADMIN_EMAIL || '';
+      if (!to) return reply({ error: 'Aucune adresse d’administrateur connue.' }, 400);
+      try {
+        const r = await sendTest(data.id, to);
+        return reply({ ok: true, to, account: r.account });
+      } catch (error) {
+        return reply({ error: (error as Error).message }, 409);
+      }
+    }
+    if (action === 'admin-newsletter-send') {
+      if (!uuid(data.id)) return reply({ error: 'Brouillon invalide.' }, 400);
+      if (data.confirm !== 'ENVOYER') return reply({ error: 'Tapez ENVOYER pour confirmer l’envoi à tous les inscrits.' }, 400);
+      try {
+        return reply(await sendBatch(data.id, 60));
+      } catch (error) {
+        return reply({ error: (error as Error).message }, 409);
+      }
     }
     if (action === 'admin-email') {
       if (!uuid(data.id)) return reply({ error: 'Référence invalide.' }, 400);
