@@ -150,24 +150,17 @@ export const SEO_COPY: Record<string, SeoCopy> = {
   },
 
   'materiel-sport-de-combat': {
-    title: 'Matériel sport de combat : boutique sport de combat France',
-    description: 'Matériel sport de combat, boutique sport de combat France : boxe anglaise, MMA, muay-thaï, kick-boxing, JJB. Tout le catalogue avec les tailles et les prix prévus, livraison dans toute la France.',
-    eyebrow: 'MATÉRIEL SPORT DE COMBAT · BOUTIQUE SPORT DE COMBAT FRANCE',
-    prioritaires: ['matériel sport de combat', 'sport de combat', 'boutique sport de combat France'],
+    title: 'Matériel sport de combat : gants, protections, textile, sacs',
+    description: 'Matériel sport de combat : boxe, savate, muay-thaï, kick-boxing, MMA, JJB, karaté. Ce que chaque discipline demande, avec tailles et prix prévus.',
+    eyebrow: 'MATÉRIEL SPORT DE COMBAT · DISCIPLINE PAR DISCIPLINE',
+    prioritaires: ['matériel sport de combat', 'sport de combat', 'équipement sport de combat'],
     secondaires: ['équipement sports de combat', 'boxe anglaise', 'MMA', 'muay-thaï', 'kick-boxing', 'jiu-jitsu brésilien', 'savate', 'tout le catalogue'],
     sections: [
       {
-        h2: 'Une boutique sport de combat pour toute la France',
+        h2: 'Tout le matériel sport de combat, en un catalogue',
         paragraphs: [
           'Boxe anglaise, MMA, muay-thaï, kick-boxing, jiu-jitsu brésilien, savate : chaque sport de combat a ses gestes et son matériel. Cette page est le catalogue complet, du gant de 4 oz au sac de frappe de 1,80 m, avec les tailles réelles et les prix prévus.',
           'Boutique de Boxe expédie en France uniquement, à l’ouverture des ventes : point relais, domicile, matériel lourd sur tarif.',
-        ],
-      },
-      {
-        h2: 'Le matériel selon votre discipline',
-        paragraphs: [
-          'Boxe anglaise : gants, bandes, protège-dents, casque, chaussures de boxe. MMA : gants à doigts libres, protège-tibias, rashguard, short. Muay-thaï et kick-boxing : gants, protège-tibias avec pied, short de boxe thaï. JJB et grappling : kimono, ceinture, rashguard, spats.',
-          'Chaque famille a sa page et son guide : commencez par la discipline, puis par l’usage, sac, technique ou partenaire.',
         ],
       },
       {
@@ -179,7 +172,7 @@ export const SEO_COPY: Record<string, SeoCopy> = {
     ],
     faq: [
       { question: 'Matériel sport de combat : par où commencer ?', answer: 'Le matériel sport de combat de départ tient en trois pièces : un protège-dents, des gants adaptés à la discipline, un short ou un kimono. Le reste, casque, protège-tibias, sac de frappe, vient avec la pratique.' },
-      { question: 'Boutique sport de combat France : livrez-vous partout ?', answer: 'Oui. Boutique sport de combat France : chaque commande part vers toute la France métropolitaine, à domicile ou en point relais, avec les tailles réelles et les prix prévus affichés avant l’ouverture des ventes.' },
+      { question: 'Le matériel sport de combat est-il livré dans toute la France ?', answer: 'Oui : chaque commande part vers toute la France métropolitaine, à domicile ou en point relais, dès l’ouverture des ventes. Les tailles réelles et les prix prévus sont affichés dès maintenant.' },
       { question: 'Quels sports de combat sont couverts ?', answer: 'Boxe anglaise, MMA, muay-thaï, kick-boxing, jiu-jitsu brésilien, savate et karaté. Chaque fiche indique la discipline concernée.' },
       { question: 'Le matériel est-il le même pour tous les sports de combat ?', answer: 'Non. Les gants, les protections et le textile changent selon la discipline. Un gant de boxe thaï n’a pas la coupe d’un gant de boxe anglaise ; un gant MMA laisse les doigts libres.' },
       { question: 'Expédiez-vous hors de France ?', answer: 'Pas pour l’instant. La livraison prévue couvre la France métropolitaine : point relais et domicile.' },

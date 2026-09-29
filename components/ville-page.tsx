@@ -7,12 +7,13 @@ import { Breadcrumb, ArrowLink } from './shop-shell';
 import { ProductCard } from './shop-interactions';
 import { SeoBody } from './seo-body';
 import { spaced } from '@/lib/spaced';
+import { dansLeRayon, ENFANT } from '@/lib/rayons';
 import {
-  SOURCE, VILLES, REGIONS, CARREFOUR, villePath, dateSource, regionTotal, regionDisciplines,
-  CLUBS_BOXING_CENTER, A_COTE, RAYON, a, de, dansDepartement, siteDe, fine,
-  villeTitre, villeDescription, villeChapeau, villeSections, villeFaq, villeKit,
+  SOURCE, FRANCE, VILLES, REGIONS, CARREFOUR, villePath, dateSource, regionTotal, regionDisciplines,
+  CLUBS_BOXING_CENTER, A_COTE, BALMA, RAYON, a, de, dansDepartement, siteDe, fine,
+  villeTitre, villeDescription, villeDensite, villeChapeau, villeSections, villeFaq, villeKit, parArrondissement,
   regionTitre, regionDescription, regionChapeau, regionFaq, livraison, livraisonPartout,
-  CARREFOUR_TITRE, CARREFOUR_DESCRIPTION, carrefourChapeau, CARREFOUR_FAQ,
+  CARREFOUR_TITRE, CARREFOUR_DESCRIPTION, carrefourChapeau, carrefourFaq, franceEnChiffres,
   type Ville, type Region, type Lieu, type Groupe,
 } from '@/lib/villes';
 
@@ -25,6 +26,8 @@ import {
 
 const HUB_PATH = '/' + CARREFOUR + '/';
 const HUB_CRUMB = { label: 'Boutique sport de combat', href: HUB_PATH };
+const MATERIEL = '/materiel-sport-de-combat/';
+const IDF = ['75', '92', '93', '94', '78', '91', '95', '77'];
 
 const meta = (path: string, title: string, description: string, key: string, keywords: string[]): Metadata => ({
   title: { absolute: title },
@@ -63,23 +66,35 @@ const hote = (url: string) => {
   }
 };
 const adresseDe = (l: Lieu) => [l.adresse, [l.codePostal, l.commune].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+const VIDE = <span className="salle-vide">—</span>;
 
 /** Un nombre stable par ville : chaque page montre d'autres modèles que sa voisine. */
 const graine = (s: string) => [...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
 
-function kitProducts(sources: string[], all: Product[], seed: number) {
+/* Ce qu'un premier sac évite, et ce qu'il préfère quand le rayon en a, selon la boxe :
+   pas de short thaï ni de chaussure de lutte pour la boxe anglaise ; la chaussure de savate pour la savate. */
+const EVITER: Record<string, RegExp> = { 'Boxe anglaise': /tha[iï]|lutte/i };
+const PREFERER: Record<string, RegExp> = { 'Savate boxe française': /savate|boxe fran/i, 'Muay-thaï': /tha[iï]|muay/i };
+
+/** Le premier sac : des modèles d'entrée de gamme — le tiers le moins cher de chaque rayon, photo posée
+    de préférence DANS ce tiers —, jamais d'article d'enfant, jamais deux fois le même modèle. */
+function kitProducts(sources: string[], all: Product[], seed: number, discipline: string) {
   const pris = new Set<string>();
+  const evite = EVITER[discipline];
+  const prefere = PREFERER[discipline];
   return sources
     .map((slug, i) => {
       const sub = SUBFAMILIES.find((x) => x.slug === slug);
       const cat = sub ? null : categoryFor(slug);
-      const pool = (sub ? subfamilyProducts(sub, all) : cat ? getCategoryProducts(cat, all) : []).filter((p) => p.images[0] && p.price > 0 && !pris.has(p.id));
-      const juste = slug === 'kimonos' ? pool.filter((p) => /kimono/i.test(p.name)) : pool;
-      if (juste.length) pool.splice(0, pool.length, ...juste);
-      const beaux = pool.filter((p) => p.cut?.mode === 'pose');
-      const choix = beaux.length >= 3 ? beaux : pool;
-      if (!choix.length) return null;
-      const p = choix[(seed + i * 7) % choix.length];
+      const rayon = (sub ? subfamilyProducts(sub, all) : cat ? getCategoryProducts(cat, all) : []).filter(
+        (p) => p.images[0] && p.price > 0 && !pris.has(p.id) && dansLeRayon(slug, p) && !ENFANT.test(p.name) && !(evite && evite.test(p.name)),
+      );
+      const choix = prefere && rayon.some((p) => prefere.test(p.name)) ? rayon.filter((p) => prefere.test(p.name)) : rayon;
+      const moitie = [...choix].sort((x, y) => x.price - y.price).slice(0, Math.max(3, Math.ceil(choix.length / 3)));
+      const beaux = moitie.filter((p) => p.cut?.mode === 'pose');
+      const pool = beaux.length >= 3 ? beaux : moitie;
+      if (!pool.length) return null;
+      const p = pool[(seed + i * 7) % pool.length];
       pris.add(p.id);
       return p;
     })
@@ -99,11 +114,16 @@ function Chiffres({ items }: { items: [string, string][] }) {
   );
 }
 
-function Source() {
+function Source({ population = false }: { population?: boolean }) {
   return (
     <p className="observatory-cite">
-      Source : <a href={SOURCE.url}>{SOURCE.nom}</a>, {SOURCE.editeur}, <a href={SOURCE.licenceUrl}>{SOURCE.licence}</a> · mis à jour le {dateSource()}. Sont listés les lieux
-      ouverts aux clubs ou au public ; les salles réservées aux scolaires ne le sont pas.
+      Source : <a href={SOURCE.url}>{SOURCE.nom}</a>, {SOURCE.editeur}, <a href={SOURCE.licenceUrl}>{SOURCE.licence}</a>, mis à jour le {dateSource()}
+      {population ? (
+        <>
+          {' '}· populations : <a href={SOURCE.population.url}>Insee, via l’API Découpage administratif</a>
+        </>
+      ) : null}
+      .
     </p>
   );
 }
@@ -117,11 +137,10 @@ function Disciplines({ titre, par, total }: { titre: string; par: Record<string,
           <li key={d} style={{ '--share': total ? n / total : 0 } as React.CSSProperties}>
             <span>{RAYON[d] ? <a href={RAYON[d]}>{d}</a> : d}</span>{' '}
             <i aria-hidden="true" />{' '}
-            <strong>{n}</strong>
+            <strong>{fr(n)}</strong>
           </li>
         ))}
       </ol>
-      <p className="hub-prices-note">Nombre de lieux qui déclarent chaque discipline ; un lieu en déclare souvent plusieurs. Chaque discipline mène au matériel qu’elle demande.</p>
     </section>
   );
 }
@@ -148,15 +167,15 @@ function Lieux({ lieux, caption, id }: { lieux: Lieu[]; caption: string; id?: st
                   {l.nom}{' '}
                   <small>{l.salles.map((s) => s.nom).join(' · ')}</small>
                 </th>
-                <td data-label="Disciplines">{l.disciplines.length ? l.disciplines.join(', ') : <span className="salle-vide">non déclarées</span>}</td>
-                <td data-label="Adresse">{adresseDe(l) || <span className="salle-vide">non renseignée</span>}</td>
+                <td data-label="Disciplines">{l.disciplines.length ? l.disciplines.join(', ') : VIDE}</td>
+                <td data-label="Adresse">{adresseDe(l) || VIDE}</td>
                 <td data-label="En ligne">
                   {site && hote(site) ? (
                     <a href={lien(site)} rel={CLUBS_BOXING_CENTER.some((c) => c.site === site) ? undefined : 'nofollow noopener'}>
                       {hote(site)}
                     </a>
                   ) : (
-                    <span className="salle-vide">pas de site déclaré</span>
+                    VIDE
                   )}
                 </td>
               </tr>
@@ -164,16 +183,58 @@ function Lieux({ lieux, caption, id }: { lieux: Lieu[]; caption: string; id?: st
           })}
         </tbody>
       </table>
+      <p className="hub-prices-note">« — » : non renseigné au recensement.</p>
     </div>
   );
 }
 
+function Arrondissements({ v }: { v: Ville }) {
+  const rows = parArrondissement(v);
+  if (rows.length < 4) return null;
+  return (
+    <section className="keyword-hub observatory">
+      <h2>{`${v.nom}, arrondissement par arrondissement.`}</h2>
+      <div className="hub-prices salles-table">
+        <table>
+          <caption>{`Lieux de boxe et d’arts martiaux par arrondissement ${de(v.nom)}`}</caption>
+          <thead>
+            <tr>
+              <th scope="col">Arrondissement</th>
+              <th scope="col">Lieux</th>
+              <th scope="col">Où l’on boxe</th>
+              <th scope="col">Salles de boxe</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((x) => (
+              <tr key={x.nom}>
+                <th scope="row">{x.nom}</th>
+                <td data-label="Lieux">{x.lieux}</td>
+                <td data-label="Où l’on boxe">{x.frappe}</td>
+                <td data-label="Salles de boxe">{x.boxe}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+
+const RAYON_DE: Record<string, [string, string]> = {
+  'Boxe anglaise': ['/materiel-boxe/', 'Le matériel de boxe anglaise'],
+  'Savate boxe française': ['/chaussures-boxe/', 'Les chaussures de boxe'],
+  'Muay-thaï': ['/protege-tibias/', 'Les protège-tibias'],
+  'Kick-boxing': ['/protections-boxe/', 'Les protections de boxe'],
+  'Full contact': ['/gants-de-boxe/', 'Les gants de boxe'],
+};
+
 function Kit({ lieu, compte, all, seed }: { lieu: string; compte: { frappe: number; parDiscipline: Record<string, number> }; all: Product[]; seed: number }) {
   const k = villeKit(lieu, compte);
-  const items = kitProducts(k.sources, all, seed);
+  const items = kitProducts(k.sources, all, seed, k.discipline);
   // jamais une carte seule sur sa rangée : quatre colonnes au bureau, deux au téléphone
   const rangee = items.slice(0, items.length >= 4 ? items.length - (items.length % 4) : items.length - (items.length % 2));
-  const rayon = k.kind === 'frappe' ? ['/materiel-boxe/', 'Tout le matériel de boxe'] : ['/boutique-arts-martiaux/', 'Toute la boutique arts martiaux'];
+  const [href, texte] = RAYON_DE[k.discipline] || RAYON_DE['Boxe anglaise'];
   return (
     <section className="ville-kit">
       <header className="ville-kit-head">
@@ -190,28 +251,33 @@ function Kit({ lieu, compte, all, seed }: { lieu: string; compte: { frappe: numb
         ))}
       </div>
       <div className="ville-kit-links">
-        <ArrowLink href={rayon[0]}>{rayon[1]}</ArrowLink>{' '}
+        <ArrowLink href={href}>{texte}</ArrowLink>{' '}
+        <ArrowLink href={MATERIEL}>Matériel sport de combat</ArrowLink>{' '}
         <ArrowLink href="/outils/poids-de-gants/">Quel poids de gants ?</ArrowLink>
       </div>
     </section>
   );
 }
 
-function AutresVilles({ sauf }: { sauf?: string }) {
-  const liens = [...VILLES.map((v) => ({ slug: v.slug, nom: v.nom })), ...REGIONS.map((r) => ({ slug: r.slug, nom: r.nom }))]
-    .filter((x) => x.slug !== sauf)
-    .sort((x, y) => x.nom.localeCompare(y.nom, 'fr'));
+/** Les grandes villes les plus proches, et les pages de la même région : pas la liste entière des villes sur chaque page. */
+function Voisines({ v }: { v: Ville }) {
+  const idf = IDF.includes(v.codeDepartement) ? REGIONS.find((r) => r.slug === 'ile-de-france') : undefined;
   return (
     <section className="ville-ailleurs">
-      <h2>La boutique de boxe, dans les autres villes.</h2>
-      <nav className="subfamily-links" aria-label="Les autres villes">
+      <h2>{fine(`Autour ${de(v.nom)} : les grandes villes voisines.`)}</h2>
+      <nav className="subfamily-links" aria-label={`Les grandes villes voisines ${de(v.nom)}`}>
         {spaced(
-          liens.map((x) => (
+          v.voisines.map((x) => (
             <a key={x.slug} href={villePath(x.slug)}>
-              {'Boutique de boxe ' + x.nom}
+              {`Boutique de boxe ${x.nom} · ${fr(x.km)} km`}
             </a>
           )),
         )}{' '}
+        {idf ? (
+          <>
+            <a href={villePath(idf.slug)}>{`Boutique de boxe ${idf.nom}, hors Paris`}</a>{' '}
+          </>
+        ) : null}
         <a href={HUB_PATH}>{fine('Toutes les villes : la boutique sport de combat France')}</a>
       </nav>
     </section>
@@ -276,9 +342,7 @@ export function VillePage({ ville: v, all }: { ville: Ville; all: Product[] }) {
           <h1>{`Boutique de boxe ${v.nom}.`}</h1>
         </div>
         <div>
-          <div className="label">
-            {fr(v.lieux.length)} lieux de boxe et d’arts martiaux, et le matériel que chacun demande.
-          </div>
+          <div className="label">{fine(villeDensite(v))}</div>
           <p>{villeChapeau(v)}</p>
         </div>
       </section>
@@ -287,12 +351,12 @@ export function VillePage({ ville: v, all }: { ville: Ville; all: Product[] }) {
         <Chiffres
           items={[
             [fr(v.lieux.length), `lieux recensés ${a(v.nom)}`],
-            [fr(v.frappe), 'où l’on boxe : anglaise, française, thaïe, kick, full contact'],
+            [fr(v.frappe), 'où l’on boxe'],
             [fr(v.boxe), 'salles de boxe dédiées'],
             [fr(v.dojos), 'dojos et salles d’arts martiaux'],
           ]}
         />
-        <Source />
+        <Source population />
       </section>
 
       {toulouse && (
@@ -321,6 +385,10 @@ export function VillePage({ ville: v, all }: { ville: Ville; all: Product[] }) {
               )),
             )}
           </nav>
+          <p className="ville-balma">
+            {BALMA.avant} <a href={BALMA.site}>{BALMA.lien}</a>
+            {fine(BALMA.apres)}
+          </p>
         </section>
       )}
 
@@ -329,10 +397,9 @@ export function VillePage({ ville: v, all }: { ville: Ville; all: Product[] }) {
       {/* Hors de « main > section » : l’apparition au défilement attend 8 % de la section à l’écran, ce qu’un
          tableau de plusieurs milliers de pixels n’atteint jamais (Paris au téléphone, Île-de-France) — il resterait invisible. */}
       <div className="ville-tableau">
+        <Arrondissements v={v} />
         <section className="keyword-hub observatory">
-          <h2>
-            Les {fr(v.lieux.length)} lieux {de(v.nom)}.
-          </h2>
+          <h2>{`Les ${fr(v.lieux.length)} lieux ${de(v.nom)}.`}</h2>
           <Lieux lieux={v.lieux} caption={nomListe} id="lieux" />
         </section>
       </div>
@@ -340,7 +407,7 @@ export function VillePage({ ville: v, all }: { ville: Ville; all: Product[] }) {
       <Kit lieu={a(v.nom)} compte={v} all={all} seed={graine(v.slug)} />
 
       <SeoBody sections={villeSections(v)} faq={faq} heading={`Questions sur la boxe ${a(v.nom)}`} />
-      <AutresVilles sauf={v.slug} />
+      <Voisines v={v} />
     </main>
   );
 }
@@ -351,9 +418,7 @@ function Communes({ g }: { g: Groupe }) {
   return (
     <div className="hub-prices salles-table">
       <table>
-        <caption>
-          Les lieux de boxe et d’arts martiaux {dansDepartement(g)}, commune par commune
-        </caption>
+        <caption>{`Les lieux de boxe et d’arts martiaux ${dansDepartement(g)}, commune par commune`}</caption>
         <thead>
           <tr>
             <th scope="col">Commune</th>
@@ -366,11 +431,11 @@ function Communes({ g }: { g: Groupe }) {
         <tbody>
           {g.communes.map((c) => (
             <tr key={c.nom}>
-              <th scope="row">{c.nom}</th>
+              <th scope="row">{c.page ? <a href={villePath(c.page)}>{c.nom}</a> : c.nom}</th>
               <td data-label="Lieux">{c.lieux}</td>
               <td data-label="Salles de boxe">{c.boxe}</td>
               <td data-label="Où l’on boxe">{c.frappe}</td>
-              <td data-label="Disciplines">{c.disciplines.join(', ') || <span className="salle-vide">non déclarées</span>}</td>
+              <td data-label="Disciplines">{c.disciplines.join(', ') || VIDE}</td>
             </tr>
           ))}
         </tbody>
@@ -387,6 +452,7 @@ export function RegionPage({ region: r, all }: { region: Region; all: Product[] 
   const groupes = [...r.groupes].sort((x, y) => y.lieux - x.lieux);
   const faq = regionFaq(r);
   const paris = VILLES.find((v) => v.slug === 'paris');
+  const pages = VILLES.filter((v) => IDF.includes(v.codeDepartement) && v.slug !== 'paris');
   return (
     <main id="contenu" className="page-wrap ville-page">
       <Breadcrumb items={[HUB_CRUMB, { label: 'Boutique de boxe ' + r.nom }]} />
@@ -420,7 +486,7 @@ export function RegionPage({ region: r, all }: { region: Region; all: Product[] 
           <h1>{`Boutique de boxe ${r.nom}.`}</h1>
         </div>
         <div>
-          <div className="label">{fr(t.lieux)} lieux de boxe et d’arts martiaux, commune par commune.</div>
+          <div className="label">{`${fr(t.lieux)} lieux de boxe et d’arts martiaux, commune par commune.`}</div>
           <p>{regionChapeau(r)}</p>
         </div>
       </section>
@@ -429,7 +495,7 @@ export function RegionPage({ region: r, all }: { region: Region; all: Product[] 
         <Chiffres
           items={[
             [fr(t.lieux), 'lieux recensés hors Paris'],
-            [fr(t.frappe), 'où l’on boxe : anglaise, française, thaïe, kick, full contact'],
+            [fr(t.frappe), 'où l’on boxe'],
             [fr(t.boxe), 'salles de boxe dédiées'],
             [paris ? fr(paris.lieux.length) : '—', 'lieux de plus à Paris, sur sa propre page'],
           ]}
@@ -437,31 +503,40 @@ export function RegionPage({ region: r, all }: { region: Region; all: Product[] 
         <Source />
       </section>
 
-      {paris && (
-        <nav className="subfamily-links" aria-label="Paris">
-          <a href={villePath('paris')}>{fine(`Boutique de boxe Paris : les ${fr(paris.lieux.length)} lieux de la capitale`)}</a>
-        </nav>
-      )}
+      <nav className="subfamily-links" aria-label="Les grandes villes d’Île-de-France">
+        {paris && <a href={villePath('paris')}>{fine(`Boutique de boxe Paris : les ${fr(paris.lieux.length)} lieux de la capitale`)}</a>}{' '}
+        {spaced(
+          pages.map((v) => (
+            <a key={v.slug} href={villePath(v.slug)}>
+              {`Boutique de boxe ${v.nom} · ${v.lieux.length} lieux`}
+            </a>
+          )),
+        )}
+      </nav>
 
       <Disciplines titre={`Les disciplines en ${r.nom}.`} par={par} total={t.lieux} />
 
-      {/* Hors de « main > section » : l’apparition au défilement attend 8 % de la section à l’écran, ce qu’un
-         tableau de plusieurs milliers de pixels n’atteint jamais (Paris au téléphone, Île-de-France) — il resterait invisible. */}
       <div className="ville-tableau">
-      <section className="keyword-hub observatory" id="communes">
-        {groupes.map((g) => (
-          <div key={g.code}>
-            <h2>{fine(`${g.nom} (${g.code}) : ${fr(g.lieux)} lieux dans ${fr(g.communes.length)} communes.`)}</h2>
-            <Communes g={g} />
-          </div>
-        ))}
-      </section>
+        <section className="keyword-hub observatory" id="communes">
+          {groupes.map((g) => (
+            <div key={g.code}>
+              <h2>{fine(`${g.nom} (${g.code}) : ${fr(g.lieux)} lieux dans ${fr(g.communes.length)} communes.`)}</h2>
+              <Communes g={g} />
+            </div>
+          ))}
+        </section>
       </div>
 
       <Kit lieu={'en ' + r.nom} compte={{ frappe: t.frappe, parDiscipline: par }} all={all} seed={graine(r.slug)} />
 
       <SeoBody sections={[{ h2: `Livraison en ${r.nom}`, paragraphs: [livraison('toute l’' + r.nom)] }]} faq={faq} heading={`Questions sur la boxe en ${r.nom}`} />
-      <AutresVilles sauf={r.slug} />
+      <section className="ville-ailleurs">
+        <h2>La boutique de boxe, partout en France.</h2>
+        <nav className="subfamily-links" aria-label="Toutes les villes">
+          <a href={HUB_PATH}>{fine('Toutes les villes : la boutique sport de combat France')}</a>{' '}
+          <a href={MATERIEL}>Matériel sport de combat</a>
+        </nav>
+      </section>
     </main>
   );
 }
@@ -470,13 +545,15 @@ export function RegionPage({ region: r, all }: { region: Region; all: Product[] 
 
 export function CarrefourPage({ all }: { all: Product[] }) {
   const lignes = [
-    ...VILLES.map((v) => ({ slug: v.slug, nom: v.nom, region: v.region, lieux: v.lieux.length, boxe: v.boxe, frappe: v.frappe, tete: Object.keys(v.parDiscipline)[0] })),
+    ...VILLES.map((v) => ({ slug: v.slug, nom: v.nom, region: v.region, lieux: v.lieux.length, boxe: v.boxe, frappe: v.frappe, densite: v.habitantsParLieu as number | null })),
     ...REGIONS.map((r) => {
       const t = regionTotal(r);
-      return { slug: r.slug, nom: r.nom + ' (hors Paris)', region: r.nom, lieux: t.lieux, boxe: t.boxe, frappe: t.frappe, tete: Object.keys(regionDisciplines(r))[0] };
+      return { slug: r.slug, nom: r.nom + ' (hors Paris)', region: r.nom, lieux: t.lieux, boxe: t.boxe, frappe: t.frappe, densite: null as number | null };
     }),
   ].sort((x, y) => y.lieux - x.lieux);
   const total = lignes.reduce((n, l) => n + l.lieux, 0);
+  const faq = carrefourFaq();
+  const [chiffres1, chiffres2] = franceEnChiffres();
   return (
     <main id="contenu" className="page-wrap ville-page">
       <Breadcrumb items={[{ label: 'Boutique sport de combat' }]} />
@@ -495,7 +572,7 @@ export function CarrefourPage({ all }: { all: Product[] }) {
               numberOfItems: lignes.length,
               itemListElement: lignes.map((l, i) => ({ '@type': 'ListItem', position: i + 1, name: 'Boutique de boxe ' + l.nom, url: urlOf(villePath(l.slug)) })),
             },
-            faqNode(HUB_PATH, CARREFOUR_FAQ),
+            faqNode(HUB_PATH, faq),
           ]),
         }}
       />
@@ -505,61 +582,62 @@ export function CarrefourPage({ all }: { all: Product[] }) {
           <h1>La boutique sport de combat, ville par ville.</h1>
         </div>
         <div>
-          <div className="label">{fine('Boutique sport de combat France : un catalogue, toutes les villes.')}</div>
+          <div className="label">{fine('Boutique sport de combat France : un catalogue, toutes les grandes villes.')}</div>
           <p>{carrefourChapeau(total)}</p>
         </div>
       </section>
 
-      <section className="observatory-lead" aria-label="La boutique en chiffres">
+      <section className="observatory-lead" aria-label="La France des sports de combat en chiffres">
         <Chiffres
           items={[
-            [fr(lignes.length), 'villes et régions, chacune sa page'],
-            [fr(total), 'lieux de boxe et d’arts martiaux recensés'],
+            [fr(FRANCE.lieux), 'lieux de sports de combat en France métropolitaine'],
+            [fr(FRANCE.frappe), 'où l’on boxe'],
+            [fr(lignes.length), 'grandes villes et régions, chacune sa page'],
             [fr(all.length), 'modèles au catalogue'],
-            ['France', 'métropolitaine, à domicile ou en point relais'],
           ]}
         />
-        <Source />
+        <Source population />
       </section>
 
-      {/* Hors de « main > section » : l’apparition au défilement attend 8 % de la section à l’écran, ce qu’un
-         tableau de plusieurs milliers de pixels n’atteint jamais (Paris au téléphone, Île-de-France) — il resterait invisible. */}
+      <SeoBody sections={[{ h2: 'La France des sports de combat, en chiffres', paragraphs: [chiffres1, chiffres2] }]} />
+      <Disciplines titre="Les disciplines en France." par={FRANCE.parDiscipline} total={FRANCE.lieux} />
+
       <div className="ville-tableau">
-      <section className="keyword-hub observatory">
-        <h2>Les lieux de boxe et d’arts martiaux, par ville.</h2>
-        <div className="hub-prices salles-table" id="villes">
-          <table>
-            <caption>Lieux de boxe et d’arts martiaux recensés par ville</caption>
-            <thead>
-              <tr>
-                <th scope="col">Ville</th>
-                <th scope="col">Région</th>
-                <th scope="col">Lieux</th>
-                <th scope="col">Salles de boxe</th>
-                <th scope="col">Où l’on boxe</th>
-                <th scope="col">La plus déclarée</th>
-              </tr>
-            </thead>
-            <tbody>
-              {lignes.map((l) => (
-                <tr key={l.slug}>
-                  <th scope="row">
-                    <a href={villePath(l.slug)}>{'Boutique de boxe ' + l.nom}</a>
-                  </th>
-                  <td data-label="Région">{l.region}</td>
-                  <td data-label="Lieux">{fr(l.lieux)}</td>
-                  <td data-label="Salles de boxe">{fr(l.boxe)}</td>
-                  <td data-label="Où l’on boxe">{fr(l.frappe)}</td>
-                  <td data-label="La plus déclarée">{l.tete}</td>
+        <section className="keyword-hub observatory">
+          <h2>Les grandes villes, une par une.</h2>
+          <div className="hub-prices salles-table" id="villes">
+            <table>
+              <caption>Lieux de boxe et d’arts martiaux recensés par grande ville</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Ville</th>
+                  <th scope="col">Région</th>
+                  <th scope="col">Lieux</th>
+                  <th scope="col">Où l’on boxe</th>
+                  <th scope="col">Salles de boxe</th>
+                  <th scope="col">Habitants par lieu</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          <p className="hub-prices-note">
-            Une ville a sa page à partir de {SOURCE.seuil} lieux recensés. Recensement des équipements sportifs du {dateSource()}.
-          </p>
-        </div>
-      </section>
+              </thead>
+              <tbody>
+                {lignes.map((l) => (
+                  <tr key={l.slug}>
+                    <th scope="row">
+                      <a href={villePath(l.slug)}>{'Boutique de boxe ' + l.nom}</a>
+                    </th>
+                    <td data-label="Région">{l.region}</td>
+                    <td data-label="Lieux">{fr(l.lieux)}</td>
+                    <td data-label="Où l’on boxe">{fr(l.frappe)}</td>
+                    <td data-label="Salles de boxe">{fr(l.boxe)}</td>
+                    <td data-label="Habitants par lieu">{l.densite ? fr(l.densite) : VIDE}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p className="hub-prices-note">
+              {`Une page par commune de plus de ${fr(SOURCE.seuilHabitants)} habitants qui compte au moins ${SOURCE.seuil} lieux, dont ${SOURCE.seuilFrappe} où l’on boxe.`}
+            </p>
+          </div>
+        </section>
       </div>
 
       <SeoBody
@@ -572,18 +650,21 @@ export function CarrefourPage({ all }: { all: Product[] }) {
             ],
           },
         ]}
-        faq={CARREFOUR_FAQ}
+        faq={faq}
         heading="Questions sur la boutique sport de combat"
       />
       <section className="spec-section">
         <div>
           <h2>Du matériel par discipline.</h2>
-          <ArrowLink href="/materiel-boxe/">Matériel de boxe anglaise</ArrowLink>
-          <ArrowLink href="/materiel-mma/">Matériel de MMA</ArrowLink>
-          <ArrowLink href="/boutique-arts-martiaux/">Boutique arts martiaux</ArrowLink>
-          <ArrowLink href="/materiel-sport-de-combat/">Tout le matériel de sport de combat</ArrowLink>
+          {spaced([
+            <ArrowLink key="m" href={MATERIEL}>Matériel sport de combat</ArrowLink>,
+            <ArrowLink key="b" href="/materiel-boxe/">Matériel de boxe anglaise</ArrowLink>,
+            <ArrowLink key="mma" href="/materiel-mma/">Matériel de MMA</ArrowLink>,
+            <ArrowLink key="am" href="/boutique-arts-martiaux/">Boutique arts martiaux</ArrowLink>,
+          ])}
         </div>
       </section>
     </main>
   );
 }
+

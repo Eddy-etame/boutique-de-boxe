@@ -192,9 +192,9 @@ export const categories: Category[] = [
   },
   {
     slug: 'materiel-sport-de-combat',
-    name: 'Matériel de sports de combat',
-    label: 'Tout le catalogue.',
-    intro: 'Boxe, MMA et arts martiaux réunis : cherchez un modèle, une marque ou un type de matériel.',
+    name: 'Matériel sport de combat',
+    label: 'Plus de 1 000 modèles, discipline par discipline.',
+    intro: 'Boxe anglaise, savate, muay-thaï, kick-boxing, full contact, MMA, jiu-jitsu brésilien, judo, karaté : ce que chaque sport de combat demande d’abord, puis tout le catalogue pour le trouver.',
     description:
       'Matériel de sports de combat en France : boxe, MMA, arts martiaux, protections, textile et accessoires. Découvrez le catalogue et les guides.',
     families: [],

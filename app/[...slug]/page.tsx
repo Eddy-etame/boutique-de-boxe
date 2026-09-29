@@ -40,6 +40,8 @@ import { ogImage } from '@/lib/og';
 import { spaced } from '@/lib/spaced';
 import { villeFor, regionFor, CARREFOUR } from '@/lib/villes';
 import { VillePage, RegionPage, CarrefourPage, villeMetadata, regionMetadata, carrefourMetadata } from '@/components/ville-page';
+import { MaterielParDiscipline, materielFaq } from '@/components/materiel-par-discipline';
+import { entrelace } from '@/lib/rayons';
 export const revalidate = 60;
 type Props = {
   params: Promise<{ slug: string[] }>;
@@ -500,7 +502,9 @@ export default async function Page({ params, searchParams }: Props) {
     // La page de résultats arrive déjà filtrée par la saisie de l'entête (?q=), sans attendre le script.
     const query = path === 'recherche' ? ((await searchParams).q || '').slice(0, 80).trim() : '';
     const data = cat
-      ? getCategoryProducts(cat, products)
+      ? cat.slug === 'materiel-sport-de-combat'
+        ? entrelace(getCategoryProducts(cat, products))
+        : getCategoryProducts(cat, products)
       : path === 'nouveautes'
         ? [...products].reverse()
         : query
@@ -508,6 +512,9 @@ export default async function Page({ params, searchParams }: Props) {
           : products;
     const currentPage = catalogPage((await searchParams).page, data.length);
     if (currentPage === null) notFound();
+    // « Matériel sport de combat » (29/09) : le tableau par discipline et ses questions, tirés du recensement du ministère.
+    const materiel = cat?.slug === 'materiel-sport-de-combat';
+    const faq = cat && SEO_COPY[cat.slug] ? [...SEO_COPY[cat.slug].faq, ...(materiel ? materielFaq() : [])] : undefined;
     return (
       <main id="contenu" className="page-wrap">
         <Breadcrumb
@@ -532,7 +539,7 @@ export default async function Page({ params, searchParams }: Props) {
                 page: currentPage,
                 perPage: PAGE_SIZE,
                 category: cat,
-                faq: cat ? SEO_COPY[cat.slug]?.faq : undefined,
+                faq,
               }),
             }}
           />
@@ -573,6 +580,8 @@ export default async function Page({ params, searchParams }: Props) {
             </nav>
           ) : null;
         })()}
+        {/* la réponse propre à la page d’abord, le catalogue ensuite */}
+        {materiel && currentPage === 1 && <MaterielParDiscipline all={products} />}
         <Catalog
           items={data.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map(listItem)}
           total={data.length}
@@ -624,7 +633,7 @@ export default async function Page({ params, searchParams }: Props) {
             </div>
           </section>
         )}
-        {cat && SEO_COPY[cat.slug] && <SeoBody sections={SEO_COPY[cat.slug].sections} faq={SEO_COPY[cat.slug].faq} />}
+        {cat && SEO_COPY[cat.slug] && <SeoBody sections={SEO_COPY[cat.slug].sections} faq={faq} />}
       </main>
     );
   }

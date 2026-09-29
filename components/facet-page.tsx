@@ -75,7 +75,7 @@ export function FacetPage({ facet: f, all, page = 1 }: { facet: Facet; all: Prod
         <section className="spec-section">
           <div>
             <h2>Pour choisir sans se tromper.</h2>
-            <ArrowLink href={f.guide === 'guide-des-tailles' ? '/guide-des-tailles/' : '/guides/' + f.guide + '/'}>Lire le guide d’achat</ArrowLink>
+            <ArrowLink href={f.guide === 'guide-des-tailles' ? '/guide-des-tailles/' : '/guides/' + f.guide + '/'}>Lire le guide d’achat</ArrowLink>{' '}
             {f.kind === 'oz' && <ArrowLink href="/outils/poids-de-gants/">Calculer mon poids de gants</ArrowLink>}
           </div>
         </section>

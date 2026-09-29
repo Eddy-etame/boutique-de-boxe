@@ -7,7 +7,7 @@ import { shop, money, type Product } from './catalog';
 import { guides, services } from './editorial';
 import { ATTRIBUTION, EDITORIAL_DATE, familiesWithCounts, urlOf } from './seo';
 import { QUERY_MAP } from './seo-copy';
-import { VILLES, REGIONS, CARREFOUR, SOURCE, villePath, regionTotal } from './villes';
+import { VILLES, REGIONS, CARREFOUR, SOURCE, villePath, regionTotal, franceEnChiffres, rang } from './villes';
 import { SUBFAMILIES, subfamilyProducts } from './subfamilies';
 import { brandsOf } from './brands';
 import { ozFacets, brandFamilyFacets } from './facets';
@@ -72,8 +72,9 @@ function prices(products: Product[]) {
 function villes() {
   return [
     '## Boutique de boxe, ville par ville (recensement du ministère des Sports)',
-    `Carrefour : [Boutique sport de combat France](${urlOf('/' + CARREFOUR + '/')}). Source des chiffres : ${SOURCE.nom}, ${SOURCE.editeur}, ${SOURCE.licence}, mis à jour le ${SOURCE.maj}.`,
-    ...VILLES.map((v) => `- [Boutique de boxe ${v.nom}](${urlOf(villePath(v.slug))}) : ${v.lieux.length} lieux de boxe et d’arts martiaux, ${v.boxe} salles de boxe, ${v.frappe} lieux où l’on boxe ; discipline la plus déclarée : ${Object.keys(v.parDiscipline)[0] || '—'}.`),
+    `Carrefour : [Boutique sport de combat France](${urlOf('/' + CARREFOUR + '/')}). Source des chiffres : ${SOURCE.nom}, ${SOURCE.editeur}, ${SOURCE.licence}, mis à jour le ${SOURCE.maj} ; populations légales de l’Insee. Une page par commune de plus de ${SOURCE.seuilHabitants.toLocaleString('fr-FR')} habitants comptant au moins ${SOURCE.seuil} lieux, dont ${SOURCE.seuilFrappe} où l’on boxe. Le matériel de chaque discipline : [Matériel sport de combat](${urlOf('/materiel-sport-de-combat/')}).`,
+    ...franceEnChiffres(),
+    ...VILLES.map((v) => `- [Boutique de boxe ${v.nom}](${urlOf(villePath(v.slug))}) : ${v.lieux.length} lieux de boxe et d’arts martiaux, dont ${v.frappe} où l’on boxe et ${v.boxe} salles de boxe ; un lieu pour ${v.habitantsParLieu.toLocaleString('fr-FR')} habitants (${rang(v.rangDensite)} des ${VILLES.length} grandes villes) ; discipline la plus déclarée : ${Object.keys(v.parDiscipline)[0] || '—'}.`),
     ...REGIONS.map((r) => {
       const t = regionTotal(r);
       return `- [Boutique de boxe ${r.nom}](${urlOf(villePath(r.slug))}) : hors Paris, ${t.lieux} lieux dans ${r.groupes.length} départements, ${t.boxe} salles de boxe.`;
@@ -115,7 +116,7 @@ export function llmsTxt(products: Product[]) {
     '',
     '## Familles de produits (nombre de modèles)',
     ...fam.map((f) => `- [${f.name}](${f.url}) : ${fr(f.count)} modèles. ${f.label}`),
-    `- Pages d’entrée par discipline : [Boxe anglaise](${urlOf('/materiel-boxe/')}), [MMA](${urlOf('/materiel-mma/')}), [Arts martiaux](${urlOf('/boutique-arts-martiaux/')}), [Tout le catalogue](${urlOf('/materiel-sport-de-combat/')}).`,
+    `- Pages d’entrée par discipline : [Boxe anglaise](${urlOf('/materiel-boxe/')}), [MMA](${urlOf('/materiel-mma/')}), [Arts martiaux](${urlOf('/boutique-arts-martiaux/')}), [Matériel sport de combat, tout le catalogue](${urlOf('/materiel-sport-de-combat/')}).`,
     '',
     '## Guides d’achat (réponses courtes, sourcées)',
     ...guides.map((g) => `- [${g.title}](${urlOf('/guides/' + g.slug + '/')}) — ${g.description}`),
@@ -173,6 +174,8 @@ export function llmsFullTxt(products: Product[]) {
       ...g.faq.map((f) => `- Q : ${f.question} R : ${f.answer}`),
       '',
     ]),
+    villes(),
+    '',
     delivery(),
     '',
     agents(),

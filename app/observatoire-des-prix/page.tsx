@@ -127,19 +127,19 @@ export default async function ObservatoryPage() {
       <section className="observatory-lead" aria-label="Ce qu’il faut retenir">
         <div className="observatory-figures">
           <div>
-            <strong>{money(o.all.median)}</strong>
+            <strong>{money(o.all.median)}</strong>{' '}
             <span>prix médian, tout le catalogue</span>
           </div>
           <div>
-            <strong>{money(o.all.min)}</strong>
+            <strong>{money(o.all.min)}</strong>{' '}
             <span>le modèle le moins cher</span>
           </div>
           <div>
-            <strong>{money(o.all.max)}</strong>
+            <strong>{money(o.all.max)}</strong>{' '}
             <span>le modèle le plus cher</span>
           </div>
           <div>
-            <strong>{o.bands.find((b) => b.label === 'de 20 à 50 €')?.count ?? 0}</strong>
+            <strong>{o.bands.find((b) => b.label === 'de 20 à 50 €')?.count ?? 0}</strong>{' '}
             <span>modèles entre 20 et 50 €</span>
           </div>
         </div>
@@ -187,8 +187,8 @@ export default async function ObservatoryPage() {
       <section className="spec-section">
         <div>
           <h2>Pour aller du chiffre au modèle.</h2>
-          <ArrowLink href="/gants-de-boxe/">Tous les gants de boxe</ArrowLink>
-          <ArrowLink href="/marques/">Toutes les marques</ArrowLink>
+          <ArrowLink href="/gants-de-boxe/">Tous les gants de boxe</ArrowLink>{' '}
+          <ArrowLink href="/marques/">Toutes les marques</ArrowLink>{' '}
           <ArrowLink href="/guides/quelle-taille-gants-de-boxe/">Quelle taille de gants choisir ?</ArrowLink>
         </div>
       </section>

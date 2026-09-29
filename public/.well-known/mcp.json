@@ -37,6 +37,7 @@
     "get_brands",
     "get_weekly_selection",
     "get_price_observatory",
+    "get_combat_venues",
     "subscribe_opening_alert",
     "get_technical_attribution"
   ],

@@ -110,7 +110,8 @@ export const SUBFAMILIES: Subfamily[] = [
       { question: 'Le casque de boxe protège-t-il des commotions ?', answer: 'Il réduit les coupures et les chocs superficiels, pas le risque de commotion. Gardez les consignes d’intensité de votre cours.' },
     ],
     guide: 'choisir-protections',
-    match: (p) => n(p).startsWith('casque'),
+    // « casque », pas « casquette » (29/09 : trois casquettes s’affichaient parmi les casques de boxe)
+    match: (p) => n(p).startsWith('casque') && !n(p).startsWith('casquette'),
   },
   {
     slug: 'protege-tibias',

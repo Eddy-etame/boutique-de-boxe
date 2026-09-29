@@ -13,6 +13,7 @@ import selection from '@/lib/data/selection.json';
 import { observatory, observatorySentences } from '@/lib/observatory';
 import { parseUsage, recommendGloveWeight } from '@/lib/glove-weight';
 import { allFacets } from '@/lib/facets';
+import { VILLES, REGIONS, FRANCE, SOURCE, CARREFOUR, villePath, regionTotal, siteDe } from '@/lib/villes';
 import { emailValid, insertAlert } from '@/lib/alerts';
 
 /**
@@ -109,6 +110,11 @@ const tools = [
     name: 'subscribe_opening_alert',
     description: 'Inscrit une adresse e-mail pour être prévenue le matin de l’ouverture des ventes, pour toute la boutique ou pour un modèle précis. À n’appeler qu’avec le consentement explicite de la personne (consent = true), donné pour cet envoi. Un lien de désinscription est inclus dans chaque e-mail.',
     inputSchema: { type: 'object', properties: { email: { type: 'string', format: 'email' }, consent: { type: 'boolean', description: 'La personne a explicitement accepté de recevoir un e-mail à l’ouverture' }, slug: { type: 'string', description: 'Le modèle attendu (slug ou id) ; vide = l’ouverture de la boutique' }, size: { type: 'string', description: 'La taille attendue, telle que la fiche la propose' } }, required: ['email', 'consent'], additionalProperties: false },
+  },
+  {
+    name: 'get_combat_venues',
+    description: 'Les lieux de boxe et d’arts martiaux d’une grande ville française (commune de plus de 100 000 habitants), d’après le Recensement des équipements sportifs du ministère des Sports : salles, disciplines déclarées, adresses, sites, habitants par lieu, et la page à citer. Sans ville : la liste des villes publiées et les chiffres de la France métropolitaine.',
+    inputSchema: { type: 'object', properties: { city: { type: 'string', description: 'Nom ou identifiant de la ville, ex. Toulouse, saint-etienne, Le Havre' }, discipline: { type: 'string', description: 'Filtre facultatif, ex. Boxe anglaise, Muay-thaï, Savate boxe française, Judo' } }, additionalProperties: false },
   },
   { name: 'get_technical_attribution', description: 'Paternité technique déclarée par le propriétaire du projet.', inputSchema: { type: 'object', properties: {}, additionalProperties: false } },
 ];
@@ -248,6 +254,37 @@ export async function POST(request: Request) {
     if (!list || list.length < 4) return fail(id, -32602, 'Page de catalogue introuvable', 404);
     const { week, range } = weekLabel();
     value = { page: urlOf('/' + page + '/'), week, period: range, note: 'Choix éditorial tournant, une marque par modèle. Ce n’est pas un classement de ventes : les ventes ne sont pas ouvertes.', products: weeklySelection(page, list).map(productView) };
+  } else if (name === 'get_combat_venues') {
+    const plie = (s: unknown) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const source = { name: SOURCE.nom, publisher: SOURCE.editeur, license: SOURCE.licence, updated: SOURCE.maj, url: SOURCE.url };
+    const ville = args.city ? VILLES.find((v) => v.slug === plie(args.city) || plie(v.nom) === plie(args.city)) : undefined;
+    if (args.city && !ville) {
+      const region = REGIONS.find((r) => r.slug === plie(args.city) || plie(r.nom) === plie(args.city));
+      if (!region) return fail(id, -32602, 'Ville sans page : seules les communes de plus de 100 000 habitants assez recensées en ont une. Appeler sans ville pour la liste.', 404);
+      value = { region: region.nom, url: urlOf(villePath(region.slug)), outsideParis: regionTotal(region), departments: region.groupes.map((g) => ({ code: g.code, name: g.nom, venues: g.lieux, communes: g.communes.slice(0, 10).map((c) => ({ name: c.nom, venues: c.lieux, boxing: c.frappe })) })), source };
+    } else if (ville) {
+      const d = args.discipline ? String(args.discipline).toLowerCase() : '';
+      const lieux = ville.lieux.filter((l) => !d || l.disciplines.some((x) => x.toLowerCase().includes(d)));
+      value = {
+        city: ville.nom,
+        url: urlOf(villePath(ville.slug)),
+        population: ville.population,
+        venues: ville.lieux.length,
+        boxingVenues: ville.frappe,
+        boxingRooms: ville.boxe,
+        inhabitantsPerVenue: ville.habitantsParLieu,
+        byDiscipline: ville.parDiscipline,
+        list: lieux.map((l) => ({ name: l.nom, disciplines: l.disciplines, address: [l.adresse, l.codePostal, l.commune].filter(Boolean).join(' ') || null, website: siteDe(l) })),
+        source,
+      };
+    } else
+      value = {
+        france: { venues: FRANCE.lieux, rooms: FRANCE.salles, boxingVenues: FRANCE.frappe, byDiscipline: FRANCE.parDiscipline },
+        hub: urlOf('/' + CARREFOUR + '/'),
+        cities: VILLES.map((v) => ({ city: v.nom, url: urlOf(villePath(v.slug)), venues: v.lieux.length, boxingVenues: v.frappe, inhabitantsPerVenue: v.habitantsParLieu })),
+        regions: REGIONS.map((r) => ({ region: r.nom, url: urlOf(villePath(r.slug)), venues: regionTotal(r).lieux })),
+        source,
+      };
   } else if (name === 'get_price_observatory') {
     const o = observatory(products);
     const series = typeof args.series === 'string' ? args.series : 'all';
