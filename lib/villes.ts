@@ -89,14 +89,34 @@ export const dateSource = () =>
   new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(SOURCE.maj + 'T12:00:00Z'));
 
 /* Les clubs Boxing Center qui ont leur site — registre des sites de proximité
-   (page « Nos clubs »), adresses vérifiées. Balma n'y est plus : vendu. */
+   (page « Nos clubs »), adresses vérifiées. Balma n'y est plus : vendu.
+   Disciplines : ce que chaque club déclare sur son propre site (relevé du 29/09).
+   Bouton : la page d'essai ou de tarifs qui existe vraiment sur ce site (200 vérifié le 29/09) ;
+   chaque bouton a son texte, jamais deux fois le même sur la page. */
 export const CLUBS_BOXING_CENTER = [
-  { nom: 'Boxing Center Toulouse Minimes', lieu: 'quartier des Minimes', site: 'https://boxe-toulouse.com/', recensement: 'I315550423' },
-  { nom: 'Boxing Center Toulouse États-Unis', lieu: 'avenue des États-Unis', site: 'https://clubmma.fr/', recensement: 'I315550717' },
-  { nom: 'Boxing Center Toulouse Saint-Cyprien', lieu: 'rive gauche, Saint-Cyprien', site: 'https://club-boxe-toulouse.com/', recensement: 'I315550718' },
-  { nom: 'Boxing Center Portet-sur-Garonne', lieu: 'route d’Espagne, au sud', site: 'https://boxing-center-portet.fr/', recensement: null },
-  { nom: 'Boxing Center Ramonville', lieu: 'terminus du métro B, au sud-est', site: 'https://mmatoulouse.com/', recensement: null },
+  { nom: 'Boxing Center Toulouse Minimes', lieu: 'quartier des Minimes', adresse: '12 rue de Fenouillet, 31200 Toulouse', site: 'https://boxe-toulouse.com/', recensement: 'I315550423', disciplines: 'Boxe anglaise, boxe éducative, Boxing Lady, pieds-poings, cross training.', cta: { texte: 'Première séance aux Minimes', href: 'https://boxe-toulouse.com/premiere-seance/' } },
+  { nom: 'Boxing Center Toulouse États-Unis', lieu: 'avenue des États-Unis', adresse: '388 avenue des États-Unis, 31200 Toulouse', site: 'https://clubmma.fr/', recensement: 'I315550717', disciplines: 'MMA en cage, grappling, jiu-jitsu et boxe.', cta: { texte: 'Un essai aux États-Unis', href: 'https://clubmma.fr/contact/' } },
+  { nom: 'Boxing Center Toulouse Saint-Cyprien', lieu: 'rive gauche, à 4 minutes du métro A', adresse: '11 rue Sainte-Lucie, 31300 Toulouse', site: 'https://club-boxe-toulouse.com/', recensement: 'I315550718', disciplines: 'Boxe anglaise, thaï et K1, grappling, Hyrox, Lady Punch, école dès 3 ans.', cta: { texte: 'Un essai à Saint-Cyprien', href: 'https://club-boxe-toulouse.com/contact/' } },
+  { nom: 'Boxing Center Portet-sur-Garonne', lieu: 'route d’Espagne, au sud', adresse: "61 route d'Espagne, 31120 Portet-sur-Garonne", site: 'https://boxing-center-portet.fr/', recensement: null, disciplines: 'Boxe anglaise, kick-boxing, grappling, JJB, cours femmes et enfants.', cta: { texte: 'Première séance à Portet', href: 'https://boxing-center-portet.fr/premiere-seance/' } },
+  { nom: 'Boxing Center Ramonville', lieu: 'terminus du métro B, au sud-est', adresse: '33 rue des Ormes, 31520 Ramonville-Saint-Agne', site: 'https://mmatoulouse.com/', recensement: null, disciplines: 'Boxe anglaise, MMA, grappling, Lady Punch, enfants dès 3 ans.', cta: { texte: 'Les tarifs de Ramonville', href: 'https://mmatoulouse.com/tarifs/' } },
 ];
+/* Le Noble Art Portésien (Eddy, 29/09 : juste après Boxing Center, avant tout le reste) : association de
+   boxe anglaise qui partage le lieu de Boxing Center Portet — deux entités distinctes (son site le dit). */
+export const NOBLE_ART = {
+  nom: 'Noble Art Portésien',
+  lieu: 'au 61 route d’Espagne, avec Boxing Center Portet',
+  adresse: '61 route d’Espagne, 31120 Portet-sur-Garonne',
+  site: 'https://noble-art-portesien.com/',
+  disciplines: 'Boxe anglaise éducative, loisir, amateur et handi-boxe.',
+  cta: { texte: 'Écrire au Noble Art Portésien', href: 'https://noble-art-portesien.com/contactez-noble-art-portesien/' },
+};
+/** Sur toute page, Boxing Center d'abord, le Noble Art Portésien ensuite, puis les autres lieux (Eddy, 29/09). */
+const priorite = (l: { id: string; nom: string }) =>
+  CLUBS_BOXING_CENTER.some((c) => c.recensement === l.id) ? 0 : /noble\s*art\s*port[ée]sien/i.test(l.nom) ? 1 : 2;
+export const estBoxingCenter = (l: { id: string }) => CLUBS_BOXING_CENTER.some((c) => c.recensement === l.id);
+/** Nos clubs sous leur nom du registre, les autres lieux sous celui du recensement. */
+export const nomLieu = (l: { id: string; nom: string }) => CLUBS_BOXING_CENTER.find((c) => c.recensement === l.id)?.nom || l.nom;
+for (const v of VILLES) v.lieux.sort((x, y) => priorite(x) - priorite(y));
 /** Le site d'un lieu du recensement : celui du club quand c'est un club Boxing Center, sinon celui déclaré. */
 export const siteDe = (l: Lieu) => CLUBS_BOXING_CENTER.find((c) => c.recensement === l.id)?.site || l.site;
 
@@ -274,7 +294,7 @@ export function villeDensite(v: Ville) {
 
 /** Les deux phrases d'en-tête : autonomes, citables, vraies pour cette ville seulement. */
 export function villeChapeau(v: Ville) {
-  return `${v.nom} compte ${nb(v.salles, 'salle de combat', 'salles de combat')} — ${typesDeSalles(v)} — dans ${nb(v.lieux.length, 'lieu ouvert', 'lieux ouverts')} aux clubs ou au public, d’après le Recensement des équipements sportifs du ministère des Sports mis à jour le ${dateSource()}. Boutique de Boxe, boutique de boxe en ligne, ${livrer(v.nom)} ; les ${v.frappe} lieux où l’on boxe ouvrent la liste ci-dessous.`;
+  return `${v.nom} compte ${nb(v.salles, 'salle de combat', 'salles de combat')} — ${typesDeSalles(v)} — dans ${nb(v.lieux.length, 'lieu ouvert', 'lieux ouverts')} aux clubs ou au public, d’après le Recensement des équipements sportifs du ministère des Sports mis à jour le ${dateSource()}. Boutique de Boxe, boutique de boxe en ligne, ${livrer(v.nom)} ; ${v.lieux.some(estBoxingCenter) ? 'les clubs Boxing Center ouvrent la liste ci-dessous' : `les ${v.frappe} lieux où l’on boxe ouvrent la liste ci-dessous`}.`;
 }
 
 export function villeSections(v: Ville): SeoSection[] {
@@ -310,11 +330,22 @@ export function villeFaq(v: Ville): SeoFaq[] {
     {
       question: fine(`Combien de salles de boxe ${a(v.nom)} ?`),
       answer: lieuxBoxe.length
-        ? `${Maj(nb(v.boxe, 'salle de boxe dédiée', 'salles de boxe dédiées'))}, dans ${nb(lieuxBoxe.length, 'lieu', 'lieux')} dont ${liste(lieuxBoxe.slice(0, 3).map((l) => l.nom))}. En tout, ${v.frappe} lieux déclarent une boxe : ${repartition(deFrappe(v.parDiscipline), 5)}.`
+        ? `${Maj(nb(v.boxe, 'salle de boxe dédiée', 'salles de boxe dédiées'))}, dans ${nb(lieuxBoxe.length, 'lieu', 'lieux')} dont ${liste(lieuxBoxe.slice(0, 3).map(nomLieu))}. En tout, ${v.frappe} lieux déclarent une boxe : ${repartition(deFrappe(v.parDiscipline), 5)}.`
         : `Aucune salle n’y est classée « salle de boxe », mais ${v.frappe} lieux déclarent une boxe : ${repartition(deFrappe(v.parDiscipline), 5)}.`,
     },
   ];
-  if (anglaise.length)
+  const bc = v.lieux.filter(estBoxingCenter);
+  if (bc.length)
+    faq.unshift({
+      question: fine(`Où faire de la boxe ${a(v.nom)} ?`),
+      answer: `Dans les ${bc.length} clubs Boxing Center de la ville — Minimes, États-Unis et Saint-Cyprien —, qui proposent une séance d’essai à 10 € ; au sud de l’agglomération, Boxing Center Portet et Ramonville, et le ${NOBLE_ART.nom} à Portet. Le recensement compte ${v.lieux.length} lieux de sports de combat ${a(v.nom)}.`,
+    });
+  if (anglaise.length && bc.length)
+    faq.push({
+      question: fine(`Où faire de la boxe anglaise ${a(v.nom)} ?`),
+      answer: `Aux Minimes, aux États-Unis et à Saint-Cyprien, dans les clubs Boxing Center, et à Portet avec le ${NOBLE_ART.nom}, qui l’enseigne en loisir comme en amateur. Le recensement compte ${nb(anglaise.length, 'lieu', 'lieux')} où elle est déclarée ${a(v.nom)}.`,
+    });
+  else if (anglaise.length)
     faq.push({
       question: fine(`Où faire de la boxe anglaise ${a(v.nom)} ?`),
       answer: `Le recensement compte ${nb(anglaise.length, 'lieu', 'lieux')} où la boxe anglaise est déclarée ${a(v.nom)}${autres.length ? `, dont ${liste(autres.slice(-3).map((l) => l.nom))}` : ''}.`,

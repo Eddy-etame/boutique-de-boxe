@@ -23,12 +23,21 @@
 .ville-clubs, .ville-a-cote, .ville-kit, .ville-ailleurs { margin-top: 72px; }
 .ville-clubs h2, .ville-a-cote h2, .ville-kit h2, .ville-ailleurs h2 { font: 800 clamp(26px, 2.6vw, 40px) / 1 Barlow, Impact, sans-serif; text-transform: uppercase; text-wrap: balance; margin: 0 0 22px; }
 .ville-clubs > p { max-width: 62ch; margin: 0 0 26px; font-size: 16px; line-height: 1.55; }
-.ville-clubs ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 24px; }
+.ville-clubs ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px 24px; }
 .ville-clubs li { position: relative; display: grid; align-content: start; gap: 8px; padding-top: 20px; border-top: 1px solid var(--ink); }
 .ville-clubs li::before { content: ''; position: absolute; left: 0; top: -2px; width: 46px; height: 3px; background: var(--tape); }
-.ville-clubs li a { font: 800 clamp(20px, 1.7vw, 25px) / 1.02 Barlow, Impact, sans-serif; text-transform: uppercase; color: var(--ink); text-decoration: none; }
-.ville-clubs li a:hover, .ville-clubs li a:focus-visible { text-decoration: underline; text-underline-offset: 4px; }
+/* le titre de la carte seulement : le bouton garde son style (texte clair sur vert) */
+.ville-club-nom { font: 800 clamp(20px, 1.7vw, 25px) / 1.02 Barlow, Impact, sans-serif; text-transform: uppercase; color: var(--ink); text-decoration: none; }
+.ville-club-nom:hover, .ville-club-nom:focus-visible { text-decoration: underline; text-underline-offset: 4px; }
 .ville-clubs li span { font-size: 13px; line-height: 1.4; color: var(--muted); }
+.ville-clubs li { grid-template-rows: auto auto 1fr auto; align-content: stretch; }
+.ville-clubs li p { margin: 4px 0 10px; font-size: 15px; line-height: 1.5; }
+.ville-clubs li .button { justify-self: start; align-self: end; }
+/* la carte du Noble Art Portésien, dernière, se distingue sans quitter la famille */
+.ville-clubs li:last-child::before { background: var(--ink); }
+/* dans le tableau du recensement : les lignes Boxing Center se voient, sans répéter leur nom */
+.salles-table tr.ligne-bc { background: color-mix(in srgb, var(--tape) 34%, transparent); }
+.salles-table tr.ligne-bc th a { color: var(--ink); text-decoration: underline; text-decoration-color: currentColor; text-underline-offset: 4px; }
 .ville-a-cote .subfamily-links { padding-bottom: 0; }
 .ville-balma { max-width: 70ch; margin: 20px 0 0; font-size: 15px; line-height: 1.55; }
 .ville-balma a { color: var(--ink); font-weight: 650; text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 4px; }
@@ -43,8 +52,8 @@
 .ville-ailleurs .subfamily-links { padding-bottom: 8px; }
 
 @media (max-width: 1100px) {
-  /* cinq clubs : trois puis deux, jamais un seul sur sa rangée */
-  .ville-clubs ul { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  /* six cartes : 3 + 3 au bureau, 2 + 2 + 2 ici, une colonne au téléphone — jamais une seule sur sa rangée */
+  .ville-clubs ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 800px) {

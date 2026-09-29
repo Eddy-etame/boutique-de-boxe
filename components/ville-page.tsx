@@ -10,7 +10,7 @@ import { spaced } from '@/lib/spaced';
 import { dansLeRayon, ENFANT } from '@/lib/rayons';
 import {
   SOURCE, FRANCE, VILLES, REGIONS, CARREFOUR, villePath, dateSource, regionTotal, regionDisciplines,
-  CLUBS_BOXING_CENTER, A_COTE, BALMA, RAYON, a, de, dansDepartement, siteDe, fine,
+  CLUBS_BOXING_CENTER, NOBLE_ART, A_COTE, BALMA, RAYON, a, de, dansDepartement, siteDe, fine, estBoxingCenter,
   villeTitre, villeDescription, villeDensite, villeChapeau, villeSections, villeFaq, villeKit, parArrondissement,
   regionTitre, regionDescription, regionChapeau, regionFaq, livraison, livraisonPartout,
   CARREFOUR_TITRE, CARREFOUR_DESCRIPTION, carrefourChapeau, carrefourFaq, franceEnChiffres,
@@ -65,7 +65,17 @@ const hote = (url: string) => {
     return null;
   }
 };
-const adresseDe = (l: Lieu) => [l.adresse, [l.codePostal, l.commune].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+/** Nos clubs sous leur nom du registre (accents compris), les autres sous celui du recensement. */
+const clubDe = (l: Lieu) => CLUBS_BOXING_CENTER.find((c) => c.recensement === l.id);
+const nomDe = (l: Lieu) => clubDe(l)?.nom || l.nom;
+const plie = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+/** Les salles d'un lieu, sans celle qui ne fait que répéter son nom. */
+const sallesDe = (l: Lieu) => l.salles.map((s) => s.nom).filter((n) => plie(n) !== plie(l.nom) && plie(n) !== plie(nomDe(l)));
+/* Nos clubs : l'adresse du registre (« 12 rue de Fenouillet », pas « 12 r de fenouillet »). */
+const adresseDe = (l: Lieu) => clubDe(l)?.adresse || [l.adresse, [l.codePostal, l.commune].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+/* Le tableau garde les disciplines du recensement, pour tous : celles que nos clubs déclarent sont sur
+   leur carte, plus haut — les répéter ici mettrait deux fois le même texte sur la page. */
+const disciplinesDe = (l: Lieu) => l.disciplines.join(', ');
 const VIDE = <span className="salle-vide">—</span>;
 
 /** Un nombre stable par ville : chaque page montre d'autres modèles que sa voisine. */
@@ -162,12 +172,12 @@ function Lieux({ lieux, caption, id }: { lieux: Lieu[]; caption: string; id?: st
           {lieux.map((l) => {
             const site = siteDe(l);
             return (
-              <tr key={l.id}>
+              <tr key={l.id} className={estBoxingCenter(l) ? 'ligne-bc' : undefined}>
                 <th scope="row">
-                  {l.nom}{' '}
-                  <small>{l.salles.map((s) => s.nom).join(' · ')}</small>
+                  {clubDe(l) ? <a href={clubDe(l)!.site}>{nomDe(l)}</a> : l.nom}{' '}
+                  {sallesDe(l).length ? <small>{sallesDe(l).join(' · ')}</small> : null}
                 </th>
-                <td data-label="Disciplines">{l.disciplines.length ? l.disciplines.join(', ') : VIDE}</td>
+                <td data-label="Disciplines">{disciplinesDe(l) || VIDE}</td>
                 <td data-label="Adresse">{adresseDe(l) || VIDE}</td>
                 <td data-label="En ligne">
                   {site && hote(site) ? (
@@ -183,7 +193,9 @@ function Lieux({ lieux, caption, id }: { lieux: Lieu[]; caption: string; id?: st
           })}
         </tbody>
       </table>
-      <p className="hub-prices-note">« — » : non renseigné au recensement.</p>
+      <p className="hub-prices-note">
+        {lieux.some(estBoxingCenter) ? '« — » : non renseigné au recensement. Les clubs Boxing Center en tête de liste enseignent plus que ce que le recensement déclare : leurs disciplines sont sur leur carte, plus haut.' : '« — » : non renseigné au recensement.'}
+      </p>
     </div>
   );
 }
@@ -297,16 +309,75 @@ function itemListNode(path: string, name: string, lieux: Lieu[]) {
         position: i + 1,
         item: {
           '@type': 'Place',
-          name: l.nom,
-          ...(l.adresse || l.codePostal
-            ? { address: { '@type': 'PostalAddress', ...(l.adresse ? { streetAddress: l.adresse } : {}), ...(l.codePostal ? { postalCode: l.codePostal } : {}), ...(l.commune ? { addressLocality: l.commune } : {}), addressCountry: 'FR' } }
-            : {}),
+          name: nomDe(l),
+          ...(clubDe(l)
+            ? { address: adressePostale(clubDe(l)!.adresse) }
+            : l.adresse || l.codePostal
+              ? { address: { '@type': 'PostalAddress', ...(l.adresse ? { streetAddress: l.adresse } : {}), ...(l.codePostal ? { postalCode: l.codePostal } : {}), ...(l.commune ? { addressLocality: l.commune } : {}), addressCountry: 'FR' } }
+              : {}),
           ...(site ? { url: lien(site) } : {}),
           identifier: { '@type': 'PropertyValue', propertyID: 'Recensement des équipements sportifs', value: l.id },
         },
       };
     }),
   };
+}
+
+/** Toulouse (Eddy, 29/09) : la page amène d'abord aux clubs Boxing Center, puis au Noble Art Portésien. */
+function ClubsBoxingCenter() {
+  const clubs = [...CLUBS_BOXING_CENTER, { ...NOBLE_ART, recensement: null }];
+  return (
+    <section className="ville-clubs">
+      <h2>{fine('S’entraîner à Toulouse : les clubs Boxing Center.')}</h2>
+      <p>
+        {fine(
+          'Boutique de Boxe est la boutique de la SAS Boxing Center. Avant le premier achat, le premier cours : les trois clubs de Toulouse proposent une séance d’essai à 10 €, deux autres attendent au sud de l’agglomération, et le Noble Art Portésien enseigne la boxe anglaise à Portet.',
+        )}
+      </p>
+      <ul>
+        {clubs.map((c) => (
+          <li key={c.site}>
+            <a className="ville-club-nom" href={c.site}>
+              {c.nom}
+            </a>{' '}
+            <span>{c.lieu}</span>{' '}
+            <p>{c.disciplines}</p>{' '}
+            <ArrowLink href={c.cta.href}>{c.cta.texte}</ArrowLink>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function clubsNode(path: string) {
+  const clubs = [...CLUBS_BOXING_CENTER, NOBLE_ART];
+  return {
+    '@type': 'ItemList',
+    '@id': urlOf(path) + '#clubs',
+    name: 'Les clubs Boxing Center et le Noble Art Portésien, à Toulouse et à ses portes',
+    numberOfItems: clubs.length,
+    itemListElement: clubs.map((c, i) => {
+      return {
+        '@type': 'ListItem',
+        position: i + 1,
+        item: {
+          '@type': 'SportsActivityLocation',
+          name: c.nom,
+          url: c.site,
+          description: c.disciplines,
+          address: adressePostale(c.adresse),
+        },
+      };
+    }),
+  };
+}
+
+/** « 12 rue de Fenouillet, 31200 Toulouse » → PostalAddress. */
+function adressePostale(adresse: string) {
+  const [rue, reste] = adresse.split(/,\s*/);
+  const [, cp, ville] = /^(\d{5})\s+(.+)$/.exec(reste || '') || [];
+  return { '@type': 'PostalAddress', streetAddress: rue, ...(cp ? { postalCode: cp, addressLocality: ville } : {}), addressCountry: 'FR' };
 }
 
 const sourceNode = () => ({ '@type': 'Dataset', name: SOURCE.nom, url: SOURCE.url, license: SOURCE.licenceUrl, creator: { '@type': 'GovernmentOrganization', name: 'Ministère des Sports' }, dateModified: SOURCE.maj });
@@ -332,6 +403,7 @@ export function VillePage({ ville: v, all }: { ville: Ville; all: Product[] }) {
               isBasedOn: sourceNode(),
             },
             itemListNode(path, nomListe, v.lieux),
+            ...(toulouse ? [clubsNode(path)] : []),
             faqNode(path, faq),
           ]),
         }}
@@ -347,32 +419,7 @@ export function VillePage({ ville: v, all }: { ville: Ville; all: Product[] }) {
         </div>
       </section>
 
-      <section className="observatory-lead" aria-label={`${v.nom} en chiffres`}>
-        <Chiffres
-          items={[
-            [fr(v.lieux.length), `lieux recensés ${a(v.nom)}`],
-            [fr(v.frappe), 'où l’on boxe'],
-            [fr(v.boxe), 'salles de boxe dédiées'],
-            [fr(v.dojos), 'dojos et salles d’arts martiaux'],
-          ]}
-        />
-        <Source population />
-      </section>
-
-      {toulouse && (
-        <section className="ville-clubs">
-          <h2>Les clubs Boxing Center, à Toulouse et à ses portes.</h2>
-          <p>Boutique de Boxe est la boutique de la SAS Boxing Center, dont les clubs de boxe et de MMA sont à Toulouse et au sud de l’agglomération.</p>
-          <ul>
-            {CLUBS_BOXING_CENTER.map((c) => (
-              <li key={c.site}>
-                <a href={c.site}>{c.nom}</a>{' '}
-                <span>{c.lieu}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+      {toulouse && <ClubsBoxingCenter />}
       {toulouse && (
         <section className="ville-a-cote">
           <h2>{fine('Êtes-vous à côté de Toulouse ?')}</h2>
@@ -391,6 +438,18 @@ export function VillePage({ ville: v, all }: { ville: Ville; all: Product[] }) {
           </p>
         </section>
       )}
+
+      <section className="observatory-lead" aria-label={`${v.nom} en chiffres`}>
+        <Chiffres
+          items={[
+            [fr(v.lieux.length), `lieux recensés ${a(v.nom)}`],
+            [fr(v.frappe), 'où l’on boxe'],
+            [fr(v.boxe), 'salles de boxe dédiées'],
+            [fr(v.dojos), 'dojos et salles d’arts martiaux'],
+          ]}
+        />
+        <Source population />
+      </section>
 
       <Disciplines titre={`Les disciplines ${a(v.nom)}.`} par={v.parDiscipline} total={v.lieux.length} />
 
