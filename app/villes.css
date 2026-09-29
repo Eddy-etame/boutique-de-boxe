@@ -1,0 +1,64 @@
+/* Pages-villes (29/09) : « Boutique de boxe <ville> », Île-de-France, carrefour « Boutique sport de combat France ».
+   Les chiffres, les barres et les tableaux reprennent l’observatoire des prix ; ce fichier n’ajoute que ce qui leur manque. */
+
+.ville-page .observatory-bands li { grid-template-columns: 190px minmax(0, 1fr) 60px; }
+.ville-page .observatory-bands li span a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 4px; transition: text-decoration-color 0.25s; }
+.ville-page .observatory-bands li span a:hover, .ville-page .observatory-bands li span a:focus-visible { text-decoration-color: currentColor; }
+.ville-disciplines .hub-prices-note { margin-top: 16px; }
+
+/* Les tableaux de lieux : du texte, pas des prix — aligné à gauche, sans gras de colonne. */
+.salles-table table { min-width: 760px; }
+/* le H2 au-dessus dit déjà ce que liste le tableau : la légende reste pour les lecteurs d’écran */
+.salles-table caption { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.salles-table th, .salles-table td, .salles-table tbody th { text-align: left; vertical-align: top; }
+.salles-table td, .salles-table td:nth-child(4) { font-weight: 400; }
+.salles-table tbody th { font-weight: 650; max-width: 340px; }
+.salles-table tbody th small { display: block; margin-top: 5px; font-size: 12px; font-weight: 400; line-height: 1.4; color: var(--muted); }
+.salles-table td a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 4px; overflow-wrap: anywhere; }
+.salles-table td a:hover, .salles-table td a:focus-visible { text-decoration-color: currentColor; }
+.salle-vide { color: var(--muted); font-style: italic; }
+.keyword-hub.observatory > div + div { margin-top: 12px; }
+
+/* Les blocs propres aux villes */
+.ville-clubs, .ville-a-cote, .ville-kit, .ville-ailleurs { margin-top: 72px; }
+.ville-clubs h2, .ville-a-cote h2, .ville-kit h2, .ville-ailleurs h2 { font: 800 clamp(26px, 2.6vw, 40px) / 1 Barlow, Impact, sans-serif; text-transform: uppercase; text-wrap: balance; margin: 0 0 22px; }
+.ville-clubs > p { max-width: 62ch; margin: 0 0 26px; font-size: 16px; line-height: 1.55; }
+.ville-clubs ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 24px; }
+.ville-clubs li { position: relative; display: grid; align-content: start; gap: 8px; padding-top: 20px; border-top: 1px solid var(--ink); }
+.ville-clubs li::before { content: ''; position: absolute; left: 0; top: -2px; width: 46px; height: 3px; background: var(--tape); }
+.ville-clubs li a { font: 800 clamp(20px, 1.7vw, 25px) / 1.02 Barlow, Impact, sans-serif; text-transform: uppercase; color: var(--ink); text-decoration: none; }
+.ville-clubs li a:hover, .ville-clubs li a:focus-visible { text-decoration: underline; text-underline-offset: 4px; }
+.ville-clubs li span { font-size: 13px; line-height: 1.4; color: var(--muted); }
+.ville-a-cote .subfamily-links { padding-bottom: 0; }
+
+.ville-kit-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; align-items: end; margin-bottom: 30px; }
+.ville-kit-head h2 { margin: 0; }
+.ville-kit-head p { max-width: 62ch; margin: 0 0 12px; font-size: 16px; line-height: 1.55; }
+.ville-kit-head p:last-child { margin-bottom: 0; }
+.ville-kit-links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+.ville-ailleurs { padding-top: 44px; border-top: 1px solid var(--line); }
+.ville-ailleurs .subfamily-links { padding-bottom: 8px; }
+
+@media (max-width: 1100px) {
+  /* cinq clubs : trois puis deux, jamais un seul sur sa rangée */
+  .ville-clubs ul { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 800px) {
+  .ville-clubs, .ville-a-cote, .ville-kit, .ville-ailleurs { margin-top: 56px; }
+  .ville-kit-head { grid-template-columns: 1fr; gap: 16px; }
+  .ville-page .observatory-bands li { grid-template-columns: 128px minmax(0, 1fr) 44px; gap: 12px; font-size: 13px; }
+
+  /* Au téléphone, chaque ligne de tableau devient une fiche : rien ne défile de côté. */
+  .salles-table { overflow-x: visible; }
+  .salles-table table { min-width: 0; }
+  .salles-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .salles-table tbody tr { display: block; padding: 14px 0 16px; border-bottom: 1px solid var(--line); }
+  .salles-table tbody th, .salles-table tbody td { display: block; max-width: none; padding: 3px 0; border: 0; font-size: 14px; }
+  .salles-table tbody th { font-size: 16px; padding-bottom: 6px; }
+  .salles-table tbody td::before { content: attr(data-label) ' · '; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+}
+
+@media (max-width: 540px) {
+  .ville-clubs ul { grid-template-columns: 1fr; gap: 18px; }
+}

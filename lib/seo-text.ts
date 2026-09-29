@@ -7,6 +7,7 @@ import { shop, money, type Product } from './catalog';
 import { guides, services } from './editorial';
 import { ATTRIBUTION, EDITORIAL_DATE, familiesWithCounts, urlOf } from './seo';
 import { QUERY_MAP } from './seo-copy';
+import { VILLES, REGIONS, CARREFOUR, SOURCE, villePath, regionTotal } from './villes';
 import { SUBFAMILIES, subfamilyProducts } from './subfamilies';
 import { brandsOf } from './brands';
 import { ozFacets, brandFamilyFacets } from './facets';
@@ -67,6 +68,19 @@ function prices(products: Product[]) {
   ].join('\n');
 }
 
+/* Pages-villes (29/09) : chaque ville, ses chiffres du recensement du ministère des Sports. */
+function villes() {
+  return [
+    '## Boutique de boxe, ville par ville (recensement du ministère des Sports)',
+    `Carrefour : [Boutique sport de combat France](${urlOf('/' + CARREFOUR + '/')}). Source des chiffres : ${SOURCE.nom}, ${SOURCE.editeur}, ${SOURCE.licence}, mis à jour le ${SOURCE.maj}.`,
+    ...VILLES.map((v) => `- [Boutique de boxe ${v.nom}](${urlOf(villePath(v.slug))}) : ${v.lieux.length} lieux de boxe et d’arts martiaux, ${v.boxe} salles de boxe, ${v.frappe} lieux où l’on boxe ; discipline la plus déclarée : ${Object.keys(v.parDiscipline)[0] || '—'}.`),
+    ...REGIONS.map((r) => {
+      const t = regionTotal(r);
+      return `- [Boutique de boxe ${r.nom}](${urlOf(villePath(r.slug))}) : hors Paris, ${t.lieux} lieux dans ${r.groupes.length} départements, ${t.boxe} salles de boxe.`;
+    }),
+  ].join('\n');
+}
+
 function subfamilies(products: Product[]) {
   return ['## Sous-familles (pages dédiées)', ...SUBFAMILIES.map((s) => `- [${s.name}](${urlOf('/' + s.slug + '/')}) : ${subfamilyProducts(s, products).length} modèles. ${s.intro.split('. ')[0]}.`)].join('\n');
 }
@@ -114,6 +128,8 @@ export function llmsTxt(products: Product[]) {
     longTail(products),
     '',
     prices(products),
+    '',
+    villes(),
     '',
     delivery(),
     '',

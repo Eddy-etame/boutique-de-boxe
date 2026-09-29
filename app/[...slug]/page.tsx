@@ -38,6 +38,8 @@ import { CartPage, ReceiptPage } from '@/components/commerce-ui';
 import selection from '@/lib/data/selection.json';
 import { ogImage } from '@/lib/og';
 import { spaced } from '@/lib/spaced';
+import { villeFor, regionFor, CARREFOUR } from '@/lib/villes';
+import { VillePage, RegionPage, CarrefourPage, villeMetadata, regionMetadata, carrefourMetadata } from '@/components/ville-page';
 export const revalidate = 60;
 type Props = {
   params: Promise<{ slug: string[] }>;
@@ -49,6 +51,14 @@ export async function generateMetadata({
 }: Props): Promise<Metadata> {
   const { slug } = await params;
   const path = slug.join('/');
+  // Pages-villes et carrefour « Boutique sport de combat France » (29/09) : tout vient de lib/villes.ts.
+  if (slug.length === 1) {
+    const ville = villeFor(path);
+    if (ville) return villeMetadata(ville);
+    const region = regionFor(path);
+    if (region) return regionMetadata(region);
+    if (path === CARREFOUR) return carrefourMetadata();
+  }
   const products = await readCatalog();
   const product =
     slug[0] === 'produits'
@@ -292,6 +302,13 @@ export default async function Page({ params, searchParams }: Props) {
       </main>
     );
   const products = await readCatalog();
+  if (slug.length === 1) {
+    const ville = villeFor(path);
+    if (ville) return <VillePage ville={ville} all={products} />;
+    const region = regionFor(path);
+    if (region) return <RegionPage region={region} all={products} />;
+    if (path === CARREFOUR) return <CarrefourPage all={products} />;
+  }
   if (slug[0] === 'produits' && slug.length === 2) {
     const p = products.find((p) => p.slug === slug[1]);
     if (!p) notFound();

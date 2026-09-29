@@ -11,6 +11,7 @@ import selection from './data/selection.json';
 import { brandFor, brandsOf } from './brands';
 import { facetFor } from './facets';
 import { observatory } from './observatory';
+import { villeFor, regionFor, regionTotal, VILLES, REGIONS, CARREFOUR } from './villes';
 
 export const OG_WIDTH = 1200;
 export const OG_HEIGHT = 630;
@@ -188,6 +189,43 @@ export function cardFor(kind: CardKind, key: string, products: Product[]): Card 
         photos: photosOf(facet.products.filter((p) => p.cut?.mode === 'pose')),
         photoLabel: facet.kind === 'oz' ? 'UNE PAIRE EN ' + facet.name.replace('Gants de boxe ', '').toUpperCase() : 'UN MODÈLE ' + facet.parent.name.toUpperCase(),
         path: facet.path,
+      };
+    }
+    // Pages-villes (29/09) : chaque ville sa carte — ses chiffres, et une autre paire de gants que sa voisine.
+    const ville = villeFor(key);
+    const region = ville ? undefined : regionFor(key);
+    if (ville || region) {
+      const nom = (ville || region)!.nom;
+      const t = ville ? { lieux: ville.lieux.length, boxe: ville.boxe, frappe: ville.frappe } : regionTotal(region!);
+      const gants = products.filter((p) => p.category === 'gants-de-boxe' && p.cut?.mode === 'pose');
+      const i = [...key].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7) % Math.max(gants.length, 1);
+      return {
+        // le nom de la ville ne se coupe jamais (« Le Havre », « Saint-Étienne »)
+        title: 'Boutique de boxe ' + nom.replace(/ /g, ' ') + '.',
+        eyebrow: 'BOUTIQUE DE BOXE · ' + (ville ? ville.departement : 'HORS PARIS').toUpperCase(),
+        facts: [
+          { label: 'LIEUX DE BOXE ET D’ARTS MARTIAUX', value: fr(t.lieux) },
+          { label: 'OÙ L’ON BOXE', value: fr(t.frappe) },
+          { label: 'SALLES DE BOXE', value: fr(t.boxe) },
+        ],
+        photos: gants[i]?.images[0] ? [gants[i].images[0].src] : [],
+        photoLabel: 'LE PREMIER SAC ' + (ville ? (ville.nom.startsWith('Le ') ? 'AU ' + ville.nom.slice(3) : 'À ' + ville.nom) : 'EN ' + nom).toUpperCase(),
+        path: '/' + key + '/',
+      };
+    }
+    if (key === CARREFOUR) {
+      const lieux = VILLES.reduce((n, v) => n + v.lieux.length, 0) + REGIONS.reduce((n, r) => n + regionTotal(r).lieux, 0);
+      return {
+        title: 'Boutique sport de combat France.',
+        eyebrow: 'BOUTIQUE DE BOXE · VILLE PAR VILLE',
+        facts: [
+          { label: 'VILLES ET RÉGIONS', value: fr(VILLES.length + REGIONS.length) },
+          { label: 'LIEUX RECENSÉS', value: fr(lieux) },
+          { label: 'LIVRAISON', value: 'Toute la France' },
+        ],
+        photos: photosOf(products.filter((p) => p.category === 'protections-boxe' && p.cut?.mode === 'pose')),
+        photoLabel: 'UN MODÈLE DU CATALOGUE',
+        path: '/' + CARREFOUR + '/',
       };
     }
     if (key === 'observatoire-des-prix') {

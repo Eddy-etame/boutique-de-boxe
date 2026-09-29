@@ -62,6 +62,9 @@ export const shop = {
   siret: '821 817 889 00016',
   address: '12 rue de Fenouillet, 31200 Toulouse',
   director: 'Sébastien DUTILH',
+  // Un seul interrupteur pour le jour J (29/09) : les pages-villes et le carrefour passent
+  // du futur (« livrera dès l’ouverture des ventes ») au présent quand il vaut true.
+  ventesOuvertes: false,
 };
 export const variantPrice = (p:Product, label:string) => p.variants?.find(v=>v.label===label)?.price ?? p.price;
 export const money = (cents: number) =>

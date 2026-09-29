@@ -12,6 +12,7 @@ import './motion.css';
 import './scale.css';
 import './wayfinding.css';
 import './hero.css';
+import './villes.css';
 import type { Viewport } from 'next';
 
 export const metadata: Metadata = {

@@ -6,8 +6,11 @@ import { EDITORIAL_DATE, urlOf } from '@/lib/seo';
 import { SUBFAMILIES, subfamilyProducts } from '@/lib/subfamilies';
 import { brandsOf } from '@/lib/brands';
 import { allFacets } from '@/lib/facets';
+import { VILLES, REGIONS, CARREFOUR, SOURCE, villePath } from '@/lib/villes';
 const SUBFAMILY_PATHS = new Set(SUBFAMILIES.map((s) => '/' + s.slug + '/'));
 const TOOL_PATHS = new Set(['/observatoire-des-prix/', '/outils/poids-de-gants/']);
+// Pages-villes et carrefour (29/09) : datées par le recensement du ministère des Sports qui les nourrit.
+const VILLE_PATHS = new Set(['/' + CARREFOUR + '/', ...[...VILLES, ...REGIONS].map((v) => villePath(v.slug))]);
 export const revalidate = 60;
 
 const productDate = (product: { updatedAt?: string; dateAdded: string }) =>
@@ -58,6 +61,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     dates.set('/marques/' + brand.slug + '/', collectionDate(brand.products));
   for (const facet of facets)
     dates.set(facet.path, collectionDate(facet.products));
+  for (const path of VILLE_PATHS) dates.set(path, SOURCE.maj);
 
   return [
     '/',
@@ -68,6 +72,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...facets.map((f) => f.path),
     '/observatoire-des-prix/',
     '/outils/poids-de-gants/',
+    ...VILLE_PATHS,
     ...products.map((p) => '/produits/' + p.slug + '/'),
     '/nouveautes/',
     '/guides/',
@@ -76,12 +81,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/contact/',
   ].map((path) => {
     const product = path.startsWith('/produits/') ? products.find((p) => '/produits/' + p.slug + '/' === path) : undefined;
-    const kind = path === '/' ? 'home' : product ? 'product' : SUBFAMILY_PATHS.has(path) || path.startsWith('/marques/') || /^\/gants-de-boxe-[a-z0-9-]+\/$/.test(path) ? 'subfamily' : TOOL_PATHS.has(path) ? 'index' : path.startsWith('/guides/') ? 'guide' : categoryFor(path.replace(/^\/|\/$/g, '')) ? 'category' : path === '/nouveautes/' || path === '/guides/' ? 'index' : 'service';
+    const kind = path === '/' ? 'home' : product ? 'product' : VILLE_PATHS.has(path) ? 'ville' : SUBFAMILY_PATHS.has(path) || path.startsWith('/marques/') || /^\/gants-de-boxe-[a-z0-9-]+\/$/.test(path) ? 'subfamily' : TOOL_PATHS.has(path) ? 'index' : path.startsWith('/guides/') ? 'guide' : categoryFor(path.replace(/^\/|\/$/g, '')) ? 'category' : path === '/nouveautes/' || path === '/guides/' ? 'index' : 'service';
     return {
       url: shop.origin + path,
       ...(dates.has(path) ? { lastModified: dates.get(path) } : kind === 'guide' || kind === 'home' || kind === 'index' || kind === 'subfamily' ? { lastModified: EDITORIAL_DATE } : {}),
-      changeFrequency: ({ home: 'daily', category: 'daily', index: 'daily', subfamily: 'weekly', product: 'weekly', guide: 'monthly', service: 'yearly' } as const)[kind],
-      priority: { home: 1, category: 0.9, index: 0.8, subfamily: 0.8, guide: 0.8, product: 0.7, service: 0.4 }[kind],
+      changeFrequency: ({ home: 'daily', category: 'daily', index: 'daily', subfamily: 'weekly', ville: 'monthly', product: 'weekly', guide: 'monthly', service: 'yearly' } as const)[kind],
+      priority: { home: 1, category: 0.9, index: 0.8, subfamily: 0.8, ville: 0.8, guide: 0.8, product: 0.7, service: 0.4 }[kind],
       // Plan d’images : uniquement les photos sur l’hôte canonique, pour Google Images.
       ...(product
         ? { images: ownedImages(product.images.map((image) => image.src)) }
