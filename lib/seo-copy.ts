@@ -52,7 +52,7 @@ export const SEO_COPY: Record<string, SeoCopy> = {
       {
         h2: 'Prix prévus, livraison dans toute la France',
         paragraphs: [
-          'La vente n’est pas encore ouverte. Chaque fiche affiche un prix prévu à l’ouverture, toutes taxes comprises, hors livraison. Rien n’est débité, rien n’est réservé. Vous pouvez essayer la commande jusqu’au reçu, sans payer, et laisser votre e-mail pour être prévenu le jour J.',
+          'La vente n’est pas encore ouverte. Chaque fiche affiche un prix prévu à l’ouverture, toutes taxes comprises, hors livraison. Rien n’est débité, rien n’est réservé. Vous pouvez remplir votre panier, enregistrer vos choix et être prévenu le jour J.',
           'Les conditions de livraison prévues : point relais 6,90 €, offert dès 69 € d’achats ; domicile 8,90 € ; matériel lourd sur tarif. Expédition en France uniquement.',
         ],
       },
@@ -66,7 +66,7 @@ export const SEO_COPY: Record<string, SeoCopy> = {
     faq: [
       { question: 'Matos boxe : que trouve-t-on ici ?', answer: 'Tout le matos boxe d’une séance : bandes, gants du 4 au 20 oz, protège-dents, casque, sac de frappe, corde, short et chaussures. Le matos boxe, livré chez vous dans toute la France.' },
       { question: 'Boutique de Boxe est-elle liée à un club ?', answer: 'Non. Boutique de Boxe est une boutique en ligne de matériel de boxe et de sports de combat. Elle ne propose ni cours ni salle. L’éditeur est la société SAS BOXING CENTER, à Toulouse.' },
-      { question: 'Peut-on déjà commander ?', answer: 'Pas encore. Les prix affichés sont des prix prévus à l’ouverture des ventes. Vous pouvez essayer la commande sans payer et laisser votre e-mail pour être prévenu à l’ouverture.' },
+      { question: 'Peut-on déjà commander ?', answer: 'Pas encore. Les prix affichés sont des prix prévus à l’ouverture des ventes. Vous pouvez enregistrer vos choix depuis le panier et être prévenu à l’ouverture.' },
       { question: 'Livrez-vous partout en France ?', answer: 'Oui, à l’ouverture des ventes : point relais 6,90 €, offert dès 69 € d’achats, domicile 8,90 €. Le matériel lourd a un tarif spécifique. Pas d’expédition hors de France pour l’instant.' },
     ],
   },
@@ -572,7 +572,7 @@ export const QUERY_MAP: { query: string; path: string; answer: string }[] = [
 export const HOME_FAQ: SeoFaq[] = [
   { question: 'Qu’est-ce que Boutique de Boxe ?', answer: 'Boutique de Boxe est une boutique en ligne indépendante de matériel de boxe, de MMA et de sports de combat : plus de 1 000 modèles de gants, bandes, protections, textile, sacs de frappe et chaussures, avec leurs tailles réelles et leurs prix prévus, livrés dans toute la France.' },
   { question: 'Quand ouvrent les ventes ?', answer: 'La date n’est pas encore publiée. Laissez votre e-mail sur la page d’ouverture ou sur une fiche : nous vous écrivons le jour J, sans autre message.' },
-  { question: 'Peut-on déjà commander ?', answer: 'Vous pouvez essayer la commande de bout en bout, sans payer : panier, coordonnées, livraison et reçu en PDF. Rien n’est débité ni réservé.' },
+  { question: 'Peut-on déjà commander ?', answer: 'Pas encore : les ventes ouvrent bientôt. Vous pouvez déjà remplir votre panier et enregistrer vos choix avec votre prénom et votre e-mail ; rien n’est débité ni réservé, et vous êtes prévenu le jour de l’ouverture.' },
   { question: 'Livrez-vous dans toute la France ?', answer: 'Oui, France métropolitaine, à domicile ou en point relais : 6,90 € en relais, offerts dès 69 € d’achats, 8,90 € à domicile, tarif spécifique pour le matériel lourd.' },
   { question: 'Comment choisir la taille de mes gants ?', answer: 'Par l’usage : 10 oz pour le sac, 12 oz pour la technique, 14 à 16 oz avec un partenaire. Les onces sont un poids, pas une taille de main ; le guide des tailles détaille gants, textile, chaussures et enfants.' },
   { question: 'Quelles marques proposez-vous ?', answer: 'Metal Boxe, Elion, Fairtex, Twins, Cleto Reyes, Adidas, Everlast, Venum, Manto, Athena Fightwear, Century, Shock Doctor, Under Armour : le matériel des salles, avec ses références fabricant.' },

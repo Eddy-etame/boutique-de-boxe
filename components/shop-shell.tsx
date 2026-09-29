@@ -45,7 +45,7 @@ export function Header() {
     <>
       <div className="launch-strip">
         <span className="status-dot" />
-        OUVERTURE DES VENTES BIENTÔT · COMMANDE D’ESSAI SANS PAIEMENT{' '}
+        OUVERTURE DES VENTES BIENTÔT{' '}
         <a href="/offres-de-lancement/">
           En savoir plus <ArrowUpRight size={13} />
         </a>

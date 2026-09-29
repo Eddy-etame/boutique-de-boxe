@@ -126,6 +126,7 @@ summary:focus-visible {
   letter-spacing: 0.1em;
 }
 .launch-strip a {
+  white-space: nowrap;
   margin-left: 32px;
   display: flex;
   align-items: center;
@@ -3708,3 +3709,25 @@ html[data-consent-open] .sticky-buy { transform: translateY(110%); }
 .brand-tile-families a:hover { color: var(--ink); }
 /* Les guides voisins. */
 .guide-neighbours { margin-top: 40px; }
+
+/* Connexion à l'administration (29/09) : le libellé au-dessus du champ, jamais collé contre lui. */
+.atelier-signin { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px 12px; align-items: end; width: 100%; max-width: 560px; margin: 26px auto 0; text-align: left; }
+.atelier-signin label { grid-column: 1 / -1; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.atelier-signin input { min-width: 0; height: 52px; padding: 0 14px; border: 1px solid var(--ink); background: #fff; font: inherit; font-size: 16px; }
+.atelier-signin input:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.atelier-signin .button { height: 52px; white-space: nowrap; }
+@media (max-width: 540px) {
+  .atelier-signin { grid-template-columns: 1fr; }
+  .atelier-signin .button { width: 100%; justify-content: center; }
+}
+/* Administration : les inscriptions repérées comme robots (29/09). */
+.atelier-suspect { display: inline-block; margin-left: 8px; padding: 1px 6px; background: #f3d9c9; color: #7a2e0e; font-size: 11px; font-style: normal; font-weight: 700; }
+.atelier-suspects { margin: 16px 0; padding: 12px 16px; background: #fbeee6; border-left: 3px solid #b8471b; font-size: 14px; }
+/* Administration : équipe et accès (29/09). */
+.team-admin h2 { margin: 32px 0 12px; font-size: 18px; }
+.team-link { display: grid; gap: 6px; margin: 16px 0; padding: 14px 16px; background: color-mix(in srgb, var(--tape) 34%, transparent); }
+.team-link input { width: 100%; padding: 10px 12px; border: 1px solid var(--ink); background: #fff; font: 13px/1.4 ui-monospace, monospace; }
+.team-add { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; align-items: end; max-width: 560px; margin-top: 18px; }
+.team-add label { grid-column: 1 / -1; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.team-add input { height: 48px; padding: 0 12px; border: 1px solid var(--ink); background: #fff; font: inherit; }
+@media (max-width: 540px) { .team-add { grid-template-columns: 1fr; } }

@@ -19,7 +19,7 @@ function status() {
   return [
     `## État du service (${EDITORIAL_DATE})`,
     '- Les ventes ne sont pas encore ouvertes. Chaque modèle affiche « En vente bientôt » et son prix prévu à l’ouverture. Ce prix est une information, pas une offre.',
-    '- Le visiteur peut essayer la commande jusqu’au reçu, sans payer : aucun montant n’est débité, rien n’est expédié, rien n’est réservé.',
+    '- Le visiteur peut remplir son panier et enregistrer ses choix (prénom, e-mail) pour être prévenu à l’ouverture : aucun paiement, rien n’est expédié, rien n’est réservé.',
     '- Un visiteur peut laisser son e-mail pour être prévenu à l’ouverture des ventes. Cela ne réserve aucun modèle.',
     `- Éditeur : ${shop.entity}, Toulouse. Contact : ${shop.email}, ${shop.phone}.`,
     '- Boutique de Boxe est une boutique en ligne indépendante. Ce n’est pas un club, ni une salle de sport.',

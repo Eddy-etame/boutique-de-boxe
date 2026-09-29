@@ -6,6 +6,7 @@ import imported from './data/imported-products.json';
 // Les fichiers gardent le prix public relevé ; la règle de prix du propriétaire s’applique à la lecture (lib/pricing.ts).
 const products = ([...original, ...imported] as unknown as Product[]).map(withOurPrice);
 import { getSessionUser, DEV_OWNER_EMAIL } from './auth';
+import { emailSession, estMembre } from './team';
 import { d1Compat, type D1Database } from '@/db';
 import { withCutout } from './cutouts';
 import { withOurPrice } from './pricing';
@@ -20,16 +21,21 @@ export async function runtime() {
 export async function db(): Promise<D1Database> {
   return d1Compat();
 }
-export async function isAdmin() {
+/**
+ * L'adresse de l'administrateur de cette requête, ou null (29/09) : d'abord une session d'équipe
+ * (lien copié depuis l'administration, lib/team.ts), sinon une session Supabase (lien magique)
+ * dont l'adresse est celle du propriétaire (ADMIN_EMAIL) ou d'un membre ajouté par lui.
+ */
+export async function adminEmail(): Promise<string | null> {
+  const equipe = await emailSession();
+  if (equipe) return equipe;
   const user = await getSessionUser();
-  if (!user) return false;
-  const env = await runtime();
-  return Boolean(
-    (env.ADMIN_EMAIL &&
-      user.email.toLowerCase() === env.ADMIN_EMAIL.toLowerCase()) ||
-    (process.env.NODE_ENV === 'development' &&
-      user.email === DEV_OWNER_EMAIL),
-  );
+  if (!user) return null;
+  if (process.env.NODE_ENV === 'development' && user.email === DEV_OWNER_EMAIL) return user.email;
+  return (await estMembre(user.email)) ? user.email.toLowerCase() : null;
+}
+export async function isAdmin() {
+  return Boolean(await adminEmail());
 }
 /** Une seule lecture par requête : les métadonnées et la page partagent le résultat. */
 async function readCatalogFromDb(): Promise<Product[]> {

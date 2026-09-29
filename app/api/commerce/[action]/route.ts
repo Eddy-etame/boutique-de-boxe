@@ -4,9 +4,10 @@ import { clientsReport, clientsCsv,
 import { receiptPdf } from '@/lib/receipt-pdf';
 import { boxtalConfigured, boxtalMapToken, parseRelay, validateRelayPoint } from '@/lib/boxtal';
 import { newsletterStatus, saveCampaign, sendBatch, sendTest } from '@/lib/newsletter';
-import { getSessionUser } from '@/lib/auth';
-import { db, isAdmin, readCatalog } from '@/lib/database';
+import { db, isAdmin, readCatalog, adminEmail } from '@/lib/database';
 import { after } from 'next/server';
+import { shop } from '@/lib/catalog';
+import { emailValid, ensureAlertContact, ensureChoices, insertAlert, normalisePhone, CONSENT_VERSION } from '@/lib/alerts';
 import {
   cartToken,
   resolveCart,
@@ -239,7 +240,7 @@ export async function POST(request: Request, context: Context) {
     if (action === 'admin-newsletter-test') {
       if (!uuid(data.id)) return reply({ error: 'Brouillon invalide.' }, 400);
       // L'essai part à l'administrateur connecté, jamais à une adresse saisie : rien à détourner.
-      const to = (await getSessionUser())?.email || process.env.ADMIN_EMAIL || '';
+      const to = (await adminEmail()) || process.env.ADMIN_EMAIL || '';
       if (!to) return reply({ error: 'Aucune adresse d’administrateur connue.' }, 400);
       try {
         const r = await sendTest(data.id, to);
@@ -362,8 +363,59 @@ export async function POST(request: Request, context: Context) {
       // Le panier vient d’être écrit : on le recompose en mémoire, sans relire la base.
       return reply(buildCart(items, products, cart.revision + 1), 200, cookie);
     }
+    // « Enregistrer mes choix » (Eddy, 29/09) : le panier lu côté serveur devient un contact à prévenir.
+    if (action === 'choices') {
+      const firstName = typeof data.firstName === 'string' ? data.firstName.trim() : '';
+      const email = typeof data.email === 'string' ? data.email.trim().toLowerCase() : '';
+      const rawPhone = typeof data.phone === 'string' ? data.phone.trim() : '';
+      const phone = rawPhone ? normalisePhone(rawPhone) : '';
+      const postcode = typeof data.postcode === 'string' ? data.postcode.trim() : '';
+      if (
+        !existingToken ||
+        firstName.length < 2 ||
+        firstName.length > 60 ||
+        !emailValid(email) ||
+        data.consent !== true ||
+        (rawPhone !== '' && !phone) ||
+        (postcode !== '' && !/^\d{5}$/.test(postcode))
+      )
+        return reply({ error: 'Vérifiez votre prénom, votre e-mail, le mobile et votre accord.' }, 400);
+      const cart = await resolveCart(existingToken);
+      if (!cart.items.length) return reply({ error: 'Votre panier est vide.' }, 400);
+      await Promise.all([ensureChoices(), ensureAlertContact()]);
+      const sms = phone && data.smsConsent === true ? 1 : 0;
+      await database
+        .prepare('INSERT INTO choices (id,email,first_name,phone,sms_consent,postcode,items,subtotal,created_at,cart_id,consent_version) VALUES (?,?,?,?,?,?,?,?,?,?,?)')
+        .bind(
+          crypto.randomUUID(),
+          email,
+          firstName,
+          phone,
+          sms,
+          postcode,
+          JSON.stringify(cart.items.map(({ productId, variant, quantity, name, price }) => ({ productId, variant, quantity, name, price }))),
+          cart.subtotal,
+          new Date().toISOString(),
+          existingToken,
+          CONSENT_VERSION,
+        )
+        .run();
+      // Chaque modèle entre aussi dans les inscriptions à l’ouverture : la lettre d’ouverture les atteint.
+      for (const line of cart.items) {
+        await insertAlert({ email, productId: line.productId, variant: line.variant, source: 'panier' });
+        if (sms)
+          await database
+            .prepare("UPDATE alerts SET phone=?, sms_consent=1 WHERE email=? AND product_id=? AND variant=? AND phone=''")
+            .bind(phone, email, line.productId, line.variant)
+            .run();
+      }
+      return reply({ ok: true }, 201);
+    }
     if (action !== 'checkout')
       return reply({ error: 'Ressource introuvable.' }, 404);
+    // Ventes fermées : aucun paiement, pas même simulé (Eddy, 29/09). Le même interrupteur rouvre ce parcours le jour J.
+    if (!shop.ventesOuvertes)
+      return reply({ error: 'Les ventes ne sont pas encore ouvertes : enregistrez vos choix, on vous prévient à l’ouverture.' }, 403);
     if (
       !existingToken ||
       !uuid(data.idempotencyKey) ||

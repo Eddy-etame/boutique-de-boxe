@@ -114,7 +114,7 @@ export async function generateMetadata({
     ],
     panier: [
       'Votre panier',
-      'Essayez la commande jusqu’au reçu, sans payer.',
+      'Remplissez votre panier et enregistrez vos choix, sans payer.',
     ],
     recu: [
       'Votre reçu de simulation',
@@ -283,7 +283,7 @@ export default async function Page({ params, searchParams }: Props) {
             <p>
               Les ventes ouvrent bientôt.
               <br />
-              Vous pouvez déjà essayer la commande, sans payer.
+              Vous pouvez déjà enregistrer vos choix depuis le panier.
             </p>
             <div className="contact-mark" aria-hidden="true">
               BOUTIQUE

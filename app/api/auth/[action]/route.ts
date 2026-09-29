@@ -4,11 +4,27 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import {
   DEV_OWNER_COOKIE,
-  isOwnerEmail,
   safeRelativePath,
   supabaseConfigured,
   supabaseServer,
 } from '@/lib/auth';
+import { adminEmail } from '@/lib/database';
+import {
+  COOKIE_LOCAL,
+  COOKIE_SECURE,
+  ajouterMembre,
+  cookieSession,
+  creerLien,
+  estMembre,
+  estProprietaire,
+  fermerSession,
+  fermerSessionParId,
+  membres,
+  ownerEmail,
+  retirerMembre,
+  sessions,
+  utiliserLien,
+} from '@/lib/team';
 
 export const dynamic = 'force-dynamic';
 
@@ -69,7 +85,7 @@ export async function POST(request: Request, { params }: Params) {
       console.error('auth rate limit', (error as { code?: string }).code || (error as Error).name);
       return page('Service indisponible', 'Réessayez dans quelques minutes.', 503);
     }
-    if (!isOwnerEmail(email) || !supabaseConfigured()) {
+    if (!supabaseConfigured() || !(await estMembre(email))) {
       await new Promise((resolve) => setTimeout(resolve, 700 + Math.random() * 800));
       return page('Lien demandé', generic);
     }
@@ -87,9 +103,62 @@ export async function POST(request: Request, { params }: Params) {
     if (error) console.error('Magic link failed', error.name, error.message);
     return page('Lien demandé', generic);
   }
+  // Le lien copié depuis l'administration : consommé au clic, jamais à l'ouverture de la page.
+  if (action === 'entrer') {
+    if (!sameOrigin(request))
+      return page('Requête refusée', 'Origine non autorisée.', 403);
+    const form = await request.formData().catch(() => null);
+    const ouvert = await utiliserLien(form?.get('t'), request.headers.get('user-agent') || '');
+    if (!ouvert)
+      return page('Lien invalide', 'Ce lien de connexion a déjà servi ou a expiré (24 heures). Demandez-en un nouveau.', 400);
+    const https = new URL(request.url).protocol === 'https:';
+    const c = cookieSession(ouvert.session, https);
+    const response = NextResponse.redirect(new URL('/admin/', request.url), 303);
+    response.cookies.set(c.name, c.value, c.options);
+    return response;
+  }
+  // Gestion de l'équipe : le propriétaire ajoute, retire, déconnecte ; chacun peut s'ouvrir un autre appareil.
+  if (action === 'equipe') {
+    if (!sameOrigin(request) || !request.headers.get('content-type')?.includes('application/json'))
+      return Response.json({ error: 'Origine ou format invalide.' }, { status: 400 });
+    const moi = await adminEmail();
+    if (!moi) return Response.json({ error: 'Accès réservé.' }, { status: 403 });
+    const data = (await request.json().catch(() => null)) as { op?: string; email?: string; id?: string } | null;
+    const email = typeof data?.email === 'string' ? data.email.trim().toLowerCase() : '';
+    const proprio = estProprietaire(moi);
+    const valide = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && email.length <= 254;
+    if (data?.op === 'lien') {
+      // Le propriétaire fabrique un lien pour tout membre ; un membre, pour lui-même seulement.
+      const cible = email || moi;
+      if (!proprio && cible !== moi)
+        return Response.json({ error: 'Un membre ne crée de lien que pour ses propres appareils.' }, { status: 403 });
+      if (!(await estMembre(cible)))
+        return Response.json({ error: 'Cette adresse n’a pas accès à l’administration.' }, { status: 403 });
+      return Response.json(await creerLien(cible, moi, new URL(request.url).origin), { headers: { 'Cache-Control': 'no-store' } });
+    }
+    if (!proprio) return Response.json({ error: 'Réservé au propriétaire.' }, { status: 403 });
+    if (data?.op === 'ajouter') {
+      if (!valide) return Response.json({ error: 'Adresse e-mail invalide.' }, { status: 400 });
+      await ajouterMembre(email, moi);
+      return Response.json({ ok: true });
+    }
+    if (data?.op === 'retirer') {
+      if (!valide || estProprietaire(email)) return Response.json({ error: 'Cette adresse ne peut pas être retirée.' }, { status: 400 });
+      await retirerMembre(email);
+      return Response.json({ ok: true });
+    }
+    if (data?.op === 'fermer' && typeof data.id === 'string') {
+      await fermerSessionParId(data.id);
+      return Response.json({ ok: true });
+    }
+    return Response.json({ error: 'Opération inconnue.' }, { status: 400 });
+  }
   if (action === 'signout') {
     if (!sameOrigin(request))
       return page('Requête refusée', 'Origine non autorisée.', 403);
+    await fermerSession().catch(() => undefined);
+    (await cookies()).delete(COOKIE_SECURE);
+    (await cookies()).delete(COOKIE_LOCAL);
     if (supabaseConfigured()) await (await supabaseServer()).auth.signOut();
     if (process.env.NODE_ENV === 'development')
       (await cookies()).delete(DEV_OWNER_COOKIE);
@@ -111,6 +180,29 @@ export async function GET(request: Request, { params }: Params) {
     if (error)
       return page('Lien invalide', 'Ce lien de connexion est expiré ou a déjà servi. Demandez-en un nouveau.', 400);
     return NextResponse.redirect(new URL(next, request.url), 303);
+  }
+  // Page du lien copié : un bouton, rien d'autre. L'aperçu d'une messagerie ne consomme donc rien.
+  if (action === 'entrer') {
+    const t = url.searchParams.get('t') || '';
+    if (!/^[A-Za-z0-9_-]{43}$/.test(t)) return page('Lien invalide', 'Ce lien de connexion est incomplet.', 400);
+    const html = `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><meta name="referrer" content="no-referrer"><title>Ouvrir l’administration | Boutique de Boxe</title><style>body{font-family:system-ui,sans-serif;max-width:32rem;margin:4rem auto;padding:0 1.5rem;color:#111;line-height:1.5}button{font:inherit;font-weight:700;padding:.9rem 1.4rem;background:#20241f;color:#fff;border:0;cursor:pointer}</style></head><body><h1>Ouvrir l’administration</h1><p>Ce lien ouvre l’administration de Boutique de Boxe sur cet appareil, pour 30 jours. Il ne sert qu’une fois.</p><form method="post" action="/api/auth/entrer"><input type="hidden" name="t" value="${t}"><button type="submit">Ouvrir sur cet appareil</button></form></body></html>`;
+    return new NextResponse(html, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer', 'X-Robots-Tag': 'noindex' } });
+  }
+  if (action === 'equipe') {
+    const moi = await adminEmail();
+    if (!moi) return Response.json({ error: 'Accès réservé.' }, { status: 403 });
+    const proprio = estProprietaire(moi);
+    const toutes = await sessions();
+    return Response.json(
+      {
+        moi,
+        proprietaire: proprio,
+        proprietaireEmail: ownerEmail(),
+        membres: await membres(),
+        sessions: proprio ? toutes : toutes.filter((s) => s.email === moi),
+      },
+      { headers: { 'Cache-Control': 'no-store' } },
+    );
   }
   if (action === 'dev-login' && process.env.NODE_ENV === 'development') {
     const response = NextResponse.redirect(new URL('/admin/', request.url), 303);

@@ -215,8 +215,8 @@ export default function Home({ items }: { items: Product[] }) {
             le jour J.
           </h2>
           <p>
-            Vous pouvez déjà essayer la commande, sans payer. Laissez votre
-            e-mail : nous vous écrivons le jour de l’ouverture.
+            Vous pouvez déjà remplir votre panier et enregistrer vos choix. Ou
+            laissez simplement votre e-mail : nous vous écrivons le jour de l’ouverture.
           </p>
         </div>
         <AlertForm />
@@ -226,7 +226,7 @@ export default function Home({ items }: { items: Product[] }) {
         <div className="home-faq-intro">
           <span className="eyebrow">AVANT DE COMMANDER</span>
           <p>
-            Ouverture des ventes, commande d’essai, livraison, tailles, marques
+            Ouverture des ventes, panier, livraison, tailles, marques
             : les réponses courtes, sans chercher.
           </p>
           <a className="inline-link" href="/faq/">

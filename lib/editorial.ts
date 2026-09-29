@@ -11,21 +11,21 @@ export type Service = {
 };
 export const services: Record<string, Service> = {
   faq: {
-    title: 'Questions fréquentes : essai, livraison, tailles, retours',
-    description: 'Les réponses de Boutique de Boxe : ouverture des ventes, prix prévus, commande d’essai sans paiement, livraison dans toute la France, tailles et onces, retours, paiement sécurisé, alerte par e-mail, données.',
+    title: 'Questions fréquentes : ouverture, livraison, tailles, retours',
+    description: 'Les réponses de Boutique de Boxe : ouverture des ventes, prix prévus, panier à enregistrer sans paiement, livraison dans toute la France, tailles et onces, retours, paiement sécurisé, alerte par e-mail, données.',
     eyebrow: 'QUESTIONS FRÉQUENTES',
     sections: [
       {
         title: 'Tout ce qu’on nous demande, avant même l’ouverture.',
         paragraphs: [
-          'Boutique de Boxe prépare son ouverture : le catalogue est complet, avec les tailles réelles et les prix prévus, et la commande peut déjà être essayée de bout en bout, sans paiement. Voici les réponses aux questions que vous nous posez le plus, par e-mail comme en salle.',
+          'Boutique de Boxe prépare son ouverture : le catalogue est complet, avec les tailles réelles et les prix prévus, et le panier peut déjà être rempli et enregistré, sans paiement. Voici les réponses aux questions que vous nous posez le plus, par e-mail comme en salle.',
         ],
       },
     ],
     faq: [
       { question: 'Quand la boutique ouvre-t-elle ses ventes ?', answer: 'La date n’est pas encore publiée. Laissez votre e-mail sur la page « Ouverture de la boutique » ou sur n’importe quelle fiche : nous vous écrivons le jour J, et vous ne recevez rien d’autre.' },
       { question: 'Les prix affichés sont-ils définitifs ?', answer: 'Ce sont les prix prévus à l’ouverture, TTC, hors livraison. Ils peuvent bouger à la marge d’ici là ; le prix payé sera celui affiché le jour de la commande.' },
-      { question: 'À quoi sert la commande d’essai ?', answer: 'À parcourir tout le tunnel comme un vrai achat : panier, coordonnées, livraison, reçu, sans qu’aucun paiement ne soit demandé ni aucun article réservé. Le reçu se télécharge en PDF et rappelle qu’il s’agit d’une simulation.' },
+      { question: 'Puis-je déjà remplir mon panier ?', answer: 'Oui : choisissez vos modèles et vos tailles, puis enregistrez vos choix avec votre prénom et votre e-mail. Aucun paiement n’est demandé et aucun article n’est réservé ; vous êtes prévenu le jour de l’ouverture des ventes, et votre panier vous attend.' },
       { question: 'Livrez-vous partout en France ?', answer: 'Oui, dans toute la France métropolitaine, à domicile ou en point relais. Les frais prévus sont de 6,90 € en point relais, offerts dès 69 € d’achats, et de 8,90 € à domicile. Le matériel lourd, comme les sacs de frappe, a un tarif spécifique indiqué avant validation.' },
       { question: 'Comment choisir la taille de mes gants ?', answer: 'Par l’usage, pas par la main : 10 oz pour le sac, 12 oz pour la technique, 14 à 16 oz avec un partenaire. Les onces sont un poids de rembourrage. Le guide des tailles et le guide des onces détaillent chaque cas, gants, textile, chaussures et enfants compris.' },
       { question: 'Puis-je retourner ou échanger un article ?', answer: 'Oui. À l’ouverture des ventes, vous disposerez du délai légal de rétractation de quatorze jours, article non porté et dans son emballage. Les conditions exactes et les frais de retour seront précisés dans les conditions générales de vente.' },
@@ -33,7 +33,7 @@ export const services: Record<string, Service> = {
       { question: 'Quelles marques trouve-t-on ?', answer: 'Metal Boxe, Elion, Fairtex, Twins, Cleto Reyes, Adidas, Everlast, Venum, Manto, Athena Fightwear, Century, Shock Doctor, Under Armour, entre autres, chacune avec ses références fabricant.' },
       { question: 'Y a-t-il du matériel pour les enfants ?', answer: 'Oui : gants du 4 au 8 oz, protège-dents et casques enfant, packs de démarrage, kimonos M0 à M4. Chaque fiche indique si le modèle est prévu pour un enfant.' },
       { question: 'Équipez-vous les clubs, les coachs et les salles ?', answer: 'Oui. Pour un équipement de club ou une commande groupée, écrivez-nous via la page contact avec les quantités et les tailles : nous répondons par e-mail avec une proposition.' },
-      { question: 'Que faites-vous de mes données ?', answer: 'Vos coordonnées servent à la commande, au reçu et, si vous l’acceptez, à l’alerte d’ouverture. La mesure d’audience n’est activée qu’avec votre accord, sans outil tiers. La politique de confidentialité détaille durées et droits, dont l’effacement.' },
+      { question: 'Que faites-vous de mes données ?', answer: 'Vos coordonnées servent à garder vos choix et, si vous l’acceptez, à vous prévenir de l’ouverture. La mesure d’audience n’est activée qu’avec votre accord, sans outil tiers. La politique de confidentialité détaille durées et droits, dont l’effacement.' },
       { question: 'Comment vous joindre ?', answer: 'Par la page contact, ou par e-mail à boxingcenter31@gmail.com. Nous répondons par e-mail, en général sous un jour ouvré.' },
     ],
   },
@@ -52,7 +52,7 @@ export const services: Record<string, Service> = {
       {
         title: 'Votre matériel, jusqu’à votre porte.',
         paragraphs: [
-          'Le catalogue est en préparation. Le panier permet de simuler une commande sans débit ni expédition. Les tarifs ci-dessous sont des repères envisagés pour l’ouverture, à confirmer avant tout achat.',
+          'Le catalogue est en préparation. Le panier permet d’enregistrer vos choix, sans paiement ni expédition. Les tarifs ci-dessous sont des repères envisagés pour l’ouverture, à confirmer avant tout achat.',
         ],
       },
       {
@@ -90,7 +90,7 @@ export const services: Record<string, Service> = {
       {
         title: 'Les ventes ne sont pas encore ouvertes.',
         paragraphs: [
-          'Le site propose un catalogue et des commandes d’essai. Les simulations sont enregistrées, sans paiement réel, réservation de stock ni expédition. Leur reçu est un récapitulatif de test ; il ne constitue pas une facture ou une preuve d’achat. Aucun retour de produit ne découle de ce parcours.',
+          'Le site propose un catalogue et un panier dont les choix peuvent être enregistrés, sans paiement, réservation de stock ni expédition. Un choix enregistré n’est ni une commande ni une réservation. Aucun retour de produit ne découle de ce parcours.',
         ],
       },
       {
@@ -154,7 +154,7 @@ export const services: Record<string, Service> = {
       {
         title: 'Un catalogue avant l’ouverture.',
         paragraphs: [
-          'Le site permet de consulter des produits, de lire des guides, de contacter l’éditeur et de demander une alerte de disponibilité. Un panier et un paiement simulé permettent d’essayer le parcours jusqu’au reçu. Aucun moyen de paiement réel n’est demandé, aucun produit n’est réservé et aucune expédition n’est déclenchée. Une alerte ne constitue ni une commande, ni une précommande, ni une réservation.',
+          'Le site permet de consulter des produits, de lire des guides, de contacter l’éditeur et de demander une alerte de disponibilité. Le panier permet d’enregistrer ses choix pour être prévenu à l’ouverture. Aucun moyen de paiement n’est demandé, aucun produit n’est réservé et aucune expédition n’est déclenchée. Une alerte ne constitue ni une commande, ni une précommande, ni une réservation.',
         ],
       },
       {
@@ -210,10 +210,10 @@ export const services: Record<string, Service> = {
         ],
       },
       {
-        title: 'Panier et commandes d’essai',
+        title: 'Panier et choix enregistrés',
         paragraphs: [
           'Le panier utilise un cookie technique de 30 jours. Il contient un identifiant aléatoire ; les produits et quantités sont conservés côté serveur. La préparation de séance mémorise uniquement vos choix dans l’onglet en cours.',
-          'Lors d’une simulation, vos nom et e-mail, les lignes du panier, le montant et le résultat du test sont enregistrés pour produire le reçu et diagnostiquer le parcours. Aucun numéro de carte n’est collecté. Vous pouvez demander la suppression de ces données à Boxing Center.',
+          'Quand vous enregistrez vos choix, votre prénom, votre e-mail, les modèles du panier et leur montant prévu sont conservés pour vous prévenir de l’ouverture des ventes, sur la base de votre consentement ; votre mobile, avec l’accord pour un SMS, et votre code postal le sont aussi si vous les laissez. Aucun numéro de carte n’est collecté. Le lien de désinscription de chaque message efface ces données ; vous pouvez aussi en demander la suppression à Boxing Center.',
           'Le formulaire peut transmettre votre demande à Inlett après son enregistrement dans la boutique. L’envoi du reçu par e-mail utilise un service transactionnel seulement après configuration ; son état apparaît sur le reçu. Une demande enregistrée ou acceptée par un prestataire ne garantit pas la livraison de l’e-mail.',
         ],
       },

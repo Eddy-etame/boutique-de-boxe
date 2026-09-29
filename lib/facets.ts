@@ -216,7 +216,7 @@ export function brandFamilyFacet(b: Brand, family: string): Facet | null {
       { question: `Quels ${lower(fam)} ${b.name} proposez-vous ?`, answer: `${items.length} modèles, listés sur cette page avec leur photo, leurs tailles et leur prix prévu. Le filtre permet de trier par prix et par taille.` },
       { question: `À quel prix sont les ${lower(fam)} ${b.name} ?`, answer: `De ${money(prices[0])} à ${money(prices.at(-1)!)}, prix médian ${money(prices[Math.floor(prices.length / 2)])}. Ce sont les prix prévus à l’ouverture des ventes.` },
       ...(sizes.length >= 3 ? [{ question: `Quelles tailles pour les ${lower(fam)} ${b.name} ?`, answer: `Selon le modèle : ${sizes.join(', ')}. Les tailles ${b.name} ne se transposent pas d’une marque à l’autre : suivez le guide de tailles de la marque indiqué sur la fiche.` }] : []),
-      { question: `Quand pourrai-je commander ?`, answer: 'Les ventes ouvrent bientôt. Laissez votre e-mail sur la fiche du modèle qui vous intéresse : vous êtes prévenu le matin de l’ouverture. D’ici là, la commande d’essai fonctionne sans paiement.' },
+      { question: `Quand pourrai-je commander ?`, answer: 'Les ventes ouvrent bientôt. Laissez votre e-mail sur la fiche du modèle qui vous intéresse : vous êtes prévenu le matin de l’ouverture. D’ici là, le panier enregistre vos choix, sans paiement.' },
     ],
     guide: cat?.guide || 'guide-des-tailles',
     parent: { path: '/marques/' + b.slug + '/', name: b.name },

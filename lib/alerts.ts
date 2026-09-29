@@ -30,6 +30,33 @@ export async function ensureAlertContact() {
 
 export const CONSENT_VERSION = '2026-09-17';
 
+/* Paniers enregistrés comme choix (Eddy, 29/09) : tant que les ventes sont fermées, le panier se termine
+   par « Enregistrer mes choix » ; la table naît au premier usage, comme les autres. */
+let choicesReady = false;
+export async function ensureChoices() {
+  if (choicesReady) return;
+  await (await db())
+    .prepare("CREATE TABLE IF NOT EXISTS choices (id text PRIMARY KEY, email text NOT NULL, first_name text NOT NULL, phone text NOT NULL DEFAULT '', sms_consent integer NOT NULL DEFAULT 0, postcode text NOT NULL DEFAULT '', items text NOT NULL, subtotal integer NOT NULL, created_at text NOT NULL, cart_id text NOT NULL, consent_version text NOT NULL)")
+    .run();
+  choicesReady = true;
+}
+
+/**
+ * Inscription de robot (29/09) : une adresse Gmail truffée de points, avec des lettres isolées
+ * (« va.k.a.bosap38.1@gmail.com »). Gmail ignore les points : un robot en sème au hasard pour
+ * faire passer une même boîte pour des dizaines d'inscrits. Un humain n'écrit pas ainsi ;
+ * « jean.pierre.dupont.75 » ou « j.p.martin » ne sont PAS repérés. Rien n'est effacé : l'inscription
+ * est marquée « suspecte », écartée de la lettre d'ouverture, et l'administration propose de la supprimer.
+ */
+export function suspicion(email: string): string | null {
+  const [local, domaine] = email.toLowerCase().split('@');
+  if (!local || !domaine || !['gmail.com', 'googlemail.com'].includes(domaine)) return null;
+  const morceaux = local.split('+')[0].split('.');
+  const points = morceaux.length - 1;
+  const isoles = morceaux.filter((m) => m.length === 1).length;
+  return points >= 4 && isoles >= 2 ? 'adresse Gmail semée de points et de lettres isolées : forme typique des robots' : null;
+}
+
 /** Crée l’inscription ; rend sa référence, ou null si l’adresse était déjà inscrite pour ce modèle. */
 export async function insertAlert(o: { email: string; productId: string; variant: string; source: string }) {
   await ensureAlertContact();

@@ -35,7 +35,7 @@ const shopInfo = () => ({
   currency: 'EUR',
   deliveryArea: 'France',
   editorialDate: EDITORIAL_DATE,
-  status: 'Les ventes ne sont pas ouvertes. Chaque modèle affiche un prix prévu à l’ouverture, TTC hors livraison. Aucun stock, aucune réservation, aucun paiement. Le panier est une commande d’essai sans paiement.',
+  status: 'Les ventes ne sont pas ouvertes. Chaque modèle affiche un prix prévu à l’ouverture, TTC hors livraison. Aucun stock, aucune réservation, aucun paiement. Le panier s’enregistre comme une liste de choix, sans paiement ; la boutique prévient à l’ouverture.',
   delivery: 'Prévue : point relais 6,90 € (offert dès 69 €), domicile 8,90 €, matériel lourd sur tarif. France uniquement.',
   notPublished: ['date d’ouverture des ventes', 'stocks', 'délais de livraison', 'remises', 'avis clients', 'profils sociaux'],
   representationNotice: 'Boutique de Boxe est une boutique en ligne indépendante. Ce n’est ni un club ni une salle de sport.',

@@ -4,7 +4,7 @@ import { NewsletterAdmin } from './newsletter-admin';
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { CatalogEditor } from './catalog-editor';
-import type { Product } from '@/lib/catalog';
+import { money, type Product } from '@/lib/catalog';
 
 // Chaque panneau d’onglet est chargé à l’ouverture de son onglet, pas au chargement
 // de l’atelier : le gros module de commande et les tableaux recharts ne pèsent plus
@@ -15,17 +15,19 @@ const Audience = dynamic(() => import('./audience').then((m) => m.Audience), { s
 const Clients = dynamic(() => import('./clients').then((m) => m.Clients), { ssr: false, loading });
 const PayplugSettings = dynamic(() => import('./payplug-settings').then((m) => m.PayplugSettings), { ssr: false, loading });
 const CatalogueImports = dynamic(() => import('./catalogue-imports').then((m) => m.CatalogueImports), { ssr: false, loading });
+const TeamAdmin = dynamic(() => import('./team-admin').then((m) => m.TeamAdmin), { ssr: false, loading });
 type RecordRow = Record<string, string | number>;
 // La navigation de l’atelier, par métier : ce qu’on vend, ce qu’on encaisse, qui nous écrit, ce qu’on mesure.
 const SECTIONS: { title: string; items: [string, string][] }[] = [
   { title: 'Catalogue', items: [['products', 'Produits'], ['imports', 'Imports du catalogue']] },
   { title: 'Commerce', items: [['orders', 'Commandes d’essai'], ['payments', 'Réglages PayPlug'], ['clients', 'Clients & ventes']] },
-  { title: 'Public', items: [['alerts', 'Inscrits à l’ouverture'], ['newsletter', 'Lettre d’ouverture'], ['contacts', 'Contacts']] },
-  { title: 'Pilotage', items: [['audience', 'Audience'], ['seo', 'Suivi SEO']] },
+  { title: 'Public', items: [['choices', 'Paniers enregistrés'], ['alerts', 'Inscrits à l’ouverture'], ['newsletter', 'Lettre d’ouverture'], ['contacts', 'Contacts']] },
+  { title: 'Pilotage', items: [['audience', 'Audience'], ['seo', 'Suivi SEO'], ['equipe', 'Équipe et accès']] },
 ];
 type AdminData = {
   products: Product[];
   alerts: RecordRow[];
+  choices: RecordRow[];
   contacts: RecordRow[];
   overrides: RecordRow[];
 };
@@ -65,6 +67,17 @@ export function Admin() {
   const p = data.products.find((p) => p.id === selected) || data.products[0];
   const phones = data.alerts.filter((a) => a.phone).length;
   const override = data.overrides.find((o) => o.product_id === p?.id);
+  async function removeSuspects(n: number) {
+    if (!window.confirm(`Supprimer définitivement les ${n} inscriptions repérées comme robots ?`)) return;
+    const r = await fetch('/api/admin-delete-suspects', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+    if (!r.ok) {
+      setError('Suppression impossible.');
+      return;
+    }
+    const d = (await r.json()) as { deleted?: number };
+    setSaved(`${d.deleted ?? 0} inscriptions de robots supprimées.`);
+    await refresh();
+  }
   async function remove(kind: string, id: string) {
     if (
       !window.confirm('Supprimer définitivement cette demande et ses données ?')
@@ -273,6 +286,82 @@ export function Admin() {
           </form>
         </div>
       )}
+      {tab === 'choices' && (
+        <div className="admin-inbox">
+          <p>
+            Les paniers enregistrés : tant que les ventes sont fermées, le panier se termine par « Enregistrer
+            mes choix ». Prénom, e-mail, mobile et code postal quand ils ont été laissés, et les modèles choisis.
+            Chaque modèle entre aussi dans les inscrits à l’ouverture. Les 300 plus récents sont affichés.
+          </p>
+          {(data.choices ?? []).length === 0 ? (
+            <p className="empty-state">Aucun panier enregistré.</p>
+          ) : (
+            <div className="atelier-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Prénom</th>
+                    <th scope="col">E-mail</th>
+                    <th scope="col">Mobile</th>
+                    <th scope="col">Code postal</th>
+                    <th scope="col">Choix</th>
+                    <th scope="col">Total prévu</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">
+                      <span className="sr-only">Actions</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.choices.map((row) => {
+                    let lines: { name: string; variant: string; quantity: number }[] = [];
+                    try {
+                      lines = JSON.parse(String(row.items));
+                    } catch {
+                      lines = [];
+                    }
+                    return (
+                      <tr key={row.id}>
+                        <td>{String(row.first_name)}</td>
+                        <td>
+                          <a href={'mailto:' + row.email}>{row.email}</a>
+                          {row.suspect ? <em className="atelier-suspect" title={String(row.suspect)}>robot ?</em> : null}
+                        </td>
+                        <td>
+                          {row.phone ? (
+                            <>
+                              {String(row.phone)} {Number(row.sms_consent) ? <em>SMS ok</em> : null}
+                            </>
+                          ) : (
+                            <span className="atelier-muted">—</span>
+                          )}
+                        </td>
+                        <td>{String(row.postcode || '') || <span className="atelier-muted">—</span>}</td>
+                        <td>
+                          {lines.map((l, i) => (
+                            <div key={i}>
+                              {l.quantity} × {l.name}
+                              {l.variant ? ' · ' + l.variant : ''}
+                            </div>
+                          ))}
+                        </td>
+                        <td>{money(Number(row.subtotal))}</td>
+                        <td>{new Date(String(row.created_at)).toLocaleDateString('fr-FR')}</td>
+                        <td className="atelier-actions">
+                          <button className="text-button" type="button" onClick={() => remove('choices', String(row.id))}>
+                            Supprimer
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+          {saved && <p role="status">{saved}</p>}
+        </div>
+      )}
       {tab === 'newsletter' && <NewsletterAdmin />}
       {tab === 'alerts' && (
         <div className="admin-inbox">
@@ -285,6 +374,18 @@ export function Admin() {
           <a className="button button-dark" href="/api/commerce/admin-export?kind=alertes">
             Exporter les inscrits (CSV) ↗
           </a>
+          {(() => {
+            const n = data.alerts.filter((a) => a.suspect).length;
+            return n ? (
+              <p className="atelier-suspects">
+                <strong>{n} inscriptions ressemblent à des robots</strong> (adresses Gmail semées de points et de lettres
+                isolées). Elles sont déjà écartées de la lettre d’ouverture.{' '}
+                <button className="text-button" type="button" onClick={() => void removeSuspects(n)}>
+                  Supprimer les {n} inscriptions suspectes
+                </button>
+              </p>
+            ) : null;
+          })()}
           {data.alerts.length === 0 ? (
             <p className="empty-state">Aucune inscription enregistrée.</p>
           ) : (
@@ -307,6 +408,7 @@ export function Admin() {
                     <tr key={row.id}>
                       <td>
                         <a href={'mailto:' + row.email}>{row.email}</a>
+                        {row.suspect ? <em className="atelier-suspect" title={String(row.suspect)}>robot ?</em> : null}
                       </td>
                       <td>
                         {row.phone ? (
@@ -402,6 +504,7 @@ export function Admin() {
         </div>
       )}
       {tab === 'audience' && <Audience />}
+      {tab === 'equipe' && <TeamAdmin />}
       {tab === 'seo' && (
         <div className="admin-seo">
           <BriefBoard />

@@ -1,4 +1,5 @@
-import { db, isAdmin, readCatalog, bustCatalog } from '@/lib/database';
+import { db, isAdmin, readCatalog, bustCatalog, adminEmail } from '@/lib/database';
+import { renouvelerCookie } from '@/lib/team';
 
 import { validateProduct } from '@/lib/product-input';
 
@@ -6,8 +7,7 @@ import { shop, listItem } from '@/lib/catalog';
 import { listingFor } from '@/lib/listing';
 import { nearest, suggest } from '@/lib/suggest';
 
-import { getSessionUser } from '@/lib/auth';
-import { emailValid, ensureAlertContact, insertAlert, normalisePhone } from '@/lib/alerts';
+import { emailValid, ensureAlertContact, insertAlert, normalisePhone, ensureChoices, suspicion } from '@/lib/alerts';
 import { unsubscribeAll } from '@/lib/newsletter';
 import { clientIp } from '@/lib/request';
 import { revalidatePath } from 'next/cache';
@@ -194,10 +194,12 @@ export async function GET(
     if (!(await isAdmin()))
       return response({ error: 'Accès réservé à l’administration.' }, 403);
 
-    await ensureAlertContact();
+    // Une session d'équipe en usage garde 30 jours de plus côté navigateur.
+    await renouvelerCookie(new URL(request.url).protocol === 'https:');
+    await Promise.all([ensureAlertContact(), ensureChoices()]);
     const database = await db();
 
-    const [alerts, contacts, overrides] = await Promise.all([
+    const [alerts, contacts, overrides, choices] = await Promise.all([
       database
 
         .prepare(
@@ -215,10 +217,18 @@ export async function GET(
         .all(),
 
       database.prepare('SELECT * FROM product_overrides').all(),
+
+      database
+        .prepare('SELECT id,email,first_name,phone,sms_consent,postcode,items,subtotal,created_at FROM choices ORDER BY created_at DESC LIMIT 300')
+        .all(),
     ]);
 
+    // Chaque ligne porte son éventuel motif de suspicion (robot) : l'administration l'affiche et propose la suppression.
+    const marque = (rows: Record<string, unknown>[]) => rows.map((r) => ({ ...r, suspect: suspicion(String(r.email || '')) || '' }));
     return response({
-      alerts: alerts.results,
+      alerts: marque(alerts.results as Record<string, unknown>[]),
+
+      choices: marque(choices.results as Record<string, unknown>[]),
 
       contacts: contacts.results,
 
@@ -340,9 +350,24 @@ export async function POST(
       return response({ ok: true });
     }
 
+    // Supprimer d'un geste les inscriptions de robots (bouton de l'administration, avec confirmation).
+    if (action === 'admin-delete-suspects') {
+      await ensureChoices();
+      const database = await db();
+      let n = 0;
+      for (const table of ['alerts', 'choices'] as const) {
+        const rows = (await database.prepare(`SELECT id,email FROM ${table}`).all<{ id: string; email: string }>()).results;
+        for (const r of rows.filter((r) => suspicion(r.email))) {
+          await database.prepare(`DELETE FROM ${table} WHERE id=?`).bind(r.id).run();
+          n++;
+        }
+      }
+      return response({ ok: true, deleted: n });
+    }
+
     if (action === 'admin-delete') {
       if (
-        !['alerts', 'contacts'].includes(data.kind) ||
+        !['alerts', 'contacts', 'choices'].includes(data.kind) ||
         typeof data.id !== 'string' ||
         !/^[0-9a-f-]{36}$/.test(data.id)
       )
@@ -355,7 +380,9 @@ export async function POST(
         .prepare(
           data.kind === 'alerts'
             ? 'DELETE FROM alerts WHERE id=?'
-            : 'DELETE FROM contacts WHERE id=?',
+            : data.kind === 'choices'
+              ? 'DELETE FROM choices WHERE id=?'
+              : 'DELETE FROM contacts WHERE id=?',
         )
 
         .bind(data.id)
@@ -387,7 +414,8 @@ export async function POST(
         return response({ error: 'Vérifiez les champs du produit.' }, 400);
 
       if (p.variants?.length && data.priceCents!==p.price) return response({error:'Modifiez les prix de chaque déclinaison dans la fiche complète.'},400);
-      const user = await getSessionUser();
+      // L'auteur de la modification : l'adresse de l'administrateur, quel que soit son accès (lien d'équipe ou Supabase).
+      const auteur = (await adminEmail()) || 'administration';
 
       await (
         await db()
@@ -405,7 +433,7 @@ export async function POST(
           data.internalStock,
           data.plannedDiscount,
           new Date().toISOString(),
-          user!.userId,
+          auteur,
         )
 
         .run();

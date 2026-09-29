@@ -87,7 +87,7 @@ export function longDescription(p: Product): string {
       `Le prix prévu à l’ouverture est de ${money(p.price)} TTC, livraison en sus.`,
     ], 5),
   );
-  parts.push(pick(p.id, ['La vente n’est pas encore ouverte : rien n’est débité ni réservé. Vous pouvez essayer la commande sans payer et laisser votre e-mail pour être prévenu.', 'En vente bientôt : aucun stock ni paiement pour l’instant. Laissez votre e-mail pour être prévenu à l’ouverture.'], 6));
+  parts.push(pick(p.id, ['La vente n’est pas encore ouverte : rien n’est débité ni réservé. Vous pouvez déjà le mettre dans votre panier, enregistrer vos choix et être prévenu.', 'En vente bientôt : aucun stock ni paiement pour l’instant. Laissez votre e-mail pour être prévenu à l’ouverture.'], 6));
   return parts.join(' ');
 }
 
@@ -129,7 +129,7 @@ export function productFaq(p: Product): { question: string; answer: string }[] {
     { question: `Quelle taille choisir pour ${short} ?`, answer: size },
     { question: `Pour quelle pratique et quel niveau ?`, answer: `${disciplines.join(', ')}, niveau ${level}. ${p.short}` },
     { question: `Comment entretenir ${short} ?`, answer: careAdvice(p) },
-    { question: `Quel est le prix, et quand sera-t-il disponible ?`, answer: `Le prix prévu à l’ouverture est de ${(p.price / 100).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}, TTC hors livraison. Les ventes ne sont pas encore ouvertes : laissez votre e-mail sur la fiche pour être prévenu le jour J ; vous pouvez déjà essayer la commande sans payer.` },
+    { question: `Quel est le prix, et quand sera-t-il disponible ?`, answer: `Le prix prévu à l’ouverture est de ${(p.price / 100).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}, TTC hors livraison. Les ventes ne sont pas encore ouvertes : laissez votre e-mail sur la fiche pour être prévenu le jour J ; vous pouvez déjà enregistrer vos choix depuis le panier.` },
     { question: `Comment est-il livré ?`, answer: heavy ? 'À domicile uniquement, dans toute la France métropolitaine, avec un tarif de matériel lourd indiqué avant validation ; le point relais n’accepte pas les colis lourds.' : 'Dans toute la France métropolitaine, en point relais (6,90 €, offerts dès 69 € d’achats) ou à domicile (8,90 €), aux tarifs prévus à l’ouverture.' },
     { question: `Peut-on le retourner ou l’échanger ?`, answer: 'Oui, dès l’ouverture des ventes : quatorze jours de rétractation, article non porté et dans son emballage ; pour un échange de taille, écrivez-nous avec la référence de la commande.' },
   ];

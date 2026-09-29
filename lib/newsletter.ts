@@ -1,4 +1,5 @@
 import { db } from './database';
+import { suspicion, ensureChoices } from './alerts';
 import { shop } from './catalog';
 import { QuotaExhausted, mailerConfigured, quotaToday, sendMail } from './mailer';
 
@@ -29,7 +30,8 @@ export async function subscribers(): Promise<Subscriber[]> {
     await (await db()).prepare('SELECT lower(email) AS email, unsubscribe_token AS token, created_at FROM alerts ORDER BY created_at ASC').all<{ email: string; token: string; created_at: string }>()
   ).results;
   const seen = new Map<string, Subscriber>();
-  for (const r of rows) if (!seen.has(r.email)) seen.set(r.email, { email: r.email, token: r.token, first_seen: r.created_at });
+  // Les inscriptions repérées comme robots (lib/alerts.ts, suspicion) ne reçoivent rien.
+  for (const r of rows) if (!seen.has(r.email) && !suspicion(r.email)) seen.set(r.email, { email: r.email, token: r.token, first_seen: r.created_at });
   return [...seen.values()];
 }
 
@@ -153,5 +155,7 @@ export async function unsubscribeAll(token: string) {
   const email = await database.prepare('SELECT email FROM alerts WHERE unsubscribe_token=?').bind(token).first<string>('email');
   if (!email) return false;
   await database.prepare('DELETE FROM alerts WHERE lower(email)=lower(?)').bind(email).run();
+  await ensureChoices();
+  await database.prepare('DELETE FROM choices WHERE lower(email)=lower(?)').bind(email).run();
   return true;
 }

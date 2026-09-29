@@ -31,7 +31,7 @@ export default async function AdminPage() {
             action="/api/auth/magic-link"
             className="atelier-signin"
           >
-            <label htmlFor="owner-email">Adresse e-mail du propriétaire</label>
+            <label htmlFor="owner-email">Votre adresse e-mail (équipe)</label>
             <input
               id="owner-email"
               name="email"

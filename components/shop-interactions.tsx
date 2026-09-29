@@ -1037,7 +1037,7 @@ export function ProductDetails({ product: p }: { product: Product }) {
           />
         </section>
         <div ref={buyRef} className="buy-anchor">
-          <p className="trial-lead">Ou essayez la commande dès maintenant, sans payer.</p>
+          <p className="trial-lead">Ou ajoutez-le à votre panier et enregistrez vos choix, sans payer.</p>
           <AddToCart key={p.id + size} product={p} variant={size} />
         </div>
         <div className="detail-assurances">
@@ -1047,7 +1047,7 @@ export function ProductDetails({ product: p }: { product: Product }) {
           </span>{' '}
           <span>
             <Check size={15} />
-            Commande d’essai, sans paiement
+            Vos choix gardés, sans paiement
           </span>
         </div>
         <a href="/livraison/" className="inline-link">

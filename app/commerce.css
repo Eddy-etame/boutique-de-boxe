@@ -747,6 +747,7 @@
 }
 
 .checkout-fields > label:not(.honeypot),
+.checkout-row > label,
 .orders-controls > label {
   display: block;
   margin-bottom: 18px;
@@ -1536,7 +1537,7 @@
   .checkout-fields { margin-bottom: 24px; padding-bottom: 24px; }
   .checkout-fields legend { gap: 12px; font-size: 16px; margin-bottom: 20px; }
   .checkout-fields legend > span { font-size: 9px; }
-  .checkout-fields > label:not(.honeypot) { margin-bottom: 16px; font-size: 12px; }
+  .checkout-fields > label:not(.honeypot), .checkout-row > label { margin-bottom: 16px; font-size: 12px; }
   .checkout-fields input:not([type='checkbox']) { min-height: 54px; font-size: 16px; }
   .commerce-choice { grid-template-columns: 19px minmax(0, 1fr) max-content; gap: 11px; padding: 15px 13px; min-height: 99px; }
   .commerce-choice strong { font-size: 12px; line-height: 1.6; }

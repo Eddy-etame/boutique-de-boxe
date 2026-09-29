@@ -91,14 +91,14 @@ export const dateSource = () =>
 /* Les clubs Boxing Center qui ont leur site — registre des sites de proximité
    (page « Nos clubs »), adresses vérifiées. Balma n'y est plus : vendu.
    Disciplines : ce que chaque club déclare sur son propre site (relevé du 29/09).
-   Bouton : la page d'essai ou de tarifs qui existe vraiment sur ce site (200 vérifié le 29/09) ;
-   chaque bouton a son texte, jamais deux fois le même sur la page. */
+   Bouton : l'ACCUEIL de chaque site (Eddy, 29/09 : « all of them should link to the opening pages » —
+   c'est l'accueil qu'on fait monter, et il porte l'essai) ; chaque bouton a son texte, jamais deux fois le même. */
 export const CLUBS_BOXING_CENTER = [
-  { nom: 'Boxing Center Toulouse Minimes', lieu: 'quartier des Minimes', adresse: '12 rue de Fenouillet, 31200 Toulouse', site: 'https://boxe-toulouse.com/', recensement: 'I315550423', disciplines: 'Boxe anglaise, boxe éducative, Boxing Lady, pieds-poings, cross training.', cta: { texte: 'Première séance aux Minimes', href: 'https://boxe-toulouse.com/premiere-seance/' } },
-  { nom: 'Boxing Center Toulouse États-Unis', lieu: 'avenue des États-Unis', adresse: '388 avenue des États-Unis, 31200 Toulouse', site: 'https://clubmma.fr/', recensement: 'I315550717', disciplines: 'MMA en cage, grappling, jiu-jitsu et boxe.', cta: { texte: 'Un essai aux États-Unis', href: 'https://clubmma.fr/contact/' } },
-  { nom: 'Boxing Center Toulouse Saint-Cyprien', lieu: 'rive gauche, à 4 minutes du métro A', adresse: '11 rue Sainte-Lucie, 31300 Toulouse', site: 'https://club-boxe-toulouse.com/', recensement: 'I315550718', disciplines: 'Boxe anglaise, thaï et K1, grappling, Hyrox, Lady Punch, école dès 3 ans.', cta: { texte: 'Un essai à Saint-Cyprien', href: 'https://club-boxe-toulouse.com/contact/' } },
-  { nom: 'Boxing Center Portet-sur-Garonne', lieu: 'route d’Espagne, au sud', adresse: "61 route d'Espagne, 31120 Portet-sur-Garonne", site: 'https://boxing-center-portet.fr/', recensement: null, disciplines: 'Boxe anglaise, kick-boxing, grappling, JJB, cours femmes et enfants.', cta: { texte: 'Première séance à Portet', href: 'https://boxing-center-portet.fr/premiere-seance/' } },
-  { nom: 'Boxing Center Ramonville', lieu: 'terminus du métro B, au sud-est', adresse: '33 rue des Ormes, 31520 Ramonville-Saint-Agne', site: 'https://mmatoulouse.com/', recensement: null, disciplines: 'Boxe anglaise, MMA, grappling, Lady Punch, enfants dès 3 ans.', cta: { texte: 'Les tarifs de Ramonville', href: 'https://mmatoulouse.com/tarifs/' } },
+  { nom: 'Boxing Center Toulouse Minimes', lieu: 'quartier des Minimes', adresse: '12 rue de Fenouillet, 31200 Toulouse', site: 'https://boxe-toulouse.com/', recensement: 'I315550423', disciplines: 'Boxe anglaise, boxe éducative, Boxing Lady, pieds-poings, cross training.', cta: { texte: 'Le club des Minimes', href: 'https://boxe-toulouse.com/' } },
+  { nom: 'Boxing Center Toulouse États-Unis', lieu: 'avenue des États-Unis', adresse: '388 avenue des États-Unis, 31200 Toulouse', site: 'https://clubmma.fr/', recensement: 'I315550717', disciplines: 'MMA en cage, grappling, jiu-jitsu et boxe.', cta: { texte: 'Le club des États-Unis', href: 'https://clubmma.fr/' } },
+  { nom: 'Boxing Center Toulouse Saint-Cyprien', lieu: 'rive gauche, à 4 minutes du métro A', adresse: '11 rue Sainte-Lucie, 31300 Toulouse', site: 'https://club-boxe-toulouse.com/', recensement: 'I315550718', disciplines: 'Boxe anglaise, thaï et K1, grappling, Hyrox, Lady Punch, école dès 3 ans.', cta: { texte: 'Le club de Saint-Cyprien', href: 'https://club-boxe-toulouse.com/' } },
+  { nom: 'Boxing Center Portet-sur-Garonne', lieu: 'route d’Espagne, au sud', adresse: "61 route d'Espagne, 31120 Portet-sur-Garonne", site: 'https://boxing-center-portet.fr/', recensement: null, disciplines: 'Boxe anglaise, kick-boxing, grappling, JJB, cours femmes et enfants.', cta: { texte: 'Le club de Portet', href: 'https://boxing-center-portet.fr/' } },
+  { nom: 'Boxing Center Ramonville', lieu: 'terminus du métro B, au sud-est', adresse: '33 rue des Ormes, 31520 Ramonville-Saint-Agne', site: 'https://mmatoulouse.com/', recensement: null, disciplines: 'Boxe anglaise, MMA, grappling, Lady Punch, enfants dès 3 ans.', cta: { texte: 'Le club de Ramonville', href: 'https://mmatoulouse.com/' } },
 ];
 /* Le Noble Art Portésien (Eddy, 29/09 : juste après Boxing Center, avant tout le reste) : association de
    boxe anglaise qui partage le lieu de Boxing Center Portet — deux entités distinctes (son site le dit). */
@@ -108,7 +108,7 @@ export const NOBLE_ART = {
   adresse: '61 route d’Espagne, 31120 Portet-sur-Garonne',
   site: 'https://noble-art-portesien.com/',
   disciplines: 'Boxe anglaise éducative, loisir, amateur et handi-boxe.',
-  cta: { texte: 'Écrire au Noble Art Portésien', href: 'https://noble-art-portesien.com/contactez-noble-art-portesien/' },
+  cta: { texte: 'Découvrir le Noble Art Portésien', href: 'https://noble-art-portesien.com/' },
 };
 /** Sur toute page, Boxing Center d'abord, le Noble Art Portésien ensuite, puis les autres lieux (Eddy, 29/09). */
 const priorite = (l: { id: string; nom: string }) =>

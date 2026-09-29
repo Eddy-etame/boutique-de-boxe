@@ -25,7 +25,7 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { RelayPicker } from './relay-picker';
 import { relayLabel, type RelayPoint } from '@/lib/boxtal';
-import { money, type Product } from '@/lib/catalog';
+import { money, shop, type Product } from '@/lib/catalog';
 import type { Cart, CartLine, Order } from '@/lib/commerce';
 
 const CART_EVENT = 'boutique:cart-changed';
@@ -277,7 +277,7 @@ export function AddToCart({
       <p id={helpId} className="commerce-caption">
         {!valid
           ? (labels.choose ?? 'Choisissez une taille pour ajouter ce modèle.')
-          : (labels.note ?? 'Commande d’essai : rien n’est payé ni envoyé.')}
+          : (labels.note ?? 'Dans vos choix : rien n’est payé, on vous prévient à l’ouverture.')}
       </p>
       {error && (
         <p role="alert" className="commerce-error">
@@ -488,10 +488,10 @@ export function QuickAdd({ product }: { product: Product }) {
   );
 }
 
-function Steps({ current }: { current: 1 | 2 | 3 }) {
+function Steps({ current, labels = ['L’équipement', 'L’essai', 'Le reçu'] }: { current: 1 | 2 | 3; labels?: string[] }) {
   return (
-    <ol className="commerce-steps" aria-label="Votre parcours d’essai">
-      {['L’équipement', 'L’essai', 'Le reçu'].map((label, i) => (
+    <ol className="commerce-steps" aria-label="Votre parcours">
+      {labels.map((label, i) => (
         <li
           key={label}
           className={
@@ -634,6 +634,14 @@ export function CartPage() {
   const form = useRef<HTMLFormElement>(null);
   const busyRef = useRef(false);
   const fieldId = useId();
+  // Ventes fermées (Eddy, 29/09) : aucun paiement, pas même simulé. Le panier se termine par
+  // « Enregistrer mes choix » : prénom, e-mail, mobile facultatif — un contact à prévenir à l’ouverture.
+  const choix = !shop.ventesOuvertes;
+  const [firstName, setFirstName] = useState('');
+  const [leadPostcode, setLeadPostcode] = useState('');
+  const [smsOk, setSmsOk] = useState(false);
+  const [leadConsent, setLeadConsent] = useState(false);
+  const [saved, setSaved] = useState<string | null>(null);
   const shipping = cart ? shippingEstimate(cart.subtotal, delivery) : 0;
   const total = (cart?.subtotal ?? 0) + shipping;
   const locked = busy || uncertain;
@@ -670,6 +678,35 @@ export function CartPage() {
           ? e.message
           : 'La quantité n’a pas pu être modifiée.',
       );
+    }
+  }
+
+  async function saveChoices(event?: SyntheticEvent<HTMLFormElement>) {
+    event?.preventDefault();
+    if (busyRef.current || cartBusyNow || !cart?.items.length) return;
+    if (!leadConsent || !form.current?.reportValidity()) return;
+    busyRef.current = true;
+    setBusy(true);
+    setError('');
+    try {
+      await request<{ ok: true }>('choices', {
+        firstName: firstName.trim(),
+        email: email.trim().toLowerCase(),
+        phone: phone.trim(),
+        smsConsent: smsOk && phone.trim() !== '',
+        postcode: leadPostcode.trim(),
+        consent: true,
+        quotedRevision: cart.revision,
+        website,
+      });
+      setSaved(firstName.trim());
+      setAnnouncement('Vos choix sont enregistrés.');
+      requestAnimationFrame(() => heading.current?.focus());
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'L’enregistrement n’a pas abouti. Réessayez.');
+    } finally {
+      busyRef.current = false;
+      setBusy(false);
     }
   }
 
@@ -782,11 +819,23 @@ export function CartPage() {
       <header className="commerce-heading">
         <p className="eyebrow">Le banc de préparation</p>
         <h1 ref={heading} tabIndex={-1}>
-          {step === 1 ? (
+          {saved !== null ? (
+            <>
+              C’est
+              <br />
+              enregistré.
+            </>
+          ) : step === 1 ? (
             <>
               Tout pour
               <br />
               votre séance.
+            </>
+          ) : choix ? (
+            <>
+              Vos choix,
+              <br />
+              gardés.
             </>
           ) : (
             <>
@@ -797,15 +846,19 @@ export function CartPage() {
           )}
         </h1>
         <p>
-          {step === 1
-            ? 'Ajustez les quantités, puis essayez le parcours jusqu’au reçu.'
-            : 'Choisissez un scénario et vérifiez le récapitulatif. Votre adresse e-mail sert à recevoir le reçu de simulation.'}
+          {choix
+            ? step === 1 && saved === null
+              ? 'Ajustez les quantités, puis enregistrez vos choix : on vous prévient le jour de l’ouverture des ventes.'
+              : 'Aucun paiement : les ventes ne sont pas encore ouvertes. Vos choix sont gardés pour ce jour-là.'
+            : step === 1
+              ? 'Ajustez les quantités, puis essayez le parcours jusqu’au reçu.'
+              : 'Choisissez un scénario et vérifiez le récapitulatif. Votre adresse e-mail sert à recevoir le reçu de simulation.'}
         </p>
         <span className="simulation-stamp">
-          Simulation · Aucun débit · Aucune expédition
+          {choix ? 'Ventes bientôt ouvertes · Aucun paiement' : 'Simulation · Aucun débit · Aucune expédition'}
         </span>
       </header>
-      <Steps current={step} />
+      <Steps current={saved !== null ? 3 : step} labels={choix ? ['L’équipement', 'Vos coordonnées', 'C’est enregistré'] : undefined} />
       <noscript>
         <p>
           Le panier nécessite JavaScript. Vous pouvez continuer à
@@ -834,14 +887,27 @@ export function CartPage() {
         </div>
       )}
 
-      {!cart && loading && (
+      {saved !== null && (
+        <div className="cart-empty cart-saved">
+          <Check size={42} strokeWidth={1.2} aria-hidden="true" />
+          <h2>{saved ? `Merci ${saved}, vos choix sont gardés.` : 'Vos choix sont gardés.'}</h2>
+          <p>
+            Le jour de l’ouverture des ventes, un e-mail vous le dira{phone.trim() && smsOk ? ', et un SMS' : ''}. Votre panier reste ici, prêt pour ce jour-là.
+          </p>
+          <a className="button button-dark" href={CATALOGUE}>
+            Continuer à choisir <ArrowUpRight size={18} aria-hidden="true" />
+          </a>
+        </div>
+      )}
+
+      {saved === null && !cart && loading && (
         <div className="cart-loading" role="status">
           <span className="eyebrow">Votre équipement se rassemble</span>
           <p>Chargement du panier enregistré…</p>
         </div>
       )}
 
-      {cart && cart.items.length === 0 && !uncertain && (
+      {saved === null && cart && cart.items.length === 0 && !uncertain && (
         <div className="cart-empty">
           <ShoppingBag size={42} strokeWidth={1.2} aria-hidden="true" />
           <h2>Le banc est libre.</h2>
@@ -855,7 +921,7 @@ export function CartPage() {
         </div>
       )}
 
-      {cart && (cart.items.length > 0 || uncertain) && (
+      {saved === null && cart && (cart.items.length > 0 || uncertain) && (
         <>
           {cart.notices.length > 0 && (
             <div className="commerce-notices" role="status">
@@ -993,6 +1059,94 @@ export function CartPage() {
                     équipement
                   </a>
                 </>
+              ) : choix ? (
+                <form ref={form} className="checkout-form" id={`${fieldId}-checkout`} onSubmit={saveChoices}>
+                  <fieldset disabled={busy} className="checkout-fields">
+                    <legend>
+                      <span>01</span> Pour vous prévenir à l’ouverture
+                    </legend>
+                    <label htmlFor={`${fieldId}-prenom`}>
+                      Prénom
+                      <input
+                        id={`${fieldId}-prenom`}
+                        name="given-name"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        required
+                        minLength={2}
+                        maxLength={60}
+                        autoComplete="given-name"
+                      />
+                    </label>
+                    <label htmlFor={`${fieldId}-email-choix`}>
+                      Adresse e-mail
+                      <input
+                        id={`${fieldId}-email-choix`}
+                        name="email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        maxLength={254}
+                        autoComplete="email"
+                      />
+                    </label>
+                    <div className="checkout-row">
+                      <label htmlFor={`${fieldId}-tel-choix`}>
+                        Mobile <small>facultatif</small>
+                        <input
+                          id={`${fieldId}-tel-choix`}
+                          name="tel"
+                          type="tel"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          maxLength={30}
+                          pattern="[+0-9 ().\-]*"
+                          autoComplete="tel"
+                        />
+                      </label>
+                      <label htmlFor={`${fieldId}-cp-choix`}>
+                        Code postal <small>facultatif</small>
+                        <input
+                          id={`${fieldId}-cp-choix`}
+                          name="postal-code"
+                          value={leadPostcode}
+                          onChange={(e) => setLeadPostcode(e.target.value)}
+                          inputMode="numeric"
+                          pattern="[0-9]{5}"
+                          maxLength={5}
+                          autoComplete="postal-code"
+                        />
+                      </label>
+                    </div>
+                    {phone.trim() !== '' && (
+                      <label className="simulation-consent checkout-optin" htmlFor={`${fieldId}-sms-choix`}>
+                        <input id={`${fieldId}-sms-choix`} type="checkbox" checked={smsOk} onChange={(e) => setSmsOk(e.target.checked)} />
+                        <span>Un SMS le jour de l’ouverture, et rien d’autre.</span>
+                      </label>
+                    )}
+                    <label className="honeypot" aria-hidden="true">
+                      Laisser vide
+                      <input name="website" value={website} onChange={(e) => setWebsite(e.target.value)} tabIndex={-1} autoComplete="off" />
+                    </label>
+                  </fieldset>
+                  <label className="simulation-consent" htmlFor={`${fieldId}-accord-choix`}>
+                    <input
+                      id={`${fieldId}-accord-choix`}
+                      type="checkbox"
+                      checked={leadConsent}
+                      onChange={(e) => setLeadConsent(e.target.checked)}
+                      required
+                    />
+                    <span>
+                      J’accepte que Boutique de Boxe garde ces choix et me prévienne de l’ouverture des ventes. Un lien de désinscription dans chaque message.
+                    </span>
+                  </label>
+                  <p className="commerce-caption">
+                    Aucun paiement, aucune réservation de stock.{' '}
+                    <a href="/confidentialite/">Données personnelles</a>.
+                  </p>
+                </form>
               ) : (
                 <form
                   ref={form}
@@ -1256,7 +1410,7 @@ export function CartPage() {
               className="cart-summary"
               aria-label="Récapitulatif du panier"
             >
-              <p className="eyebrow">Votre commande</p>
+              <p className="eyebrow">{choix ? 'Vos choix' : 'Votre commande'}</p>
               <h2>Votre récapitulatif.</h2>
               {step === 2 && (
                 <ul className="checkout-mini-lines">
@@ -1276,6 +1430,7 @@ export function CartPage() {
                   <dt>Équipement</dt>
                   <dd>{money(cart.subtotal)}</dd>
                 </div>
+                {!choix && (
                 <div>
                   <dt>
                     Livraison simulée
@@ -1285,14 +1440,16 @@ export function CartPage() {
                   </dt>
                   <dd>{money(shipping)}</dd>
                 </div>
+                )}
+                {!choix && (
                 <div className="commerce-total">
                   <dt>Total simulé</dt>
                   <dd>{money(total)}</dd>
                 </div>
+                )}
               </dl>
               <p className="commerce-caption">
-                Prix prévus à l’ouverture des ventes. Le montant est vérifié à
-                la validation.
+                {choix ? 'Prix prévus à l’ouverture des ventes.' : 'Prix prévus à l’ouverture des ventes. Le montant est vérifié à la validation.'}
               </p>
               {step === 1 ? (
                 <button
@@ -1306,12 +1463,22 @@ export function CartPage() {
                   }
                   onClick={() => moveTo(2)}
                 >
-                  Essayer le parcours{' '}
+                  {choix ? 'Enregistrer mes choix' : 'Essayer le parcours'}{' '}
                   <ArrowUpRight size={18} aria-hidden="true" />
                 </button>
               ) : (
                 <>
-                  {uncertain ? (
+                  {choix ? (
+                    <button
+                      type="submit"
+                      form={`${fieldId}-checkout`}
+                      className="button button-dark"
+                      disabled={busy || cartBusyNow || !leadConsent || !cart.items.length || cart.notices.length > 0}
+                    >
+                      {busy ? 'Enregistrement…' : 'Enregistrer mes choix'}
+                      <ArrowUpRight size={18} aria-hidden="true" />
+                    </button>
+                  ) : uncertain ? (
                     <div className="checkout-uncertain">
                       <p>
                         <strong>Une seule tentative à reprendre.</strong>
@@ -1364,10 +1531,12 @@ export function CartPage() {
                   </button>
                 </>
               )}
-              <p className="simulation-zero">
-                <strong>0 €</strong>
-                <span>réellement débités</span>
-              </p>
+              {!choix && (
+                <p className="simulation-zero">
+                  <strong>0 €</strong>
+                  <span>réellement débités</span>
+                </p>
+              )}
               {declinedId && (
                 <p className="commerce-caption">
                   Tentative refusée enregistrée : {declinedId.slice(0, 8)}.
