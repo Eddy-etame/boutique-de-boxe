@@ -8,6 +8,7 @@ import { Catalog } from './shop-interactions';
 import { KeywordHub } from './keyword-hub';
 import { SeoBody } from './seo-body';
 import { PAGE_SIZE } from '@/lib/pagination';
+import { spaced } from '@/lib/spaced';
 
 /**
  * Une page de longue traîne (poids de gants, marque dans une famille) : le titre, la liste en
@@ -62,10 +63,10 @@ export function FacetPage({ facet: f, all, page = 1 }: { facet: Facet; all: Prod
         </div>
       </section>
       <nav className="subfamily-links" aria-label="Pages voisines">
-        <a href={f.parent.path}>{f.kind === 'oz' ? 'Tous les poids : ' : f.kind === 'couleur' ? 'Toutes les couleurs : ' : 'Toute la marque : '}{f.parent.name}</a>
-        {siblings.slice(0, 12).map((x) => (
+        <a href={f.parent.path}>{f.kind === 'oz' ? 'Tous les poids : ' : f.kind === 'couleur' ? 'Toutes les couleurs : ' : 'Toute la marque : '}{f.parent.name}</a>{' '}
+        {spaced(siblings.slice(0, 12).map((x) => (
           <a key={x.path} href={x.path}>{x.name}</a>
-        ))}
+        )))}
       </nav>
       <Catalog items={pageItems.map(listItem)} total={f.products.length} scope={f.scope} initialPage={page} showFamilies={false} />
       {page === 1 && <KeywordHub scope={f.scope} name={f.name} items={f.products} all={all} path={f.path} />}

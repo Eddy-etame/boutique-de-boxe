@@ -10,6 +10,7 @@ import { Breadcrumb } from '@/components/shop-shell';
 import { Catalog } from '@/components/shop-interactions';
 import { SeoBody } from '@/components/seo-body';
 import { catalogPage, PAGE_SIZE } from '@/lib/pagination';
+import { spaced } from '@/lib/spaced';
 
 export const revalidate = 60;
 type Props = {
@@ -80,14 +81,14 @@ export default async function BrandPage({ params, searchParams }: Props) {
       </section>
       {[...familyPages.values()].some(Boolean) && (
         <nav className="subfamily-links" aria-label={'Les équipements ' + b.name}>
-          {b.families.map((f) => {
+          {spaced(b.families.map((f) => {
             const page = familyPages.get(f.slug);
             return page ? (
               <a key={f.slug} href={page.path}>
                 {f.name} {b.name} · {f.count}
               </a>
             ) : null;
-          })}
+          }))}
         </nav>
       )}
       <Catalog items={pageItems.map(listItem)} total={b.products.length} scope={'marque-' + b.slug} initialPage={currentPage} showFamilies={b.families.length > 1} />
@@ -124,12 +125,12 @@ export default async function BrandPage({ params, searchParams }: Props) {
       {currentPage === 1 && <SeoBody sections={[]} faq={copy.faq} heading={`Questions sur ${b.name}`} />}
       {currentPage === 1 && (
         <nav className="subfamily-links" aria-label="Autres marques">
-          <a href="/marques/">Toutes les marques</a>
-          {others.map((x) => (
+          <a href="/marques/">Toutes les marques</a>{' '}
+          {spaced(others.map((x) => (
             <a key={x.slug} href={'/marques/' + x.slug + '/'}>
               {x.name}
             </a>
-          ))}
+          )))}
         </nav>
       )}
     </main>

@@ -37,6 +37,7 @@ import { PayplugReturn } from '@/components/payplug-settings';
 import { CartPage, ReceiptPage } from '@/components/commerce-ui';
 import selection from '@/lib/data/selection.json';
 import { ogImage } from '@/lib/og';
+import { spaced } from '@/lib/spaced';
 export const revalidate = 60;
 type Props = {
   params: Promise<{ slug: string[] }>;
@@ -342,16 +343,16 @@ export default async function Page({ params, searchParams }: Props) {
           <div>
             <span className="eyebrow">LE MODÈLE</span>
             <div className="product-facts">
-              <div><span>Discipline</span>{disciplinesOf(p).join(', ')}</div>
-              <div><span>Niveau conseillé</span>{practiceLevel(p)}</div>
-              <div><span>Famille</span><a href={'/' + p.category + '/'}>{cat.name}</a></div>
+              <div><span>Discipline</span>{' '}{disciplinesOf(p).join(', ')}</div>
+              <div><span>Niveau conseillé</span>{' '}{practiceLevel(p)}</div>
+              <div><span>Famille</span>{' '}<a href={'/' + p.category + '/'}>{cat.name}</a></div>
               {brand && (
                 <div>
-                  <span>Marque</span>
+                  <span>Marque</span>{' '}
                   <a href={brandFamily ? brandFamily.path : '/marques/' + brand.slug + '/'}>{brandFamily ? brandFamily.name : 'Tout ' + brand.name}</a>
                 </div>
               )}
-              {p.reference && <div><span>{p.referenceLabel || 'Référence'}</span>{p.reference}</div>}
+              {p.reference && <div><span>{p.referenceLabel || 'Référence'}</span>{' '}{p.reference}</div>}
             </div>
             <h2>En détail.</h2>
             <p>{longDescription(p)}</p>
@@ -452,10 +453,10 @@ export default async function Page({ params, searchParams }: Props) {
           </div>
         </section>
         <nav className="subfamily-links" aria-label="Pages voisines">
-          {parent && <a href={'/' + parent.slug + '/'}>Toute la famille : {parent.name}</a>}
-          {siblings.map((x) => (
+          {parent && <><a href={'/' + parent.slug + '/'}>Toute la famille : {parent.name}</a>{' '}</>}
+          {spaced(siblings.map((x) => (
             <a key={x.slug} href={'/' + x.slug + '/'}>{x.name}</a>
-          ))}
+          )))}
         </nav>
         <Catalog
           items={pageItems.map(listItem)}
@@ -549,9 +550,9 @@ export default async function Page({ params, searchParams }: Props) {
           const subs = [...subfamiliesOf(cat.slug), ...cat.families.flatMap((f) => subfamiliesOf(f))].filter((x, i, a) => a.indexOf(x) === i);
           return subs.length ? (
             <nav className="subfamily-links" aria-label="Sous-familles">
-              {subs.map((x) => (
+              {spaced(subs.map((x) => (
                 <a key={x.slug} href={'/' + x.slug + '/'}>{x.name}</a>
-              ))}
+              )))}
             </nav>
           ) : null;
         })()}

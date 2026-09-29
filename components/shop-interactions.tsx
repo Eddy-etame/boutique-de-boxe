@@ -41,6 +41,7 @@ import {
 } from '@/lib/catalog';
 import { AddToCart, QuickAdd, PackAdd } from './commerce-ui';
 import selection from '@/lib/data/selection.json';
+import { spaced } from '@/lib/spaced';
 
 /** La scène d’un modèle détouré : mode, bords touchés par le sujet, modèle sombre ou vif, teinte dominante. */
 function stageProps(p: Product, active = true) {
@@ -70,7 +71,7 @@ export function ProductCard({
       >
         <span className="product-index">
           {String(index + 1).padStart(2, '0')}
-        </span>
+        </span>{' '}
         <span className="product-status">
           {p.audience === 'enfant'
             ? 'Enfant'
@@ -91,7 +92,7 @@ export function ProductCard({
         </span>
       </a>
       <div className="product-meta">
-        <span>{p.brand}</span>
+        <span>{p.brand}</span>{' '}
         <span>
           {p.sizes.length ? p.sizes.slice(0, 4).join(' / ') : 'Tailles à venir'}
         </span>
@@ -103,7 +104,7 @@ export function ProductCard({
         <strong>
           {p.variants?.some((v) => v.price !== p.price) ? 'Dès ' : ''}
           {money(p.price)}
-        </strong>
+        </strong>{' '}
         <span>prix prévu</span>
         <QuickAdd product={p} />
       </div>
@@ -492,7 +493,7 @@ export function Catalog({
       <div className="catalog-count" aria-live="polite">
         <span key={count} className="catalog-count-value">
           {count} {count === 1 ? 'modèle' : 'modèles'}
-        </span>
+        </span>{' '}
         <span>EN VENTE BIENTÔT</span>
       </div>
       {result.length ? (
@@ -514,7 +515,7 @@ export function Catalog({
           </div>
           {count > 36 && (
             <nav className="catalog-pagination" aria-label="Pages du catalogue">
-              {pageWindow(page, Math.ceil(count / 36)).map(
+              {spaced(pageWindow(page, Math.ceil(count / 36)).map(
                 (n, i, visible) => (
                   <span key={n}>
                     {i > 0 && n - visible[i - 1] > 1 && (
@@ -537,7 +538,7 @@ export function Catalog({
                     </a>
                   </span>
                 ),
-              )}
+              ))}
             </nav>
           )}
         </>
@@ -1043,7 +1044,7 @@ export function ProductDetails({ product: p }: { product: Product }) {
           <span>
             <Check size={15} />
             Caractéristiques détaillées
-          </span>
+          </span>{' '}
           <span>
             <Check size={15} />
             Commande d’essai, sans paiement

@@ -10,6 +10,7 @@ import {
 } from './shop-interactions';
 import { EquipmentCompare } from './equipment-compare';
 import selection from '@/lib/data/selection.json';
+import { spaced } from '@/lib/spaced';
 export default function Home({ items }: { items: Product[] }) {
   // Quatre rounds à la une : le rouge qui arrête l’œil, le noir et or, le prix d’entrée du club, une protection.
   // Le nom court est écrit à la main : une fiche de pesée ne porte pas un intitulé de catalogue.
@@ -81,13 +82,13 @@ export default function Home({ items }: { items: Product[] }) {
         </div>
       </section>
       <nav className="practice-index" aria-label="Entrer par la pratique">
-        <span>PAR DISCIPLINE</span>
+        <span>PAR DISCIPLINE</span>{' '}
         <a href="/materiel-boxe/">
           Boxe anglaise <ArrowUpRight />
-        </a>
+        </a>{' '}
         <a href="/materiel-mma/">
           MMA <ArrowUpRight />
-        </a>
+        </a>{' '}
         <a href="/boutique-arts-martiaux/">
           Arts martiaux <ArrowUpRight />
         </a>
@@ -140,7 +141,7 @@ export default function Home({ items }: { items: Product[] }) {
           </a>
         </header>
         <div className="equipment-rows">
-          {categories
+          {spaced(categories
             .filter((c) => c.families.length === 1 && c.families[0] === c.slug)
             .map((c, i) => {
               const p = items.find((p) => p.category === c.slug);
@@ -167,7 +168,7 @@ export default function Home({ items }: { items: Product[] }) {
                   <ArrowUpRight size={25} />
                 </a>
               );
-            })}
+            }))}
         </div>
       </section>
       <section className="ounce-editorial" data-reveal>

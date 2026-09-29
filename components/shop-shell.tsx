@@ -14,6 +14,7 @@ import {
 import { categories, shop, jsonLd } from '@/lib/catalog';
 import { CartLink } from './commerce-ui';
 import { HeaderSearch } from './header-search';
+import { spaced } from '@/lib/spaced';
 export function Brand() {
   return (
     <a href="/" className="brand" aria-label="Boutique de Boxe, accueil">
@@ -22,7 +23,7 @@ export function Brand() {
         <path d="M35 4h9v9h-9z" fill="var(--blue)" />
       </svg>
       <span>
-        BOUTIQUE<span>DE BOXE.</span>
+        BOUTIQUE{' '}<span>DE BOXE.</span>
       </span>
     </a>
   );
@@ -44,7 +45,7 @@ export function Header() {
     <>
       <div className="launch-strip">
         <span className="status-dot" />
-        OUVERTURE DES VENTES BIENTÔT · COMMANDE D’ESSAI SANS PAIEMENT
+        OUVERTURE DES VENTES BIENTÔT · COMMANDE D’ESSAI SANS PAIEMENT{' '}
         <a href="/offres-de-lancement/">
           En savoir plus <ArrowUpRight size={13} />
         </a>
@@ -52,9 +53,9 @@ export function Header() {
       <header className="site-header">
         <Brand />
         <nav aria-label="Navigation principale" className="desktop-nav">
-          <a href="/materiel-boxe/">Boxe anglaise</a>
-          <a href="/materiel-mma/">MMA</a>
-          <a href="/boutique-arts-martiaux/">Arts martiaux</a>
+          <a href="/materiel-boxe/">Boxe anglaise</a>{' '}
+          <a href="/materiel-mma/">MMA</a>{' '}
+          <a href="/boutique-arts-martiaux/">Arts martiaux</a>{' '}
           <a href="/guides/" onClick={() => setMenu(false)}>
             Les guides <ArrowUpRight size={13} />
           </a>
@@ -141,29 +142,29 @@ export function Footer() {
           >
             <span className="footer-route-index" aria-hidden="true">
               01
-            </span>
+            </span>{' '}
             <span>
-              <strong>Trouver mon équipement</strong>
+              <strong>Trouver mon équipement</strong>{' '}
               <small>Gants, protections, textile et sacs.</small>
             </span>
             <ArrowUpRight aria-hidden="true" />
-          </a>
+          </a>{' '}
           <a className="footer-route" href="/#preparer">
             <span className="footer-route-index" aria-hidden="true">
               02
-            </span>
+            </span>{' '}
             <span>
-              <strong>Préparer mon sac</strong>
+              <strong>Préparer mon sac</strong>{' '}
               <small>Gardez ce que vous avez. Complétez le reste.</small>
             </span>
             <ArrowUpRight aria-hidden="true" />
-          </a>
+          </a>{' '}
           <a className="footer-route" href="/guides/taille-poids-gants-boxe/">
             <span className="footer-route-index" aria-hidden="true">
               03
-            </span>
+            </span>{' '}
             <span>
-              <strong>Choisir le poids de mes gants</strong>
+              <strong>Choisir le poids de mes gants</strong>{' '}
               <small>Les repères pour comprendre les onces.</small>
             </span>
             <ArrowUpRight aria-hidden="true" />
@@ -194,7 +195,7 @@ export function Footer() {
         </div>
         <nav aria-labelledby="footer-equipment">
           <h3 id="footer-equipment">Votre équipement</h3>
-          {categories
+          {spaced(categories
             .filter((c) =>
               [
                 'gants-de-boxe',
@@ -212,27 +213,27 @@ export function Footer() {
               <a key={c.slug} href={`/${c.slug}/`}>
                 {c.name}
               </a>
-            ))}
+            )))}
         </nav>
         <nav aria-labelledby="footer-practice">
           <h3 id="footer-practice">Votre pratique</h3>
-          <a href="/materiel-boxe/">Boxe anglaise</a>
-          <a href="/materiel-mma/">Matériel MMA</a>
-          <a href="/boutique-arts-martiaux/">Arts martiaux</a>
+          <a href="/materiel-boxe/">Boxe anglaise</a>{' '}
+          <a href="/materiel-mma/">Matériel MMA</a>{' '}
+          <a href="/boutique-arts-martiaux/">Arts martiaux</a>{' '}
           <a href="/materiel-sport-de-combat/">Sports de combat</a>
           <h3 className="footer-subheading">Pour bien choisir</h3>
-          <a href="/guides/">Guides d’achat</a>
-          <a href="/guide-des-tailles/">Guide des tailles</a>
-          <a href="/marques/">Les marques</a>
+          <a href="/guides/">Guides d’achat</a>{' '}
+          <a href="/guide-des-tailles/">Guide des tailles</a>{' '}
+          <a href="/marques/">Les marques</a>{' '}
           <a href="/nouveautes/">Nouveautés</a>
         </nav>
         <nav aria-labelledby="footer-service">
           <h3 id="footer-service">Vos questions</h3>
-          <a href="/faq/">Questions fréquentes</a>
-          <a href="/livraison/">Livraison et frais prévus</a>
-          <a href="/retours/">Retours</a>
-          <a href="/contact/">Nous contacter</a>
-          <a href="/offres-de-lancement/">Ouverture de la boutique</a>
+          <a href="/faq/">Questions fréquentes</a>{' '}
+          <a href="/livraison/">Livraison et frais prévus</a>{' '}
+          <a href="/retours/">Retours</a>{' '}
+          <a href="/contact/">Nous contacter</a>{' '}
+          <a href="/offres-de-lancement/">Ouverture de la boutique</a>{' '}
           <a href="mailto:boxingcenter31@gmail.com" className="footer-contact">
             Nous écrire <ArrowUpRight size={14} aria-hidden="true" />
           </a>
@@ -244,20 +245,20 @@ export function Footer() {
           <span aria-hidden="true">+</span>
         </summary>
         <nav className="footer-queries" aria-label="Recherches par équipement">
-          {QUERY_MAP.map((q) => (
+          {spaced(QUERY_MAP.map((q) => (
             <a key={q.query} href={q.path}>
               {q.query}
             </a>
-          ))}
+          )))}
         </nav>
       </details>
       <div className="footer-bottom">
-        <MotionControl />
-        <span>© {new Date().getFullYear()} Boutique de Boxe</span>
+        <MotionControl />{' '}
+        <span>© {new Date().getFullYear()} Boutique de Boxe</span>{' '}
         <nav aria-label="Informations légales">
-          <a href="/mentions-legales/">Mentions légales</a>
-          <a href="/conditions-generales-de-vente/">CGV</a>
-          <a href="/confidentialite/">Confidentialité</a>
+          <a href="/mentions-legales/">Mentions légales</a>{' '}
+          <a href="/conditions-generales-de-vente/">CGV</a>{' '}
+          <a href="/confidentialite/">Confidentialité</a>{' '}
           <CookiesButton />
         </nav>
       </div>
