@@ -1,7 +1,7 @@
 import { db } from './database';
 import { suspicion, ensureChoices } from './alerts';
 import { shop } from './catalog';
-import { QuotaExhausted, mailerConfigured, quotaToday, sendMail } from './mailer';
+import { QuotaExhausted, mailerConfigured, mailerRoute, quotaToday, sendMail } from './mailer';
 
 /**
  * La lettre d'ouverture : ce que reçoivent, le jour J, toutes les personnes inscrites à l'alerte.
@@ -92,7 +92,7 @@ export async function progress(id: string): Promise<Progress> {
 export async function sendTest(id: string, to: string) {
   const c = await campaign(id);
   if (!c) throw new Error('Brouillon introuvable.');
-  if (!mailerConfigured()) throw new Error('Aucun compte d’envoi configuré (SMTP_USER, SMTP_PASS, SMTP_FROM).');
+  if (!mailerConfigured()) throw new Error('Aucun compte d’envoi configuré : ajoutez RESEND_API_KEY dans Vercel.');
   const { text, html } = render(c, unsubscribeUrl('00000000-0000-0000-0000-000000000000'));
   const r = await sendMail({ to, subject: '[Essai] ' + c.subject, text, html });
   await (await db()).prepare('UPDATE campaigns SET test_sent_at=? WHERE id=?').bind(new Date().toISOString(), id).run();
@@ -106,7 +106,7 @@ export async function sendTest(id: string, to: string) {
 export async function sendBatch(id: string, limit = 60): Promise<Progress & { quotaExhausted: boolean; batch: number }> {
   const c = await campaign(id);
   if (!c) throw new Error('Brouillon introuvable.');
-  if (!mailerConfigured()) throw new Error('Aucun compte d’envoi configuré (SMTP_USER, SMTP_PASS, SMTP_FROM).');
+  if (!mailerConfigured()) throw new Error('Aucun compte d’envoi configuré : ajoutez RESEND_API_KEY dans Vercel.');
   if (!c.test_sent_at) throw new Error('Envoyez-vous d’abord un essai : la lettre part telle quelle.');
   const database = await db();
   const now = new Date().toISOString();
@@ -125,6 +125,8 @@ export async function sendBatch(id: string, limit = 60): Promise<Progress & { qu
         text,
         html,
         headers: { 'List-Unsubscribe': `<${shop.origin}/api/desabonnement?token=${s.token}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' },
+        // Une lettre, un destinataire, un seul message : un lot rejoué ne double rien.
+        key: `lettre/${id}/${s.token}`,
       });
       await database.prepare('INSERT INTO campaign_sends (campaign_id, email, status, account, error, sent_at) VALUES (?,?,?,?,?,?) ON CONFLICT (campaign_id, email) DO UPDATE SET status=excluded.status, account=excluded.account, error=NULL, sent_at=excluded.sent_at').bind(id, s.email, 'sent', r.account, null, new Date().toISOString()).run();
       batch++;
@@ -146,7 +148,7 @@ export async function newsletterStatus() {
   const subs = await subscribers();
   const list = await campaigns();
   const rows = await Promise.all(list.map(async (c) => ({ ...c, progress: await progress(c.id) })));
-  return { configured: mailerConfigured(), quota: mailerConfigured() ? await quotaToday() : [], subscribers: subs.length, campaigns: rows };
+  return { configured: mailerConfigured(), route: mailerRoute(), quota: mailerConfigured() ? await quotaToday() : [], subscribers: subs.length, campaigns: rows };
 }
 
 /** Désinscrit une adresse entière à partir du jeton d'une de ses inscriptions. */

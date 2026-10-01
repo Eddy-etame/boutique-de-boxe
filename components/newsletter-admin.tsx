@@ -8,7 +8,7 @@ import { useCallback, useEffect, useState } from 'react';
  */
 type Progress = { total: number; sent: number; failed: number; pending: number };
 type Campaign = { id: string; subject: string; body: string; created_at: string; updated_at: string; test_sent_at: string | null; started_at: string | null; finished_at: string | null; progress: Progress };
-type Status = { configured: boolean; quota: { account: string; sent: number; left: number }[]; subscribers: number; campaigns: Campaign[] };
+type Status = { configured: boolean; route?: string | null; quota: { account: string; sent: number; left: number }[]; subscribers: number; campaigns: Campaign[] };
 
 const DEFAULT_SUBJECT = 'Les ventes sont ouvertes';
 const DEFAULT_BODY = `Bonjour,
@@ -127,7 +127,7 @@ export function NewsletterAdmin() {
           </div>
           <div>
             <strong>{status.configured ? status.quota.length : 0}</strong>
-            <span>{status.configured ? 'compte' + (status.quota.length > 1 ? 's' : '') + ' d’envoi (Brevo)' : 'compte d’envoi : à configurer dans Vercel (SMTP_USER, SMTP_PASS, SMTP_FROM)'}</span>
+            <span>{status.configured ? 'compte' + (status.quota.length > 1 ? 's' : '') + ' d’envoi (' + (status.route || 'SMTP') + ' en premier)' : 'compte d’envoi : à configurer dans Vercel (RESEND_API_KEY)'}</span>
           </div>
           <div>
             <strong>{quotaLeft}</strong>

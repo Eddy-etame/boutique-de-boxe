@@ -6,6 +6,8 @@ import { boxtalConfigured, boxtalMapToken, parseRelay, validateRelayPoint } from
 import { newsletterStatus, saveCampaign, sendBatch, sendTest } from '@/lib/newsletter';
 import { db, isAdmin, readCatalog, adminEmail } from '@/lib/database';
 import { after } from 'next/server';
+
+export const maxDuration = 60;
 import { shop } from '@/lib/catalog';
 import { emailValid, ensureAlertContact, ensureChoices, insertAlert, normalisePhone, CONSENT_VERSION } from '@/lib/alerts';
 import {
