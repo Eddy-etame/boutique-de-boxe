@@ -59,7 +59,7 @@ export const SUBFAMILIES: Subfamily[] = [
       { question: 'Bandes de boxe 2,50 m ou 4,50 m ?', answer: '4,50 m pour un adulte, 2,50 m pour un enfant ou une petite main. En cas de doute, prenez 4,50 m : on peut toujours faire un tour de plus.' },
       { question: 'Faut-il des bandes avec des gants de boxe ?', answer: 'Oui pour toute frappe au sac ou avec partenaire. Les bandes tiennent le poignet et protègent les articulations ; le gant seul ne le fait pas.' },
     ],
-    guide: 'debuter-boxe',
+    guide: 'bandes-de-boxe-ou-sous-gants',
     match: starts(/^bandes? de boxe|^bandes de boxe mexicaines/),
   },
   {
@@ -80,7 +80,7 @@ export const SUBFAMILIES: Subfamily[] = [
       { question: 'Peut-on porter des sous-gants sans bandes ?', answer: 'Oui, c’est leur rôle. Pour le sparring lourd, certaines salles demandent des bandes en plus : demandez.' },
       { question: 'Les sous-gants se lavent-ils ?', answer: 'À la main, à l’eau tiède, sans essorer fort. Séchage à l’air, loin d’un radiateur.' },
     ],
-    guide: 'choisir-gants-boxe',
+    guide: 'bandes-de-boxe-ou-sous-gants',
     match: starts(/^sous-gants|^mitaines/),
   },
   {
@@ -249,7 +249,7 @@ export const SUBFAMILIES: Subfamily[] = [
       { question: 'Un sac sur pied bouge-t-il ?', answer: 'Il glisse si la base est mal remplie. Remplissez-la de sable plutôt que d’eau pour plus de stabilité, et posez-la sur un tapis.' },
       { question: 'Quelle place pour un sac sur pied ?', answer: 'Un cercle de 1,50 m autour du sac pour tourner et se déplacer, plus la hauteur du sac, jusqu’à 1,80 m.' },
     ],
-    guide: 'debuter-boxe',
+    guide: 'sac-de-frappe-suspendu-ou-sur-pied',
     match: starts(/^sac de frappe sur pied|^mannequin de frappe|^base de frappe/),
   },
   {
@@ -474,7 +474,7 @@ export const SUBFAMILIES: Subfamily[] = [
     faq: [
       { question: 'Peut-on mettre seul des gants à lacets ?', answer: 'Difficilement. Un convertisseur lacets-velcro, vendu à part, résout le problème pour l’entraînement.' },
     ],
-    guide: 'choisir-gants-boxe',
+    guide: 'gants-de-boxe-cuir-ou-synthetique',
     match: (p) => p.category === 'gants-de-boxe' && /lacets/.test(n(p)),
   },
   {
@@ -656,7 +656,7 @@ export const SUBFAMILIES: Subfamily[] = [
       { question: 'Des gants d’entrée de gamme suffisent-ils pour débuter ?', answer: 'Oui pour le sac, les pattes d’ours et la technique. Le synthétique suffit pour apprendre ; le cuir, plus durable, se justifie quand l’entraînement devient régulier.' },
       { question: 'Bandes ou sous-gants pour un débutant ?', answer: 'Les bandes tiennent mieux le poignet et coûtent moins cher ; il faut cinq minutes pour apprendre à les poser. Les sous-gants s’enfilent d’un geste. L’un comme l’autre va sous tous les gants.' },
     ],
-    guide: 'debuter-boxe',
+    guide: 'gants-de-boxe-cuir-ou-synthetique',
     match: (p) => !kid(p) && p.price > 0 && (/^bandes? de boxe|^sous-gants|^corde à sauter|^protège-dents/.test(n(p)) || (p.category === 'gants-de-boxe' && n(p).startsWith('gants') && !/lacets|compétition|competition|amateur|pro fight|professional|sparring/.test(n(p)) && p.price <= 6000)),
   },
   {

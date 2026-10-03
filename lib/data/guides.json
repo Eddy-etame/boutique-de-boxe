@@ -956,5 +956,255 @@
         "url": "/guide-des-tailles/"
       }
     ]
+  },
+  {
+    "slug": "gants-de-boxe-cuir-ou-synthetique",
+    "title": "Gants de boxe en cuir ou en synthétique : lequel choisir ?",
+    "description": "Cuir, cuir synthétique ou PU : ce que la matière d’un gant de boxe change à sa durée, à son entretien et à son prix, et laquelle prendre selon vos séances.",
+    "eyebrow": "Guide · Cuir ou synthétique",
+    "readMinutes": 4,
+    "published": "2026-10-03",
+    "intro": "Le cuir dure plus longtemps et se fait à la main ; le synthétique coûte moins cher et s’entretient d’un coup de chiffon. Entre les deux, le bon choix dépend d’un seul chiffre : le nombre de séances par semaine.",
+    "sections": [
+      {
+        "title": "Trois matières, pas deux",
+        "paragraphs": [
+          "Sous le mot « synthétique », les fabricants rangent deux choses. Le PU, ou polyuréthane, est la matière des gants d’entrée de gamme : léger, bon marché, vite usé si l’on s’entraîne souvent. Le cuir synthétique technique, que chaque fabricant vend sous son propre nom, vise la tenue du cuir avec moins d’entretien.",
+          "Le cuir véritable reste la matière la plus durable. Il s’assouplit séance après séance et finit par épouser la main de celui qui le porte. La fiche de chaque modèle indique la matière extérieure à la ligne « Matières »."
+        ]
+      },
+      {
+        "title": "Ce que la matière change vraiment",
+        "paragraphs": [
+          "La durée de vie d’abord. Un fabricant comme Hayabusa classe ses propres matières ainsi : le cuir pour une longue durée, le cuir synthétique technique un peu en dessous, le PU pour un usage léger ou occasionnel.",
+          "L’entretien ensuite : le synthétique se nettoie plus facilement, le cuir demande un soin de temps en temps. Le prix enfin, qui suit le même ordre. La matière ne dit rien, en revanche, du rembourrage ni de la coupe : deux gants en cuir peuvent protéger très différemment."
+        ]
+      },
+      {
+        "title": "Le nombre de séances décide",
+        "paragraphs": [
+          "Une séance par semaine, ou un cours de cardio boxe sans opposition : un gant en PU fait le travail, et il laisse le temps de savoir si la boxe vous plaît.",
+          "Deux séances régulières : le cuir synthétique technique tient la distance sans demander de soin. À partir de trois séances par semaine, ou si vous frappez beaucoup au sac lourd, le cuir devient le choix le moins coûteux à l’usage, parce qu’il se remplace moins souvent."
+        ],
+        "bullets": [
+          "Occasionnel ou débutant : PU.",
+          "Régulier : cuir synthétique technique.",
+          "Trois séances et plus : cuir."
+        ]
+      },
+      {
+        "title": "La qualité varie dans chaque matière",
+        "paragraphs": [
+          "Un mauvais cuir existe, un excellent synthétique aussi : les deux matières vont du bas de gamme au haut de gamme. Regardez les coutures, l’épaisseur du rembourrage sur les jointures et la tenue du poignet avant de regarder l’étiquette.",
+          "Le prix aide à situer un modèle. L’observatoire des prix de la boutique donne, pour chaque marque de gants, le prix le plus bas, le prix médian et le prix le plus haut du catalogue."
+        ]
+      },
+      {
+        "title": "Quelle que soit la matière, le gant sèche ouvert",
+        "paragraphs": [
+          "C’est l’humidité qui abîme un gant, bien avant les coups. Après chaque séance : un chiffon propre sur l’extérieur, le gant grand ouvert à l’air, jamais enfermé dans le sac jusqu’au lendemain, puis un endroit frais et sec.",
+          "Porter des bandes lavées à chaque séance garde la sueur hors du rembourrage. C’est le geste qui prolonge le plus la vie d’une paire, en cuir comme en synthétique."
+        ]
+      }
+    ],
+    "faq": [
+      {
+        "question": "Les gants de boxe en cuir valent-ils leur prix ?",
+        "answer": "Oui si vous vous entraînez au moins trois fois par semaine : le cuir dure plus longtemps et devient plus confortable avec le temps. Pour une séance hebdomadaire, un bon synthétique suffit."
+      },
+      {
+        "question": "Le cuir synthétique est-il du vrai cuir ?",
+        "answer": "Non. C’est une matière de synthèse conçue pour approcher la tenue du cuir, avec un entretien plus simple et un prix plus bas ; elle se moule moins à la main."
+      },
+      {
+        "question": "Combien de temps dure un gant en PU ?",
+        "answer": "Cela dépend du nombre de séances et du travail au sac. Le PU est la matière qui s’use le plus vite : il convient à un usage léger, pas à plusieurs entraînements par semaine."
+      }
+    ],
+    "relatedCategories": [
+      "gants-de-boxe",
+      "materiel-boxe",
+      "accessoires-boxe"
+    ],
+    "sources": [
+      {
+        "title": "Hayabusa — Leather vs. Engineered Leather vs. PU Boxing Gloves",
+        "url": "https://www.hayabusafight.com/blogs/community/leather-vs-engineered-leather-vs-pu-boxing-gloves"
+      },
+      {
+        "title": "Hayabusa — Boxing Gloves Buying Guide",
+        "url": "https://www.hayabusafight.com/blogs/community/boxing-gloves-buying-guide"
+      },
+      {
+        "title": "Observatoire des prix Boutique de Boxe",
+        "url": "/observatoire-des-prix/"
+      }
+    ]
+  },
+  {
+    "slug": "sac-de-frappe-suspendu-ou-sur-pied",
+    "title": "Sac de frappe suspendu ou sur pied : lequel choisir ?",
+    "description": "Sac de frappe suspendu ou sur pied : ce que chacun demande à votre logement, le poids à viser, et l’eau ou le sable dans la base d’un sac sur pied.",
+    "eyebrow": "Guide · Suspendu ou sur pied",
+    "readMinutes": 4,
+    "published": "2026-10-03",
+    "intro": "Le sac suspendu se choisit quand le plafond ou un mur peut le porter ; le sac sur pied, quand on ne peut pas percer. Avant le modèle, c’est donc le logement qui tranche. Le reste se règle avec deux chiffres : votre poids, et la place autour.",
+    "sections": [
+      {
+        "title": "La question à poser d’abord : pouvez-vous fixer ?",
+        "paragraphs": [
+          "Un sac suspendu tire sur son point d’attache à chaque frappe. Il lui faut un support fait pour cela : une poutre, une dalle, une potence murale ou un portique posé au sol. Si vous êtes locataire, ou si le plafond est en plaques, le portique et le sac sur pied sont les deux seules réponses.",
+          "Le sac sur pied ne demande aucune fixation. Il se déplace, se range dans un coin et convient à un garage comme à un appartement."
+        ]
+      },
+      {
+        "title": "Le poids d’un sac suspendu : environ la moitié du vôtre",
+        "paragraphs": [
+          "Le repère le plus répandu : un sac qui pèse à peu près la moitié de votre poids. Plus lourd, il bouge moins et renvoie davantage dans les poignets, les coudes et les épaules ; plus léger, il se balance trop et casse le rythme.",
+          "Ce repère s’ajuste. Un débutant gagne à rester un peu en dessous, un frappeur expérimenté qui travaille la puissance peut monter. La hauteur compte autant : un sac long pour les coups de pied bas, un sac court pour les poings."
+        ]
+      },
+      {
+        "title": "Sur pied : de l’eau ou du sable dans la base",
+        "paragraphs": [
+          "La base se remplit d’eau ou de sable. L’eau se verse et se vide vite : c’est le choix de celui qui déplace son sac. Le sable pèse plus lourd et tient mieux en place : c’est celui de l’entraînement appuyé.",
+          "Dans les deux cas, remplissez la base entièrement. Une base remplie à moitié fait partie des erreurs de montage les plus courantes."
+        ]
+      },
+      {
+        "title": "Un sac sur pied qui glisse se corrige",
+        "paragraphs": [
+          "Qu’il recule un peu sous les enchaînements est normal. S’il traverse la pièce, trois réglages suffisent le plus souvent."
+        ],
+        "bullets": [
+          "Un tapis en caoutchouc sous la base : il accroche mieux qu’un parquet ou un carrelage, et protège le sol.",
+          "Du sable à la place de l’eau, jusqu’en haut.",
+          "Du poids ajouté autour de la base, disques ou sacs de sable."
+        ]
+      },
+      {
+        "title": "Ce que chacun fait le mieux",
+        "paragraphs": [
+          "Le sac suspendu encaisse les coups lourds et revient vers vous : il fait travailler le placement et les déplacements. Le sac sur pied se prête aux enchaînements rapides, au cardio et aux logements où l’on ne perce pas.",
+          "Dans le catalogue, les sacs suspendus, les sacs sur pied, les potences et les portiques sont sur la même page de famille ; chaque fiche donne la hauteur, le poids et le mode de fixation."
+        ]
+      }
+    ],
+    "faq": [
+      {
+        "question": "Un sac de frappe sur pied est-il aussi efficace qu’un sac suspendu ?",
+        "answer": "Pour le cardio, la technique et les enchaînements, oui. Pour les frappes lourdes, le sac suspendu reste plus stable ; une base remplie de sable et un tapis en caoutchouc réduisent l’écart."
+      },
+      {
+        "question": "Combien doit peser un sac de frappe suspendu ?",
+        "answer": "Environ la moitié de votre poids pour un sac suspendu : autour de 30 kg pour une personne de 60 kg, de 40 kg pour 80 kg. Un débutant reste un peu en dessous."
+      },
+      {
+        "question": "Faut-il remplir la base d’eau ou de sable ?",
+        "answer": "De sable pour la stabilité, d’eau si vous devez déplacer ou vider le sac souvent. Dans les deux cas, jusqu’en haut."
+      }
+    ],
+    "relatedCategories": [
+      "sacs-de-frappe",
+      "materiel-boxe",
+      "gants-de-boxe"
+    ],
+    "sources": [
+      {
+        "title": "Hayabusa — Freestanding Heavy Bag Setup: Fill, Anchor & Keep It Stable",
+        "url": "https://www.hayabusafight.com/blogs/community/standing-punching-bag-setup"
+      },
+      {
+        "title": "Hayabusa — How to Choose the Right Punching Bag Weight",
+        "url": "https://www.hayabusafight.com/blogs/community/how-to-choose-the-right-punching-bag-weight"
+      },
+      {
+        "title": "Guide « Quel équipement pour débuter la boxe anglaise ? »",
+        "url": "/guides/debuter-boxe/"
+      }
+    ]
+  },
+  {
+    "slug": "bandes-de-boxe-ou-sous-gants",
+    "title": "Bandes de boxe ou sous-gants : que mettre sous ses gants ?",
+    "description": "Bandes de boxe ou sous-gants : ce que chacun protège, le temps que chacun demande, et lequel prendre pour le sparring, le sac ou le cardio boxe.",
+    "eyebrow": "Guide · Bandes ou sous-gants",
+    "readMinutes": 4,
+    "published": "2026-10-03",
+    "intro": "Les bandes se règlent tour par tour et tiennent mieux le poignet ; les sous-gants s’enfilent en dix secondes. Aucun des deux n’est meilleur dans l’absolu : la bande est l’outil de celui qui s’entraîne souvent, le sous-gant celui du cours qui démarre à l’heure.",
+    "sections": [
+      {
+        "title": "À quoi sert ce qu’on met sous le gant",
+        "paragraphs": [
+          "Le gant amortit le coup. Ce qu’il y a dessous tient la main : le poignet reste dans l’axe, les petits os du métacarpe sont serrés ensemble, les jointures gagnent une épaisseur.",
+          "Il y a un second effet, moins connu. Le tissu boit la sueur avant qu’elle n’atteigne la mousse : un gant porté sur des bandes sent moins et dure plus longtemps."
+        ]
+      },
+      {
+        "title": "La bande : réglable, mais à apprendre",
+        "paragraphs": [
+          "Une bande se pose comme on veut : plus de tours au poignet pour qui se le tord, plus d’épaisseur sur les jointures pour qui frappe fort, un passage entre les doigts pour que rien ne glisse. C’est ce réglage qui en fait le choix du sparring et du sac lourd.",
+          "La contrepartie est le temps. Comptez quelques minutes par séance, et quelques cours pour retenir le geste. La longueur se choisit à la main : plus longue pour une grande main ou une pose très couvrante, plus courte pour une petite main."
+        ]
+      },
+      {
+        "title": "Le sous-gant : rapide, moins précis",
+        "paragraphs": [
+          "Le sous-gant s’enfile comme une mitaine et se ferme au poignet. Son rembourrage, souvent en gel, est déjà placé sur les jointures : il n’y a rien à apprendre.",
+          "Il convient aux cours de cardio boxe, aux séances courtes et aux débutants qui ne savent pas encore poser une bande. Son maintien du poignet est fixe : on ne peut pas le renforcer d’un tour de plus."
+        ]
+      },
+      {
+        "title": "Lequel pour quelle séance",
+        "paragraphs": [
+          "Beaucoup de pratiquants ont les deux dans leur sac et choisissent le jour même."
+        ],
+        "bullets": [
+          "Sparring, sac lourd, plusieurs séances par semaine : bandes.",
+          "Cardio boxe, séance courte, premier mois : sous-gants.",
+          "Poignet fragile : bandes, avec des tours en plus au poignet."
+        ]
+      },
+      {
+        "title": "Les deux se lavent, à chaque fois",
+        "paragraphs": [
+          "Une bande ou un sous-gant porté deux fois de suite rend au gant la sueur de la veille. Lavez-les après chaque séance, les bandes dans un filet pour qu’elles ne s’emmêlent pas, et laissez sécher à plat.",
+          "Qui s’entraîne plusieurs fois par semaine a intérêt à en posséder deux jeux, pour ne jamais remettre une bande humide."
+        ]
+      }
+    ],
+    "faq": [
+      {
+        "question": "Peut-on boxer sans bandes ni sous-gants ?",
+        "answer": "On le peut, mais on retire à la main sa première protection : le poignet est moins tenu, les jointures moins couvertes, et la sueur entre directement dans le gant, qui s’use plus vite."
+      },
+      {
+        "question": "Les sous-gants remplacent-ils les bandes pour le sparring ?",
+        "answer": "Ils dépannent. Pour le sparring et le sac lourd, les bandes restent le choix le plus sûr, parce qu’on règle soi-même le maintien du poignet. Certaines salles les imposent : demandez."
+      },
+      {
+        "question": "Quelle longueur de bandes choisir ?",
+        "answer": "Une main d’adulte demande une bande longue, de 4 m à 4,50 m ; une petite main ou un enfant, 2,50 m. Plus la pose couvre de poignet et de jointures, plus il faut de longueur."
+      }
+    ],
+    "relatedCategories": [
+      "accessoires-boxe",
+      "gants-de-boxe",
+      "materiel-boxe"
+    ],
+    "sources": [
+      {
+        "title": "Hayabusa — How to Choose the Right Boxing Hand Wraps",
+        "url": "https://www.hayabusafight.com/blogs/community/how-to-choose-boxing-hand-wraps"
+      },
+      {
+        "title": "Hayabusa — Do You Need Hand Wraps for Boxing?",
+        "url": "https://www.hayabusafight.com/blogs/community/boxing-hand-wraps-why-they-matter"
+      },
+      {
+        "title": "Guide « Comment choisir ses gants de boxe ? »",
+        "url": "/guides/choisir-gants-boxe/"
+      }
+    ]
   }
 ]

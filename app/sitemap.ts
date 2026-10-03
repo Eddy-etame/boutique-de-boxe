@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { readCatalog } from '@/lib/database';
 import { categories, categoryFor, getCategoryProducts, shop } from '@/lib/catalog';
-import { guides, services } from '@/lib/editorial';
+import { guides, services, guidePublished } from '@/lib/editorial';
 import { EDITORIAL_DATE, urlOf } from '@/lib/seo';
 import { SUBFAMILIES, subfamilyProducts } from '@/lib/subfamilies';
 import { brandsOf } from '@/lib/brands';
@@ -64,6 +64,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const facet of facets)
     dates.set(facet.path, collectionDate(facet.products));
   for (const path of VILLE_PATHS) dates.set(path, SOURCE.maj);
+  // Un guide écrit après le lancement porte sa propre date, jamais celle de la révision générale.
+  for (const g of guides) if (guidePublished(g) > EDITORIAL_DATE) dates.set('/guides/' + g.slug + '/', guidePublished(g));
 
   return [
     '/',

@@ -20,7 +20,7 @@ import {
   listItem,
 } from '@/lib/catalog';
 import { readCatalog } from '@/lib/database';
-import { guides, services } from '@/lib/editorial';
+import { guides, services, guidesEnLettres } from '@/lib/editorial';
 import { Breadcrumb, ArrowLink } from '@/components/shop-shell';
 import {
   Catalog,
@@ -94,7 +94,7 @@ export async function generateMetadata({
   const special: Record<string, [string, string]> = {
     guides: [
       'Guides d’achat boxe, MMA et sports de combat',
-      'Douze guides pour choisir gants, protections et équipement de boxe ou MMA selon votre pratique. Les tailles, les onces et les critères utiles.',
+      guidesEnLettres().charAt(0).toUpperCase() + guidesEnLettres().slice(1) + ' guides pour choisir gants, protections et équipement de boxe ou MMA selon votre pratique. Les tailles, les onces et les critères utiles.',
     ],
     nouveautes: [
       'Nouveautés : les équipements du catalogue',

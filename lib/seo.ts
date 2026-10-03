@@ -11,7 +11,7 @@
  * le vérifie.
  */
 import { shop, categories, categoryFor, getCategoryProducts, money, jsonLd, type Product, type Category } from './catalog';
-import type { Guide } from './editorial';
+import { guidePublished, guidesEnLettres, type Guide } from './editorial';
 import { SEO_COPY, type SeoFaq } from './seo-copy';
 import type { Subfamily } from './subfamilies';
 import { PAGE_SIZE } from './pagination';
@@ -108,6 +108,9 @@ export const KEYWORDS = {
     'difference-gants-boxe-mma': ['différence gants de boxe et gants MMA', 'gants MMA ou gants de boxe', 'gants MMA pour le sac'],
     'equipement-enfant': ['matériel de boxe enfant', 'gants de boxe enfant taille', 'protège-dents enfant', 'équipement boxe junior'],
     'equipement-femme': ['équipement de boxe femme', 'gants de boxe femme', 'brassière de sport boxe', 'short de boxe femme'],
+    'gants-de-boxe-cuir-ou-synthetique': ['gants de boxe cuir ou synthétique', 'gants de boxe en cuir', 'gants de boxe PU', 'cuir synthétique gants de boxe', 'durée de vie gants de boxe'],
+    'sac-de-frappe-suspendu-ou-sur-pied': ['sac de frappe suspendu ou sur pied', 'sac de frappe sur pied avis', 'quel poids de sac de frappe', 'sac de frappe eau ou sable', 'sac de frappe appartement'],
+    'bandes-de-boxe-ou-sous-gants': ['bandes de boxe ou sous-gants', 'bandes ou mitaines boxe', 'sous-gants gel avis', 'faut-il des bandes sous les gants', 'longueur bandes de boxe'],
   } as Record<string, string[]>,
 };
 
@@ -216,7 +219,7 @@ export function websiteNode() {
     url: shop.origin,
     name: shop.name,
     alternateName: ['Boutique de Boxe en ligne', 'Boxing Boutique', 'boutique-de-boxe.com'],
-    description: 'Matériel de boxe, MMA et sports de combat : plus de 1 000 modèles avec leurs tailles et leurs prix prévus, douze guides d’achat.',
+    description: 'Matériel de boxe, MMA et sports de combat : plus de 1 000 modèles avec leurs tailles et leurs prix prévus, ' + guidesEnLettres() + ' guides d’achat.',
     inLanguage: 'fr-FR',
     publisher: { '@id': ID('organisation') },
     dateModified: EDITORIAL_DATE,
@@ -372,8 +375,8 @@ export function articleGraph(g: Guide) {
     speakable: { '@type': 'SpeakableSpecification', cssSelector: ['.article-heading > p', '.guide-answer > p'] },
     author: { '@id': ID('organisation') },
     publisher: { '@id': ID('organisation') },
-    datePublished: '2026-09-09',
-    dateModified: EDITORIAL_DATE,
+    datePublished: guidePublished(g),
+    dateModified: [EDITORIAL_DATE, guidePublished(g)].sort().at(-1),
     inLanguage: 'fr-FR',
     articleSection: 'Guides d’achat',
     keywords: guideKeywords(g).join(', '),

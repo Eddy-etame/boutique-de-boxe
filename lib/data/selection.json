@@ -649,6 +649,75 @@
           "sourceSection": "La coupe : essayer avec les bandes"
         }
       ]
+    },
+    {
+      "slug": "gants-de-boxe-cuir-ou-synthetique",
+      "imageProductId": "bs-2000663",
+      "visualPattern": "three-materials-by-frequency",
+      "briefAnswer": "Comptez vos séances. Une par semaine : un gant en PU suffit. Deux : un cuir synthétique technique. Trois et plus : le cuir, qui dure le plus longtemps et se fait à votre main. La matière ne dit rien du rembourrage : vérifiez-le à part.",
+      "decisionPoints": [
+        {
+          "label": "Trois matières",
+          "explanation": "PU, cuir synthétique technique, cuir : lisez la ligne « Matières » de la fiche.",
+          "sourceSection": "Trois matières, pas deux"
+        },
+        {
+          "label": "Vos séances par semaine",
+          "explanation": "C’est le chiffre qui décide, avant le budget.",
+          "sourceSection": "Le nombre de séances décide"
+        },
+        {
+          "label": "Le séchage",
+          "explanation": "Un gant grand ouvert après chaque séance, quelle que soit sa matière.",
+          "sourceSection": "Quelle que soit la matière, le gant sèche ouvert"
+        }
+      ]
+    },
+    {
+      "slug": "sac-de-frappe-suspendu-ou-sur-pied",
+      "imageProductId": "bs-8736",
+      "visualPattern": "fix-or-stand-two-paths",
+      "briefAnswer": "Si un support peut le porter, prenez un sac suspendu d’environ la moitié de votre poids. Si vous ne pouvez pas percer, prenez un sac sur pied, base remplie de sable jusqu’en haut, posé sur un tapis en caoutchouc.",
+      "decisionPoints": [
+        {
+          "label": "Fixer ou ne pas fixer",
+          "explanation": "Poutre, dalle, potence ou portique : sans support fait pour cela, ce sera un sac sur pied.",
+          "sourceSection": "La question à poser d’abord : pouvez-vous fixer ?"
+        },
+        {
+          "label": "La moitié de votre poids",
+          "explanation": "Le repère d’un sac suspendu, à ajuster selon votre niveau.",
+          "sourceSection": "Le poids d’un sac suspendu : environ la moitié du vôtre"
+        },
+        {
+          "label": "Eau ou sable",
+          "explanation": "L’eau pour déplacer le sac, le sable pour qu’il tienne en place.",
+          "sourceSection": "Sur pied : de l’eau ou du sable dans la base"
+        }
+      ]
+    },
+    {
+      "slug": "bandes-de-boxe-ou-sous-gants",
+      "imageProductId": "bs-9732",
+      "visualPattern": "wrap-or-slip-on",
+      "briefAnswer": "Les bandes pour le sparring, le sac lourd et les semaines à plusieurs séances : on règle soi-même le maintien du poignet. Les sous-gants pour le cardio boxe, les séances courtes et le premier mois. Dans les deux cas, lavés après chaque séance.",
+      "decisionPoints": [
+        {
+          "label": "Tenir la main",
+          "explanation": "Ce qu’on met sous le gant aligne le poignet et serre les os de la main.",
+          "sourceSection": "À quoi sert ce qu’on met sous le gant"
+        },
+        {
+          "label": "Réglable ou rapide",
+          "explanation": "La bande se règle tour par tour ; le sous-gant s’enfile d’un geste.",
+          "sourceSection": "La bande : réglable, mais à apprendre"
+        },
+        {
+          "label": "Selon la séance",
+          "explanation": "Sparring et sac lourd : bandes. Cardio et séance courte : sous-gants.",
+          "sourceSection": "Lequel pour quelle séance"
+        }
+      ]
     }
   ],
   "sessions": [

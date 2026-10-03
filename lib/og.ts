@@ -4,7 +4,7 @@
  * viennent des données au moment de la requête, donc jamais en retard.
  */
 import { categoryFor, getCategoryProducts, money, shop, type Product, type Category } from './catalog';
-import { guides, services, type Guide } from './editorial';
+import { guides, services, guidePublished, dateEnLettres, type Guide } from './editorial';
 import { SEO_COPY } from './seo-copy';
 import { SUBFAMILIES, subfamilyProducts, type Subfamily } from './subfamilies';
 import selection from './data/selection.json';
@@ -109,7 +109,7 @@ function guideCard(g: Guide, products: Product[]): Card {
     facts: [
       { label: 'REPÈRES', value: fr(g.sections.length) },
       { label: 'QUESTIONS', value: fr(g.faq.length) },
-      { label: 'MIS À JOUR', value: '11 septembre 2026' },
+      'published' in g ? { label: 'PUBLIÉ', value: dateEnLettres(guidePublished(g)) } : { label: 'MIS À JOUR', value: '11 septembre 2026' },
     ],
     photos: photo ? [photo] : fallback,
     photoLabel: 'LE MODÈLE ILLUSTRÉ',

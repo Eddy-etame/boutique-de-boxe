@@ -1,4 +1,4 @@
-import { guides, type Guide, type Service } from '@/lib/editorial';
+import { guides, guidePublished, dateEnLettres, guidesEnLettres, type Guide, type Service } from '@/lib/editorial';
 import { articleGraph } from '@/lib/seo';
 import { categories, categoryFor, getCategoryProducts } from '@/lib/catalog';
 import { readCatalog } from '@/lib/database';
@@ -19,6 +19,9 @@ const covers = [
   'LA LISTE.',
   'LE MINIMUM.',
   'LA TAILLE.',
+  'LE CUIR.',
+  'LE SAC.',
+  'SOUS LE GANT.',
 ];
 export async function GuidesIndex() {
   const products = await readCatalog();
@@ -35,7 +38,7 @@ export async function GuidesIndex() {
           </h1>
         </div>
         <p>
-          Douze guides pour choisir la bonne taille, le bon poids et le bon
+          {guidesEnLettres().charAt(0).toUpperCase() + guidesEnLettres().slice(1)} guides pour choisir la bonne taille, le bon poids et le bon
           modèle avant d’acheter.
         </p>
       </section>
@@ -99,8 +102,7 @@ export async function GuidePage({ guide: g }: { guide: Guide }) {
         <h1>{g.title}</h1>
         <p>{g.intro}</p>
         <span className="article-byline">
-          Boutique de Boxe · Repères documentaires · Mis à jour le 11 septembre
-          2026
+          {'published' in g ? `Boutique de Boxe · Repères documentaires · Publié le ${dateEnLettres(guidePublished(g))}` : 'Boutique de Boxe · Repères documentaires · Mis à jour le 11 septembre 2026'}
         </span>
       </header>
       {summary && (

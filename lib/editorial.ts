@@ -1,6 +1,13 @@
 import seed from './data/guides.json';
 export const guides = seed;
 export type Guide = (typeof seed)[number];
+/** Les guides du lancement datent du 9 septembre 2026 ; ceux écrits ensuite portent leur date (« published »). */
+export const guidePublished = (g: Guide): string => ('published' in g && typeof g.published === 'string' ? g.published : '2026-09-09');
+/** La date en toutes lettres : « 3 octobre 2026 ». */
+export const dateEnLettres = (iso: string) => new Date(iso + 'T12:00:00Z').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+const EN_LETTRES = ['zéro', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf', 'dix', 'onze', 'douze', 'treize', 'quatorze', 'quinze', 'seize', 'dix-sept', 'dix-huit', 'dix-neuf', 'vingt'];
+/** Le nombre de guides, en toutes lettres : il ne se périme plus quand on en ajoute un. */
+export const guidesEnLettres = () => EN_LETTRES[guides.length] || String(guides.length);
 export type Service = {
   title: string;
   description: string;

@@ -145,7 +145,7 @@ export const categories: Category[] = [
     description:
       'Préparez le choix de votre sac de frappe : installation, dimensions, usages et sélection de matériel de frappe pour la boxe.',
     families: ['sacs-de-frappe'],
-    guide: 'debuter-boxe',
+    guide: 'sac-de-frappe-suspendu-ou-sur-pied',
     number: '06',
   },
   {

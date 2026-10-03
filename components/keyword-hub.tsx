@@ -6,6 +6,7 @@ import { urlOf } from '@/lib/seo';
 import { SUBFAMILIES, subfamilyProducts } from '@/lib/subfamilies';
 import { ozFacets, colourFacets, brandFamilyFacet } from '@/lib/facets';
 import { ProductCard } from './shop-interactions';
+import { dansLeRayon } from '@/lib/rayons';
 
 /**
  * La page-pilier d’une recherche du brief. Demande du propriétaire : « for keyword in keywords we need
@@ -36,7 +37,8 @@ export async function KeywordHub({
   const { week, range } = weekLabel();
   const selection = weeklySelection(scope, items);
   const viewed = await mostViewed(items);
-  const families = priceTable(items);
+  // Ce qui compte dans le rayon seulement (lib/rayons.ts) : sans les semelles, « chaussures dès 1,70 € » était faux.
+  const families = priceTable(items.filter((p) => dansLeRayon(p.category, p)));
   // Une seule famille : le tableau se lit par marque, c’est là que les prix diffèrent.
   const byBrand = families.length < 2;
   const brandList = brandsOf(items);

@@ -197,7 +197,7 @@ export async function POST(request: Request) {
         ...SUBFAMILIES.map((sf) => ({ path: '/' + sf.slug + '/', purpose: `${sf.name} : ${subfamilyProducts(sf, products).length} modèles` })),
         { path: '/marques/', purpose: 'toutes les marques du catalogue' },
         ...brandsOf(products).map((b) => ({ path: '/marques/' + b.slug + '/', purpose: `${b.name} : ${b.products.length} modèles` })),
-        { path: '/guides/', purpose: 'les douze guides d’achat' },
+        { path: '/guides/', purpose: `les ${guides.length} guides d’achat` },
         ...guides.map((g) => ({ path: '/guides/' + g.slug + '/', purpose: g.title })),
         ...Object.keys(services).map((s) => ({ path: '/' + s + '/', purpose: services[s].title })),
         { path: '/contact/', purpose: 'formulaire de contact' },
