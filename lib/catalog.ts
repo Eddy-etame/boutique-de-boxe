@@ -150,11 +150,11 @@ export const categories: Category[] = [
   },
   {
     slug: 'materiel-boxe',
-    name: 'Matériel de boxe anglaise',
-    label: 'Tout pour la boxe anglaise.',
-    intro: 'Gants, bandes, protections, textile et sacs de frappe : tout le matériel de boxe anglaise, avec les tailles et les prix prévus.',
+    name: 'Matériel de boxe',
+    label: 'Tout le matériel de boxe, du premier cours au ring.',
+    intro: 'Le matériel de boxe tient en huit rayons : gants, bandes et accessoires, protections, textile, sacs de frappe, chaussures, matériel d’entraînement et sacs de sport. Pour la boxe anglaise comme pour la boxe thaï, le kick-boxing ou la savate, chaque modèle est donné avec ses tailles réelles et son prix prévu.',
     description:
-      'Matériel de boxe anglaise : gants, bandes, protections, tenues et sacs de frappe. Explorez le catalogue et les guides d’achat Boutique de Boxe.',
+      'Matériel de boxe : gants, bandes, protections, tenues, sacs de frappe et chaussures, pour la boxe anglaise, la boxe thaï, le kick-boxing et la savate. Le catalogue et les guides d’achat Boutique de Boxe.',
     families: [
       'gants-de-boxe',
       'protections-boxe',

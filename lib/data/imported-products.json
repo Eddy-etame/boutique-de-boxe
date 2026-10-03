@@ -71113,8 +71113,8 @@
     "description": "Protège-tibias Elion, coton noir. Sa construction associe coton · élasthanne et mousse double densité. Coloris : noir.",
     "use": "Protèges-Tibias et pieds",
     "sizes": [
-      "Small - Medium (\\\"Junior\\\")",
-      "Large - XLarge (\\\"Senior\\\")"
+      "Small - Medium (« Junior »)",
+      "Large - XLarge (« Senior »)"
     ],
     "specs": {
       "Référence": "52010",
@@ -71142,9 +71142,9 @@
       {
         "id": "bs-9018-v-2018798",
         "reference": "EL52010",
-        "label": "Small - Medium (\\\"Junior\\\")",
+        "label": "Small - Medium (« Junior »)",
         "attributes": {
-          "Taille": "Small - Medium ( \\\"Junior\\\" )",
+          "Taille": "Small - Medium (« Junior »)",
           "Couleur": "NOIR"
         },
         "price": 1200
@@ -71152,9 +71152,9 @@
       {
         "id": "bs-9018-v-2018799",
         "reference": "EL52010",
-        "label": "Large - XLarge (\\\"Senior\\\")",
+        "label": "Large - XLarge (« Senior »)",
         "attributes": {
-          "Taille": "Large - XLarge ( \\\"Senior\\\" )",
+          "Taille": "Large - XLarge (« Senior »)",
           "Couleur": "NOIR"
         },
         "price": 1200
@@ -71170,8 +71170,8 @@
     "referenceLabel": "Référence",
     "review": false,
     "sourceSizes": [
-      "Small - Medium ( \\\"Junior\\\" ) · NOIR",
-      "Large - XLarge ( \\\"Senior\\\" ) · NOIR"
+      "Small - Medium (« Junior ») · NOIR",
+      "Large - XLarge (« Senior ») · NOIR"
     ],
     "sourceBrand": "ELION"
   },

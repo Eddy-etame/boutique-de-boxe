@@ -65,7 +65,7 @@ const CATEGORY_ENTITY: Record<string, Entity[]> = {
   'chaussures-boxe': [ENTITY.boxe],
   'sacs-de-sport': [ENTITY.sportsDeCombat],
   'arts-martiaux': [ENTITY.jjb, ENTITY.kickBoxing, ENTITY.savate],
-  'materiel-boxe': [ENTITY.boxe],
+  'materiel-boxe': [ENTITY.boxe, ENTITY.muayThai, ENTITY.kickBoxing, ENTITY.savate],
   'materiel-mma': [ENTITY.mma],
   'boutique-arts-martiaux': [ENTITY.jjb, ENTITY.muayThai, ENTITY.savate],
   'materiel-sport-de-combat': [ENTITY.sportsDeCombat],
@@ -93,7 +93,7 @@ export const KEYWORDS = {
     'equipement-entrainement': { head: ['équipement d’entraînement boxe', 'matériel d’entraînement boxe'], body: ['pattes d’ours', 'pao boxe', 'bouclier de frappe', 'corde ondulatoire', 'élastique de résistance', 'gilet lesté', 'medicine-ball', 'raquettes de boxe'] },
     'sacs-de-sport': { head: ['sac de sport boxe', 'sac de boxe'], body: ['sac de sport Elion', 'sac à dos boxe', 'sac de sport convertible', 'sac de sport Fairtex', 'sac de sport Venum'] },
     'arts-martiaux': { head: ['équipement arts martiaux', 'matériel arts martiaux'], body: ['kimono de JJB', 'kimono karaté', 'ceinture de JJB', 'protège-tibias karaté', 'matériel kick-boxing', 'matériel savate'] },
-    'materiel-boxe': { head: ['matériel de boxe anglaise', 'équipement boxe anglaise'], body: ['gants de boxe', 'bandes de boxe', 'casque de boxe', 'sac de frappe', 'chaussures de boxe'] },
+    'materiel-boxe': { head: ['matériel de boxe', 'matériel de boxe anglaise', 'équipement boxe anglaise'], body: ['gants de boxe', 'bandes de boxe', 'casque de boxe', 'sac de frappe', 'chaussures de boxe', 'budget équipement de boxe'] },
     'materiel-mma': { head: ['matériel MMA', 'équipement MMA'], body: ['gants MMA', 'short MMA', 'protège-dents MMA', 'rashguard', 'protège-tibias MMA'] },
     'boutique-arts-martiaux': { head: ['boutique arts martiaux', 'matériel arts martiaux en ligne'], body: ['kimono', 'ceinture', 'protections', 'muay-thaï', 'kick-boxing', 'savate'] },
     'materiel-sport-de-combat': { head: ['matériel sport de combat', 'équipement sports de combat'], body: ['boxe anglaise', 'MMA', 'muay-thaï', 'jiu-jitsu brésilien', 'kick-boxing', 'tout le catalogue'] },
@@ -123,6 +123,8 @@ export const PAGE_KEYWORDS: Record<string, string[]> = {
   'conditions-generales-de-vente': ['conditions générales de vente boutique de boxe'],
   confidentialite: ['confidentialité boutique de boxe', 'données personnelles'],
   'mentions-legales': ['mentions légales boutique de boxe', 'SAS BOXING CENTER'],
+  'a-propos': ['à propos de boutique de boxe', 'qui est boutique de boxe', 'SAS BOXING CENTER Toulouse', 'boutique de boxe en ligne française'],
+  'plan-du-site': ['plan du site', 'toutes les pages boutique de boxe', 'rayons matériel de boxe'],
 };
 export const pageKeywords = (path: string) => PAGE_KEYWORDS[path.replace(/^\/|\/$/g, '')];
 
@@ -344,10 +346,14 @@ export function collectionGraph(o: { path: string; name: string; description: st
   ]);
 }
 
+/** L’entité de chaque page par boxe : ce dont elle parle, avant sa famille parente. */
+const DISCIPLINE_ENTITY: Record<string, Entity> = { 'Muay-thaï': ENTITY.muayThai, 'Kick-boxing': ENTITY.kickBoxing, 'Savate boxe française': ENTITY.savate, 'Jiu-jitsu brésilien': ENTITY.jjb };
+
 /** Sous-famille : CollectionPage, liste, questions ; renvoie à la famille parente par `about`. */
 export function subfamilyGraph(sub: Subfamily, items: Product[], page = 1) {
   const parent = categoryFor(sub.parent);
-  return collectionGraph({ path: '/' + sub.slug + '/', name: sub.name, description: sub.description, items: items.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE), total: items.length, page, perPage: PAGE_SIZE, category: parent, faq: sub.faq, keywords: subfamilyKeywords(sub), about: parent ? (CATEGORY_ENTITY[parent.slug] || []).map(thing) : [] });
+  const own = sub.discipline ? DISCIPLINE_ENTITY[sub.discipline] : undefined;
+  return collectionGraph({ path: '/' + sub.slug + '/', name: sub.name, description: sub.description, items: items.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE), total: items.length, page, perPage: PAGE_SIZE, category: parent, faq: sub.faq, keywords: subfamilyKeywords(sub), about: own ? [thing(own)] : parent ? (CATEGORY_ENTITY[parent.slug] || []).map(thing) : [] });
 }
 
 /** Guide : Article + FAQPage, auteur et éditeur = la boutique. */

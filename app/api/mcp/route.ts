@@ -201,6 +201,8 @@ export async function POST(request: Request) {
         ...guides.map((g) => ({ path: '/guides/' + g.slug + '/', purpose: g.title })),
         ...Object.keys(services).map((s) => ({ path: '/' + s + '/', purpose: services[s].title })),
         { path: '/contact/', purpose: 'formulaire de contact' },
+        { path: '/vente-materiel-de-boxe/', purpose: 'la vente : vendeur, prix par rayon, livraison, retour' },
+        { path: '/plan-du-site/', purpose: 'toutes les pages qui ne sont pas une fiche' },
       ],
     };
   else if (name === 'get_query_map') value = QUERY_MAP.map((q) => ({ query: q.query, url: urlOf(q.path), answer: q.answer }));

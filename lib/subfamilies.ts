@@ -7,6 +7,7 @@
  */
 import type { Product } from './catalog';
 import type { SeoFaq, SeoSection } from './seo-copy';
+import { ENFANT, entrelace } from './rayons';
 
 export type Subfamily = {
   slug: string;
@@ -22,10 +23,22 @@ export type Subfamily = {
   faq: SeoFaq[];
   guide: string;
   match: (p: Product) => boolean;
+  /**
+   * Page d’entrée par discipline ou par niveau (03/10) : elle traverse les familles au lieu d’en
+   * découper une. Ses modèles alternent d’une famille à l’autre, elle a son bloc de liens à elle
+   * (« Par boxe et par niveau ») et n’entre jamais dans « Par équipement ».
+   */
+  kind?: 'discipline' | 'niveau';
+  /** La ligne du tableau par discipline que la page détaille (components/materiel-par-discipline.tsx). */
+  discipline?: string;
+  /** Le sac du niveau que la page détaille (components/materiel-de-boxe.tsx). */
+  niveau?: 'debutant' | 'competition';
 };
 
 const n = (p: Product) => p.name.toLowerCase();
 const starts = (re: RegExp) => (p: Product) => re.test(n(p));
+const tagged = (p: Product, discipline: string) => (p.disciplines || []).includes(discipline);
+const kid = (p: Product) => p.audience === 'enfant' || ENFANT.test(p.name);
 
 export const SUBFAMILIES: Subfamily[] = [
   {
@@ -524,8 +537,160 @@ export const SUBFAMILIES: Subfamily[] = [
     guide: 'equipement-femme',
     match: (p) => p.audience === 'femme' || /\b(femme|women|brassière|pelvienne)\b/.test(n(p)),
   },
+
+  /* ── Par boxe et par niveau (03/10) : les pages d’entrée sous « Matériel de boxe » ─────────── */
+  {
+    slug: 'materiel-boxe-thai',
+    parent: 'materiel-boxe',
+    kind: 'discipline',
+    discipline: 'Muay-thaï',
+    name: 'Matériel de boxe thaï',
+    eyebrow: 'MATÉRIEL DE BOXE THAÏ · ÉQUIPEMENT MUAY-THAÏ',
+    title: 'Matériel de boxe thaï : gants, protège-tibias, shorts',
+    description: 'Matériel de boxe thaï et équipement muay-thaï : gants Fairtex et Twins, protège-tibias, shorts thaï, coudières, chevillères. Tailles de chaque marque, prix prévus, livraison en France.',
+    prioritaires: ['matériel de boxe thaï', 'équipement muay-thaï', 'matériel muay-thaï'],
+    secondaires: ['équipement boxe thaï', 'gants de boxe thaï', 'short de boxe thaï', 'protège-tibias muay-thaï', 'gants Fairtex', 'gants Twins', 'coudières boxe thaï', 'chevillères boxe thaï', 'débuter la boxe thaï'],
+    intro: 'La boxe thaï frappe avec les poings, les tibias, les genoux et les coudes : le matériel protège donc les jambes autant que les mains. Gants, protège-tibias et short thaï d’abord ; coudières, chevillères et coquille quand le travail à deux s’installe.',
+    sections: [
+      { h2: 'Ce que le muay-thaï ajoute à un sac de boxe', paragraphs: ['Les gants et les bandes sont ceux de toutes les boxes. Le reste est propre au muay-thaï : des protège-tibias pour bloquer et donner les coups de pied sans se blesser, un short court et fendu qui laisse monter le genou, des chevillères pour tenir la cheville sur le pivot.', 'Les coudières n’arrivent qu’avec le travail des coudes à deux, et la coquille dès le premier sparring. Le casque dépend du club : demandez ce qu’il impose avant d’acheter.'] },
+      { h2: 'Fairtex, Twins : les marques nées en Thaïlande', paragraphs: ['Fairtex et Twins fabriquent en Thaïlande des gants au rembourrage dense, pensés pour le sac lourd, les paos et le corps-à-corps. Leurs tailles suivent la grille de la marque, pas une équivalence européenne : lisez le tableau de la fiche avant de choisir un short ou une paire de protège-tibias.'] },
+      { h2: 'Protège-tibias : avec ou sans pied', paragraphs: ['Le modèle avec pied couvre le cou-de-pied : c’est celui du sparring. La chaussette en coton, plus fine, sert aux débuts et aux exercices sans opposition appuyée. La taille se lit sur la longueur du tibia, du dessous du genou à la cheville.'] },
+    ],
+    faq: [
+      { question: 'Quel matériel pour débuter la boxe thaï ?', answer: 'Des bandes, une paire de gants de 10 ou 12 oz et des protège-tibias. Le short thaï et le protège-dents suivent vite ; la coquille et les coudières arrivent avec le sparring.' },
+      { question: 'Quel poids de gants pour le muay-thaï ?', answer: '10 ou 12 oz pour le sac et les paos, 14 ou 16 oz pour le sparring selon votre gabarit et la règle du club. Une once de plus, c’est de la mousse en plus ; la largeur du gant se lit dans la grille de la marque.' },
+      { question: 'Peut-on faire de la boxe thaï avec des gants de boxe anglaise ?', answer: 'Oui. Les gants thaïlandais ont souvent une paume plus souple pour saisir au corps-à-corps, mais une paire de boxe anglaise convient pour apprendre.' },
+    ],
+    guide: 'choisir-protections',
+    match: (p) => tagged(p, 'boxe-thai') || /tha[iï]|muay/.test(n(p)) || (p.category === 'gants-de-boxe' && /^(fairtex|twins)$/i.test(p.brand)) || /^protège-tibias|^coudières|^chevillères|^ceinture de frappe|^protège-cuisses/.test(n(p)),
+  },
+  {
+    slug: 'materiel-kick-boxing',
+    parent: 'materiel-boxe',
+    kind: 'discipline',
+    discipline: 'Kick-boxing',
+    name: 'Matériel de kick-boxing',
+    eyebrow: 'MATÉRIEL DE KICK-BOXING · K-1 ET FULL CONTACT',
+    title: 'Matériel de kick-boxing : gants, protège-tibias, casques',
+    description: 'Matériel de kick-boxing, K-1 et full contact : gants, protège-tibias et pieds, protège-pieds, casques, coquilles et shorts. Grilles de tailles par marque, prix prévus, expédition en France.',
+    prioritaires: ['matériel de kick-boxing', 'équipement kick-boxing', 'matériel full contact'],
+    secondaires: ['protège-tibias et pieds', 'protège-pieds full contact', 'casque de kick-boxing', 'gants de kick-boxing', 'short de kick-boxing', 'équipement K-1', 'débuter le kick-boxing'],
+    intro: 'Le kick-boxing enchaîne poings et pieds : aux gants et aux bandes s’ajoutent des protège-tibias qui couvrent aussi le pied, une coquille, un protège-dents et, chez les amateurs, un casque. Le full contact remplace le short par un pantalon et protège le pied seul.',
+    sections: [
+      { h2: 'Kick-boxing, K-1, full contact : trois règles, trois tenues', paragraphs: ['En kick-boxing, le coup de pied à la cuisse est permis : le protège-tibias descend jusqu’au pied et le short reste court. Le K-1 y ajoute les genoux. Le full contact ne frappe qu’au-dessus de la ceinture : pantalon long et protège-pieds.', 'Avant d’acheter, demandez au club la règle qu’il enseigne : elle décide de la protection des jambes.'] },
+      { h2: 'Les protections, de la tête aux pieds', paragraphs: ['Le casque se choisit au tour de tête et se règle au menton et à l’arrière du crâne ; une fois serré, il reste en place quand vous secouez la tête. La coquille se glisse sous le short, tenue par son support. Le protège-tibias et pieds tient par une chaussette ou par des sangles : la chaussette glisse moins, les sangles se règlent mieux.'] },
+    ],
+    faq: [
+      { question: 'Quel matériel pour commencer le kick-boxing ?', answer: 'Des bandes, des gants de 10 ou 12 oz, un protège-dents et des protège-tibias et pieds. La coquille et le casque s’ajoutent au premier sparring.' },
+      { question: 'Quelle différence entre le matériel de kick-boxing et celui de boxe thaï ?', answer: 'Les gants et les protège-tibias sont les mêmes. La boxe thaï ajoute les coudières, parce que les coudes y sont permis ; le kick-boxing amateur ajoute souvent le casque.' },
+    ],
+    guide: 'choisir-protections',
+    match: (p) => tagged(p, 'kick-boxing') || /kick|full contact/.test(n(p)) || /^protège-tibias et pieds|^protège-tibias pieds|^protège-pieds|^coquille/.test(n(p)) || (n(p).startsWith('casque') && !n(p).startsWith('casquette')),
+  },
+  {
+    slug: 'materiel-boxe-francaise',
+    parent: 'materiel-boxe',
+    kind: 'discipline',
+    discipline: 'Savate boxe française',
+    name: 'Matériel de boxe française',
+    eyebrow: 'MATÉRIEL DE BOXE FRANÇAISE · SAVATE',
+    title: 'Matériel de boxe française : chaussures de savate, tenue',
+    description: 'Matériel de boxe française et de savate : chaussures Rivat et ISBA, pantalon et combinaison, protège-tibias, casque. Pointures et tailles de chaque marque, prix prévus, livraison en France.',
+    prioritaires: ['matériel de boxe française', 'équipement savate', 'chaussures de savate'],
+    secondaires: ['chaussures de boxe française', 'chaussures Rivat', 'combinaison de savate', 'pantalon de boxe française', 'intégrale savate', 'tenue de savate', 'débuter la savate'],
+    intro: 'La savate est la seule boxe qui se pratique chaussée : la chaussure, souple et à semelle lisse, sert à toucher autant qu’à se déplacer. Avec elle viennent les gants, la tenue ajustée et, selon le niveau, les protège-tibias et le casque.',
+    sections: [
+      { h2: 'La chaussure de savate, pièce par pièce', paragraphs: ['Tige montante pour tenir la cheville, semelle lisse pour pivoter, bout et talon renforcés pour toucher sans blesser : une chaussure de savate n’est ni une chaussure de boxe anglaise ni une chaussure de salle. Rivat et ISBA la fabriquent ; prenez votre pointure dans le tableau du fabricant.', 'Un modèle d’initiation suffit pour l’assaut, où la touche est contrôlée. Les modèles de combat, plus rigides, attendent la compétition.'] },
+      { h2: 'Tenue et protections', paragraphs: ['La combinaison, dite intégrale, ou le pantalon avec un débardeur : la tenue colle au corps pour que l’arbitre lise les touches. Les gants sont ceux de la boxe anglaise. Protège-dents et coquille dès l’opposition ; protège-tibias et casque selon l’âge et la forme de pratique.'] },
+    ],
+    faq: [
+      { question: 'Quelles chaussures pour débuter la boxe française ?', answer: 'Une paire d’initiation à semelle lisse et tige montante, à votre pointure dans la grille de la marque. Certains clubs acceptent une chaussure de salle propre aux premières séances : demandez.' },
+      { question: 'Faut-il une combinaison pour pratiquer la savate ?', answer: 'Pas pour commencer : un pantalon de sport et un tee-shirt près du corps suffisent. La combinaison intégrale devient la règle en compétition.' },
+    ],
+    guide: 'guide-des-tailles',
+    match: (p) => tagged(p, 'boxe-francaise') || /savate|boxe française/.test(n(p)),
+  },
+  {
+    slug: 'equipement-jjb',
+    parent: 'boutique-arts-martiaux',
+    kind: 'discipline',
+    discipline: 'Jiu-jitsu brésilien',
+    name: 'Équipement JJB et grappling',
+    eyebrow: 'ÉQUIPEMENT JJB · GRAPPLING ET NO-GI',
+    title: 'Équipement JJB et grappling : kimonos, rashguards, shorts',
+    description: 'Équipement JJB et grappling : kimonos de A0 à A4, ceintures par grade, rashguards, spats, shorts sans poche, finger tape et protège-oreilles. Tailles de chaque marque, prix prévus.',
+    prioritaires: ['équipement jjb', 'matériel jjb', 'équipement grappling'],
+    secondaires: ['kimono de JJB', 'ceinture de JJB', 'rashguard JJB', 'tenue no-gi', 'spats grappling', 'short de grappling', 'finger tape', 'protège-oreilles', 'débuter le JJB'],
+    intro: 'Le jiu-jitsu brésilien se pratique en kimono ou sans : deux tenues, deux listes. En kimono, le gi et la ceinture. En no-gi et en grappling, un rashguard, un short sans poche ou des spats. Le protège-dents, lui, sert dans les deux.',
+    sections: [
+      { h2: 'En kimono : le gi et la ceinture', paragraphs: ['Un kimono de JJB est tissé serré pour résister aux saisies, plus court et plus ajusté qu’un kimono de judo. Il se taille de A0 à A4, d’après votre stature et votre poids ; le grammage, 350 ou 450 g/m², dit sa légèreté ou sa tenue. Le coton rétrécit au premier lavage : lisez la notice avant d’hésiter entre deux tailles.', 'La ceinture suit le grade, blanche pour commencer ; sa longueur se lit dans le tableau de la marque.'] },
+      { h2: 'Sans kimono : rashguard, spats et short', paragraphs: ['Le rashguard colle à la peau pour qu’aucun doigt ne s’y prenne et évite les brûlures du tapis. Le short n’a ni poche ni fermeture métallique ; les spats se portent dessous ou seuls, selon le club. La même tenue sert au grappling et à la lutte au sol du MMA.'] },
+      { h2: 'Les petites pièces qui durent', paragraphs: ['Le finger tape tient les doigts que les saisies de manches fatiguent. Le protège-oreilles évite l’oreille en chou-fleur à ceux qui roulent souvent. Ni l’un ni l’autre n’est nécessaire au premier cours.'] },
+    ],
+    faq: [
+      { question: 'Quel équipement pour un premier cours de JJB ?', answer: 'Un kimono de JJB à votre taille et sa ceinture blanche pour un cours en gi ; un rashguard et un short sans poche pour un cours no-gi. Beaucoup de clubs prêtent un kimono à l’essai : demandez.' },
+      { question: 'Un kimono de judo convient-il pour le JJB ?', answer: 'Pour essayer, oui. Il est plus ample et ses manches plus longues donnent davantage de prise à l’adversaire ; un kimono de JJB devient utile dès que la pratique s’installe.' },
+      { question: 'Faut-il un protège-dents en grappling ?', answer: 'Il n’est pas toujours imposé, mais un coup de tête ou de genou involontaire arrive vite au sol : un modèle fin, à mouler, suffit.' },
+    ],
+    guide: 'debuter-mma',
+    match: (p) => tagged(p, 'jjb') || /jjb|jiu|grappling|^rashguard|^spats|^protège-oreilles/.test(n(p)),
+  },
+  {
+    slug: 'materiel-boxe-debutant',
+    parent: 'materiel-boxe',
+    kind: 'niveau',
+    niveau: 'debutant',
+    name: 'Matériel de boxe débutant',
+    eyebrow: 'MATÉRIEL DE BOXE DÉBUTANT · LE PREMIER SAC',
+    title: 'Matériel de boxe débutant : gants, bandes, protège-dents',
+    description: 'Matériel de boxe débutant : gants à velcro à moins de 60 €, bandes, sous-gants, protège-dents et cordes à sauter pour adulte. Le premier sac chiffré, prix prévus, livraison en France.',
+    prioritaires: ['matériel de boxe débutant', 'équipement boxe débutant', 'gants de boxe débutant'],
+    secondaires: ['kit boxe débutant', 'premier cours de boxe', 'quel matériel pour débuter la boxe', 'gants de boxe pas cher', 'bandes de boxe débutant', 'protège-dents débutant', 'corde à sauter boxe'],
+    intro: 'Un premier sac de boxe tient en trois pièces : des bandes, une paire de gants à velcro et un protège-dents. Cette page ne garde que cela, en taille adulte, avec des gants à moins de 60 € et la corde à sauter pour l’échauffement.',
+    sections: [
+      { h2: 'Les trois pièces du premier cours', paragraphs: ['Les bandes d’abord : elles tiennent le poignet et se lavent après chaque séance, donc elles ne se prêtent pas. Les gants ensuite, à velcro pour s’équiper seul, en 10 ou 12 oz pour le sac et la technique. Le protège-dents enfin, à mouler dans l’eau chaude, dès le premier exercice à deux.', 'Les sous-gants remplacent les bandes pour qui veut s’équiper en dix secondes. La corde à sauter sert à l’échauffement de presque tous les cours.'] },
+      { h2: 'Ce qui peut attendre', paragraphs: ['Le casque, la coquille, les chaussures de boxe et les gants de 14 ou 16 oz viennent avec le sparring, pas avant. Attendez que votre entraîneur vous les demande : il vous dira le poids de gants que la salle impose.'] },
+    ],
+    faq: [
+      { question: 'Faut-il acheter ses gants avant le premier cours de boxe ?', answer: 'Pas toujours : beaucoup de salles en prêtent aux séances d’essai. Achetez d’abord vos bandes et votre protège-dents, qui sont personnels, puis vos gants quand vous êtes sûr de continuer.' },
+      { question: 'Des gants d’entrée de gamme suffisent-ils pour débuter ?', answer: 'Oui pour le sac, les pattes d’ours et la technique. Le synthétique suffit pour apprendre ; le cuir, plus durable, se justifie quand l’entraînement devient régulier.' },
+      { question: 'Bandes ou sous-gants pour un débutant ?', answer: 'Les bandes tiennent mieux le poignet et coûtent moins cher ; il faut cinq minutes pour apprendre à les poser. Les sous-gants s’enfilent d’un geste. L’un comme l’autre va sous tous les gants.' },
+    ],
+    guide: 'debuter-boxe',
+    match: (p) => !kid(p) && p.price > 0 && (/^bandes? de boxe|^sous-gants|^corde à sauter|^protège-dents/.test(n(p)) || (p.category === 'gants-de-boxe' && n(p).startsWith('gants') && !/lacets|compétition|competition|amateur|pro fight|professional|sparring/.test(n(p)) && p.price <= 6000)),
+  },
+  {
+    slug: 'materiel-boxe-competition',
+    parent: 'materiel-boxe',
+    kind: 'niveau',
+    niveau: 'competition',
+    name: 'Matériel de boxe de compétition',
+    eyebrow: 'MATÉRIEL DE BOXE DE COMPÉTITION · LE RING',
+    title: 'Matériel de boxe de compétition : gants à lacets, casques',
+    description: 'Matériel de boxe de compétition : gants à lacets et gants amateurs, casques, coquilles, chaussures de boxe, shorts, débardeurs et peignoirs. Tailles du fabricant et prix prévus sur chaque fiche.',
+    prioritaires: ['matériel de boxe de compétition', 'équipement boxe compétition', 'gants de boxe compétition'],
+    secondaires: ['gants de boxe amateur', 'gants à lacets', 'casque de boxe amateur', 'chaussures de boxe', 'short de boxe anglaise', 'peignoir de boxe', 'coquille de boxe', 'tenue de combat boxe'],
+    intro: 'Monter sur le ring change la liste : des gants à lacets ou des gants amateurs au poids imposé, des chaussures qui tiennent la cheville, une coquille, un short et un débardeur aux couleurs du coin. Le règlement de la fédération, pas la boutique, décide de ce qui est admis.',
+    sections: [
+      { h2: 'Ce que le règlement impose', paragraphs: ['Le poids des gants de combat dépend de la fédération et de la catégorie : 8 ou 10 oz chez les professionnels, 10 ou 12 oz chez les amateurs. Le casque, la couleur de la tenue et les modèles admis varient d’une fédération à l’autre. Lisez le règlement de la vôtre, ou demandez à votre entraîneur, avant toute commande.', 'Les modèles dont le nom porte une mention fédérale l’affichent sur leur fiche ; nous n’ajoutons aucune homologation qui n’y figure pas.'] },
+      { h2: 'Lacets, chaussures, coquille', paragraphs: ['Les lacets serrent le poignet mieux que le velcro et ne s’ouvrent pas dans l’échange ; il faut quelqu’un pour les nouer. La chaussure de boxe, montante et à semelle fine, tient la cheville sur les appuis. La coquille de combat couvre le bas-ventre et les hanches, plus largement qu’une coquille d’entraînement.'] },
+    ],
+    faq: [
+      { question: 'Quels gants pour un premier combat amateur ?', answer: 'Ceux que la fédération et l’organisateur admettent : souvent des gants de 10 ou 12 oz fournis ou contrôlés le jour du combat. Entraînez-vous avec une paire du même poids les semaines précédentes.' },
+      { question: 'Peut-on s’entraîner avec des gants de compétition ?', answer: 'Au sac et aux pattes d’ours, oui, pour s’habituer à leur poids. Pas en sparring : leur rembourrage est trop mince pour le partenaire, il faut des 14 ou 16 oz.' },
+    ],
+    guide: 'choisir-gants-boxe',
+    match: (p) =>
+      !kid(p) &&
+      ((p.category === 'gants-de-boxe' && /lacets|compétition|competition|amateur|ffb|aiba|pro fight/.test(n(p))) ||
+        (n(p).startsWith('chaussures') && ['chaussures-boxe', 'accessoires-boxe'].includes(p.category) && !/lutte|kung|savate|multiboxe|rivat/.test(n(p))) ||
+        (p.category === 'protections-boxe' && ((n(p).startsWith('casque') && /compétition|competition|amateur|ffb|aiba/.test(n(p))) || n(p).startsWith('coquille'))) ||
+        (p.category === 'textile-boxe' && (n(p).startsWith('peignoir') || /boxe anglaise|amateur|ffb/.test(n(p))))),
+  },
 ];
 
 export const subfamilyFor = (slug: string) => SUBFAMILIES.find((s) => s.slug === slug);
 export const subfamiliesOf = (parent: string) => SUBFAMILIES.filter((s) => s.parent === parent);
-export const subfamilyProducts = (s: Subfamily, all: Product[]) => all.filter(s.match);
+/** Les modèles d’une page. Une page par discipline ou par niveau alterne les familles : sa première
+ *  page montre des gants, des protections et une tenue, pas trente-six shorts à la suite. */
+export const subfamilyProducts = (s: Subfamily, all: Product[]) => (s.kind ? entrelace(all.filter(s.match)) : all.filter(s.match));

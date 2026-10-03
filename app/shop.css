@@ -3189,6 +3189,13 @@ html[data-motion='reduce'] .button:hover {
 .hub-links a { background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: background-size 0.3s; }
 .hub-links a:hover, .hub-links a:focus-visible { background-size: 100% 1px; }
 .hub-links li span { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+/* « Vente matériel de boxe » : l’en-tête a déjà son filet, et le H2 dit déjà ce que liste le tableau. */
+.observatory-lead.vente-chiffres { margin-top: 0; border-top: 0; }
+.vente-rayons { margin-top: 0; }
+.vente-rayons caption { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* Le plan du site : les mêmes colonnes, sous le titre de la page. */
+.hub-links.plan-du-site { margin-top: 0; }
+.plan-du-site h2 { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin: 0 0 14px; }
 /* Les marques : une tuile par marque, trois modèles détourés sur la scène. */
 .brand-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 44px 22px; padding: 10px 0 70px; }
 .brand-tile { display: block; min-width: 0; }

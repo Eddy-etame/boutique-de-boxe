@@ -107,6 +107,45 @@ export const services: Record<string, Service> = {
       },
     ],
   },
+  'a-propos': {
+    title: 'À propos de la boutique',
+    description: 'Qui édite Boutique de Boxe, ce que la boutique vend, comment le catalogue, les prix et les guides sont établis, et comment nous joindre. SAS BOXING CENTER, Toulouse.',
+    eyebrow: 'LA BOUTIQUE / À PROPOS',
+    sections: [
+      {
+        title: 'Qui tient la boutique',
+        paragraphs: [
+          'Boutique de Boxe est éditée par la SAS BOXING CENTER, société au capital de 1 500 €, immatriculée au RCS de Toulouse sous le numéro 821 817 889. Son siège est au 12 rue de Fenouillet, 31200 Toulouse. Le directeur de la publication est Sébastien DUTILH.',
+          'La société exploite aussi des salles de boxe à Toulouse. La boutique en est distincte : elle ne propose ni cours ni planning, et vend en ligne, pour toute la France métropolitaine.',
+        ],
+      },
+      {
+        title: 'Ce que la boutique vend',
+        paragraphs: [
+          'Du matériel de boxe et de sports de combat, et rien d’autre : gants, bandes, protections, textile, sacs de frappe, chaussures, matériel d’entraînement, sacs de sport et tenues d’arts martiaux. Plus de 1 000 modèles, chacun avec les tailles et la référence de son fabricant.',
+        ],
+      },
+      {
+        title: 'Comment le catalogue est établi',
+        paragraphs: [
+          'Une fiche reprend les tailles que la marque propose réellement, sans conversion d’une marque à l’autre. Le prix affiché est le prix prévu à l’ouverture des ventes, toutes taxes comprises.',
+          'Tant que la vente n’est pas ouverte, la boutique n’affiche ni stock, ni remise, ni avis client, ni « meilleures ventes » : nous ne publions pas ce que nous ne pouvons pas prouver.',
+        ],
+      },
+      {
+        title: 'Les guides et les chiffres',
+        paragraphs: [
+          'Les guides d’achat nomment leurs sources en bas de page. L’observatoire des prix publie chaque semaine le prix le plus bas, le prix médian et le prix le plus haut de chaque famille, calculés sur le catalogue ; ses données se téléchargent. Les pages par ville s’appuient sur le Recensement des équipements sportifs du ministère des Sports.',
+        ],
+      },
+      {
+        title: 'Nous joindre',
+        paragraphs: [
+          'Par la page contact, par e-mail à boxingcenter31@gmail.com ou par téléphone au 09 54 14 74 72. La réponse arrive par e-mail, en général sous un jour ouvré.',
+        ],
+      },
+    ],
+  },
   'mentions-legales': {
     title: 'Mentions légales',
     description:

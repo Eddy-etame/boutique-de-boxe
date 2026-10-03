@@ -154,6 +154,30 @@ const PAGES: Record<string, (products: Product[]) => Card> = {
     photoLabel: 'LES MODÈLES',
     path: '/nouveautes/',
   }),
+  'vente-materiel-de-boxe': (products) => ({
+    title: 'Vente de matériel de boxe.',
+    eyebrow: 'VENTE MATÉRIEL DE BOXE · EN LIGNE, LIVRÉ EN FRANCE',
+    facts: [
+      { label: 'MODÈLES', value: fr(products.length) },
+      { label: 'POINT RELAIS', value: '6,90 €, offert dès 69 €' },
+      { label: 'POUR CHANGER D’AVIS', value: '14 jours' },
+    ],
+    photos: photosOf(products.filter((p) => p.category === 'sacs-de-sport' && p.cut?.mode === 'pose')),
+    photoLabel: 'UN MODÈLE DU CATALOGUE',
+    path: '/vente-materiel-de-boxe/',
+  }),
+  'plan-du-site': (products) => ({
+    title: 'Le plan du site.',
+    eyebrow: 'PLAN DU SITE · TOUTES LES PAGES',
+    facts: [
+      { label: 'FICHES', value: fr(products.length) },
+      { label: 'ÉQUIPEMENTS, BOXES, NIVEAUX', value: fr(SUBFAMILIES.length) },
+      { label: 'GUIDES D’ACHAT', value: fr(guides.length) },
+    ],
+    photos: [],
+    photoLabel: '',
+    path: '/plan-du-site/',
+  }),
   contact: () => ({
     title: 'Une question sur un modèle ?',
     eyebrow: 'CONTACT · BOUTIQUE DE BOXE',

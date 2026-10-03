@@ -717,7 +717,7 @@ export function CarrefourPage({ all }: { all: Product[] }) {
           <h2>Du matériel par discipline.</h2>
           {spaced([
             <ArrowLink key="m" href={MATERIEL}>Matériel sport de combat</ArrowLink>,
-            <ArrowLink key="b" href="/materiel-boxe/">Matériel de boxe anglaise</ArrowLink>,
+            <ArrowLink key="b" href="/materiel-boxe/">Matériel de boxe</ArrowLink>,
             <ArrowLink key="mma" href="/materiel-mma/">Matériel de MMA</ArrowLink>,
             <ArrowLink key="am" href="/boutique-arts-martiaux/">Boutique arts martiaux</ArrowLink>,
           ])}

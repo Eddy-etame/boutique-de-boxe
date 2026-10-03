@@ -9,6 +9,8 @@ import { allFacets } from '@/lib/facets';
 import { VILLES, REGIONS, CARREFOUR, SOURCE, villePath } from '@/lib/villes';
 const SUBFAMILY_PATHS = new Set(SUBFAMILIES.map((s) => '/' + s.slug + '/'));
 const TOOL_PATHS = new Set(['/observatoire-des-prix/', '/outils/poids-de-gants/']);
+// « Vente matériel de boxe » (03/10) : une page de catalogue qui n'est pas une famille ; ses chiffres suivent le catalogue.
+const VENTE_PATH = '/vente-materiel-de-boxe/';
 // Pages-villes et carrefour (29/09) : datées par le recensement du ministère des Sports qui les nourrit.
 const VILLE_PATHS = new Set(['/' + CARREFOUR + '/', ...[...VILLES, ...REGIONS].map((v) => villePath(v.slug))]);
 export const revalidate = 60;
@@ -50,7 +52,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   );
 
   const allProductsDate = collectionDate(products);
-  for (const path of ['/', '/marques/', '/observatoire-des-prix/', '/nouveautes/'])
+  for (const path of ['/', '/marques/', '/observatoire-des-prix/', '/nouveautes/', VENTE_PATH, '/plan-du-site/'])
     dates.set(path, allProductsDate);
   for (const c of categories) {
     dates.set('/' + c.slug + '/', collectionDate(getCategoryProducts(c, products)));
@@ -66,6 +68,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     '/',
     ...categories.map((c) => '/' + c.slug + '/'),
+    VENTE_PATH,
     ...SUBFAMILIES.map((s) => '/' + s.slug + '/'),
     '/marques/',
     ...brands.map((b) => '/marques/' + b.slug + '/'),
@@ -79,9 +82,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...guides.map((g) => '/guides/' + g.slug + '/'),
     ...Object.keys(services).map((s) => '/' + s + '/'),
     '/contact/',
+    '/plan-du-site/',
   ].map((path) => {
     const product = path.startsWith('/produits/') ? products.find((p) => '/produits/' + p.slug + '/' === path) : undefined;
-    const kind = path === '/' ? 'home' : product ? 'product' : VILLE_PATHS.has(path) ? 'ville' : SUBFAMILY_PATHS.has(path) || path.startsWith('/marques/') || /^\/gants-de-boxe-[a-z0-9-]+\/$/.test(path) ? 'subfamily' : TOOL_PATHS.has(path) ? 'index' : path.startsWith('/guides/') ? 'guide' : categoryFor(path.replace(/^\/|\/$/g, '')) ? 'category' : path === '/nouveautes/' || path === '/guides/' ? 'index' : 'service';
+    const kind = path === '/' ? 'home' : product ? 'product' : VILLE_PATHS.has(path) ? 'ville' : SUBFAMILY_PATHS.has(path) || path.startsWith('/marques/') || /^\/gants-de-boxe-[a-z0-9-]+\/$/.test(path) ? 'subfamily' : TOOL_PATHS.has(path) ? 'index' : path.startsWith('/guides/') ? 'guide' : categoryFor(path.replace(/^\/|\/$/g, '')) || path === VENTE_PATH ? 'category' : path === '/nouveautes/' || path === '/guides/' ? 'index' : 'service';
     return {
       url: shop.origin + path,
       ...(dates.has(path) ? { lastModified: dates.get(path) } : kind === 'guide' || kind === 'home' || kind === 'index' || kind === 'subfamily' ? { lastModified: EDITORIAL_DATE } : {}),

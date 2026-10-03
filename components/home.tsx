@@ -86,8 +86,17 @@ export default function Home({ items }: { items: Product[] }) {
         <a href="/materiel-boxe/">
           Boxe anglaise <ArrowUpRight />
         </a>{' '}
+        <a href="/materiel-boxe-thai/">
+          Boxe thaï <ArrowUpRight />
+        </a>{' '}
+        <a href="/materiel-kick-boxing/">
+          Kick-boxing <ArrowUpRight />
+        </a>{' '}
         <a href="/materiel-mma/">
           MMA <ArrowUpRight />
+        </a>{' '}
+        <a href="/equipement-jjb/">
+          JJB <ArrowUpRight />
         </a>{' '}
         <a href="/boutique-arts-martiaux/">
           Arts martiaux <ArrowUpRight />

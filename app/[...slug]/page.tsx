@@ -42,6 +42,9 @@ import { villeFor, regionFor, CARREFOUR } from '@/lib/villes';
 import { VillePage, RegionPage, CarrefourPage, villeMetadata, regionMetadata, carrefourMetadata } from '@/components/ville-page';
 import { MaterielParDiscipline, materielFaq } from '@/components/materiel-par-discipline';
 import { entrelace } from '@/lib/rayons';
+import { VentePage, venteMetadata, VENTE } from '@/components/vente-page';
+import { PlanDuSite, PLAN, PLAN_TITRE, PLAN_DESCRIPTION } from '@/components/plan-du-site';
+import { MaterielParNiveau, KitNiveau, KitDiscipline, budgetFaq } from '@/components/materiel-de-boxe';
 export const revalidate = 60;
 type Props = {
   params: Promise<{ slug: string[] }>;
@@ -60,6 +63,7 @@ export async function generateMetadata({
     const region = regionFor(path);
     if (region) return regionMetadata(region);
     if (path === CARREFOUR) return carrefourMetadata();
+    if (path === VENTE) return venteMetadata();
   }
   const products = await readCatalog();
   const product =
@@ -100,6 +104,7 @@ export async function generateMetadata({
       'Rechercher un équipement',
       'Recherchez un modèle, une marque ou une famille d’équipement dans le catalogue Boutique de Boxe.',
     ],
+    [PLAN]: [PLAN_TITRE, PLAN_DESCRIPTION],
     contact: [
       'Contact : une question sur le matériel ?',
       'Écrivez à Boutique de Boxe pour une question sur un modèle, une taille ou une fiche produit. Réponse par e-mail.',
@@ -310,6 +315,8 @@ export default async function Page({ params, searchParams }: Props) {
     const region = regionFor(path);
     if (region) return <RegionPage region={region} all={products} />;
     if (path === CARREFOUR) return <CarrefourPage all={products} />;
+    if (path === VENTE) return <VentePage all={products} />;
+    if (path === PLAN) return <PlanDuSite all={products} />;
   }
   if (slug[0] === 'produits' && slug.length === 2) {
     const p = products.find((p) => p.slug === slug[1]);
@@ -477,6 +484,8 @@ export default async function Page({ params, searchParams }: Props) {
             <a key={x.slug} href={'/' + x.slug + '/'}>{x.name}</a>
           )))}
         </nav>
+        {currentPage === 1 && sub.discipline && <KitDiscipline discipline={sub.discipline} nom={sub.name} all={products} />}
+        {currentPage === 1 && sub.niveau && <KitNiveau niveau={sub.niveau} all={products} />}
         <Catalog
           items={pageItems.map(listItem)}
           total={data.length}
@@ -514,7 +523,9 @@ export default async function Page({ params, searchParams }: Props) {
     if (currentPage === null) notFound();
     // « Matériel sport de combat » (29/09) : le tableau par discipline et ses questions, tirés du recensement du ministère.
     const materiel = cat?.slug === 'materiel-sport-de-combat';
-    const faq = cat && SEO_COPY[cat.slug] ? [...SEO_COPY[cat.slug].faq, ...(materiel ? materielFaq() : [])] : undefined;
+    // « Matériel de boxe » (03/10) : les trois sacs chiffrés sur le catalogue, et la question du budget.
+    const boxe = cat?.slug === 'materiel-boxe';
+    const faq = cat && SEO_COPY[cat.slug] ? [...SEO_COPY[cat.slug].faq, ...(materiel ? materielFaq() : []), ...(boxe ? budgetFaq(products) : [])] : undefined;
     return (
       <main id="contenu" className="page-wrap">
         <Breadcrumb
@@ -582,6 +593,7 @@ export default async function Page({ params, searchParams }: Props) {
         })()}
         {/* la réponse propre à la page d’abord, le catalogue ensuite */}
         {materiel && currentPage === 1 && <MaterielParDiscipline all={products} />}
+        {boxe && currentPage === 1 && <MaterielParNiveau all={products} />}
         <Catalog
           items={data.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map(listItem)}
           total={data.length}

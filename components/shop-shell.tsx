@@ -53,7 +53,7 @@ export function Header() {
       <header className="site-header">
         <Brand />
         <nav aria-label="Navigation principale" className="desktop-nav">
-          <a href="/materiel-boxe/">Boxe anglaise</a>{' '}
+          <a href="/materiel-boxe/">Matériel de boxe</a>{' '}
           <a href="/materiel-mma/">MMA</a>{' '}
           <a href="/boutique-arts-martiaux/">Arts martiaux</a>{' '}
           <a href="/guides/" onClick={() => setMenu(false)}>
@@ -217,7 +217,7 @@ export function Footer() {
         </nav>
         <nav aria-labelledby="footer-practice">
           <h3 id="footer-practice">Votre pratique</h3>
-          <a href="/materiel-boxe/">Boxe anglaise</a>{' '}
+          <a href="/materiel-boxe/">Matériel de boxe</a>{' '}
           <a href="/materiel-mma/">Matériel MMA</a>{' '}
           <a href="/boutique-arts-martiaux/">Arts martiaux</a>{' '}
           <a href="/materiel-sport-de-combat/">Sports de combat</a>
@@ -232,7 +232,9 @@ export function Footer() {
           <a href="/faq/">Questions fréquentes</a>{' '}
           <a href="/livraison/">Livraison et frais prévus</a>{' '}
           <a href="/retours/">Retours</a>{' '}
+          <a href="/vente-materiel-de-boxe/">Comment se passe la vente</a>{' '}
           <a href="/contact/">Nous contacter</a>{' '}
+          <a href="/a-propos/">À propos</a>{' '}
           <a href="/offres-de-lancement/">Ouverture de la boutique</a>{' '}
           <a href="mailto:boxingcenter31@gmail.com" className="footer-contact">
             Nous écrire <ArrowUpRight size={14} aria-hidden="true" />
@@ -259,6 +261,7 @@ export function Footer() {
           <a href="/mentions-legales/">Mentions légales</a>{' '}
           <a href="/conditions-generales-de-vente/">CGV</a>{' '}
           <a href="/confidentialite/">Confidentialité</a>{' '}
+          <a href="/plan-du-site/">Plan du site</a>{' '}
           <CookiesButton />
         </nav>
       </div>

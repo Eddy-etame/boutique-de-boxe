@@ -12,9 +12,9 @@ import { dansLeRayon } from '@/lib/rayons';
  * page ne met ces deux relevés côte à côte : c'est ce qui rend la page citable.
  */
 
-type Ligne = { discipline: string; recensement: string | null; essentiel: string[]; ensuite: string[] };
+export type Ligne = { discipline: string; recensement: string | null; essentiel: string[]; ensuite: string[] };
 
-const LIGNES: Ligne[] = [
+export const LIGNES: Ligne[] = [
   { discipline: 'Boxe anglaise', recensement: 'Boxe anglaise', essentiel: ['bandes-de-boxe', 'gants-de-boxe', 'protege-dents'], ensuite: ['casques-de-boxe', 'chaussures-boxe', 'cordes-a-sauter'] },
   { discipline: 'Savate boxe française', recensement: 'Savate boxe française', essentiel: ['chaussures-boxe', 'gants-de-boxe', 'protege-dents'], ensuite: ['coquilles', 'casques-de-boxe'] },
   { discipline: 'Muay-thaï', recensement: 'Muay-thaï', essentiel: ['protege-tibias', 'gants-de-boxe', 'bandes-de-boxe'], ensuite: ['shorts-de-boxe', 'coquilles', 'protege-dents'] },
@@ -27,7 +27,7 @@ const LIGNES: Ligne[] = [
 ];
 
 /** Un rayon du catalogue : son nom, son adresse, son nombre de modèles et son premier prix. */
-function rayon(slug: string, all: Product[]) {
+export function rayon(slug: string, all: Product[]) {
   const sub = SUBFAMILIES.find((s) => s.slug === slug);
   const cat = sub ? undefined : categoryFor(slug);
   const items = (sub ? subfamilyProducts(sub, all) : cat ? getCategoryProducts(cat, all) : []).filter((p) => dansLeRayon(slug, p));
@@ -35,7 +35,7 @@ function rayon(slug: string, all: Product[]) {
   return { slug, nom: sub?.name || cat?.name || slug, n: items.length, des: prix.length ? Math.min(...prix) : null };
 }
 
-function Rayon({ r }: { r: ReturnType<typeof rayon> }) {
+export function Rayon({ r }: { r: ReturnType<typeof rayon> }) {
   return (
     <li>
       <a href={'/' + r.slug + '/'}>{r.nom}</a>{' '}

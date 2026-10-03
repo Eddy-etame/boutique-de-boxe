@@ -64,12 +64,14 @@ export async function KeywordHub({
     ? colourFacets(all).map((f) => ({ f, n: f.products.filter((p) => ids.has(p.id)).length })).filter((x) => x.n >= 4 && x.f.scope !== scope).slice(0, 8)
     : [];
   const subs = SUBFAMILIES.map((s) => ({ s, n: subfamilyProducts(s, all).filter((p) => ids.has(p.id)).length }))
-    .filter((x) => x.n >= 4 && x.s.slug !== scope)
+    .filter((x) => x.n >= 4 && x.s.slug !== scope && !x.s.kind)
     .sort((a, b) => b.n - a.n)
     .slice(0, 8);
+  // Les pages d’entrée par boxe et par niveau (03/10) : leur colonne à elles, sur chaque page-pilier.
+  const entries = SUBFAMILIES.filter((s) => s.kind && s.slug !== scope).map((s) => ({ s, n: subfamilyProducts(s, all).length }));
   // Les autres recherches du brief : une ligne par page, avec la requête exacte en texte de lien.
   const seenPaths = new Set<string>([path]);
-  const searches = QUERY_MAP.filter((q) => (seenPaths.has(q.path) ? false : (seenPaths.add(q.path), true))).slice(0, 8);
+  const searches = QUERY_MAP.filter((q) => (seenPaths.has(q.path) ? false : (seenPaths.add(q.path), true))).slice(0, 10);
   const graph = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
@@ -168,6 +170,18 @@ export async function KeywordHub({
             </ul>
           </div>
         )}
+        {entries.length > 0 && (
+          <div>
+            <h3>Par boxe et par niveau</h3>
+            <ul>
+              {entries.map(({ s, n }) => (
+                <li key={s.slug}>
+                  <a href={'/' + s.slug + '/'}>{s.name}</a> <span>{n}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
         {weights.length > 0 && (
           <div>
             <h3>Par poids</h3>
@@ -246,6 +260,12 @@ export async function KeywordHub({
             </li>
             <li>
               <a href="/materiel-boxe-enfant/">Matériel de boxe enfant</a>
+            </li>
+            <li>
+              <a href="/a-propos/">À propos de la boutique</a>
+            </li>
+            <li>
+              <a href="/plan-du-site/">Le plan du site</a>
             </li>
             <li>
               <a href="/#ouverture">Être prévenu à l’ouverture des ventes</a>
