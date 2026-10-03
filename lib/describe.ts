@@ -8,6 +8,8 @@ import { guides } from './editorial';
  */
 import { categoryFor, money, type Product } from './catalog';
 import { productObject } from './seo';
+import { dansLeRayon, ENFANT } from './rayons';
+import { ouncesOf } from './facets';
 
 const pick = <T>(id: string, list: T[], salt = 0): T => {
   let h = salt;
@@ -91,6 +93,71 @@ export function longDescription(p: Product): string {
   return parts.join(' ');
 }
 
+/* Ce que chaque poids de gant fait, pour un adulte (guide « taille et poids des gants de boxe »). */
+const USAGE_OZ: [number, string][] = [
+  [8, 'la compétition'],
+  [10, 'le sac'],
+  [12, 'la technique'],
+  [14, 'le travail avec partenaire'],
+  [16, 'le travail avec partenaire'],
+  [18, 'le sparring des gabarits lourds'],
+  [20, 'le sparring des gabarits lourds'],
+];
+const listeFr = (xs: string[]) => (xs.length > 1 ? xs.slice(0, -1).join(', ') + ' et ' + xs[xs.length - 1] : xs[0] || '');
+
+/**
+ * La place du modèle dans sa famille, chiffrée sur le catalogue du jour (03/10). C'est le seul texte
+ * d'une fiche qu'aucune autre fiche ne peut porter : son rang de prix parmi les modèles comparables
+ * (même famille, même public, accessoires du rayon exclus), le prix médian de ces modèles, la gamme
+ * de sa marque dans la famille et, pour un gant, ce que ses poids permettent. Aucun avis, aucune vente.
+ */
+export function placeDansLaFamille(p: Product, all: Product[]): string[] {
+  const family = categoryFor(p.category);
+  if (!family || p.price <= 0) return [];
+  const enfant = (x: Product) => x.audience === 'enfant' || ENFANT.test(x.name);
+  const pairs = all.filter((x) => x.category === p.category && x.price > 0 && dansLeRayon(p.category, x) && enfant(x) === enfant(p));
+  if (pairs.length < 6) return [];
+  const prix = pairs.map((x) => x.price).sort((a, b) => a - b);
+  const moins = prix.filter((x) => x < p.price).length;
+  const plus = prix.filter((x) => x > p.price).length;
+  const median = prix[Math.floor(prix.length / 2)];
+  const n = pairs.length;
+  const famille = `${n} modèles${enfant(p) ? ' pour enfant' : ''} de la famille « ${family.name} »`;
+  const rang =
+    moins === 0
+      ? 'c’est le prix le plus bas'
+      : plus === 0
+        ? 'c’est le prix le plus haut'
+        : moins < n / 4
+          ? 'il se place dans le quart le moins cher'
+          : plus < n / 4
+            ? 'il se place dans le quart le plus cher'
+            : p.price <= median
+              ? 'il se place dans la moitié la moins chère'
+              : 'il se place dans la moitié la plus chère';
+  const out = [`Parmi les ${famille}, ${moins} sont moins chers et ${plus} plus chers : à ${money(p.price)}, ${rang}, pour un prix médian de ${money(median)}.`];
+  if (!badBrand(p.brand)) {
+    const marque = pairs.filter((x) => x.brand === p.brand).map((x) => x.price).sort((a, b) => a - b);
+    if (marque.length >= 2 && marque[0] !== marque[marque.length - 1]) out.push(`${p.brand} en propose ${marque.length} dans cette famille, de ${money(marque[0])} à ${money(marque[marque.length - 1])}.`);
+    else if (marque.length >= 2) out.push(`${p.brand} en propose ${marque.length} dans cette famille, tous à ${money(marque[0])}.`);
+    else out.push(`C’est le seul modèle ${p.brand} de cette famille.`);
+  }
+  if (p.category === 'gants-de-boxe' && !enfant(p)) {
+    const oz = ouncesOf(p);
+    const usages: string[] = [];
+    for (const [poids, usage] of USAGE_OZ) {
+      const ici = oz.filter((o) => o === poids);
+      if (!ici.length) continue;
+      const deja = usages.findIndex((u) => u.startsWith(usage));
+      if (deja >= 0) usages[deja] = usages[deja].replace(/ oz\)$/, ` et ${poids} oz)`);
+      else usages.push(`${usage} (${poids} oz)`);
+    }
+    if (usages.length >= 2) out.push(`Ses poids couvrent ${listeFr(usages)}.`);
+    else if (usages.length === 1) out.push(`Son poids sert surtout pour ${usages[0]}.`);
+  }
+  return out;
+}
+
 /** Conseils d’entretien par famille, quand la fiche n’en porte pas. */
 export function careAdvice(p: Product): string {
   if (p.care) return p.care;
@@ -127,10 +194,10 @@ export function productFaq(p: Product): { question: string; answer: string }[] {
         : `Les tailles de ${p.name} ne sont pas encore renseignées dans le catalogue. Cela ne signifie pas que le modèle est en taille unique : vérifiez le guide « ${guideTitle} » ou écrivez-nous avant l’ouverture des ventes.`;
   return [
     { question: `Quelle taille choisir pour ${short} ?`, answer: size },
-    { question: `Pour quelle pratique et quel niveau ?`, answer: `${disciplines.join(', ')}, niveau ${level}. ${p.short}` },
+    { question: `${cap(short)} : pour quelle pratique et quel niveau ?`, answer: `${disciplines.join(', ')}, niveau ${level}. ${p.short}` },
     { question: `Comment entretenir ${short} ?`, answer: careAdvice(p) },
-    { question: `Quel est le prix, et quand sera-t-il disponible ?`, answer: `Le prix prévu à l’ouverture est de ${(p.price / 100).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}, TTC hors livraison. Les ventes ne sont pas encore ouvertes : laissez votre e-mail sur la fiche pour être prévenu le jour J ; vous pouvez déjà enregistrer vos choix depuis le panier.` },
-    { question: `Comment est-il livré ?`, answer: heavy ? 'À domicile uniquement, dans toute la France métropolitaine, avec un tarif de matériel lourd indiqué avant validation ; le point relais n’accepte pas les colis lourds.' : 'Dans toute la France métropolitaine, en point relais (6,90 €, offerts dès 69 € d’achats) ou à domicile (8,90 €), aux tarifs prévus à l’ouverture.' },
-    { question: `Peut-on le retourner ou l’échanger ?`, answer: 'Oui, dès l’ouverture des ventes : quatorze jours de rétractation, article non porté et dans son emballage ; pour un échange de taille, écrivez-nous avec la référence de la commande.' },
+    { question: `${cap(short)} : quel prix, et à partir de quand ?`, answer: `Le prix prévu à l’ouverture est de ${(p.price / 100).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}, TTC hors livraison. Les ventes ne sont pas encore ouvertes : laissez votre e-mail sur la fiche pour être prévenu le jour J ; vous pouvez déjà enregistrer vos choix depuis le panier.` },
+    { question: `${cap(short)} : comment se passe la livraison ?`, answer: heavy ? 'À domicile uniquement, dans toute la France métropolitaine, avec un tarif de matériel lourd indiqué avant validation ; le point relais n’accepte pas les colis lourds.' : `Dans toute la France métropolitaine, en point relais (6,90 €, offerts dès 69 € d’achats) ou à domicile (8,90 €), aux tarifs prévus à l’ouverture.${p.price > 0 ? (p.price < 6900 ? ` À ${money(p.price)}, il reste ${money(6900 - p.price)} d’achats avant la livraison offerte en point relais.` : ` À ${money(p.price)}, ce modèle passe à lui seul le seuil de la livraison offerte en point relais.`) : ''}` },
+    { question: `${cap(short)} : retour ou échange possibles ?`, answer: `Oui, dès l’ouverture des ventes : quatorze jours de rétractation, article non porté et dans son emballage.${sizes.length > 1 ? ` Pour passer d’une taille à l’autre (${sizes.slice(0, 5).join(', ')}${sizes.length > 5 ? '…' : ''}), écrivez-nous avec la référence de la commande.` : ' Pour un échange, écrivez-nous avec la référence de la commande.'}` },
   ];
 }

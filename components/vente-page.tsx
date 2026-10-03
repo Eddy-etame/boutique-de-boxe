@@ -97,7 +97,7 @@ export function venteFaq(): SeoFaq[] {
     { question: 'Les prix affichés comprennent-ils la TVA ?', answer: 'Oui : chaque prix est donné toutes taxes comprises, hors frais de livraison. Les frais de livraison s’ajoutent au panier avant la validation, jamais après.' },
     { question: 'Comment paie-t-on ?', answer: `${ouvert ? 'Par carte bancaire' : 'À l’ouverture des ventes, par carte bancaire'}, sur la page de paiement de PayPlug, prestataire français agréé. Le numéro de carte ne passe pas par la boutique, qui n’en conserve aucun.` },
     { question: 'Vendez-vous aux clubs et aux associations ?', answer: 'Oui. Pour équiper une salle ou grouper une commande, écrivez depuis la page contact avec les quantités et les tailles : vous recevez une proposition par e-mail.' },
-    { question: 'Vente matériel de boxe : livrez-vous hors de France ?', answer: 'Pas à l’ouverture. La boutique livre la France métropolitaine, en point relais ou à domicile ; pour la Corse, l’outre-mer et l’étranger, rien n’est encore arrêté.' },
+    { question: 'Vente matériel boxe : livrez-vous hors de France ?', answer: 'Pas à l’ouverture. La boutique livre la France métropolitaine, en point relais ou à domicile ; pour la Corse, l’outre-mer et l’étranger, rien n’est encore arrêté.' },
   ];
 }
 

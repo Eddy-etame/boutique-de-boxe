@@ -11,7 +11,7 @@ import selection from './data/selection.json';
 import { brandFor, brandsOf } from './brands';
 import { facetFor } from './facets';
 import { observatory } from './observatory';
-import { villeFor, regionFor, regionTotal, VILLES, REGIONS, CARREFOUR } from './villes';
+import { villeFor, regionFor, regionTotal, VILLES, REGIONS, CARREFOUR, FRANCE } from './villes';
 
 export const OG_WIDTH = 1200;
 export const OG_HEIGHT = 630;
@@ -165,6 +165,30 @@ const PAGES: Record<string, (products: Product[]) => Card> = {
     photos: photosOf(products.filter((p) => p.category === 'sacs-de-sport' && p.cut?.mode === 'pose')),
     photoLabel: 'UN MODÈLE DU CATALOGUE',
     path: '/vente-materiel-de-boxe/',
+  }),
+  'sports-de-combat': (products) => ({
+    title: 'Les sports de combat.',
+    eyebrow: 'SPORT DE COMBAT · LES DISCIPLINES EN FRANCE',
+    facts: [
+      { label: 'LIEUX RECENSÉS', value: fr(FRANCE.lieux) },
+      { label: 'OÙ L’ON BOXE', value: fr(FRANCE.frappe) },
+      { label: 'LE PLUS DÉCLARÉ', value: 'Judo, jujitsu' },
+    ],
+    photos: photosOf(products.filter((p) => p.category === 'gants-de-boxe' && p.cut?.mode === 'pose').slice(7)),
+    photoLabel: 'UNE PAIRE DU CATALOGUE',
+    path: '/sports-de-combat/',
+  }),
+  'les-arts-martiaux': (products) => ({
+    title: 'Les arts martiaux.',
+    eyebrow: 'ARTS MARTIAUX · LA LISTE ET LEURS DOJOS',
+    facts: [
+      { label: 'DOJOS ET SALLES', value: fr(FRANCE.dojos) },
+      { label: 'JUDO, JUJITSU', value: fr(FRANCE.parDiscipline['Judo, jujitsu'] || 0) + ' lieux' },
+      { label: 'KARATÉ', value: fr(FRANCE.parDiscipline['Karaté'] || 0) + ' lieux' },
+    ],
+    photos: photosOf(products.filter((p) => p.category === 'arts-martiaux' && p.cut?.mode === 'pose')),
+    photoLabel: 'UN KIMONO DU CATALOGUE',
+    path: '/les-arts-martiaux/',
   }),
   'plan-du-site': (products) => ({
     title: 'Le plan du site.',

@@ -117,6 +117,7 @@ export function llmsTxt(products: Product[]) {
     '## Familles de produits (nombre de modèles)',
     ...fam.map((f) => `- [${f.name}](${f.url}) : ${fr(f.count)} modèles. ${f.label}`),
     `- Vente : [Vente matériel de boxe](${urlOf('/vente-materiel-de-boxe/')}) — qui vend, les prix par rayon, la livraison, le retour.`,
+    `- Information : [Les sports de combat](${urlOf('/sports-de-combat/')}) et [les arts martiaux](${urlOf('/les-arts-martiaux/')}), discipline par discipline, avec le nombre de lieux qui les déclarent en France (recensement du ministère des Sports).`,
     `- Pages d’entrée par discipline : [Matériel de boxe](${urlOf('/materiel-boxe/')}), [Boxe thaï](${urlOf('/materiel-boxe-thai/')}), [Kick-boxing](${urlOf('/materiel-kick-boxing/')}), [Boxe française](${urlOf('/materiel-boxe-francaise/')}), [MMA](${urlOf('/materiel-mma/')}), [JJB et grappling](${urlOf('/equipement-jjb/')}), [Arts martiaux](${urlOf('/boutique-arts-martiaux/')}), [Matériel sport de combat, tout le catalogue](${urlOf('/materiel-sport-de-combat/')}).`,
     '',
     '## Guides d’achat (réponses courtes, sourcées)',

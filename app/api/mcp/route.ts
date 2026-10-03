@@ -203,6 +203,8 @@ export async function POST(request: Request) {
         { path: '/contact/', purpose: 'formulaire de contact' },
         { path: '/vente-materiel-de-boxe/', purpose: 'la vente : vendeur, prix par rayon, livraison, retour' },
         { path: '/plan-du-site/', purpose: 'toutes les pages qui ne sont pas une fiche' },
+        { path: '/sports-de-combat/', purpose: 'les sports de combat, et combien de lieux les déclarent en France (recensement du ministère des Sports)' },
+        { path: '/les-arts-martiaux/', purpose: 'les arts martiaux, leur origine et leurs dojos en France' },
       ],
     };
   else if (name === 'get_query_map') value = QUERY_MAP.map((q) => ({ query: q.query, url: urlOf(q.path), answer: q.answer }));

@@ -63,6 +63,8 @@ export function PlanDuSite({ all }: { all: Product[] }) {
         { href: '/guide-des-tailles/', nom: 'Guide des tailles' },
         { href: '/outils/poids-de-gants/', nom: 'Quel poids de gants de boxe ?' },
         { href: '/observatoire-des-prix/', nom: 'L’observatoire des prix' },
+        { href: '/sports-de-combat/', nom: 'Les sports de combat, discipline par discipline' },
+        { href: '/les-arts-martiaux/', nom: 'Les arts martiaux, leur origine et leurs dojos' },
       ],
     },
     {

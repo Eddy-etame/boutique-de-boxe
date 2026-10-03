@@ -264,6 +264,12 @@ export async function KeywordHub({
               <a href="/materiel-boxe-enfant/">Matériel de boxe enfant</a>
             </li>
             <li>
+              <a href="/sports-de-combat/">Les sports de combat en France</a>
+            </li>
+            <li>
+              <a href="/les-arts-martiaux/">Les arts martiaux et leurs dojos</a>
+            </li>
+            <li>
               <a href="/a-propos/">À propos de la boutique</a>
             </li>
             <li>

@@ -2,7 +2,8 @@ import { catalogPage, PAGE_SIZE } from '@/lib/pagination';
 import { productGraph, collectionGraph, subfamilyGraph, serviceGraph, subfamilyKeywords, productKeywords, categoryKeywords, guideKeywords, pageKeywords } from '@/lib/seo';
 import { SEO_COPY } from '@/lib/seo-copy';
 import { subfamilyFor, subfamiliesOf, subfamilyProducts } from '@/lib/subfamilies';
-import { longDescription, practiceLevel, disciplinesOf, careAdvice, productFaq } from '@/lib/describe';
+import { longDescription, practiceLevel, disciplinesOf, careAdvice, productFaq, placeDansLaFamille } from '@/lib/describe';
+import { SUBFAMILIES } from '@/lib/subfamilies';
 import { matchesSearch } from '@/lib/catalog-tools';
 import { SeoBody } from '@/components/seo-body';
 import { KeywordHub } from '@/components/keyword-hub';
@@ -44,6 +45,7 @@ import { MaterielParDiscipline, materielFaq } from '@/components/materiel-par-di
 import { entrelace } from '@/lib/rayons';
 import { VentePage, venteMetadata, VENTE } from '@/components/vente-page';
 import { PlanDuSite, PLAN, PLAN_TITRE, PLAN_DESCRIPTION } from '@/components/plan-du-site';
+import { DisciplinesPage, disciplinesMetadata, DISCIPLINES_PAGES } from '@/components/disciplines-page';
 import { MaterielParNiveau, KitNiveau, KitDiscipline, budgetFaq } from '@/components/materiel-de-boxe';
 export const revalidate = 60;
 type Props = {
@@ -64,6 +66,7 @@ export async function generateMetadata({
     if (region) return regionMetadata(region);
     if (path === CARREFOUR) return carrefourMetadata();
     if (path === VENTE) return venteMetadata();
+    if (DISCIPLINES_PAGES[path]) return disciplinesMetadata(DISCIPLINES_PAGES[path]);
   }
   const products = await readCatalog();
   const product =
@@ -317,6 +320,7 @@ export default async function Page({ params, searchParams }: Props) {
     if (path === CARREFOUR) return <CarrefourPage all={products} />;
     if (path === VENTE) return <VentePage all={products} />;
     if (path === PLAN) return <PlanDuSite all={products} />;
+    if (DISCIPLINES_PAGES[path]) return <DisciplinesPage config={DISCIPLINES_PAGES[path]} />;
   }
   if (slug[0] === 'produits' && slug.length === 2) {
     const p = products.find((p) => p.slug === slug[1]);
@@ -382,6 +386,29 @@ export default async function Page({ params, searchParams }: Props) {
             </div>
             <h2>En détail.</h2>
             <p>{longDescription(p)}</p>
+            {(() => {
+              // 03/10 : le texte que seule cette fiche peut porter, et les pages par boxe et par niveau qui la listent.
+              const place = placeDansLaFamille(p, products);
+              const entrees = SUBFAMILIES.filter((s) => s.kind && s.match(p));
+              return place.length || entrees.length ? (
+                <>
+                  <h2>Face aux autres modèles.</h2>
+                  {place.length > 0 && <p>{place.join(' ')}</p>}
+                  {entrees.length > 0 && (
+                    <p>
+                      {'Ce modèle figure aussi sur '}
+                      {entrees.map((s, i) => (
+                        <span key={s.slug}>
+                          {i > 0 ? (i === entrees.length - 1 ? ' et ' : ', ') : ''}
+                          <a href={'/' + s.slug + '/'}>{'la page « ' + s.name + ' »'}</a>
+                        </span>
+                      ))}
+                      .
+                    </p>
+                  )}
+                </>
+              ) : null;
+            })()}
             {p.use && p.use.length > 40 && (
               <>
                 <h2>À l’usage.</h2>
