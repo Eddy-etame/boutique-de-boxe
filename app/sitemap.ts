@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 import { readCatalog } from '@/lib/database';
 import { categories, categoryFor, getCategoryProducts, shop } from '@/lib/catalog';
 import { guides, services, guidePublished } from '@/lib/editorial';
-import { EDITORIAL_DATE, urlOf } from '@/lib/seo';
+import { EDITORIAL_DATE, CATALOGUE_REVISION, urlOf } from '@/lib/seo';
 import { SUBFAMILIES, subfamilyProducts } from '@/lib/subfamilies';
 import { brandsOf } from '@/lib/brands';
 import { allFacets } from '@/lib/facets';
@@ -27,7 +27,7 @@ const productDate = (product: { updatedAt?: string; dateAdded: string }) =>
 const collectionDate = (
   products: { updatedAt?: string; dateAdded: string }[],
 ) =>
-  [EDITORIAL_DATE, ...products.map(productDate).filter(Boolean)].sort().at(-1) ??
+  [EDITORIAL_DATE, CATALOGUE_REVISION, ...products.map(productDate).filter(Boolean)].sort().at(-1) ??
   EDITORIAL_DATE;
 
 /**

@@ -1,6 +1,18 @@
 import assert from 'node:assert/strict';
 import { writeFileSync, mkdirSync } from 'node:fs';
 const base = process.env.QA_ORIGIN || 'http://localhost:3000';
+// Un serveur local chargé coupe parfois une connexion (ECONNRESET) : on la rejoue, la vérification ne change pas.
+const fetchOnce = globalThis.fetch;
+globalThis.fetch = async (...args) => {
+  for (let essai = 0; ; essai++) {
+    try {
+      return await fetchOnce(...args);
+    } catch (error) {
+      if (essai >= 4) throw error;
+      await new Promise((r) => setTimeout(r, 2000 * (essai + 1)));
+    }
+  }
+};
 const expectedOrigin = 'https://www.boutique-de-boxe.com';
 const obsoleteOrigin =
   /https?:\/\/(?:www\.)?boutique-de-boxe\.(?:fr|vercel\.app)|https?:\/\/boutique-de-boxe\.com|https?:\/\/boutique-de-boxe\.etame-eddy01\.chatgpt\.site/;
@@ -150,7 +162,10 @@ for (let i = 0; i < locations.length; i += 4) {
           product.sku && product.image?.length && product.url,
           'Product facts ' + path,
         );
-        assert.ok(!structured.some((x) => x.offers), 'fake offers ' + path);
+        // L’offre suit l’interrupteur des ventes : absente tant que rien ne se vend, complète le jour J.
+        const enVente = !structured.some((x) => (x.additionalProperty || []).some((a) => a.name === 'Disponibilité' && /^En vente le /.test(a.value)));
+        if (!enVente) assert.ok(!structured.some((x) => x.offers), 'fake offers ' + path);
+        else assert.ok(structured.some((x) => x.offers && x.offers.price && x.offers.priceCurrency === 'EUR' && x.offers.availability), 'offre absente ' + path);
         assert.ok(
           structured.some((x) => x['@type'] === 'ItemPage'),
           'ItemPage ' + path,

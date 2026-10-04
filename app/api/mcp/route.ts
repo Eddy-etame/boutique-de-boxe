@@ -54,7 +54,7 @@ const productView = (p: Product) => ({
   reference: p.reference || null,
   audience: p.audience,
   summary: p.short,
-  availability: 'En vente bientôt',
+  availability: 'En vente le ' + shop.ouverture.long,
 });
 
 const tools = [

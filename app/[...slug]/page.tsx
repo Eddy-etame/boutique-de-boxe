@@ -289,7 +289,7 @@ export default async function Page({ params, searchParams }: Props) {
               {shop.email} ↗
             </a>
             <p>
-              Les ventes ouvrent bientôt.
+              {`Les ventes ouvrent le ${shop.ouverture.long}.`}
               <br />
               Vous pouvez déjà enregistrer vos choix depuis le panier.
             </p>
@@ -453,7 +453,7 @@ export default async function Page({ params, searchParams }: Props) {
                 )}
                 <tr>
                   <th scope="row">Disponibilité</th>
-                  <td>En vente bientôt</td>
+                  <td>{'En vente le ' + shop.ouverture.long}</td>
                 </tr>
               </tbody>
             </table>

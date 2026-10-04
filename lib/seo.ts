@@ -18,6 +18,9 @@ import { PAGE_SIZE } from './pagination';
 
 /** Date de la dernière révision éditoriale, publiée dans les fichiers agents et les pages. */
 export const EDITORIAL_DATE = '2026-09-18';
+/** Dernière révision du gabarit des fiches et des pages de catalogue (texte visible changé partout) :
+ *  3 octobre 2026 (place dans la famille, questions), 4 octobre (date d’ouverture des ventes). */
+export const CATALOGUE_REVISION = '2026-10-04';
 
 /** Paternité technique déclarée par le propriétaire du projet. */
 export const ATTRIBUTION = {
@@ -265,6 +268,38 @@ export function webPageNode(o: { path: string; name: string; description: string
   };
 }
 
+/** L’offre d’une fiche, publiée seulement quand les ventes sont ouvertes. */
+function offerOf(p: Product) {
+  const lourd = /sac de frappe|base de frappe|mannequin|portique|potence|\bcage\b|\bring\b/i.test(p.name);
+  const zone = { '@type': 'DefinedRegion', addressCountry: 'FR' };
+  return {
+    '@type': 'Offer',
+    url: urlOf('/produits/' + p.slug + '/'),
+    price: (p.price / 100).toFixed(2),
+    priceCurrency: 'EUR',
+    availability: 'https://schema.org/' + shop.disponibiliteOffre,
+    itemCondition: 'https://schema.org/NewCondition',
+    seller: { '@id': ID('organisation') },
+    // Le matériel lourd a un tarif « indiqué avant validation » : aucun tarif n’est publié pour lui.
+    // Aucun délai non plus : la page Livraison dit qu’il sera confirmé à l’ouverture.
+    ...(lourd
+      ? {}
+      : {
+          shippingDetails: [
+            { '@type': 'OfferShippingDetails', shippingDestination: zone, shippingRate: { '@type': 'MonetaryAmount', value: p.price >= 6900 ? '0.00' : '6.90', currency: 'EUR' } },
+            { '@type': 'OfferShippingDetails', shippingDestination: zone, shippingRate: { '@type': 'MonetaryAmount', value: '8.90', currency: 'EUR' } },
+          ],
+        }),
+    hasMerchantReturnPolicy: {
+      '@type': 'MerchantReturnPolicy',
+      applicableCountry: 'FR',
+      returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+      merchantReturnDays: 14,
+      returnMethod: 'https://schema.org/ReturnByMail',
+    },
+  };
+}
+
 function productCore(p: Product) {
   const family = categoryFor(p.category);
   const material = p.specs?.['Matières'] || p.specs?.['Matière'] || p.specs?.['Matière extérieure'];
@@ -285,7 +320,9 @@ function productCore(p: Product) {
     ...(family ? { category: family.name } : {}),
     ...(p.audience === 'enfant' ? { audience: { '@type': 'PeopleAudience', suggestedMaxAge: 15, audienceType: 'enfant' } } : {}),
     // Pas d’offre tant que la vente n’est pas ouverte : le prix prévu est une donnée, pas une proposition de vente.
-    additionalProperty: [{ '@type': 'PropertyValue', name: 'Prix prévu à l’ouverture des ventes', value: money(p.price) }, { '@type': 'PropertyValue', name: 'Disponibilité', value: 'En vente bientôt' }],
+    // Le jour J (shop.ventesOuvertes), l’offre complète s’allume d’elle-même.
+    ...(shop.ventesOuvertes && p.price > 0 ? { offers: offerOf(p) } : {}),
+    additionalProperty: [{ '@type': 'PropertyValue', name: 'Prix prévu à l’ouverture des ventes', value: money(p.price) }, { '@type': 'PropertyValue', name: 'Disponibilité', value: shop.ventesOuvertes ? 'En vente' : 'En vente le ' + shop.ouverture.long }],
     isFamilyFriendly: true,
     inLanguage: 'fr-FR',
   };
@@ -316,7 +353,7 @@ export function productGraph(p: Product, related: Product[], opts: { description
         }
       : null;
   return graph([
-    webPageNode({ path, name: p.name, description: p.short, type: 'ItemPage', image: p.images[0]?.src, dateModified: [EDITORIAL_DATE, p.updatedAt || p.dateAdded || EDITORIAL_DATE].sort().at(-1)!.slice(0, 10), about: family ? (CATEGORY_ENTITY[family.slug] || []).map(thing) : [], keywords: productKeywords(p), mainEntity: product['@id'] }),
+    webPageNode({ path, name: p.name, description: p.short, type: 'ItemPage', image: p.images[0]?.src, dateModified: [EDITORIAL_DATE, CATALOGUE_REVISION, p.updatedAt || p.dateAdded || EDITORIAL_DATE].sort().at(-1)!.slice(0, 10), about: family ? (CATEGORY_ENTITY[family.slug] || []).map(thing) : [], keywords: productKeywords(p), mainEntity: product['@id'] }),
     product,
     ...(group ? [group] : []),
     ...(opts.faq?.length ? [faqNode(path, opts.faq)] : []),
@@ -343,7 +380,7 @@ export function collectionGraph(o: { path: string; name: string; description: st
   const about = o.about || (o.category ? (CATEGORY_ENTITY[o.category.slug] || []).map(thing) : []);
   const keywords = o.keywords || (o.category ? categoryKeywords(o.category) : []);
   return graph([
-    webPageNode({ path: pagePath, name: o.name, description: o.description, type: 'CollectionPage', about, keywords, mainEntity: list['@id'] }),
+    webPageNode({ path: pagePath, name: o.name, description: o.description, type: 'CollectionPage', about, keywords, mainEntity: list['@id'], dateModified: CATALOGUE_REVISION }),
     list,
     ...(o.page === 1 && o.faq?.length ? [faqNode(o.path, o.faq)] : []),
   ]);

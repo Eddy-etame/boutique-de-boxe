@@ -114,7 +114,7 @@ export async function KeywordHub({
             </div>
             <p>
               Les modèles les plus regardés sur cette page cette semaine, d’après les visites de la
-              boutique. Pas des ventes : les ventes ouvrent bientôt.
+              boutique. Pas des ventes : les ventes ouvrent le 20 octobre.
             </p>
           </header>
           <div className="product-grid hub-grid">

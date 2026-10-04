@@ -46,7 +46,7 @@ export async function GET() {
       colors: p.colors || [],
       reference: p.reference || null,
       audience: p.audience,
-      availability: 'En vente bientôt',
+      availability: 'En vente le ' + shop.ouverture.long,
     })),
   };
   const serialized = JSON.stringify(body);

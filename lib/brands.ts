@@ -75,7 +75,7 @@ export function brandCopy(b: Brand) {
     { question: `Quels produits ${b.name} trouve-t-on chez Boutique de Boxe ?`, answer: `${n} modèles ${b.name} : ${list(b.families.map((f) => `${f.count} en ${lower(f.name)}`))}. La liste complète est sur cette page, avec un filtre par équipement, par taille et par budget.` },
     { question: `À quel prix sont les produits ${b.name} ?`, answer: `De ${money(b.min)} à ${money(b.max)}, selon le modèle. Ce sont les prix prévus à l’ouverture des ventes ; ils sont affichés sur chaque fiche.` },
     ...(sizes.length >= 3 ? [{ question: `Quelles tailles ${b.name} proposez-vous ?`, answer: `Selon le modèle : ${sizes.join(', ')}. Les tailles ne se transposent pas d’une marque à l’autre : suivez le guide de tailles de ${b.name} indiqué sur la fiche.` }] : []),
-    { question: `Quand pourrai-je acheter du ${b.name} ?`, answer: 'Les ventes ouvrent bientôt. Laissez votre e-mail sur la fiche du modèle qui vous intéresse : vous êtes prévenu le matin de l’ouverture. D’ici là, vous pouvez remplir votre panier et enregistrer vos choix.' },
+    { question: `Quand pourrai-je acheter du ${b.name} ?`, answer: 'Les ventes ouvrent le 20 octobre 2026. Laissez votre e-mail sur la fiche du modèle qui vous intéresse : vous êtes prévenu le matin de l’ouverture. D’ici là, vous pouvez remplir votre panier et enregistrer vos choix.' },
     { question: `Livrez-vous les produits ${b.name} partout en France ?`, answer: 'Oui, dans toute la France métropolitaine, à domicile ou en point relais. Le matériel lourd (sacs de frappe, bases) est livré à domicile seulement.' },
   ];
   return { title, description, intro, faq };

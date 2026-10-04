@@ -1,5 +1,5 @@
 import { ArrowUpRight, ArrowDown } from 'lucide-react';
-import { categories, listItem, type Product } from '@/lib/catalog';
+import { categories, listItem, shop, type Product } from '@/lib/catalog';
 import { HOME_FAQ } from '@/lib/seo-copy';
 import { SeoBody } from './seo-body';
 import { HeroRing } from './hero-ring';
@@ -58,9 +58,9 @@ export default function Home({ items }: { items: Product[] }) {
               <br />
               Le matériel des salles, livré chez vous, dans toute la France.
               <br />
-              Ouverture des ventes bientôt.{' '}
+              {`Ouverture des ventes le ${shop.ouverture.long}.`}{' '}
               <a href="#ouverture">Laissez votre e-mail</a>, on vous prévient le
-              jour J.
+              matin même.
             </p>
           </div>
           <div className="hero-actions">
@@ -224,8 +224,7 @@ export default function Home({ items }: { items: Product[] }) {
             le jour J.
           </h2>
           <p>
-            Vous pouvez déjà remplir votre panier et enregistrer vos choix. Ou
-            laissez simplement votre e-mail : nous vous écrivons le jour de l’ouverture.
+            {`Les ventes ouvrent le ${shop.ouverture.long}. Vous pouvez déjà remplir votre panier et enregistrer vos choix, ou laisser simplement votre e-mail : nous vous écrivons le matin même.`}
           </p>
         </div>
         <AlertForm />

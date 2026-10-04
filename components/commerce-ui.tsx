@@ -855,7 +855,7 @@ export function CartPage() {
               : 'Choisissez un scénario et vérifiez le récapitulatif. Votre adresse e-mail sert à recevoir le reçu de simulation.'}
         </p>
         <span className="simulation-stamp">
-          {choix ? 'Ventes bientôt ouvertes · Aucun paiement' : 'Simulation · Aucun débit · Aucune expédition'}
+          {choix ? `Ventes le ${shop.ouverture.court} · Aucun paiement` : 'Simulation · Aucun débit · Aucune expédition'}
         </span>
       </header>
       <Steps current={saved !== null ? 3 : step} labels={choix ? ['L’équipement', 'Vos coordonnées', 'C’est enregistré'] : undefined} />

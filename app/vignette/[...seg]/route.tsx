@@ -118,7 +118,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ seg:
             ) : null}
           </div>
           <div style={{ position: 'absolute', left: 56, top: 579, width: 496, height: 1, background: INK, display: 'flex' }} />
-          <div style={{ position: 'absolute', left: 56, top: 594, display: 'flex', fontSize: 13, fontWeight: 700, letterSpacing: 1, color: MUTED }}>LIVRAISON DANS TOUTE LA FRANCE · OUVERTURE BIENTÔT</div>
+          <div style={{ position: 'absolute', left: 56, top: 594, display: 'flex', fontSize: 13, fontWeight: 700, letterSpacing: 1, color: MUTED }}>LIVRAISON DANS TOUTE LA FRANCE · OUVERTURE LE 20 OCTOBRE</div>
         </div>
       ),
       {

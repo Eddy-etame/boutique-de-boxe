@@ -30,7 +30,7 @@ export const services: Record<string, Service> = {
       },
     ],
     faq: [
-      { question: 'Quand la boutique ouvre-t-elle ses ventes ?', answer: 'La date n’est pas encore publiée. Laissez votre e-mail sur la page « Ouverture de la boutique » ou sur n’importe quelle fiche : nous vous écrivons le jour J, et vous ne recevez rien d’autre.' },
+      { question: 'Quand la boutique ouvre-t-elle ses ventes ?', answer: 'Le 20 octobre 2026. Laissez votre e-mail sur la page « Ouverture de la boutique » ou sur n’importe quelle fiche : nous vous écrivons le matin même, et vous ne recevez rien d’autre.' },
       { question: 'Les prix affichés sont-ils définitifs ?', answer: 'Ce sont les prix prévus à l’ouverture, TTC, hors livraison. Ils peuvent bouger à la marge d’ici là ; le prix payé sera celui affiché le jour de la commande.' },
       { question: 'Puis-je déjà remplir mon panier ?', answer: 'Oui : choisissez vos modèles et vos tailles, puis enregistrez vos choix avec votre prénom et votre e-mail. Aucun paiement n’est demandé et aucun article n’est réservé ; vous êtes prévenu le jour de l’ouverture des ventes, et votre panier vous attend.' },
       { question: 'Livrez-vous partout en France ?', answer: 'Oui, dans toute la France métropolitaine, à domicile ou en point relais. Les frais prévus sont de 6,90 € en point relais, offerts dès 69 € d’achats, et de 8,90 € à domicile. Le matériel lourd, comme les sacs de frappe, a un tarif spécifique indiqué avant validation.' },
@@ -123,7 +123,7 @@ export const services: Record<string, Service> = {
         title: 'Qui tient la boutique',
         paragraphs: [
           'Boutique de Boxe est éditée par la SAS BOXING CENTER, société au capital de 1 500 €, immatriculée au RCS de Toulouse sous le numéro 821 817 889. Son siège est au 12 rue de Fenouillet, 31200 Toulouse. Le directeur de la publication est Sébastien DUTILH.',
-          'La société exploite aussi des salles de boxe à Toulouse. La boutique en est distincte : elle ne propose ni cours ni planning, et vend en ligne, pour toute la France métropolitaine.',
+          'Boutique de Boxe est une boutique en ligne indépendante, ouverte à tous les pratiquants : elle ne propose ni cours ni planning, et ses ventes ouvrent le 20 octobre 2026.',
         ],
       },
       {
@@ -168,7 +168,7 @@ export const services: Record<string, Service> = {
       {
         title: 'Publication et contact',
         paragraphs: [
-          'Directeur de la publication : Sébastien DUTILH. Courriel : boxingcenter31@gmail.com. Téléphone : 09 54 14 74 72. Boutique de Boxe est une boutique en ligne nationale de matériel de sports de combat, éditée par la SAS BOXING CENTER. Elle est distincte des salles de sport de l’éditeur.',
+          'Directeur de la publication : Sébastien DUTILH. Courriel : boxingcenter31@gmail.com. Téléphone : 09 54 14 74 72. Boutique de Boxe est une boutique en ligne nationale de matériel de sports de combat, éditée par la SAS BOXING CENTER.',
         ],
       },
       {
@@ -324,7 +324,7 @@ export const services: Record<string, Service> = {
       {
         title: 'L’alerte ne vous engage à rien.',
         paragraphs: [
-          'Inscrivez-vous pour recevoir les informations d’ouverture. Aucune date ni remise n’est annoncée pour le moment. Votre inscription ne réserve aucun produit et ne déclenche aucun paiement.',
+          'Les ventes ouvrent le 20 octobre 2026. Inscrivez-vous pour recevoir un e-mail ce matin-là. Aucune remise n’est annoncée ; votre inscription ne réserve aucun produit et ne déclenche aucun paiement.',
         ],
       },
     ],

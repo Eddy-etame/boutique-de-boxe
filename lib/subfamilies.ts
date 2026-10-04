@@ -538,6 +538,125 @@ export const SUBFAMILIES: Subfamily[] = [
     match: (p) => p.audience === 'femme' || /\b(femme|women|brassière|pelvienne)\b/.test(n(p)),
   },
 
+  /* ── Longue traîne d'acheteurs (03/10 soir) : des recherches précises, adossées au stock réel ─── */
+  {
+    slug: 'gants-de-boxe-pas-cher',
+    parent: 'gants-de-boxe',
+    name: 'Gants de boxe pas cher',
+    eyebrow: 'GANTS DE BOXE PAS CHER · 50 € ET MOINS',
+    title: 'Gants de boxe pas cher : les paires à 50 € et moins',
+    description: 'Gants de boxe pas cher pour adulte : toutes les paires du catalogue à 50 € et moins, Metal Boxe, Elion, Adidas, Venum, Champboxing. Poids, fermeture, prix prévus.',
+    prioritaires: ['gants de boxe pas cher', 'gants de boxe pas chers'],
+    secondaires: ['gants de boxe moins de 50 euros', 'gants de boxe débutant', 'gants de boxe entrée de gamme', 'premiers gants de boxe', 'gants de boxe synthétique', 'gants de boxe velcro'],
+    intro: 'Toutes les paires pour adulte que le catalogue propose à 50 € et moins. À ce prix, le gant est synthétique et se ferme au velcro : c’est ce qu’il faut pour apprendre au sac, aux pattes d’ours et en cours collectif.',
+    sections: [
+      { h2: 'Ce qu’on trouve à 50 € et moins', paragraphs: ['Une enveloppe synthétique, un rembourrage en mousse injectée, une fermeture velcro qu’on serre seul. Les poids vont le plus souvent de 10 à 14 oz, ceux du sac et de la technique. Les grandes marques d’entrée de gamme y sont, avec leurs propres grilles de tailles.'] },
+      { h2: 'Trois contrôles avant de choisir une paire bon marché', paragraphs: ['Le rembourrage des jointures d’abord : il doit être épais et ferme, pas seulement visible. Le poignet ensuite : la sangle doit faire le tour complet et tenir la main droite quand on serre le poing. Les coutures enfin, surtout autour du pouce, là où un gant d’entrée de gamme s’use en premier.'] },
+      { h2: 'Quand payer davantage', paragraphs: ['Dès que le sparring devient régulier, ou à partir de trois séances par semaine. Un gant plus cher n’est pas plus protecteur par principe, mais son rembourrage se tasse moins vite et son enveloppe dure plus longtemps. Le guide « cuir ou synthétique » détaille l’écart.'] },
+    ],
+    faq: [
+      { question: 'Des gants de boxe pas chers suffisent-ils pour débuter ?', answer: 'Oui pour le sac, les pattes d’ours et les exercices techniques. Pour le sparring, votre salle demandera souvent 14 ou 16 oz : prenez ce poids dès le départ si vous comptez y aller vite.' },
+      { question: 'Quel poids prendre pour une première paire pas chère ?', answer: '12 oz pour un adulte de gabarit moyen : assez léger pour le sac, assez rembourré pour la technique à deux. 10 oz si vous ne frappez qu’au sac.' },
+      { question: 'Les gants de boxe d’entrée de gamme sont-ils en cuir ?', answer: 'Presque jamais à ce prix : l’enveloppe est synthétique. C’est une matière plus légère et plus simple à entretenir, qui s’use plus vite qu’un cuir sous un usage intensif.' },
+    ],
+    guide: 'gants-de-boxe-cuir-ou-synthetique',
+    match: (p) => p.category === 'gants-de-boxe' && n(p).startsWith('gant') && !kid(p) && p.price > 0 && p.price <= 5000,
+  },
+  {
+    slug: 'gants-de-boxe-cuir',
+    parent: 'gants-de-boxe',
+    name: 'Gants de boxe en cuir',
+    eyebrow: 'GANTS DE BOXE EN CUIR · CLETO REYES, FAIRTEX, TWINS, ELION',
+    title: 'Gants de boxe en cuir : Cleto Reyes, Fairtex, Twins, Elion',
+    description: 'Gants de boxe en cuir pour le sac, le sparring et la compétition : Cleto Reyes, Fairtex, Twins, Elion. Velcro ou lacets, 8 à 18 oz, prix prévus, tailles de chaque marque.',
+    prioritaires: ['gants de boxe en cuir', 'gants de boxe cuir'],
+    secondaires: ['gants de boxe cuir véritable', 'gants Cleto Reyes', 'gants Fairtex cuir', 'gants Twins cuir', 'entretien gants cuir', 'gants de boxe haut de gamme'],
+    intro: 'Les gants dont l’enveloppe est en cuir, d’après la fiche de chaque modèle. Le cuir s’assouplit séance après séance et finit par prendre la forme de la main ; c’est la matière des pratiquants réguliers et des rings.',
+    sections: [
+      { h2: 'Pourquoi le cuir', paragraphs: ['Il dure plus longtemps que le synthétique et se fait à la main avec le temps : les fabricants le réservent à leurs gammes d’entraînement intensif, de sparring et de compétition. La contrepartie est le prix, et un peu d’entretien.'] },
+      { h2: 'Mexicains, thaïlandais, européens', paragraphs: ['Les gants mexicains, comme Cleto Reyes, ont la réputation d’un rembourrage ferme, qui laisse sentir l’impact. Les gants thaïlandais, Fairtex et Twins, ont en général une paume plus souple, pensée pour saisir au corps-à-corps. L’essai avec les bandes reste le seul juge ; le tableau de cette page compare les prix par marque.'] },
+      { h2: 'Faire durer une paire en cuir', paragraphs: ['Sortir les gants du sac après chaque séance, les laisser sécher ouverts loin d’un radiateur, essuyer l’extérieur au chiffon. Une noisette de crème pour cuir deux ou trois fois par an évite qu’il se dessèche et craquelle.'] },
+    ],
+    faq: [
+      { question: 'Un gant de boxe en cuir vaut-il son prix ?', answer: 'Pour trois séances par semaine et plus, oui : il dure plus longtemps et devient plus confortable. Pour une séance hebdomadaire, un bon synthétique suffit.' },
+      { question: 'Cuir ou cuir synthétique ?', answer: 'Le cuir synthétique technique approche la tenue du cuir avec moins d’entretien et un prix plus bas ; il se moule moins à la main. Chaque fiche indique la matière à la ligne « Matières ».' },
+      { question: 'Comment choisir la taille d’un gant en cuir ?', answer: 'Comme tout gant : au poids, selon la séance, puis à l’essai avec les bandes. Un gant en cuir neuf est plus ferme qu’après quelques semaines : il ne doit pas comprimer les doigts, mais il se détendra un peu.' },
+    ],
+    guide: 'gants-de-boxe-cuir-ou-synthetique',
+    match: (p) => {
+      if (p.category !== 'gants-de-boxe' || !n(p).startsWith('gant') || kid(p)) return false;
+      const m = ((p.specs?.['Matières'] || '') + ' ' + (p.specs?.['Matière'] || '') + ' ' + (p.specs?.['Matière extérieure'] || '')).toLowerCase();
+      return /\bcuir\b/.test(n(p) + ' ' + m) && !/synth|simili|\bpu\b/.test(n(p) + ' ' + m);
+    },
+  },
+  {
+    slug: 'shorts-de-boxe-thai',
+    parent: 'textile-boxe',
+    name: 'Shorts de boxe thaï',
+    eyebrow: 'SHORT DE BOXE THAÏ · MUAY-THAÏ ET KICK-BOXING',
+    title: 'Short de boxe thaï : Wicked One, Fairtex, Elion, 8 Weapons',
+    description: 'Short de boxe thaï et de muay-thaï : courts, fendus, ceinture large. Wicked One, Fairtex, Elion, 8 Weapons, Everlast. Tailles de chaque marque et prix prévus.',
+    prioritaires: ['short de boxe thaï', 'shorts de boxe thaï', 'short muay-thaï'],
+    secondaires: ['short de boxe thaï Fairtex', 'short Wicked One', 'short muay thai satin', 'short de kick-boxing', 'taille short boxe thaï', 'short thaï homme'],
+    intro: 'Le short de boxe thaï est court, large aux cuisses et fendu sur les côtés : il laisse monter le genou et partir le coup de pied sans que le tissu retienne la jambe. Il sert aussi au kick-boxing et au K-1.',
+    sections: [
+      { h2: 'La coupe thaï, pièce par pièce', paragraphs: ['Une ceinture élastique haute et large, qui tient sans cordon apparent ; des jambes évasées qui s’arrêtent à mi-cuisse ; des fentes latérales qui libèrent le mouvement de hanche. Le satin brille et sèche vite, le polyester mat se froisse moins.'] },
+      { h2: 'Choisir sa taille', paragraphs: ['Elle se lit au tour de taille, dans la grille de la marque : les shorts thaïlandais taillent souvent plus petit que les européens. Entre deux tailles, prenez la plus grande : la ceinture se resserre, la longueur ne se rallonge pas.'] },
+      { h2: 'Thaï ou anglais : ne pas se tromper de short', paragraphs: ['Le short de boxe anglaise est long, ample et taillé pour une garde poings seuls ; il gêne le coup de genou. Pour le muay-thaï, le kick-boxing et le K-1, c’est le short thaï ; pour la boxe anglaise, l’autre.'] },
+    ],
+    faq: [
+      { question: 'Peut-on porter un short de boxe thaï en kick-boxing ?', answer: 'Oui : c’est le short le plus porté en kick-boxing et en K-1, pour la même raison qu’en muay-thaï, la liberté des jambes.' },
+      { question: 'Satin ou polyester pour un short thaï ?', answer: 'Le satin est la tenue traditionnelle, léger et brillant ; le polyester mat résiste mieux aux lavages répétés. Les deux se lavent à 30 °C, à l’envers.' },
+      { question: 'Un short thaï taille-t-il petit ?', answer: 'Souvent, chez les marques thaïlandaises. Mesurez votre tour de taille et suivez la grille de la fiche plutôt que votre taille habituelle.' },
+    ],
+    guide: 'guide-des-tailles',
+    match: (p) => n(p).startsWith('short') && !n(p).startsWith('short mma') && /tha[iï]|muay/.test(n(p)),
+  },
+  {
+    slug: 'shorts-de-boxe-anglaise',
+    parent: 'textile-boxe',
+    name: 'Shorts de boxe anglaise',
+    eyebrow: 'SHORT DE BOXE ANGLAISE · LONG ET AMPLE',
+    title: 'Short de boxe anglaise : Elion, Cleto Reyes, Adidas',
+    description: 'Short de boxe anglaise pour l’entraînement et le combat amateur : long, ample, ceinture haute. Elion, Cleto Reyes, Adidas. Tailles de chaque marque et prix prévus.',
+    prioritaires: ['short de boxe anglaise', 'shorts de boxe anglaise'],
+    secondaires: ['short de boxe Cleto Reyes', 'short boxe anglaise Adidas', 'short de boxe amateur', 'tenue de boxe anglaise', 'short boxe anglaise homme'],
+    intro: 'Le short de boxe anglaise descend au-dessus du genou, reste ample et monte haut à la taille : la ceinture marque la limite des coups autorisés. C’est la tenue des salles et des combats amateurs, avec le débardeur assorti.',
+    sections: [
+      { h2: 'Une coupe pour les déplacements', paragraphs: ['Rien ne doit gêner le jeu de jambes : tissu léger, jambes larges, ceinture élastique qui ne glisse pas. La ceinture haute se voit de loin, et c’est voulu : un coup porté en dessous est un coup bas.'] },
+      { h2: 'Pour le combat amateur', paragraphs: ['Les compétitions demandent souvent une tenue aux couleurs du coin, rouge ou bleu, short et débardeur assortis. Vérifiez le règlement de votre fédération avant de commander la couleur.'] },
+    ],
+    faq: [
+      { question: 'Quelle différence entre un short de boxe anglaise et un short thaï ?', answer: 'Le short anglais est long et ample, le short thaï court et fendu. Le premier convient à une boxe poings seuls, le second laisse passer le genou et le pied.' },
+      { question: 'Comment choisir la taille d’un short de boxe anglaise ?', answer: 'Au tour de taille, dans la grille de la marque. Le short se porte assez haut : en cas de doute, prenez la taille au-dessus.' },
+    ],
+    guide: 'guide-des-tailles',
+    match: (p) => n(p).startsWith('short') && /boxe anglaise/.test(n(p)),
+  },
+  {
+    slug: 'kimonos-jjb',
+    parent: 'arts-martiaux',
+    name: 'Kimonos de JJB',
+    eyebrow: 'KIMONO DE JJB · DE A0 À A4',
+    title: 'Kimono de JJB : Elion, Manto, Adidas, Century',
+    description: 'Kimono de JJB pour le jiu-jitsu brésilien : de A0 à A4, 350 ou 450 g/m², blanc, bleu ou noir. Elion, Manto, Adidas, Century, Metal Boxe. Prix prévus.',
+    prioritaires: ['kimono de jjb', 'kimono jjb', 'kimono de jiu-jitsu brésilien'],
+    secondaires: ['kimono jjb Elion', 'kimono jjb Manto', 'kimono jjb 450', 'taille kimono jjb', 'kimono jjb noir', 'gi jjb'],
+    intro: 'Le kimono de jiu-jitsu brésilien, ou gi, est plus court et plus ajusté qu’un kimono de judo, tissé serré pour résister aux saisies des manches et du col. Il se taille de A0 à A4, d’après la stature et le poids.',
+    sections: [
+      { h2: 'Le grammage dit la tenue du tissu', paragraphs: ['Autour de 350 g/m², la veste est légère, sèche vite et convient aux débuts et à l’été. Autour de 450 g/m², elle est plus épaisse, plus difficile à saisir et plus chaude. Le pantalon, en toile renforcée aux genoux, se serre par un cordon.'] },
+      { h2: 'Trois couleurs pour la compétition', paragraphs: ['Blanc, bleu et noir sont les couleurs admises dans la plupart des tournois. Un kimono de couleur vive ou à motifs se garde pour l’entraînement : vérifiez le règlement avant un premier tournoi.'] },
+      { h2: 'Laver sans rétrécir', paragraphs: ['Le coton rétrécit au premier lavage, surtout à chaud. Lavez à froid, séchez à l’air, jamais au sèche-linge. Entre deux tailles, demandez-vous si vous laverez chaud : si oui, prenez la plus grande.'] },
+    ],
+    faq: [
+      { question: 'Kimono de JJB : A0, A1, A2… comment trouver sa taille ?', answer: 'De A0 à A4 selon la taille et le poids, dans le tableau de la marque, qui donne la correspondance taille et poids. Deux personnes de même taille mais de poids différent ne portent pas le même kimono.' },
+      { question: 'Un kimono de JJB est-il vendu avec sa ceinture ?', answer: 'Pas toujours : la fiche le précise. La ceinture blanche des débuts s’achète à part si elle n’est pas fournie.' },
+      { question: 'Peut-on faire du JJB avec un kimono de judo ?', answer: 'Pour essayer, oui. Plus ample et à manches plus longues, il donne plus de prise à l’adversaire ; un kimono de JJB devient utile quand la pratique s’installe.' },
+    ],
+    guide: 'debuter-mma',
+    match: (p) => /^kimono/.test(n(p)) && /jjb|jiu|bjj|\bgi\b/.test(n(p)),
+  },
+
   /* ── Par boxe et par niveau (03/10) : les pages d’entrée sous « Matériel de boxe » ─────────── */
   {
     slug: 'materiel-boxe-thai',

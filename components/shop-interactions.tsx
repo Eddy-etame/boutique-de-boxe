@@ -38,6 +38,7 @@ import {
   categories,
   variantPrice,
   categoryFor,
+  shop,
 } from '@/lib/catalog';
 import { AddToCart, QuickAdd, PackAdd } from './commerce-ui';
 import selection from '@/lib/data/selection.json';
@@ -494,7 +495,7 @@ export function Catalog({
         <span key={count} className="catalog-count-value">
           {count} {count === 1 ? 'modèle' : 'modèles'}
         </span>{' '}
-        <span>EN VENTE BIENTÔT</span>
+        <span>{'EN VENTE LE ' + shop.ouverture.court.toUpperCase()}</span>
       </div>
       {result.length ? (
         <>
@@ -963,7 +964,7 @@ export function ProductDetails({ product: p }: { product: Product }) {
         </div>
         <div className="availability">
           <span className="status-dot" />
-          En vente bientôt
+          {'En vente le ' + shop.ouverture.long}
         </div>
         {p.sizes.length > 0 && (
           <fieldset className="variant-picker">
@@ -1022,7 +1023,7 @@ export function ProductDetails({ product: p }: { product: Product }) {
             Soyez prévenu le jour J.
           </p>
           <p className="launch-ticket-copy">
-            Les ventes ouvrent bientôt. Un e-mail le matin de l’ouverture pour{' '}
+            {`Les ventes ouvrent le ${shop.ouverture.long}. Un e-mail ce matin-là pour`}{' '}
             <strong>
               {cleanName(p)}
               {size ? `, ${size}` : ''}

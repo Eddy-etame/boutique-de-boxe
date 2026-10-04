@@ -6,7 +6,7 @@ import { guides } from './editorial';
  * ne varient jamais. Aucune phrase copiée d’un fournisseur, aucun stock, aucune
  * remise, aucune date.
  */
-import { categoryFor, money, type Product } from './catalog';
+import { categoryFor, money, shop, type Product } from './catalog';
 import { productObject } from './seo';
 import { dansLeRayon, ENFANT } from './rayons';
 import { ouncesOf } from './facets';
@@ -89,7 +89,7 @@ export function longDescription(p: Product): string {
       `Le prix prévu à l’ouverture est de ${money(p.price)} TTC, livraison en sus.`,
     ], 5),
   );
-  parts.push(pick(p.id, ['La vente n’est pas encore ouverte : rien n’est débité ni réservé. Vous pouvez déjà le mettre dans votre panier, enregistrer vos choix et être prévenu.', 'En vente bientôt : aucun stock ni paiement pour l’instant. Laissez votre e-mail pour être prévenu à l’ouverture.'], 6));
+  parts.push(pick(p.id, ['La vente n’est pas encore ouverte : rien n’est débité ni réservé. Vous pouvez déjà le mettre dans votre panier, enregistrer vos choix et être prévenu.', `En vente le ${shop.ouverture.long} : aucun paiement d’ici là. Laissez votre e-mail pour être prévenu à l’ouverture.`], 6));
   return parts.join(' ');
 }
 
@@ -196,7 +196,7 @@ export function productFaq(p: Product): { question: string; answer: string }[] {
     { question: `Quelle taille choisir pour ${short} ?`, answer: size },
     { question: `${cap(short)} : pour quelle pratique et quel niveau ?`, answer: `${disciplines.join(', ')}, niveau ${level}. ${p.short}` },
     { question: `Comment entretenir ${short} ?`, answer: careAdvice(p) },
-    { question: `${cap(short)} : quel prix, et à partir de quand ?`, answer: `Le prix prévu à l’ouverture est de ${(p.price / 100).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}, TTC hors livraison. Les ventes ne sont pas encore ouvertes : laissez votre e-mail sur la fiche pour être prévenu le jour J ; vous pouvez déjà enregistrer vos choix depuis le panier.` },
+    { question: `${cap(short)} : quel prix, et à partir de quand ?`, answer: `Le prix prévu à l’ouverture est de ${(p.price / 100).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}, TTC hors livraison. Les ventes ouvrent le ${shop.ouverture.long} : laissez votre e-mail sur la fiche pour être prévenu ce matin-là ; vous pouvez déjà enregistrer vos choix depuis le panier.` },
     { question: `${cap(short)} : comment se passe la livraison ?`, answer: heavy ? 'À domicile uniquement, dans toute la France métropolitaine, avec un tarif de matériel lourd indiqué avant validation ; le point relais n’accepte pas les colis lourds.' : `Dans toute la France métropolitaine, en point relais (6,90 €, offerts dès 69 € d’achats) ou à domicile (8,90 €), aux tarifs prévus à l’ouverture.${p.price > 0 ? (p.price < 6900 ? ` À ${money(p.price)}, il reste ${money(6900 - p.price)} d’achats avant la livraison offerte en point relais.` : ` À ${money(p.price)}, ce modèle passe à lui seul le seuil de la livraison offerte en point relais.`) : ''}` },
     { question: `${cap(short)} : retour ou échange possibles ?`, answer: `Oui, dès l’ouverture des ventes : quatorze jours de rétractation, article non porté et dans son emballage.${sizes.length > 1 ? ` Pour passer d’une taille à l’autre (${sizes.slice(0, 5).join(', ')}${sizes.length > 5 ? '…' : ''}), écrivez-nous avec la référence de la commande.` : ' Pour un échange, écrivez-nous avec la référence de la commande.'}` },
   ];

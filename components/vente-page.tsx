@@ -24,7 +24,7 @@ const PATH = '/' + VENTE + '/';
 export const VENTE_TITRE = 'Vente matériel de boxe en ligne : gants, sacs, protections';
 export const VENTE_DESCRIPTION = shop.ventesOuvertes
   ? 'Vente matériel de boxe en ligne : plus de 1 000 modèles en dix rayons, livrés en France en point relais ou à domicile, 14 jours pour changer d’avis.'
-  : 'Vente matériel de boxe en ligne : plus de 1 000 modèles en dix rayons, prix prévus affichés, livraison en France. Ouverture des ventes bientôt.';
+  : 'Vente matériel de boxe en ligne : plus de 1 000 modèles en dix rayons, prix prévus affichés, livraison en France. Ouverture des ventes le 20 octobre 2026.';
 const KEYWORDS = ['vente matériel de boxe', 'vente matériel boxe', 'acheter matériel de boxe', 'vente de matériel de boxe en ligne', 'magasin matériel de boxe', 'prix matériel de boxe', 'vente gants de boxe', 'vente sac de frappe'];
 
 export const venteMetadata = (): Metadata => ({
@@ -91,7 +91,7 @@ export function venteFaq(): SeoFaq[] {
       question: 'Peut-on acheter du matériel de boxe en ligne dès aujourd’hui ?',
       answer: ouvert
         ? 'Oui : le panier se règle par carte, sur la page sécurisée de PayPlug, et la commande part en point relais ou à domicile.'
-        : 'Pas encore : les ventes ouvrent bientôt. D’ici là, le panier sert de liste : vous y gardez vos modèles et vos tailles, sans carte bancaire, et un message vous avertit quand la commande devient possible.',
+        : `Pas avant le ${shop.ouverture.long}. D’ici là, le panier sert de liste : vous y gardez vos modèles et vos tailles, sans carte bancaire, et un message vous avertit le matin de l’ouverture.`,
     },
     { question: 'Qui est le vendeur ?', answer: `La ${shop.entity}, société immatriculée au RCS de Toulouse sous le numéro ${shop.siren}, dont le siège est au ${shop.address}. Elle édite Boutique de Boxe et répond par e-mail à ${shop.email}.` },
     { question: 'Les prix affichés comprennent-ils la TVA ?', answer: 'Oui : chaque prix est donné toutes taxes comprises, hors frais de livraison. Les frais de livraison s’ajoutent au panier avant la validation, jamais après.' },
@@ -135,7 +135,7 @@ function sections(): SeoSection[] {
     {
       h2: 'Qui vend ce matériel de boxe',
       paragraphs: [
-        `Boutique de Boxe est éditée par la ${shop.entity}, ${shop.address}, immatriculée au RCS de Toulouse sous le numéro ${shop.siren}. La société exploite aussi des salles de boxe à Toulouse ; la boutique en est distincte et vend dans toute la France.`,
+        `Boutique de Boxe est éditée par la ${shop.entity}, ${shop.address}, immatriculée au RCS de Toulouse sous le numéro ${shop.siren}. C’est une boutique en ligne indépendante, ouverte à tous les pratiquants, qui vend dans toute la France.`,
         'Chaque modèle garde la référence et les tailles de son fabricant. Rien n’est converti d’une marque à l’autre, et un prix affiché est toujours un prix toutes taxes comprises.',
       ],
     },
@@ -190,7 +190,7 @@ export function VentePage({ all }: { all: Product[] }) {
           <div className="label">Vente matériel de boxe : un vendeur, dix rayons, des prix affichés.</div>
           <p>
             {`Boutique de Boxe ${ouvert ? 'vend en ligne' : 'prépare la vente en ligne de'} ${fr(all.length)} modèles de matériel de boxe et de sports de combat, de ${marques} marques, livrés en France métropolitaine en point relais ou à domicile. `}
-            {ouvert ? 'Chaque prix est donné toutes taxes comprises, et vous avez quatorze jours pour changer d’avis.' : 'Les ventes ouvrent bientôt : les prix affichés sont ceux prévus à l’ouverture, et le panier enregistre déjà vos choix, sans paiement.'}
+            {ouvert ? 'Chaque prix est donné toutes taxes comprises, et vous avez quatorze jours pour changer d’avis.' : `Les ventes ouvrent le ${shop.ouverture.long} : les prix affichés sont ceux prévus à l’ouverture, et le panier enregistre déjà vos choix, sans paiement.`}
           </p>
         </div>
       </section>

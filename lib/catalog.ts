@@ -65,6 +65,12 @@ export const shop = {
   // Un seul interrupteur pour le jour J (29/09) : les pages-villes et le carrefour passent
   // du futur (« livrera dès l’ouverture des ventes ») au présent quand il vaut true.
   ventesOuvertes: false,
+  /** Date d'ouverture des ventes annoncée par le propriétaire (3 octobre 2026 : « let's just say the 20th »).
+   *  Elle ne change rien à l'interrupteur ci-dessus : elle ne fait que s'afficher. */
+  ouverture: { iso: '2026-10-20', long: '20 octobre 2026', court: '20 octobre' },
+  /** Disponibilité publiée dans l'offre de chaque fiche le jour où les ventes ouvrent (schema.org) :
+   *  'InStock' si le stock est réellement là, 'BackOrder' si la commande part chez le fournisseur. À confirmer le jour J. */
+  disponibiliteOffre: 'InStock' as 'InStock' | 'BackOrder',
 };
 export const variantPrice = (p:Product, label:string) => p.variants?.find(v=>v.label===label)?.price ?? p.price;
 export const money = (cents: number) =>
