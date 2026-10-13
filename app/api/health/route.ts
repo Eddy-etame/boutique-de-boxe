@@ -51,6 +51,8 @@ export async function GET() {
     mode: p.mode,
     paiement: p.mode === 'payplug_live' ? p.liveEnabled : p.mode === 'payplug_test' ? p.hostedTestEnabled : false,
     courriel: mailerConfigured(),
+    // Ce qui manque au raccordement, par son nom (ex. live_key_wrong_mode_or_format) : jamais une valeur.
+    manque: p.issues,
   };
   const answer = (h: Omit<Health, 'checkedAt'>, status = 200) => {
     const payload = { ...h, commerce, checkedAt };
