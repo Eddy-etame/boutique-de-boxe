@@ -477,6 +477,11 @@ export async function POST(
       return response({ error: 'Saisissez une adresse e-mail valide.' }, 400);
 
     const email = data.email.trim().toLowerCase();
+    // Adresse de robot (lib/alerts.ts) : refusée à l'écriture, rien de faux n'entre au back-office.
+    if (suspicion(email)) {
+      console.warn('formulaire', action, ': adresse de robot refusée');
+      return response({ error: 'Vérifiez votre adresse e-mail.' }, 400);
+    }
 
     if (action === 'alerts') {
       await ensureAlertContact();

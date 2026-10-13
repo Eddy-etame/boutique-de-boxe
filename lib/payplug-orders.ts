@@ -1,11 +1,32 @@
+import { after } from 'next/server';
 import { db, runtime, isAdmin } from './database';
-import { cartToken, resolveCart, shippingFor, uuid } from './commerce';
+import { cartToken, resolveCart, shippingFor, uuid, type CartLine } from './commerce';
 import {
   createPayplug,
   payplugSettings,
   PayplugError,
   type PayplugBinding,
+  type ProviderMode,
 } from './payplug';
+import { shop, money } from './catalog';
+import { suspicion } from './alerts';
+import { clientIp } from './request';
+import { validateRelayPoint, relayLabel, type RelayPoint } from './boxtal';
+import { mailerConfigured, sendMail } from './mailer';
+
+/**
+ * Commandes payées par PayPlug (13/10/2026, ouverture des ventes).
+ *
+ * Une tentative de paiement EST la commande : lignes, montants, coordonnées et livraison y sont figés
+ * au moment où le client part payer. Le montant vient toujours du catalogue côté serveur (resolveCart),
+ * jamais du navigateur ; PayPlug reçoit ce total, et chaque retour est revérifié par un GET authentifié
+ * (une notification ne prouve rien par elle-même). Le passage à « paid » est monotone ; les e-mails
+ * de commande partent une seule fois, réclamés par `notified_at`.
+ *
+ * Public : `create` (quand shop.ventesOuvertes et COMMERCE_MODE=payplug_live, ou payplug_test hors
+ * production) et `status` (par l'identifiant UUID de la tentative, sans adresse ni identifiant PayPlug).
+ * Réservé à l'équipe : `settings`, `reconcile`, et le mode test en production.
+ */
 
 type Attempt = {
   id: string;
@@ -13,7 +34,7 @@ type Attempt = {
   request_key: string;
   fingerprint: string;
   cart_revision: number;
-  mode: 'payplug_test';
+  mode: ProviderMode;
   name: string;
   email: string;
   billing: string;
@@ -30,7 +51,69 @@ type Attempt = {
   updated_at: string;
   paid_at: string | null;
   refunded_cents: number;
+  notified_at?: string | null;
+  notify_error?: string | null;
 };
+/** Le numéro de commande montré au client, sur PayPlug et dans les e-mails. */
+export const reference = (id: string) => 'BDB-' + id.slice(0, 8).toUpperCase();
+type Stored = {
+  first_name: string;
+  last_name: string;
+  email: string;
+  address1: string;
+  address2?: string;
+  postcode: string;
+  city: string;
+  country: 'FR';
+  phone?: string;
+  relay?: RelayPoint | null;
+  optin?: boolean;
+};
+const stored = (a: Attempt): Partial<Stored> => {
+  try {
+    return JSON.parse(a.billing) as Partial<Stored>;
+  } catch {
+    return {};
+  }
+};
+const linesOf = (a: Attempt): CartLine[] => {
+  try {
+    return JSON.parse(a.lines) as CartLine[];
+  } catch {
+    return [];
+  }
+};
+let columnsReady = false;
+/** Colonnes ajoutées sans migration manuelle, au premier passage (même principe que lib/clients.ts). */
+async function ensureColumns() {
+  if (columnsReady) return;
+  const database = await db();
+  await database.prepare('ALTER TABLE payment_attempts ADD COLUMN IF NOT EXISTS notified_at text').run();
+  await database.prepare('ALTER TABLE payment_attempts ADD COLUMN IF NOT EXISTS notify_error text').run();
+  columnsReady = true;
+}
+const sellingMode = (mode: string | undefined): mode is ProviderMode =>
+  mode === 'payplug_live' || mode === 'payplug_test';
+/** Paiement public : ventes ouvertes et vrai paiement ; le mode test ne s'ouvre au public qu'en local. */
+const publicSale = (mode: string | undefined) =>
+  shop.ventesOuvertes &&
+  (mode === 'payplug_live' || (mode === 'payplug_test' && process.env.NODE_ENV !== 'production'));
+/** Limite par adresse IP et par heure, sur la table rate_limits commune aux autres formulaires. */
+async function tooMany(request: Request, scope: string, max: number) {
+  const bucket = Math.floor(Date.now() / 3600000);
+  const digest = await crypto.subtle.digest(
+    'SHA-256',
+    new TextEncoder().encode(`${clientIp(request)}:${bucket}:payplug:${scope}`),
+  );
+  const key = Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, '0')).join('');
+  const hits = await (await db())
+    .prepare(
+      'INSERT INTO rate_limits(key,hits,expires) VALUES (?,1,?) ON CONFLICT(key) DO UPDATE SET hits=rate_limits.hits+1 RETURNING hits',
+    )
+    .bind(key, (bucket + 2) * 3600000)
+    .first<number>('hits');
+  return (hits || 0) > max;
+}
 const reply = (data: unknown, status = 200) =>
   Response.json(data, {
     status,
@@ -53,6 +136,7 @@ function binding(a: Attempt): PayplugBinding {
 function safe(a: Attempt) {
   return {
     id: a.id,
+    reference: reference(a.id),
     status: a.status,
     total: a.total,
     providerId: a.provider_id,
@@ -61,6 +145,24 @@ function safe(a: Attempt) {
     createdAt: a.created_at,
     paidAt: a.paid_at,
     refundedCents: a.refunded_cents,
+    mode: a.mode,
+  };
+}
+/** Ce que voit le client qui revient de PayPlug : ni adresse, ni identifiant PayPlug, ni journal. */
+function publicView(a: Attempt) {
+  return {
+    id: a.id,
+    reference: reference(a.id),
+    status: a.status,
+    subtotal: a.subtotal,
+    shipping: a.shipping,
+    total: a.total,
+    delivery: a.delivery,
+    firstName: stored(a).first_name || '',
+    lines: linesOf(a).map(({ name, variant, quantity, price }) => ({ name, variant, quantity, price })),
+    paymentUrl: a.status === 'pending' ? a.payment_url : null,
+    createdAt: a.created_at,
+    paidAt: a.paid_at,
     mode: a.mode,
   };
 }
@@ -143,9 +245,40 @@ async function reconcile(a: Attempt) {
     ),
   );
 }
+/** Dernière relecture PayPlug par commande (par instance) : la page de retour ne peut pas marteler l'API. */
+const lastCheck = new Map<string, number>();
 export async function payplugGet(request: Request, action: string) {
+  if (action === 'status') {
+    const id = new URL(request.url).searchParams.get('id');
+    if (!uuid(id)) return reply({ error: 'Référence invalide.' }, 400);
+    await ensureColumns();
+    const a = await byId(id);
+    if (!a) return reply({ error: 'Commande introuvable.' }, 404);
+    const admin = await isAdmin();
+    let current = a;
+    let warning: string | undefined;
+    // Le retour du navigateur ne prouve rien : on relit PayPlug côté serveur. Pour le public, au plus
+    // une fois toutes les 3 secondes par commande et tant que l'issue n'est pas acquise ; pour
+    // l'équipe, à chaque lecture (un remboursement fait dans le portail doit apparaître).
+    const last = lastCheck.get(a.id) || 0;
+    if (
+      a.provider_id &&
+      (admin || (['pending', 'unconfirmed'].includes(a.status) && Date.now() - last > 3000))
+    ) {
+      lastCheck.set(a.id, Date.now());
+      if (lastCheck.size > 500) lastCheck.delete(lastCheck.keys().next().value!);
+      try {
+        current = await reconcile(a);
+      } catch {
+        warning = 'La confirmation de PayPlug n’a pas pu être relue. Réessayez dans un instant.';
+      }
+    }
+    if (current.status === 'paid' && !current.notified_at) after(() => notifyPaid(current.id));
+    return reply({ attempt: admin ? safe(current) : publicView(current), ...(warning ? { warning } : {}) });
+  }
   if (!(await isAdmin())) return reply({ error: 'Accès réservé.' }, 403);
   if (action === 'settings') {
+    await ensureColumns();
     const database = await db();
     // An interrupted create can already exist at the provider. Never reopen it for creation.
     await database
@@ -158,37 +291,35 @@ export async function payplugGet(request: Request, action: string) {
       )
       .run();
     const attempts = await database
-      .prepare(
-        'SELECT id,status,total,provider_id,error,created_at,mode,refunded_cents FROM payment_attempts ORDER BY created_at DESC LIMIT 50',
-      )
-      .all();
+      .prepare('SELECT * FROM payment_attempts ORDER BY created_at DESC LIMIT 100')
+      .all<Attempt>();
+    // Une commande payée dont les e-mails n'ont pas pu partir est retentée à chaque ouverture des réglages.
+    for (const a of attempts.results.filter((x) => x.status === 'paid' && !x.notified_at).slice(0, 5))
+      after(() => notifyPaid(a.id));
     return reply({
       settings: payplugSettings(await runtime()),
-      attempts: attempts.results,
+      mail: mailerConfigured(),
+      attempts: attempts.results.map((a) => ({
+        ...safe(a),
+        name: a.name,
+        email: a.email,
+        subtotal: a.subtotal,
+        shipping: a.shipping,
+        delivery: a.delivery,
+        customer: stored(a),
+        lines: linesOf(a),
+        notifiedAt: a.notified_at || null,
+        notifyError: a.notify_error || null,
+      })),
     });
   }
-  if (action !== 'status')
-    return reply({ error: 'Ressource introuvable.' }, 404);
-  const id = new URL(request.url).searchParams.get('id');
-  if (!uuid(id)) return reply({ error: 'Référence invalide.' }, 400);
-  const a = await byId(id);
-  if (!a) return reply({ error: 'Tentative introuvable.' }, 404);
-  // Returning from the hosted page supplies no payment evidence. Re-read PayPlug from the server.
-  try {
-    return reply({ attempt: safe(await reconcile(a)) });
-  } catch {
-    return reply({
-      attempt: safe(a),
-      warning:
-        'Le statut PayPlug n’a pas pu être revérifié. Consultez le portail avant de réessayer.',
-    });
-  }
+  return reply({ error: 'Ressource introuvable.' }, 404);
 }
 export async function payplugPost(request: Request, action: string) {
   const env = await runtime();
   if (action === 'ipn') {
-    // The currently deployed simulation never calls PayPlug or accepts payment notifications.
-    if (env.COMMERCE_MODE !== 'payplug_test')
+    // En simulation, aucune notification n'est attendue ni acceptée.
+    if (!sellingMode(env.COMMERCE_MODE))
       return reply({ received: true, ignored: true });
     if (!request.headers.get('content-type')?.includes('application/json'))
       return reply({ error: 'Format invalide.' }, 400);
@@ -200,6 +331,7 @@ export async function payplugPost(request: Request, action: string) {
     }
     if (typeof data.id !== 'string' || !/^pay_[A-Za-z0-9]+$/.test(data.id))
       return reply({ received: true, ignored: true });
+    await ensureColumns();
     const database = await db();
     let a = await database
       .prepare('SELECT * FROM payment_attempts WHERE provider_id=?')
@@ -218,7 +350,8 @@ export async function payplugPost(request: Request, action: string) {
       const verified = a.provider_id
         ? await adapter.verifyNotification(data, binding(a), a.provider_id)
         : await adapter.retrieveAndVerifyPayment(data.id, binding(a));
-      await applyVerified(a, verified);
+      const updated = await applyVerified(a, verified);
+      if (updated.status === 'paid' && !updated.notified_at) after(() => notifyPaid(updated.id));
       return reply({ received: true });
     } catch (error) {
       return reply(
@@ -239,10 +372,20 @@ export async function payplugPost(request: Request, action: string) {
     !request.headers.get('content-type')?.includes('application/json')
   )
     return reply({ error: 'Origine ou format invalide.' }, 400);
-  if (!(await isAdmin())) return reply({ error: 'Accès réservé.' }, 403);
-  if (env.COMMERCE_MODE !== 'payplug_test')
+  const admin = await isAdmin();
+  // Commande publique : seulement quand les ventes sont ouvertes et le vrai paiement branché.
+  if (!admin && (action !== 'create' || !publicSale(env.COMMERCE_MODE)))
     return reply(
-      { error: 'PayPlug est désactivé : la boutique reste en simulation.' },
+      {
+        error: shop.ventesOuvertes
+          ? 'Le paiement en ligne est momentanément indisponible. Votre panier est conservé.'
+          : 'Les ventes ne sont pas encore ouvertes.',
+      },
+      shop.ventesOuvertes ? 503 : 403,
+    );
+  if (!sellingMode(env.COMMERCE_MODE))
+    return reply(
+      { error: 'Le paiement en ligne est momentanément indisponible. Votre panier est conservé.' },
       409,
     );
   let data;
@@ -252,6 +395,7 @@ export async function payplugPost(request: Request, action: string) {
     return reply({ error: 'Demande invalide.' }, 400);
   }
   if (action === 'reconcile') {
+    if (!admin) return reply({ error: 'Accès réservé.' }, 403);
     if (!uuid(data.id)) return reply({ error: 'Référence invalide.' }, 400);
     const a = await byId(data.id);
     if (!a) return reply({ error: 'Tentative introuvable.' }, 404);
@@ -263,14 +407,12 @@ export async function payplugPost(request: Request, action: string) {
         400,
       );
     try {
-      return reply({
-        attempt: safe(
-          await applyVerified(
-            a,
-            await createPayplug(env).retrieveAndVerifyPayment(id, binding(a)),
-          ),
-        ),
-      });
+      const updated = await applyVerified(
+        a,
+        await createPayplug(env).retrieveAndVerifyPayment(id, binding(a)),
+      );
+      if (updated.status === 'paid' && !updated.notified_at) after(() => notifyPaid(updated.id));
+      return reply({ attempt: safe(updated) });
     } catch (error) {
       if (!(error instanceof PayplugError)) console.error('PayPlug reconcile: erreur interne', (error as Error)?.message);
       return reply(
@@ -284,18 +426,34 @@ export async function payplugPost(request: Request, action: string) {
   }
   if (action !== 'create')
     return reply({ error: 'Ressource introuvable.' }, 404);
+  // Pot de miel : un humain ne voit pas ce champ. Le robot est noté au journal, rien n'est enregistré.
+  if (typeof data.website === 'string' && data.website.trim()) {
+    console.warn('payplug create: pot de miel rempli');
+    return reply({ error: 'Demande invalide.' }, 400);
+  }
+  if (await tooMany(request, 'create', 12))
+    return reply({ error: 'Trop de tentatives. Réessayez dans une heure, ou écrivez-nous.' }, 429);
   const token = cartToken(request);
   if (
     !token ||
     !uuid(data.requestKey) ||
-    data.testConsent !== true ||
+    !(data.cgv === true || (admin && data.testConsent === true)) ||
     !Number.isSafeInteger(data.quotedTotal) ||
     !Number.isSafeInteger(data.quotedRevision)
   )
     return reply(
-      { error: 'Préparez le panier et confirmez le test PayPlug.' },
+      { error: 'Acceptez les conditions générales de vente pour commander.' },
       400,
     );
+  const delivery = data.delivery === undefined ? 'home' : data.delivery;
+  if (delivery !== 'home' && delivery !== 'relay')
+    return reply({ error: 'Choisissez le mode de livraison.' }, 400);
+  if (data.relay !== undefined && (delivery !== 'relay' || !validateRelayPoint(data.relay)))
+    return reply({ error: 'Le point relais envoyé est incomplet. Choisissez-le à nouveau sur la carte.' }, 400);
+  const relay = delivery === 'relay' && data.relay !== undefined ? validateRelayPoint(data.relay) : null;
+  const phone = typeof data.phone === 'string' ? data.phone.trim() : '';
+  if (phone && !/^[+0-9 ().-]{6,30}$/.test(phone))
+    return reply({ error: 'Vérifiez le numéro de téléphone.' }, 400);
   const b = data.billing;
   const valid = (s: unknown, min: number, max: number) =>
     typeof s === 'string' &&
@@ -310,31 +468,45 @@ export async function payplugPost(request: Request, action: string) {
     !valid(b.email, 5, 254) ||
     !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(b.email) ||
     !valid(b.address1, 3, 150) ||
+    (b.address2 !== undefined && b.address2 !== '' && !valid(b.address2, 1, 150)) ||
     !valid(b.city, 2, 100) ||
     typeof b.postcode !== 'string' ||
     !/^\d{5}$/.test(b.postcode) ||
     b.country !== 'FR'
   )
     return reply(
-      { error: 'Vérifiez les coordonnées de facturation du test (France).' },
+      { error: 'Vérifiez vos coordonnées (adresse en France métropolitaine).' },
       400,
     );
+  const address2 = typeof b.address2 === 'string' ? b.address2.trim() : '';
   const billing = {
     first_name: b.first_name.trim(),
     last_name: b.last_name.trim(),
     email: b.email.trim().toLowerCase(),
     address1: b.address1.trim(),
+    ...(address2 ? { address2 } : {}),
     city: b.city.trim(),
     postcode: b.postcode,
     country: 'FR' as const,
     language: 'fr' as const,
   };
+  // Adresse de robot (lib/alerts.ts) : refusée, rien n'entre au back-office.
+  if (suspicion(billing.email)) {
+    console.warn('payplug create: adresse de robot refusée');
+    return reply({ error: 'Vérifiez votre adresse e-mail.' }, 400);
+  }
+  const optin = data.optin === true;
   const fingerprint = JSON.stringify([
     billing,
     data.quotedTotal,
     data.quotedRevision,
+    delivery,
+    relay,
+    phone,
+    optin,
   ]);
   const database = await db();
+  await ensureColumns();
   const previous = await database
     .prepare('SELECT * FROM payment_attempts WHERE cart_id=? AND request_key=?')
     .bind(token, data.requestKey)
@@ -344,7 +516,7 @@ export async function payplugPost(request: Request, action: string) {
       ? reply({ attempt: safe(previous) })
       : reply({ error: 'Cette tentative correspond à un autre contenu.' }, 409);
   const cart = await resolveCart(token),
-    shipping = shippingFor(cart.subtotal, 'home'),
+    shipping = shippingFor(cart.subtotal, delivery),
     total = cart.subtotal + shipping;
   if (
     !cart.items.length ||
@@ -358,25 +530,55 @@ export async function payplugPost(request: Request, action: string) {
     );
   if (total < 30 || total > 2000000)
     return reply(
-      {
-        error:
-          'Le total doit être compris entre 0,30 € et 20 000 € pour le test PayPlug.',
-      },
+      { error: 'Le total doit être compris entre 0,30 € et 20 000 €.' },
       400,
     );
   // Resolve configuration before reserving the cart; this performs no network request.
   const adapter = createPayplug(env);
   const settings = payplugSettings(env);
-  if (settings.issues.length)
+  if (settings.issues.length) {
+    console.error('payplug create: configuration', settings.issues.join(','));
     return reply(
       {
-        error: 'Le raccordement PayPlug de test est incomplet.',
-        issues: settings.issues,
+        error: 'Le paiement en ligne est momentanément indisponible. Votre panier est conservé.',
+        ...(admin ? { issues: settings.issues } : {}),
       },
       409,
     );
+  }
+  // Un paiement refusé par la banque, ou abandonné sur la page PayPlug, libère le panier : le client
+  // doit pouvoir réessayer. On relit d'abord PayPlug : un paiement en réalité payé, ou en cours de
+  // vérification, garde le panier (jamais deux paiements pour un même panier).
+  let revision = cart.revision;
+  const holder = await database
+    .prepare('SELECT * FROM payment_attempts WHERE cart_id=? AND cart_revision=?')
+    .bind(token, cart.revision)
+    .first<Attempt>();
+  if (holder && holder.provider_id && ['pending', 'failed'].includes(holder.status)) {
+    let fresh: Attempt | null = holder;
+    try {
+      fresh = await reconcile(holder);
+    } catch {
+      fresh = null;
+    }
+    if (!fresh)
+      return reply({ error: 'Le paiement précédent n’a pas pu être vérifié. Réessayez dans un instant.' }, 503);
+    if (fresh.status === 'pending' && fresh.fingerprint === fingerprint && fresh.payment_url)
+      return reply({ attempt: safe(fresh) });
+    if (fresh.status === 'pending' || fresh.status === 'failed') {
+      const bumped = await database
+        .prepare('UPDATE carts SET revision=revision+1,updated_at=? WHERE id=? AND revision=? RETURNING revision')
+        .bind(new Date().toISOString(), token, cart.revision)
+        .first<number>('revision');
+      if (!bumped) return reply({ error: 'Le panier a changé pendant la préparation.' }, 409);
+      revision = bumped;
+    } else if (fresh.status === 'paid') {
+      return reply({ attempt: safe(fresh) });
+    }
+  }
   const id = crypto.randomUUID(),
     now = new Date().toISOString();
+  const keep: Stored = { ...billing, phone, relay, optin };
   try {
     const row = await database
       .prepare(
@@ -387,21 +589,21 @@ export async function payplugPost(request: Request, action: string) {
         token,
         data.requestKey,
         fingerprint,
-        cart.revision,
-        'payplug_test',
+        revision,
+        env.COMMERCE_MODE,
         billing.first_name + ' ' + billing.last_name,
         billing.email,
-        JSON.stringify(billing),
+        JSON.stringify(keep),
         JSON.stringify(cart.items),
         cart.subtotal,
         shipping,
         total,
-        'home',
+        delivery,
         'creating',
         now,
         now,
         token,
-        cart.revision,
+        revision,
         Date.now(),
       )
       .first();
@@ -422,7 +624,7 @@ export async function payplugPost(request: Request, action: string) {
     return reply(
       {
         error:
-          'Une tentative PayPlug existe déjà pour ce panier. Vérifiez son état dans les réglages avant de recommencer.',
+          'Un paiement est déjà préparé pour ce panier. Rechargez la page pour le reprendre.',
       },
       409,
     );
@@ -432,6 +634,7 @@ export async function payplugPost(request: Request, action: string) {
     const payment = await adapter.createHostedPayment({
       binding: binding(a),
       billing,
+      reference: reference(a.id),
     });
     return reply({ attempt: safe(await applyVerified(a, payment)) }, 201);
   } catch (error) {
@@ -454,5 +657,101 @@ export async function payplugPost(request: Request, action: string) {
       )
       .run();
     return reply({ attempt: safe((await byId(id))!) }, uncertain ? 202 : 422);
+  }
+}
+
+const esc = (v: unknown) =>
+  String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+function deliveryText(a: Attempt) {
+  const b = stored(a);
+  if (a.delivery === 'relay')
+    return b.relay
+      ? 'En point relais : ' + relayLabel(b.relay)
+      : 'En point relais, le plus proche de votre adresse : il vous est confirmé par e-mail avant l’expédition.';
+  return `À domicile : ${b.address1 || ''}${b.address2 ? ', ' + b.address2 : ''}, ${b.postcode || ''} ${b.city || ''}`;
+}
+function orderMail(a: Attempt, forShop: boolean) {
+  const b = stored(a);
+  const ref = reference(a.id);
+  const when = new Date(a.paid_at || a.created_at).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' });
+  const rows = linesOf(a).map((l) => ({
+    label: `${l.quantity} × ${l.name}${l.variant ? ' — ' + l.variant : ''}`,
+    amount: money(l.price * l.quantity),
+  }));
+  const shippingLabel = a.delivery === 'relay' ? 'Livraison en point relais' : 'Livraison à domicile';
+  const test = a.mode !== 'payplug_live';
+  const legal = `${shop.entity} · SIREN ${shop.siren} · ${shop.address} · ${shop.email} · ${shop.phone}`;
+  const text = [
+    forShop
+      ? `Nouvelle commande payée ${ref}${test ? ' (paiement de TEST, aucun débit réel)' : ''}`
+      : `Bonjour ${b.first_name || ''},`,
+    '',
+    forShop
+      ? `Client : ${b.first_name || ''} ${b.last_name || ''} <${a.email}>${b.phone ? ' · ' + b.phone : ''}`
+      : `Votre paiement est confirmé : votre commande ${ref} est enregistrée.`,
+    `Payée le ${when}${forShop ? ' · PayPlug ' + (a.provider_id || '') : ''}`,
+    '',
+    ...rows.map((r) => `${r.label} : ${r.amount}`),
+    `${shippingLabel} : ${money(a.shipping)}`,
+    `Total TTC payé : ${money(a.total)}`,
+    '',
+    deliveryText(a),
+    '',
+    forShop
+      ? `Lettre d’information : ${b.optin ? 'oui' : 'non'}`
+      : `Un e-mail vous prévient à l’expédition. Vous disposez de 14 jours après réception pour vous rétracter : ${shop.origin}/retours/ — conditions générales de vente : ${shop.origin}/conditions-generales-de-vente/. Une question : répondez à cet e-mail.`,
+    '',
+    `${shop.name} — ${legal}`,
+  ].join('\n');
+  const cell = 'padding:10px 0;border-bottom:1px solid #ddd';
+  const html = `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>${esc(ref)}</title></head><body style="margin:0;background:#efeee8;color:#1c211e;font:15px/1.6 Arial,sans-serif"><div style="max-width:620px;margin:0 auto;padding:32px 24px;background:#ffffff"><p style="font-weight:bold;letter-spacing:.04em;margin:0 0 24px">BOUTIQUE<br>DE BOXE.</p>${
+    forShop
+      ? `<h1 style="font-size:26px;line-height:1.15;margin:0 0 12px">Nouvelle commande ${esc(ref)}</h1><p style="margin:0 0 4px">${test ? '<b>Paiement de TEST : aucun débit réel, ne pas expédier.</b>' : 'Paiement réel confirmé par PayPlug.'}</p><p style="margin:0 0 16px">${esc(b.first_name)} ${esc(b.last_name)} · <a href="mailto:${esc(a.email)}">${esc(a.email)}</a>${b.phone ? ' · ' + esc(b.phone) : ''}</p>`
+      : `<h1 style="font-size:28px;line-height:1.1;margin:0 0 12px">Merci ${esc(b.first_name)}, votre commande est confirmée.</h1><p style="margin:0 0 16px">Commande <b>${esc(ref)}</b>, payée le ${esc(when)}.</p>`
+  }<table style="width:100%;border-collapse:collapse;margin:8px 0 16px">${rows
+    .map((r) => `<tr><td style="${cell}">${esc(r.label)}</td><td style="${cell};text-align:right;white-space:nowrap">${esc(r.amount)}</td></tr>`)
+    .join('')}<tr><td style="${cell}">${esc(shippingLabel)}</td><td style="${cell};text-align:right">${esc(money(a.shipping))}</td></tr><tr><td style="padding:12px 0;font-weight:bold">Total TTC payé</td><td style="padding:12px 0;text-align:right;font-weight:bold">${esc(money(a.total))}</td></tr></table><p style="margin:0 0 16px">${esc(deliveryText(a))}</p>${
+    forShop
+      ? `<p style="margin:0 0 16px">PayPlug : ${esc(a.provider_id)} · lettre d’information : ${b.optin ? 'oui' : 'non'}</p>`
+      : `<p style="margin:0 0 16px">Un e-mail vous prévient à l’expédition. Vous disposez de 14 jours après réception pour vous rétracter : <a href="${shop.origin}/retours/">retours et rétractation</a>. Nos <a href="${shop.origin}/conditions-generales-de-vente/">conditions générales de vente</a> s’appliquent à cette commande. Une question : répondez simplement à cet e-mail.</p>`
+  }<p style="font-size:12px;color:#596059;margin:24px 0 0">${esc(shop.name)} — ${esc(legal)}</p></div></body></html>`;
+  return {
+    subject: forShop
+      ? `${test ? '[TEST] ' : ''}Nouvelle commande ${ref} · ${money(a.total)}`
+      : `Votre commande ${ref} est confirmée — Boutique de Boxe`,
+    text,
+    html,
+  };
+}
+/**
+ * Les deux e-mails d'une commande payée (client, boutique), une seule fois : la commande est
+ * réclamée par `notified_at` ; un échec la rend pour un nouvel essai (notification, retour client,
+ * réglages). Resend reçoit une clé d'idempotence : un nouvel essai ne double pas un e-mail parti.
+ */
+export async function notifyPaid(id: string) {
+  try {
+    await ensureColumns();
+    const database = await db();
+    const claimed = await database
+      .prepare("UPDATE payment_attempts SET notified_at=? WHERE id=? AND status='paid' AND notified_at IS NULL RETURNING id")
+      .bind(new Date().toISOString(), id)
+      .first();
+    if (!claimed) return;
+    const a = (await byId(id))!;
+    try {
+      if (!mailerConfigured()) throw new Error('Aucun service d’envoi configuré (RESEND_API_KEY).');
+      await sendMail({ to: a.email, ...orderMail(a, false), key: `commande/${a.id}/client` });
+      const shopTo = (process.env.ADMIN_EMAIL || '').trim() || shop.email;
+      await sendMail({ to: shopTo, ...orderMail(a, true), key: `commande/${a.id}/boutique` });
+      await database.prepare('UPDATE payment_attempts SET notify_error=NULL WHERE id=?').bind(id).run();
+    } catch (error) {
+      console.error('commande', reference(id), 'e-mails non partis :', (error as Error)?.message);
+      await database
+        .prepare('UPDATE payment_attempts SET notified_at=NULL, notify_error=? WHERE id=?')
+        .bind(String((error as Error)?.message || 'erreur').slice(0, 200), id)
+        .run();
+    }
+  } catch (error) {
+    console.error('commande', reference(id), 'notification :', (error as Error)?.message);
   }
 }

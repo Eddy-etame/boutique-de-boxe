@@ -9,7 +9,7 @@ import { after } from 'next/server';
 
 export const maxDuration = 60;
 import { shop } from '@/lib/catalog';
-import { emailValid, ensureAlertContact, ensureChoices, insertAlert, normalisePhone, CONSENT_VERSION } from '@/lib/alerts';
+import { emailValid, ensureAlertContact, ensureChoices, insertAlert, normalisePhone, suspicion, CONSENT_VERSION } from '@/lib/alerts';
 import {
   cartToken,
   resolveCart,
@@ -382,6 +382,10 @@ export async function POST(request: Request, context: Context) {
         (postcode !== '' && !/^\d{5}$/.test(postcode))
       )
         return reply({ error: 'Vérifiez votre prénom, votre e-mail, le mobile et votre accord.' }, 400);
+      if (suspicion(email)) {
+        console.warn('choix : adresse de robot refusée');
+        return reply({ error: 'Vérifiez votre adresse e-mail.' }, 400);
+      }
       const cart = await resolveCart(existingToken);
       if (!cart.items.length) return reply({ error: 'Votre panier est vide.' }, 400);
       await Promise.all([ensureChoices(), ensureAlertContact()]);

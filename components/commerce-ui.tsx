@@ -45,7 +45,7 @@ async function request<T>(
 ): Promise<T> {
   let response: Response;
   try {
-    response = await fetch(`${API}${action}`, {
+    response = await fetch(action.startsWith('/') ? action : `${API}${action}`, {
       method: body === undefined ? 'GET' : 'POST',
       credentials: 'same-origin',
       cache: 'no-store',
@@ -512,20 +512,23 @@ function Steps({ current, labels = ['L’équipement', 'L’essai', 'Le reçu'] 
 }
 
 type Delivery = 'relay' | 'home';
-type PaymentOutcome = 'approved' | 'declined';
+// Paiement réel (13/10/2026) : le panier part chez PayPlug ; le montant est recalculé par le serveur.
 type CheckoutPayload = {
-  name: string;
-  email: string;
+  billing: {
+    first_name: string;
+    last_name: string;
+    email: string;
+    address1: string;
+    address2: string;
+    postcode: string;
+    city: string;
+    country: 'FR';
+  };
   phone: string;
   optin: boolean;
-  address1: string;
-  address2: string;
-  postcode: string;
-  city: string;
   delivery: Delivery;
   relay?: RelayPoint;
-  paymentOutcome: PaymentOutcome;
-  consent: true;
+  cgv: true;
   quotedTotal: number;
   quotedRevision: number;
   website: string;
@@ -537,9 +540,7 @@ type Attempt = {
   state: 'pending' | 'uncertain' | 'resolved';
 };
 type CheckoutResponse = {
-  id: string;
-  status: 'simulated_paid' | 'simulated_declined';
-  emailStatus: string;
+  attempt: { id: string; status: string; paymentUrl: string | null; reference?: string };
 };
 
 // Display estimate only. Checkout must always validate the quote against the
@@ -612,12 +613,10 @@ export function CartPage() {
   const [step, setStep] = useState<1 | 2>(1);
   const [error, setError] = useState('');
   const [announcement, setAnnouncement] = useState('');
-  const [name, setName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [delivery, setDelivery] = useState<Delivery>('relay');
   const [relay, setRelay] = useState<RelayPoint | null>(null);
-  const [paymentOutcome, setPaymentOutcome] =
-    useState<PaymentOutcome>('approved');
   const [consent, setConsent] = useState(false);
   const [phone, setPhone] = useState('');
   const [optin, setOptin] = useState(false);
@@ -628,7 +627,6 @@ export function CartPage() {
   const [website, setWebsite] = useState('');
   const [busy, setBusy] = useState(false);
   const [uncertain, setUncertain] = useState(false);
-  const [declinedId, setDeclinedId] = useState('');
   const attempt = useRef<Attempt | null>(null);
   const heading = useRef<HTMLHeadingElement>(null);
   const form = useRef<HTMLFormElement>(null);
@@ -721,25 +719,27 @@ export function CartPage() {
     let current = attempt.current;
     if (!uncertain) {
       const payload: CheckoutPayload = {
-        name: name.trim(),
-        email: email.trim().toLowerCase(),
+        billing: {
+          first_name: firstName.trim(),
+          last_name: lastName.trim(),
+          email: email.trim().toLowerCase(),
+          address1: address1.trim(),
+          address2: address2.trim(),
+          postcode: postcode.trim(),
+          city: city.trim(),
+          country: 'FR',
+        },
         phone: phone.trim(),
         optin,
-        address1: address1.trim(),
-        address2: address2.trim(),
-        postcode: postcode.trim(),
-        city: city.trim(),
         delivery,
         ...(delivery === 'relay' && relay ? { relay } : {}),
-        paymentOutcome,
-        consent: true,
+        cgv: true,
         quotedTotal: total,
         quotedRevision: cart!.revision,
         website,
       };
       const fingerprint = JSON.stringify(payload);
-      // Keep the same key on an exact repeat, including a resolved decline.
-      // Change it only for a new payload after a definite completed response.
+      // Même clé pour une même demande : un double clic ou une reprise ne crée jamais deux paiements.
       if (
         !current ||
         (current.state === 'resolved' && current.fingerprint !== fingerprint)
@@ -758,54 +758,42 @@ export function CartPage() {
     busyRef.current = true;
     setBusy(true);
     setError('');
-    setDeclinedId('');
     try {
-      const result = await request<CheckoutResponse>('checkout', {
+      const result = await request<CheckoutResponse>('/api/payplug/create', {
         ...current.payload,
-        idempotencyKey: current.key,
+        requestKey: current.key,
       });
-      if (
-        !result.id ||
-        !['simulated_paid', 'simulated_declined'].includes(result.status)
-      ) {
+      const a = result.attempt;
+      if (a?.status === 'paid') {
+        window.location.assign(`/paiement-retour/?id=${encodeURIComponent(a.id)}`);
+        return;
+      }
+      if (!a?.paymentUrl || a.status !== 'pending') {
         throw Object.assign(
-          new Error('La réponse de votre tentative doit être vérifiée.'),
-          {
-            uncertain: true,
-          },
+          new Error('Le paiement n’a pas pu être préparé. Votre panier est conservé : réessayez.'),
+          { uncertain: a?.status === 'unconfirmed' || a?.status === 'creating' },
         ) as ApiFailure;
       }
       current.state = 'resolved';
       setUncertain(false);
-      if (result.status === 'simulated_paid') {
-        cartRevision++;
-        publishCart({
-          items: [],
-          subtotal: 0,
-          notices: [],
-          revision: current.payload.quotedRevision + 1,
-        });
-        window.location.assign(receiptPath(result.id));
-        return;
-      }
-      setDeclinedId(result.id);
-      setAnnouncement(
-        'Paiement d’essai refusé, comme demandé. Votre panier est conservé. Sélectionnez « Paiement approuvé » pour tester le reçu.',
-      );
+      setAnnouncement('Ouverture de la page de paiement sécurisée…');
+      // La page de paiement PayPlug (secure.payplug.com) : la carte n’est jamais saisie sur ce site.
+      window.location.assign(a.paymentUrl);
+      return;
     } catch (e) {
       const failure = e as ApiFailure;
       if (failure.uncertain) {
         current.state = 'uncertain';
         setUncertain(true);
         setError(
-          'La réponse n’a pas été confirmée. Reprenez cette même tentative : ses coordonnées, son montant et sa référence restent inchangés.',
+          'La réponse n’a pas été confirmée. Reprenez cette même commande : ses coordonnées, son montant et sa référence restent inchangés, et aucun second paiement n’est créé.',
         );
       } else {
         current.state = 'resolved';
         setUncertain(false);
         setError(
           failure.message ||
-            'La tentative n’a pas abouti. Vérifiez vos informations.',
+            'La commande n’a pas abouti. Vérifiez vos informations.',
         );
       }
     } finally {
@@ -839,9 +827,9 @@ export function CartPage() {
             </>
           ) : (
             <>
-              Le dernier
+              La livraison,
               <br />
-              essai.
+              puis le paiement.
             </>
           )}
         </h1>
@@ -851,14 +839,14 @@ export function CartPage() {
               ? 'Ajustez les quantités, puis enregistrez vos choix : on vous prévient le jour de l’ouverture des ventes.'
               : 'Aucun paiement : les ventes ne sont pas encore ouvertes. Vos choix sont gardés pour ce jour-là.'
             : step === 1
-              ? 'Ajustez les quantités, puis essayez le parcours jusqu’au reçu.'
-              : 'Choisissez un scénario et vérifiez le récapitulatif. Votre adresse e-mail sert à recevoir le reçu de simulation.'}
+              ? 'Ajustez les quantités, puis passez à la livraison et au paiement.'
+              : 'Vos coordonnées, la livraison, puis le paiement par carte sur la page sécurisée de PayPlug. La confirmation arrive par e-mail.'}
         </p>
         <span className="simulation-stamp">
-          {choix ? `Ventes le ${shop.ouverture.court} · Aucun paiement` : 'Simulation · Aucun débit · Aucune expédition'}
+          {choix ? `Ventes le ${shop.ouverture.court} · Aucun paiement` : 'Paiement sécurisé · Carte bancaire · PayPlug'}
         </span>
       </header>
-      <Steps current={saved !== null ? 3 : step} labels={choix ? ['L’équipement', 'Vos coordonnées', 'C’est enregistré'] : undefined} />
+      <Steps current={saved !== null ? 3 : step} labels={choix ? ['L’équipement', 'Vos coordonnées', 'C’est enregistré'] : ['L’équipement', 'La livraison', 'Le paiement']} />
       <noscript>
         <p>
           Le panier nécessite JavaScript. Vous pouvez continuer à
@@ -1158,19 +1146,32 @@ export function CartPage() {
                     <legend>
                       <span>01</span> Vos coordonnées et l’adresse de livraison
                     </legend>
-                    <label htmlFor={`${fieldId}-name`}>
-                      Nom et prénom
-                      <input
-                        id={`${fieldId}-name`}
-                        name="name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        required
-                        minLength={2}
-                        maxLength={100}
-                        autoComplete="name"
-                      />
-                    </label>
+                    <div className="checkout-row">
+                      <label htmlFor={`${fieldId}-given`}>
+                        Prénom
+                        <input
+                          id={`${fieldId}-given`}
+                          name="given-name"
+                          value={firstName}
+                          onChange={(e) => setFirstName(e.target.value)}
+                          required
+                          maxLength={80}
+                          autoComplete="given-name"
+                        />
+                      </label>
+                      <label htmlFor={`${fieldId}-family`}>
+                        Nom
+                        <input
+                          id={`${fieldId}-family`}
+                          name="family-name"
+                          value={lastName}
+                          onChange={(e) => setLastName(e.target.value)}
+                          required
+                          maxLength={80}
+                          autoComplete="family-name"
+                        />
+                      </label>
+                    </div>
                     <label htmlFor={`${fieldId}-email`}>
                       Adresse e-mail
                       <input
@@ -1190,8 +1191,8 @@ export function CartPage() {
                       className="commerce-caption"
                       id={`${fieldId}-email-note`}
                     >
-                      Le reçu sera destiné à cette adresse. Les détails de
-                      l’envoi seront indiqués après la simulation.
+                      La confirmation de commande, puis l’avis d’expédition,
+                      partent à cette adresse.
                     </p>
                     <label htmlFor={`${fieldId}-phone`}>
                       Téléphone <small>(facultatif, pour la livraison)</small>
@@ -1260,7 +1261,7 @@ export function CartPage() {
                         />
                       </label>
                     </div>
-                    <p className="commerce-caption">France métropolitaine. L’adresse sert au calcul de la livraison et à l’expédition à l’ouverture.</p>
+                    <p className="commerce-caption">Livraison en France métropolitaine.</p>
                     <label className="simulation-consent checkout-optin" htmlFor={`${fieldId}-optin`}>
                       <input
                         id={`${fieldId}-optin`}
@@ -1270,7 +1271,7 @@ export function CartPage() {
                         disabled={locked}
                       />
                       <span>
-                        Prévenez-moi par e-mail de l’ouverture des ventes et des nouveautés. Un lien de désinscription dans chaque message.
+                        Recevoir par e-mail les nouveautés et les offres de la boutique. Un lien de désinscription dans chaque message.
                       </span>
                     </label>
                     <label className="honeypot" aria-hidden="true">
@@ -1286,7 +1287,7 @@ export function CartPage() {
                   </fieldset>
                   <fieldset disabled={locked} className="checkout-fields">
                     <legend id={`${fieldId}-delivery-label`}>
-                      <span>02</span> La livraison à essayer
+                      <span>02</span> La livraison
                     </legend>
                     <RadioGroup
                       name="delivery"
@@ -1304,7 +1305,7 @@ export function CartPage() {
                         <span>
                           <strong>Point relais</strong>
                           <small>
-                            Estimation offerte dès 69 € d’équipement.
+                            Offerte dès 69 € d’équipement.
                           </small>
                         </span>
                         <b>{money(shippingEstimate(cart.subtotal, 'relay'))}</b>
@@ -1316,69 +1317,27 @@ export function CartPage() {
                         <RadioGroupItem id={`${fieldId}-home`} value="home" />
                         <span>
                           <strong>À domicile</strong>
-                          <small>Essai du calcul des frais de livraison.</small>
+                          <small>Remise en main propre à votre adresse.</small>
                         </span>
                         <b>{money(890)}</b>
                       </label>
                     </RadioGroup>
                     {delivery === 'relay' && <RelayPicker postcode={postcode} city={city} value={relay} onChange={setRelay} disabled={locked} />}
-                    <p className="commerce-caption">
-                      Cet essai ne déclenche aucune expédition. Les frais réels,
-                      notamment pour le matériel lourd, restent à confirmer.
-                    </p>
+                    {delivery === 'relay' && !relay && (
+                      <p className="commerce-caption">
+                        Sans point choisi sur la carte, le point relais le plus proche de votre adresse vous est confirmé par e-mail avant l’expédition.
+                      </p>
+                    )}
                   </fieldset>
                   <fieldset disabled={locked} className="checkout-fields">
-                    <legend id={`${fieldId}-payment-label`}>
-                      <span>03</span> Le scénario de paiement
+                    <legend>
+                      <span>03</span> Le paiement
                     </legend>
-                    <RadioGroup
-                      name="paymentOutcome"
-                      value={paymentOutcome}
-                      onValueChange={(value) =>
-                        setPaymentOutcome(value as PaymentOutcome)
-                      }
-                      disabled={locked}
-                      aria-labelledby={`${fieldId}-payment-label`}
-                      className="commerce-choice-group payment-choices"
-                    >
-                      <label
-                        className={`commerce-choice ${paymentOutcome === 'approved' ? 'is-selected' : ''}`}
-                        htmlFor={`${fieldId}-approved`}
-                      >
-                        <RadioGroupItem
-                          id={`${fieldId}-approved`}
-                          value="approved"
-                        />
-                        <span>
-                          <strong>Paiement approuvé</strong>
-                          <small>Créer une commande d’essai et son reçu.</small>
-                        </span>
-                        <span className="choice-code" aria-hidden="true">
-                          OK
-                        </span>
-                      </label>
-                      <label
-                        className={`commerce-choice ${paymentOutcome === 'declined' ? 'is-selected' : ''}`}
-                        htmlFor={`${fieldId}-declined`}
-                      >
-                        <RadioGroupItem
-                          id={`${fieldId}-declined`}
-                          value="declined"
-                        />
-                        <span>
-                          <strong>Paiement refusé</strong>
-                          <small>
-                            Tester le refus en conservant votre panier.
-                          </small>
-                        </span>
-                        <span className="choice-code" aria-hidden="true">
-                          TEST
-                        </span>
-                      </label>
-                    </RadioGroup>
                     <p className="commerce-caption">
-                      Aucune carte bancaire ni coordonnée de paiement ne sont
-                      utilisées.
+                      Par carte bancaire (CB, Visa, Mastercard), sur la page sécurisée de notre
+                      prestataire de paiement PayPlug : vos données de carte ne transitent jamais
+                      par ce site. Le paiement est débité à la validation ; la commande est
+                      confirmée par e-mail.
                     </p>
                   </fieldset>
                   <label
@@ -1394,12 +1353,13 @@ export function CartPage() {
                       disabled={locked}
                     />
                     <span>
-                      Je confirme qu’il s’agit d’une simulation : aucun débit,
-                      aucune réservation de stock et aucune expédition.
+                      J’ai lu et j’accepte les{' '}
+                      <a href="/conditions-generales-de-vente/" target="_blank" rel="noopener">conditions générales de vente</a>,
+                      dont le droit de rétractation de 14 jours.
                     </span>
                   </label>
                   <p className="commerce-caption">
-                    Vos coordonnées servent à ce parcours et à son reçu.{' '}
+                    Vos coordonnées servent à traiter et livrer la commande.{' '}
                     <a href="/confidentialite/">Données personnelles</a>.
                   </p>
                 </form>
@@ -1433,7 +1393,7 @@ export function CartPage() {
                 {!choix && (
                 <div>
                   <dt>
-                    Livraison simulée
+                    Livraison
                     <small>
                       {delivery === 'relay' ? (relay ? 'Point relais · ' + relay.name : 'Point relais') : 'À domicile'}
                     </small>
@@ -1443,13 +1403,13 @@ export function CartPage() {
                 )}
                 {!choix && (
                 <div className="commerce-total">
-                  <dt>Total simulé</dt>
+                  <dt>Total TTC</dt>
                   <dd>{money(total)}</dd>
                 </div>
                 )}
               </dl>
               <p className="commerce-caption">
-                {choix ? 'Prix prévus à l’ouverture des ventes.' : 'Prix prévus à l’ouverture des ventes. Le montant est vérifié à la validation.'}
+                {choix ? 'Prix prévus à l’ouverture des ventes.' : 'Prix TTC. Le montant est recalculé et vérifié à la validation.'}
               </p>
               {step === 1 ? (
                 <button
@@ -1463,7 +1423,7 @@ export function CartPage() {
                   }
                   onClick={() => moveTo(2)}
                 >
-                  {choix ? 'Enregistrer mes choix' : 'Essayer le parcours'}{' '}
+                  {choix ? 'Enregistrer mes choix' : 'Passer à la livraison'}{' '}
                   <ArrowUpRight size={18} aria-hidden="true" />
                 </button>
               ) : (
@@ -1481,7 +1441,7 @@ export function CartPage() {
                   ) : uncertain ? (
                     <div className="checkout-uncertain">
                       <p>
-                        <strong>Une seule tentative à reprendre.</strong>
+                        <strong>Une seule commande à reprendre.</strong>
                       </p>
                       <p>
                         Vos choix restent verrouillés pendant la vérification
@@ -1495,7 +1455,7 @@ export function CartPage() {
                       >
                         {busy
                           ? 'Vérification en cours…'
-                          : 'Reprendre la même tentative'}
+                          : 'Reprendre la même commande'}
                         <RefreshCw size={17} aria-hidden="true" />
                       </button>
                     </div>
@@ -1512,11 +1472,7 @@ export function CartPage() {
                         cart.notices.length > 0
                       }
                     >
-                      {busy
-                        ? 'Simulation en cours…'
-                        : paymentOutcome === 'approved'
-                          ? 'Simuler et créer le reçu'
-                          : 'Tester le paiement refusé'}
+                      {busy ? 'Préparation du paiement…' : `Commander et payer ${money(total)}`}
                       <ArrowUpRight size={18} aria-hidden="true" />
                     </button>
                   )}
@@ -1531,16 +1487,9 @@ export function CartPage() {
                   </button>
                 </>
               )}
-              {!choix && (
-                <p className="simulation-zero">
-                  <strong>0 €</strong>
-                  <span>réellement débités</span>
-                </p>
-              )}
-              {declinedId && (
+              {!choix && step === 2 && (
                 <p className="commerce-caption">
-                  Tentative refusée enregistrée : {declinedId.slice(0, 8)}.
-                  Aucun reçu de paiement n’est créé pour un refus.
+                  Commande avec obligation de paiement. Le bouton ouvre la page de paiement sécurisée.
                 </p>
               )}
             </aside>

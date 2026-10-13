@@ -1263,7 +1263,7 @@ export function AlertForm({
               variant,
               consent: true,
               source,
-              website: '',
+              website: (e.currentTarget.elements.namedItem('website') as HTMLInputElement | null)?.value || '',
             }),
           });
           const data = (await r.json()) as {
@@ -1300,6 +1300,11 @@ export function AlertForm({
     >
       <input type="hidden" name="productId" value={productId} />
       <input type="hidden" name="variant" value="" />
+      {/* Pot de miel : invisible pour un humain, rempli par un robot ; le serveur refuse alors l’inscription. */}
+      <label className="honeypot" aria-hidden="true">
+        Laisser vide
+        <input name="website" tabIndex={-1} autoComplete="off" defaultValue="" />
+      </label>
       <noscript>
         <p>
           Cette alerte concerne le modèle, toutes tailles. Pour une demande

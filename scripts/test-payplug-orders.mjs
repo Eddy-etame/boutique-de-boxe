@@ -59,14 +59,15 @@ class PayplugError extends Error {
   }
 }
 
-test('GET settings and status are owner only', async () => {
+test('GET settings is owner only; public status answers only by attempt UUID', async () => {
   const h = harness({ admin: false });
   assert.equal((await h.get('settings')).status, 403);
-  assert.equal((await h.get('status', key)).status, 403);
+  assert.equal((await h.get('status', key)).status, 404);
+  assert.equal((await h.get('status', 'pas-un-uuid')).status, 400);
   assert.equal(h.adapterCalls.length, 0);
 });
 
-test('create and reconcile are owner only and require same origin', async () => {
+test('while sales are closed, create and reconcile are owner only and require same origin', async () => {
   const h = harness({ admin: false });
   assert.equal((await h.post('create', payload)).status, 403);
   assert.equal(
@@ -81,8 +82,8 @@ test('create and reconcile are owner only and require same origin', async () => 
   assert.equal(h.adapterCalls.length, 0);
 });
 
-for (const mode of ['simulation', 'payplug_live', 'invalid']) {
-  test(`${mode} cannot create a PayPlug test and IPN is ignored`, async () => {
+for (const mode of ['simulation', 'invalid']) {
+  test(`${mode} cannot create a PayPlug payment and IPN is ignored`, async () => {
     const h = harness({ mode });
     assert.equal((await h.post('create', payload)).status, 409);
     const ipn = await h.post('ipn', {
@@ -558,7 +559,7 @@ test('actual settings UI retains pending attempt after failed manual reconciliat
   );
   assert.match(
     h.text(h.find(failedTree, (node) => node.props?.role === 'status')),
-    /En attente chez PayPlug/,
+    /En attente du paiement/,
   );
   assert.doesNotMatch(h.text(failedTree), /Paiement de test confirmé/);
   assert.equal(
@@ -714,8 +715,16 @@ function harness({
   onCreate,
   onRetrieve,
   onVerify,
+  ventes = false,
+  nodeEnv = 'production',
+  mailOn = true,
+  mailFails = 0,
 } = {}) {
   const rows = new Map();
+  const mails = [];
+  const later = [];
+  let rateHits = 0;
+  let failures = mailFails;
   const cart = {
     id: cartId,
     revision: 1,
@@ -752,6 +761,27 @@ function harness({
           return this;
         },
         async first() {
+          if (sql.startsWith('INSERT INTO rate_limits')) return ++rateHits;
+          if (sql === 'SELECT * FROM payment_attempts WHERE cart_id=? AND cart_revision=?')
+            return clone(
+              [...rows.values()].find((row) => row.cart_id === values[0] && row.cart_revision === values[1]) ?? null,
+            );
+          if (sql.startsWith('UPDATE carts SET revision=revision+1')) {
+            const [updated, id, revision] = values;
+            if (id !== cart.id || revision !== cart.revision) return null;
+            cart.revision++;
+            cart.updated_at = updated;
+            return cart.revision;
+          }
+          if (sql.startsWith('UPDATE payment_attempts SET notified_at=? WHERE id=?')) {
+            const [at, id] = values;
+            const row = rows.get(id);
+            if (row && row.status === 'paid' && !row.notified_at) {
+              row.notified_at = at;
+              return { id };
+            }
+            return null;
+          }
           if (sql === 'SELECT * FROM payment_attempts WHERE id=?')
             return clone(rows.get(values[0]) ?? null);
           if (sql.includes('WHERE provider_id=?'))
@@ -834,11 +864,23 @@ function harness({
           throw new Error(`Unmocked SQL first: ${sql}`);
         },
         async all() {
-          if (sql.startsWith('SELECT id,status,total,provider_id'))
+          if (sql.startsWith('SELECT * FROM payment_attempts ORDER BY created_at DESC'))
             return { results: clone([...rows.values()]) };
           throw new Error(`Unmocked SQL all: ${sql}`);
         },
         async run() {
+          if (sql.startsWith('ALTER TABLE payment_attempts ADD COLUMN IF NOT EXISTS')) return {};
+          if (sql.startsWith('UPDATE payment_attempts SET notify_error=NULL')) {
+            const row = rows.get(values[0]);
+            if (row) row.notify_error = null;
+            return {};
+          }
+          if (sql.startsWith('UPDATE payment_attempts SET notified_at=NULL, notify_error=?')) {
+            const [message, id] = values;
+            const row = rows.get(id);
+            if (row) Object.assign(row, { notified_at: null, notify_error: message });
+            return {};
+          }
           if (sql.includes("SET status='unconfirmed'")) {
             const [updated, threshold] = values;
             for (const row of rows.values())
@@ -982,7 +1024,44 @@ function harness({
     TextDecoder,
     URL,
     crypto: webcrypto,
+    process: { env: { NODE_ENV: nodeEnv, ADMIN_EMAIL: 'owner@example.invalid' } },
+    console: { error() {}, warn() {}, log() {} },
     require(specifier) {
+      if (specifier === 'next/server') return { after: (fn) => later.push(fn) };
+      if (specifier === './catalog')
+        return {
+          shop: {
+            ventesOuvertes: ventes,
+            name: 'Boutique de Boxe',
+            origin: 'https://www.boutique-de-boxe.com',
+            entity: 'SAS TEST',
+            siren: '000',
+            address: 'adresse',
+            email: 'boutique@example.invalid',
+            phone: '00',
+          },
+          money: (cents) => (cents / 100).toFixed(2) + ' EUR',
+        };
+      if (specifier === './alerts')
+        return { suspicion: (email) => (/^r\.o\.b\.o\.t/.test(email) ? 'robot' : null) };
+      if (specifier === './request') return { clientIp: () => '203.0.113.7' };
+      if (specifier === './boxtal')
+        return {
+          validateRelayPoint: (v) => (v && typeof v === 'object' && v.code && v.name && /^\d{5}$/.test(v.postcode || '') ? v : null),
+          relayLabel: (r) => r.name,
+        };
+      if (specifier === './mailer')
+        return {
+          mailerConfigured: () => mailOn,
+          sendMail: async (mail) => {
+            if (failures > 0) {
+              failures--;
+              throw new Error('Resend 500 : test');
+            }
+            mails.push(mail);
+            return { account: 'test', id: 'm' + mails.length };
+          },
+        };
       if (specifier === './database')
         return {
           db: async () => database,
@@ -1008,7 +1087,7 @@ function harness({
           PayplugError,
           payplugSettings: () => ({ mode, issues }),
           createPayplug: () => {
-            if (mode !== 'payplug_test') throw new PayplugError('disabled');
+            if (mode !== 'payplug_test' && mode !== 'payplug_live') throw new PayplugError('disabled');
             return adapter;
           },
         };
@@ -1022,6 +1101,11 @@ function harness({
   return {
     rows,
     cart,
+    mails,
+    /** Exécute ce que la route a confié à after() (e-mails de commande), comme Next après la réponse. */
+    flush: async () => {
+      while (later.length) await later.shift()();
+    },
     adapterCalls,
     calls: (kind) => adapterCalls.filter((call) => call.kind === kind),
     get: (action, id) =>
@@ -1049,3 +1133,156 @@ function harness({
 }
 
 
+
+const publicPayload = {
+  requestKey: key,
+  cgv: true,
+  quotedTotal: 4690,
+  quotedRevision: 1,
+  delivery: 'relay',
+  phone: '06 12 34 56 78',
+  website: '',
+  billing: { ...payload.billing, address2: 'Bâtiment B' },
+};
+const relayHarness = (options = {}) => {
+  const h = harness({ admin: false, ventes: true, mode: 'payplug_live', ...options });
+  return h;
+};
+
+test('public create is refused while sales are closed, even in live mode', async () => {
+  const h = harness({ admin: false, ventes: false, mode: 'payplug_live' });
+  assert.equal((await h.post('create', publicPayload)).status, 403);
+  assert.equal(h.rows.size, 0);
+  assert.equal(h.adapterCalls.length, 0);
+});
+
+test('public test mode never opens in production (owner only)', async () => {
+  const h = harness({ admin: false, ventes: true, mode: 'payplug_test', nodeEnv: 'production' });
+  assert.equal((await h.post('create', publicPayload)).status, 503);
+  assert.equal(h.rows.size, 0);
+  const local = harness({ admin: false, ventes: true, mode: 'payplug_test', nodeEnv: 'development' });
+  // shippingFor est simulé à 890 : le total cité doit suivre le serveur, pas le navigateur.
+  assert.equal((await local.post('create', { ...publicPayload, quotedTotal: 4890 })).status, 201);
+});
+
+test('live public create: CGV required, server total, live mode stored, payment named with the order reference', async () => {
+  const h = relayHarness();
+  assert.equal((await h.post('create', { ...publicPayload, cgv: false })).status, 400);
+  assert.equal((await h.post('create', { ...publicPayload, testConsent: true, cgv: undefined })).status, 400);
+  // Le montant cité par le navigateur ne fait pas foi : 46,90 € n'est pas le total du serveur (40 + 8,90).
+  assert.equal((await h.post('create', publicPayload)).status, 409);
+  const response = await h.post('create', { ...publicPayload, quotedTotal: 4890 });
+  assert.equal(response.status, 201);
+  const { attempt } = await response.json();
+  const row = h.rows.get(attempt.id);
+  assert.equal(row.mode, 'payplug_live');
+  assert.equal(row.delivery, 'relay');
+  assert.equal(row.total, 4890);
+  const stored = JSON.parse(row.billing);
+  assert.equal(stored.phone, '06 12 34 56 78');
+  assert.equal(stored.address2, 'Bâtiment B');
+  const call = h.calls('create')[0].args;
+  assert.equal(call.binding.mode, 'payplug_live');
+  assert.equal(call.binding.amountCents, 4890);
+  assert.match(call.reference, /^BDB-[0-9A-F]{8}$/);
+});
+
+test('honeypot and robot addresses are refused before any reservation', async () => {
+  const h = relayHarness();
+  assert.equal((await h.post('create', { ...publicPayload, quotedTotal: 4890, website: 'http://spam.invalid' })).status, 400);
+  assert.equal(
+    (await h.post('create', { ...publicPayload, quotedTotal: 4890, billing: { ...publicPayload.billing, email: 'r.o.b.o.t.x@gmail.com' } })).status,
+    400,
+  );
+  assert.equal(h.rows.size, 0);
+  assert.equal(h.adapterCalls.length, 0);
+});
+
+test('public create is rate limited per address', async () => {
+  const h = relayHarness();
+  let last;
+  for (let i = 0; i < 13; i++) last = await h.post('create', { ...publicPayload, cgv: false });
+  assert.equal(last.status, 429);
+});
+
+test('public status shows the order without address, e-mail or PayPlug identifier', async () => {
+  const h = relayHarness({ onRetrieve: async () => payment('pending') });
+  const { attempt } = await (await h.post('create', { ...publicPayload, quotedTotal: 4890 })).json();
+  const body = await (await h.get('status', attempt.id)).json();
+  assert.equal(body.attempt.reference, 'BDB-' + attempt.id.slice(0, 8).toUpperCase());
+  assert.equal(body.attempt.firstName, 'Test');
+  for (const hidden of ['providerId', 'email', 'billing', 'customer', 'error', 'name'])
+    assert.equal(body.attempt[hidden], undefined, hidden);
+  assert.equal(JSON.stringify(body).includes('10 rue du Test'), false);
+});
+
+test('a paid order sends the customer and shop e-mails exactly once', async () => {
+  const h = relayHarness({ onVerify: async () => payment('paid'), onRetrieve: async () => payment('paid') });
+  const { attempt } = await (await h.post('create', { ...publicPayload, quotedTotal: 4890 })).json();
+  assert.equal((await h.post('ipn', { id: 'pay_12345678' })).status, 200);
+  await h.flush();
+  assert.equal((await h.post('ipn', { id: 'pay_12345678' })).status, 200);
+  await h.get('status', attempt.id);
+  await h.flush();
+  assert.equal(h.mails.length, 2);
+  assert.deepEqual(h.mails.map((m) => m.to).sort(), ['nobody@example.invalid', 'owner@example.invalid']);
+  assert.match(h.mails.find((m) => m.to === 'nobody@example.invalid').subject, /BDB-[0-9A-F]{8}/);
+  assert.equal(h.mails.find((m) => m.to === 'owner@example.invalid').subject.startsWith('[TEST]'), false);
+  assert.ok(h.mails.every((m) => typeof m.key === 'string' && m.key.startsWith('commande/')));
+  assert.ok(h.rows.get(attempt.id).notified_at);
+});
+
+test('a failed e-mail releases the claim and is retried on the next status read', async () => {
+  const h = relayHarness({ mailFails: 1, onVerify: async () => payment('paid'), onRetrieve: async () => payment('paid') });
+  const { attempt } = await (await h.post('create', { ...publicPayload, quotedTotal: 4890 })).json();
+  await h.post('ipn', { id: 'pay_12345678' });
+  await h.flush();
+  assert.equal(h.rows.get(attempt.id).notified_at, null);
+  assert.match(h.rows.get(attempt.id).notify_error, /Resend 500/);
+  await h.get('status', attempt.id);
+  await h.flush();
+  assert.equal(h.mails.length, 2);
+  assert.equal(h.rows.get(attempt.id).notify_error, null);
+});
+
+test('unpaid or refunded orders never send order e-mails', async () => {
+  const h = relayHarness({ onVerify: async () => payment('failed'), onRetrieve: async () => payment('failed') });
+  await h.post('create', { ...publicPayload, quotedTotal: 4890 });
+  await h.post('ipn', { id: 'pay_12345678' });
+  await h.flush();
+  assert.equal(h.mails.length, 0);
+});
+
+test('a declined card releases the cart: the customer can pay again with a new attempt', async () => {
+  let state = 'failed';
+  const h = relayHarness({ onRetrieve: async () => payment(state), onVerify: async () => payment(state) });
+  const first = await (await h.post('create', { ...publicPayload, quotedTotal: 4890 })).json();
+  await h.post('ipn', { id: 'pay_12345678' });
+  assert.equal(h.rows.get(first.attempt.id).status, 'failed');
+  const retry = await h.post('create', { ...publicPayload, quotedTotal: 4890, requestKey: secondKey });
+  assert.equal(retry.status, 201);
+  const second = (await retry.json()).attempt;
+  assert.notEqual(second.id, first.attempt.id);
+  assert.equal(h.rows.get(second.id).cart_revision, 2);
+  assert.equal(h.calls('create').length, 2);
+});
+
+test('an abandoned payment is resumed, never doubled, when nothing changed', async () => {
+  const h = relayHarness({ onRetrieve: async () => payment('pending') });
+  const first = await (await h.post('create', { ...publicPayload, quotedTotal: 4890 })).json();
+  const again = await (await h.post('create', { ...publicPayload, quotedTotal: 4890, requestKey: secondKey })).json();
+  assert.equal(again.attempt.id, first.attempt.id);
+  assert.equal(h.calls('create').length, 1);
+  assert.equal(h.rows.size, 1);
+});
+
+test('a holder actually paid at PayPlug is never released for a second payment', async () => {
+  let state = 'pending';
+  const h = relayHarness({ onRetrieve: async () => payment(state) });
+  const first = await (await h.post('create', { ...publicPayload, quotedTotal: 4890 })).json();
+  state = 'paid';
+  const again = await h.post('create', { ...publicPayload, quotedTotal: 4890, requestKey: secondKey, phone: '' });
+  assert.equal((await again.json()).attempt.status, 'paid');
+  assert.equal(h.calls('create').length, 1);
+  assert.equal(h.rows.get(first.attempt.id).status, 'paid');
+});

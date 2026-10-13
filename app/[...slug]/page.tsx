@@ -117,8 +117,8 @@ export async function generateMetadata({
       'Confirmation de votre demande auprès de Boutique de Boxe.',
     ],
     'paiement-retour': [
-      'Retour du paiement de test',
-      'Vérification privée du statut PayPlug.',
+      'Votre commande',
+      'Confirmation du paiement de votre commande Boutique de Boxe.',
     ],
     panier: [
       'Votre panier',
@@ -222,7 +222,7 @@ export default async function Page({ params, searchParams }: Props) {
   if (path === 'paiement-retour')
     return (
       <main id="contenu" className="page-wrap">
-        <PayplugReturn id={(await searchParams).id || ''} />
+        <PayplugReturn id={(await searchParams).id || ''} cancelled={(await searchParams).cancel === '1'} />
       </main>
     );
   if (path === 'panier')

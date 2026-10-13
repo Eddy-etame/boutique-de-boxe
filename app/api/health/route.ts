@@ -1,4 +1,7 @@
 import postgres from 'postgres';
+import { payplugSettings } from '@/lib/payplug';
+import { mailerConfigured } from '@/lib/mailer';
+import { shop } from '@/lib/catalog';
 
 /**
  * État de la base, sans secret : le type de connexion configurée et la
@@ -41,8 +44,16 @@ export async function GET() {
     return Response.json(cached.body, { status: cached.status, headers });
   const checkedAt = new Date().toISOString();
   const url = process.env.DATABASE_URL?.trim();
+  // L'état du paiement, en oui/non : jamais une clé, ni son début, ni sa longueur.
+  const p = payplugSettings(process.env as unknown as Parameters<typeof payplugSettings>[0]);
+  const commerce = {
+    ventes: shop.ventesOuvertes,
+    mode: p.mode,
+    paiement: p.mode === 'payplug_live' ? p.liveEnabled : p.mode === 'payplug_test' ? p.hostedTestEnabled : false,
+    courriel: mailerConfigured(),
+  };
   const answer = (h: Omit<Health, 'checkedAt'>, status = 200) => {
-    const payload = { ...h, checkedAt };
+    const payload = { ...h, commerce, checkedAt };
     globalThis.__healthCache = { body: payload, status, at: Date.now() };
     return Response.json(payload, { status, headers });
   };

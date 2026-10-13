@@ -2,7 +2,8 @@
 if (typeof window !== 'undefined') throw new Error('PayPlug is server-only.');
 
 export const PAYPLUG_API_VERSION = '2019-08-06';
-export const LIVE_PAYMENT_RELEASED = false;
+// Ventes ouvertes le 13/10/2026 : le mode live PayPlug est autorisé (clé sk_live_ dans l'environnement).
+export const LIVE_PAYMENT_RELEASED = true;
 const API_ORIGIN = 'https://api.payplug.com/v1';
 export const PAYPLUG_OWNED_ORIGINS = [
   'https://boutique-de-boxe.com',
@@ -114,10 +115,17 @@ function configuredMode(env: PayplugEnvironment): CommerceMode | null {
     ? v
     : null;
 }
+// Hors production seulement (next dev) : http://localhost sert à essayer le parcours avec la clé de test.
+const localOrigin = (url: URL) =>
+  process.env.NODE_ENV !== 'production' &&
+  url.protocol === 'http:' &&
+  url.hostname === 'localhost' &&
+  !url.username && !url.password && !url.search && !url.hash && url.pathname === '/';
 function publicOrigin(value: string | undefined): string | null {
   if (!value) return null;
   try {
     const url = new URL(value);
+    if (localOrigin(url)) return url.origin;
     if (
       url.protocol !== 'https:' ||
       url.username ||
@@ -143,15 +151,24 @@ export function payplugSettings(env: PayplugEnvironment) {
   const testKeyValid = /^sk_test_[A-Za-z0-9]+$/.test(
     env.PAYPLUG_TEST_SECRET_KEY?.trim() || '',
   );
+  const liveKeyValid = /^sk_live_[A-Za-z0-9]+$/.test(
+    env.PAYPLUG_LIVE_SECRET_KEY?.trim() || '',
+  );
   const versionValid =
     !env.PAYPLUG_API_VERSION || env.PAYPLUG_API_VERSION === PAYPLUG_API_VERSION;
   const issues: string[] = [];
   if (!mode) issues.push('invalid_commerce_mode');
   if (!origin) issues.push('public_base_url_missing_or_unapproved');
-  if (!testKeyConfigured) issues.push('test_key_missing');
-  else if (!testKeyValid) issues.push('test_key_wrong_mode_or_format');
+  if (mode !== 'payplug_live') {
+    if (!testKeyConfigured) issues.push('test_key_missing');
+    else if (!testKeyValid) issues.push('test_key_wrong_mode_or_format');
+  }
+  if (mode === 'payplug_live') {
+    if (!liveKeyConfigured) issues.push('live_key_missing');
+    else if (!liveKeyValid) issues.push('live_key_wrong_mode_or_format');
+  }
   if (!versionValid) issues.push('unsupported_api_version');
-  if (mode === 'payplug_live') issues.push('live_release_locked');
+  const liveReady = Boolean(origin && liveKeyValid && versionValid);
   return {
     mode: mode ?? 'invalid',
     apiVersion: PAYPLUG_API_VERSION,
@@ -162,8 +179,10 @@ export function payplugSettings(env: PayplugEnvironment) {
     hostedTestEnabled:
       mode === 'payplug_test' &&
       Boolean(origin && testKeyValid && versionValid),
+    liveKeyValid,
+    liveReady,
     liveReleased: LIVE_PAYMENT_RELEASED,
-    liveEnabled: false,
+    liveEnabled: LIVE_PAYMENT_RELEASED && mode === 'payplug_live' && liveReady,
     issues,
   };
 }
@@ -349,8 +368,17 @@ export function createPayplug(
   function enabled() {
     const mode = configuredMode(env);
     if (mode === 'simulation') throw new PayplugError('disabled');
-    if (mode === 'payplug_live') throw new PayplugError('live_locked');
     const settings = payplugSettings(env);
+    if (mode === 'payplug_live') {
+      if (!LIVE_PAYMENT_RELEASED) throw new PayplugError('live_locked');
+      if (!settings.liveEnabled || !settings.publicBaseUrl)
+        throw new PayplugError('configuration');
+      return {
+        mode: mode as ProviderMode,
+        key: env.PAYPLUG_LIVE_SECRET_KEY!.trim(),
+        origin: settings.publicBaseUrl,
+      };
+    }
     if (
       mode !== 'payplug_test' ||
       !settings.hostedTestEnabled ||
@@ -359,7 +387,7 @@ export function createPayplug(
       throw new PayplugError('configuration');
     }
     return {
-      mode,
+      mode: mode as ProviderMode,
       key: env.PAYPLUG_TEST_SECRET_KEY!.trim(),
       origin: settings.publicBaseUrl,
     };
@@ -442,6 +470,8 @@ export function createPayplug(
       binding: PaymentBinding;
       billing: PayplugBilling;
       shipping?: PayplugShipping;
+      /** Le numéro de commande montré au client (« BDB-1A2B3C4D ») : il nomme le paiement chez PayPlug. */
+      reference?: string;
     }) {
       const { mode, origin } = enabled();
       validateBinding(input?.binding, mode);
@@ -462,7 +492,10 @@ export function createPayplug(
         currency: binding.currency,
         billing,
         shipping: { ...shipping, delivery_type: shippingType },
-        description: `Boutique de Boxe · essai ${binding.attemptId.slice(0, 8)}`,
+        description:
+          binding.mode === 'payplug_live'
+            ? `Boutique de Boxe · commande ${input.reference || binding.attemptId.slice(0, 8)}`
+            : `Boutique de Boxe · essai ${input.reference || binding.attemptId.slice(0, 8)}`,
         hosted_payment: {
           return_url: returnUrl.href,
           cancel_url: cancelUrl.href,
@@ -504,7 +537,7 @@ export function createPayplug(
       if (
         !record(body) ||
         body.object !== 'payment' ||
-        body.is_live !== false ||
+        body.is_live !== (mode === 'payplug_live') ||
         !isPayplugPaymentId(body.id) ||
         !isPayplugPaymentId(storedPaymentId) ||
         body.id !== storedPaymentId

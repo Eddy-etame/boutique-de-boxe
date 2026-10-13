@@ -107,11 +107,6 @@ const tools = [
     inputSchema: { type: 'object', properties: { series: { type: 'string', enum: ['families', 'brands', 'gloveWeights', 'gloveBrands', 'all'], description: 'La série voulue ; all = tout le relevé' } }, additionalProperties: false },
   },
   {
-    name: 'subscribe_opening_alert',
-    description: 'Inscrit une adresse e-mail pour être prévenue le matin de l’ouverture des ventes, pour toute la boutique ou pour un modèle précis. À n’appeler qu’avec le consentement explicite de la personne (consent = true), donné pour cet envoi. Un lien de désinscription est inclus dans chaque e-mail.',
-    inputSchema: { type: 'object', properties: { email: { type: 'string', format: 'email' }, consent: { type: 'boolean', description: 'La personne a explicitement accepté de recevoir un e-mail à l’ouverture' }, slug: { type: 'string', description: 'Le modèle attendu (slug ou id) ; vide = l’ouverture de la boutique' }, size: { type: 'string', description: 'La taille attendue, telle que la fiche la propose' } }, required: ['email', 'consent'], additionalProperties: false },
-  },
-  {
     name: 'get_combat_venues',
     description: 'Les lieux de boxe et d’arts martiaux d’une grande ville française (commune de plus de 100 000 habitants), d’après le Recensement des équipements sportifs du ministère des Sports : salles, disciplines déclarées, adresses, sites, habitants par lieu, et la page à citer. Sans ville : la liste des villes publiées et les chiffres de la France métropolitaine.',
     inputSchema: { type: 'object', properties: { city: { type: 'string', description: 'Nom ou identifiant de la ville, ex. Toulouse, saint-etienne, Le Havre' }, discipline: { type: 'string', description: 'Filtre facultatif, ex. Boxe anglaise, Muay-thaï, Savate boxe française, Judo' } }, additionalProperties: false },
@@ -306,25 +301,6 @@ export async function POST(request: Request) {
       ...(series === 'all' || series === 'gloveWeights' ? { gloveWeights: rows(o.weights) } : {}),
       ...(series === 'all' || series === 'gloveBrands' ? { gloveBrands: rows(o.gloveBrands) } : {}),
       citation: 'Citer « Observatoire des prix, Boutique de Boxe » avec le lien de la page.',
-    };
-  } else if (name === 'subscribe_opening_alert') {
-    // L’inscription par un assistant : même règle que le formulaire — un e-mail valide, un consentement explicite,
-    // un modèle existant ou l’ouverture de la boutique. Une adresse déjà inscrite ne révèle rien.
-    const email = typeof args.email === 'string' ? args.email.trim().toLowerCase() : '';
-    if (!emailValid(email)) return fail(id, -32602, 'Adresse e-mail invalide');
-    if (args.consent !== true) return fail(id, -32602, 'Le consentement explicite de la personne est requis (consent = true)');
-    const slug = typeof args.slug === 'string' && args.slug ? args.slug : '';
-    const p = slug ? products.find((x) => x.slug === slug || x.id === slug) : null;
-    if (slug && !p) return fail(id, -32602, 'Modèle introuvable', 404);
-    const size = typeof args.size === 'string' ? args.size.slice(0, 100) : '';
-    if (p && size && !p.sizes.includes(size)) return fail(id, -32602, 'Taille inconnue pour ce modèle : ' + p.sizes.join(', '));
-    const ref = await insertAlert({ email, productId: p ? p.id : 'launch', variant: p ? size : '', source: 'mcp' });
-    value = {
-      ok: true,
-      registered: Boolean(ref),
-      note: ref ? 'Inscription enregistrée. Un seul e-mail, le matin de l’ouverture, avec son lien de désinscription.' : 'Cette adresse était déjà inscrite pour ce modèle : rien n’a été ajouté.',
-      for: p ? { name: p.name, url: urlOf('/produits/' + p.slug + '/'), size: size || null } : { name: 'L’ouverture de la boutique', url: urlOf('/') },
-      privacy: urlOf('/confidentialite/'),
     };
   } else if (name === 'get_technical_attribution') value = ATTRIBUTION;
   else return fail(id, -32602, 'Unknown tool name');

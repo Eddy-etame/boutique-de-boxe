@@ -109,22 +109,48 @@ test('simulation and missing mode block every method before fetch even with conf
     assert.equal(h.calls.length, 0);
   }
 });
-test('live remains blocked irrespective keys or a caller-supplied release flag', async () => {
-  assert.equal(LIVE_PAYMENT_RELEASED, false);
-  const h = harness(pending(), 200, {
+test('live (13/10/2026) uses only an sk_live_ key, names the order and requires is_live payments', async () => {
+  assert.equal(LIVE_PAYMENT_RELEASED, true);
+  const live = {
     ...env,
     COMMERCE_MODE: 'payplug_live',
     PAYPLUG_LIVE_SECRET_KEY: 'sk_live_MOCKKEYONLY',
-    LIVE_PAYMENT_RELEASED: true,
+  };
+  const liveBinding = { ...binding, mode: 'payplug_live' };
+  const livePending = () => ({
+    ...pending(),
+    is_live: true,
+    hosted_payment: { payment_url: 'https://secure.payplug.com/pay/MockLive123' },
+    metadata: { ...pending().metadata, commerce_mode: 'payplug_live' },
   });
+  // Sans clé live, ou avec une clé de test à sa place : aucun appel.
+  for (const patch of [{ PAYPLUG_LIVE_SECRET_KEY: '' }, { PAYPLUG_LIVE_SECRET_KEY: 'sk_test_MOCKKEYONLY' }]) {
+    const h = harness(livePending(), 201, { ...live, ...patch });
+    await code(h.adapter.createHostedPayment({ binding: liveBinding, billing }), 'configuration');
+    assert.equal(h.calls.length, 0);
+  }
+  const h = harness(livePending(), 201, live);
+  const created = await h.adapter.createHostedPayment({ binding: liveBinding, billing, reference: 'BDB-2DACB7C9' });
+  assert.equal(created.isLive, true);
+  assert.equal(h.calls.length, 1);
+  assert.equal(h.calls[0].init.headers.Authorization, 'Bearer sk_live_MOCKKEYONLY');
+  const body = JSON.parse(h.calls[0].init.body);
+  assert.equal(body.description, 'Boutique de Boxe · commande BDB-2DACB7C9');
+  assert.equal(body.metadata.commerce_mode, 'payplug_live');
+  // Un paiement de test présenté en mode live est refusé.
+  const mixed = harness({ ...livePending(), is_live: false }, 201, live);
+  await code(mixed.adapter.createHostedPayment({ binding: liveBinding, billing }), 'create_unconfirmed', true);
+  // Notification : is_live doit correspondre au mode.
+  const n = harness(livePending(), 200, live);
   await code(
-    h.adapter.createHostedPayment({
-      binding: { ...binding, mode: 'payplug_live' },
-      billing,
-    }),
-    'live_locked',
+    n.adapter.verifyNotification({ object: 'payment', id: paymentId, is_live: false }, liveBinding, paymentId),
+    'invalid_notification',
   );
-  assert.equal(h.calls.length, 0);
+  assert.equal(n.calls.length, 0);
+  const settings = payplugSettings(live);
+  assert.equal(settings.liveEnabled, true);
+  assert.deepEqual(settings.issues, []);
+  assert.deepEqual(payplugSettings({ ...live, PAYPLUG_LIVE_SECRET_KEY: '' }).issues, ['live_key_missing']);
 });
 test('wrong-mode key, unsupported API version, unknown mode and unowned origins fail closed', async () => {
   const patches = [
