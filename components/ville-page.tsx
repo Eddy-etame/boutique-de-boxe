@@ -11,7 +11,7 @@ import { dansLeRayon, ENFANT } from '@/lib/rayons';
 import {
   SOURCE, FRANCE, VILLES, REGIONS, CARREFOUR, villePath, dateSource, regionTotal, regionDisciplines,
   CLUBS_BOXING_CENTER, NOBLE_ART, A_COTE, BALMA, RAYON, a, de, dansDepartement, siteDe, fine, estBoxingCenter,
-  villeTitre, villeDescription, villeDensite, villeChapeau, villeSections, villeFaq, villeKit, parArrondissement,
+  villeTitre, villeDescription, villeDensite, villeChapeau, villeSections, villeFaq, villeKit, parArrondissement, tour,
   regionTitre, regionDescription, regionChapeau, regionFaq, livraison, livraisonPartout,
   CARREFOUR_TITRE, CARREFOUR_DESCRIPTION, carrefourChapeau, carrefourFaq, franceEnChiffres,
   type Ville, type Region, type Lieu, type Groupe,
@@ -241,7 +241,7 @@ const RAYON_DE: Record<string, [string, string]> = {
   'Full contact': ['/gants-de-boxe/', 'Les gants de boxe'],
 };
 
-function Kit({ lieu, compte, all, seed }: { lieu: string; compte: { frappe: number; parDiscipline: Record<string, number> }; all: Product[]; seed: number }) {
+function Kit({ lieu, compte, all, seed }: { lieu: string; compte: { frappe: number; parDiscipline: Record<string, number>; slug?: string }; all: Product[]; seed: number }) {
   const k = villeKit(lieu, compte);
   const items = kitProducts(k.sources, all, seed, k.discipline);
   // jamais une carte seule sur sa rangée : quatre colonnes au bureau, deux au téléphone
@@ -267,6 +267,22 @@ function Kit({ lieu, compte, all, seed }: { lieu: string; compte: { frappe: numb
         <ArrowLink href={MATERIEL}>Matériel sport de combat</ArrowLink>{' '}
         <ArrowLink href="/outils/poids-de-gants/">Quel poids de gants ?</ArrowLink>
       </div>
+      {/* « Gants de boxe, livraison à Lyon » : la requête produit + lieu mène au rayon, depuis la ville. */}
+      <nav className="subfamily-links ville-rayons" aria-label={`Le matériel, livraison ${lieu}`}>
+        {spaced(
+          k.sources
+            .map((slug) => {
+              const s = SUBFAMILIES.find((x) => x.slug === slug);
+              const nom = s?.name || categoryFor(slug)?.name;
+              return nom ? (
+                <a key={slug} href={'/' + slug + '/'}>
+                  {`${nom}, livraison ${lieu}`}
+                </a>
+              ) : null;
+            })
+            .filter(Boolean),
+        )}
+      </nav>
     </section>
   );
 }
@@ -276,7 +292,7 @@ function Voisines({ v }: { v: Ville }) {
   const idf = IDF.includes(v.codeDepartement) ? REGIONS.find((r) => r.slug === 'ile-de-france') : undefined;
   return (
     <section className="ville-ailleurs">
-      <h2>{fine(`Autour ${de(v.nom)} : les grandes villes voisines.`)}</h2>
+      <h2>{fine([`Autour ${de(v.nom)} : les grandes villes voisines.`, `Les grandes villes les plus proches ${de(v.nom)}.`, `Depuis ${v.nom}, les autres grandes villes.`][tour(v.slug + 'v', 3)])}</h2>
       <nav className="subfamily-links" aria-label={`Les grandes villes voisines ${de(v.nom)}`}>
         {spaced(
           v.voisines.map((x) => (
@@ -451,21 +467,21 @@ export function VillePage({ ville: v, all }: { ville: Ville; all: Product[] }) {
         <Source population />
       </section>
 
-      <Disciplines titre={`Les disciplines ${a(v.nom)}.`} par={v.parDiscipline} total={v.lieux.length} />
+      <Disciplines titre={[`Les disciplines ${a(v.nom)}.`, `Ce qu’on pratique ${a(v.nom)}.`, `${v.nom}, discipline par discipline.`][tour(v.slug + 'd', 3)]} par={v.parDiscipline} total={v.lieux.length} />
 
       {/* Hors de « main > section » : l’apparition au défilement attend 8 % de la section à l’écran, ce qu’un
          tableau de plusieurs milliers de pixels n’atteint jamais (Paris au téléphone, Île-de-France) — il resterait invisible. */}
       <div className="ville-tableau">
         <Arrondissements v={v} />
         <section className="keyword-hub observatory">
-          <h2>{`Les ${fr(v.lieux.length)} lieux ${de(v.nom)}.`}</h2>
+          <h2>{[`Les ${fr(v.lieux.length)} lieux ${de(v.nom)}.`, `${v.nom} : ${fr(v.lieux.length)} lieux, un par un.`, `Où l’on boxe et où l’on pratique ${a(v.nom)} : ${fr(v.lieux.length)} lieux.`][tour(v.slug + 'l', 3)]}</h2>
           <Lieux lieux={v.lieux} caption={nomListe} id="lieux" />
         </section>
       </div>
 
-      <Kit lieu={a(v.nom)} compte={v} all={all} seed={graine(v.slug)} />
+      <Kit lieu={a(v.nom)} compte={{ frappe: v.frappe, parDiscipline: v.parDiscipline, slug: v.slug }} all={all} seed={graine(v.slug)} />
 
-      <SeoBody sections={villeSections(v)} faq={faq} heading={`Questions sur la boxe ${a(v.nom)}`} />
+      <SeoBody sections={villeSections(v)} faq={faq} heading={[`Questions sur la boxe ${a(v.nom)}`, `La boxe ${a(v.nom)}, en questions`, `Ce qu’on nous demande sur ${v.nom}`][tour(v.slug + 'f', 3)]} />
       <Voisines v={v} />
     </main>
   );
@@ -602,6 +618,14 @@ export function RegionPage({ region: r, all }: { region: Region; all: Product[] 
 
 /* ── Carrefour « Boutique sport de combat France » ─────────────────────── */
 
+/** Les grandes villes groupées par région (la page Île-de-France avec les siennes), les régions les plus dotées d'abord. */
+function parRegion() {
+  const o = new Map<string, { slug: string; nom: string; lieux: number }[]>();
+  for (const v of VILLES) o.set(v.region, [...(o.get(v.region) || []), { slug: v.slug, nom: v.nom, lieux: v.lieux.length }]);
+  for (const r of REGIONS) o.set(r.nom, [...(o.get(r.nom) || []), { slug: r.slug, nom: r.nom + ' (hors Paris)', lieux: regionTotal(r).lieux }]);
+  return [...o.entries()].map(([region, villes]) => [region, villes.sort((x, y) => y.lieux - x.lieux)] as const).sort((x, y) => y[1].length - x[1].length || y[1][0].lieux - x[1][0].lieux);
+}
+
 export function CarrefourPage({ all }: { all: Product[] }) {
   const lignes = [
     ...VILLES.map((v) => ({ slug: v.slug, nom: v.nom, region: v.region, lieux: v.lieux.length, boxe: v.boxe, frappe: v.frappe, densite: v.habitantsParLieu as number | null })),
@@ -698,6 +722,24 @@ export function CarrefourPage({ all }: { all: Product[] }) {
           </div>
         </section>
       </div>
+
+      <section className="ville-ailleurs ville-regions">
+        <h2>La boutique de boxe, région par région.</h2>
+        {parRegion().map(([region, villes]) => (
+          <div key={region}>
+            <h3>{'Boutique de boxe ' + region}</h3>
+            <nav className="subfamily-links" aria-label={'Les grandes villes de la région ' + region}>
+              {spaced(
+                villes.map((v) => (
+                  <a key={v.slug} href={villePath(v.slug)}>
+                    {`Boutique de boxe ${v.nom} · ${fr(v.lieux)} lieux`}
+                  </a>
+                )),
+              )}
+            </nav>
+          </div>
+        ))}
+      </section>
 
       <SeoBody
         sections={[

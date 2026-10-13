@@ -7,6 +7,59 @@ import { SUBFAMILIES, subfamilyProducts } from '@/lib/subfamilies';
 import { ozFacets, colourFacets, brandFamilyFacet } from '@/lib/facets';
 import { ProductCard } from './shop-interactions';
 import { dansLeRayon } from '@/lib/rayons';
+import { VILLES, REGIONS, CARREFOUR, FRAPPE, villePath } from '@/lib/villes';
+
+/* « Toucher toute la France » (13/10) : chaque page de catalogue nomme les grandes villes, avec le
+   nombre de lieux où l'on pratique SA discipline (recensement du ministère des Sports), et les lie.
+   Les six villes les plus pratiquantes d'abord, puis six autres qui tournent avec la page : chaque
+   page-ville reçoit ainsi des dizaines de liens depuis les rayons, aucune n'est oubliée. */
+const PRATIQUE: [RegExp, string[], string][] = [
+  [/tha[iï]|kick|tibias|full/, ['Muay-thaï', 'Kick-boxing', 'Full contact'], 'une boxe pieds-poings'],
+  [/francaise|savate/, ['Savate boxe française'], 'la savate boxe française'],
+  [/mma|jjb|rashguard|legging|grappling/, ['Judo, jujitsu', 'Lutte', 'Sambo'], 'le judo, le jujitsu ou la lutte'],
+  [/kimono|ceinture|arts-martiaux/, ['Judo, jujitsu', 'Karaté', 'Aïkido', 'Taekwondo'], 'un art martial'],
+];
+const pratiqueDe = (scope: string) => {
+  for (const [re, set, label] of PRATIQUE) if (re.test(scope)) return { set, label };
+  return { set: FRAPPE, label: 'une boxe' };
+};
+const hache = (s: string) => [...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
+function villesPour(scope: string) {
+  const { set, label } = pratiqueDe(scope);
+  const toutes = VILLES.map((v) => ({ v, n: v.lieux.filter((l) => l.disciplines.some((d) => set.includes(d))).length })).sort((x, y) => y.n - x.n);
+  const tete = toutes.slice(0, 6);
+  const reste = toutes.slice(6);
+  const depart = hache(scope) % Math.max(1, reste.length);
+  const tour = reste.length ? Array.from({ length: Math.min(6, reste.length) }, (_, i) => reste[(depart + i) % reste.length]) : [];
+  return { label, villes: [...tete, ...tour].sort((x, y) => y.n - x.n) };
+}
+function Villes({ scope, name }: { scope: string; name: string }) {
+  const { label, villes } = villesPour(scope);
+  const idf = REGIONS.find((r) => r.slug === 'ile-de-france');
+  return (
+    <div className="hub-villes">
+      <h3>Livrés partout en France</h3>
+      <p>
+        {`${name} : livraison dans toute la France continentale, en point relais (offert dès 69 €) ou à domicile. Les grandes villes, avec le nombre de lieux où l’on pratique ${label} :`}
+      </p>
+      <ul>
+        {villes.map(({ v, n }) => (
+          <li key={v.slug}>
+            <a href={villePath(v.slug)}>{'Boutique de boxe ' + v.nom}</a> <span>{n}</span>
+          </li>
+        ))}
+        {idf && (
+          <li>
+            <a href={villePath(idf.slug)}>{'Boutique de boxe ' + idf.nom}</a>
+          </li>
+        )}
+        <li>
+          <a href={'/' + CARREFOUR + '/'}>Toutes les grandes villes</a>
+        </li>
+      </ul>
+    </div>
+  );
+}
 
 /**
  * La page-pilier d’une recherche du brief. Demande du propriétaire : « for keyword in keywords we need
@@ -184,6 +237,7 @@ export async function KeywordHub({
             </ul>
           </div>
         )}
+        <Villes scope={scope} name={name} />
         {weights.length > 0 && (
           <div>
             <h3>Par poids</h3>

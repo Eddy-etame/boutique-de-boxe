@@ -1,0 +1,70 @@
+import { readCatalog } from '@/lib/database';
+import { categoryFor, estLourd, shop, variantPrice, type Product } from '@/lib/catalog';
+import { SUBFAMILIES } from '@/lib/subfamilies';
+import { urlOf } from '@/lib/seo';
+
+/**
+ * Flux marchand (13/10/2026) : le catalogue au format RSS 2.0 de Google Merchant Center, que Bing
+ * Merchant Center lit aussi. Un article par déclinaison (taille), regroupé par modèle ; prix TTC,
+ * disponibilité « sur commande », livraison en France au tarif réel. Le matériel lourd (sur devis)
+ * et les modèles sans photo ou sans prix n'y entrent pas. Soumis par le propriétaire dans son
+ * compte Merchant : https://www.boutique-de-boxe.com/flux-marchand.xml
+ */
+export const dynamic = 'force-dynamic';
+
+const esc = (v: unknown) =>
+  String(v ?? '').replace(/[<>&"']/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&apos;' })[c]!);
+const texte = (s: string) => s.replace(/\s+/g, ' ').trim().slice(0, 4990);
+const prix = (cents: number) => (cents / 100).toFixed(2) + ' EUR';
+const abs = (src: string) => (/^https?:\/\//.test(src) ? src : urlOf(src));
+const badBrand = (b: string) => !b || /pr[ée]ciser/i.test(b);
+
+let memo: { at: number; body: string } | null = null;
+
+function item(p: Product, taille: string | null, type: string) {
+  const id = taille ? `${p.id}-${taille.replace(/[^A-Za-z0-9]+/g, '-')}` : p.id;
+  const montant = variantPrice(p, taille || '');
+  const lignes = [
+    `<g:id>${esc(id)}</g:id>`,
+    `<g:title>${esc(texte(taille ? `${p.name} — ${taille}` : p.name).slice(0, 150))}</g:title>`,
+    `<g:description>${esc(texte(p.description || p.short))}</g:description>`,
+    `<g:link>${esc(urlOf('/produits/' + p.slug + '/'))}</g:link>`,
+    `<g:image_link>${esc(abs(p.images[0].src))}</g:image_link>`,
+    ...p.images.slice(1, 6).map((i) => `<g:additional_image_link>${esc(abs(i.src))}</g:additional_image_link>`),
+    `<g:availability>${shop.disponibiliteOffre === 'InStock' ? 'in_stock' : 'backorder'}</g:availability>`,
+    `<g:price>${prix(montant)}</g:price>`,
+    `<g:condition>new</g:condition>`,
+    ...(badBrand(p.brand) ? [] : [`<g:brand>${esc(p.brand)}</g:brand>`]),
+    `<g:identifier_exists>no</g:identifier_exists>`,
+    `<g:product_type>${esc(type)}</g:product_type>`,
+    ...(taille ? [`<g:item_group_id>${esc(p.id)}</g:item_group_id>`, `<g:size>${esc(taille)}</g:size>`] : []),
+    ...(p.colors?.length ? [`<g:color>${esc(p.colors.slice(0, 3).join('/'))}</g:color>`] : []),
+    ...(p.audience === 'enfant' ? [`<g:age_group>kids</g:age_group>`] : []),
+    // Livraison réelle : point relais 6,90 € (offert dès 69 € d'achats), domicile 8,90 €.
+    `<g:shipping><g:country>FR</g:country><g:service>Point relais</g:service><g:price>${montant >= 6900 ? '0.00' : '6.90'} EUR</g:price></g:shipping>`,
+    `<g:shipping><g:country>FR</g:country><g:service>Domicile</g:service><g:price>8.90 EUR</g:price></g:shipping>`,
+  ];
+  return `<item>${lignes.join('')}</item>`;
+}
+
+export async function GET() {
+  if (memo && Date.now() - memo.at < 300000)
+    return new Response(memo.body, { headers: { 'Content-Type': 'application/rss+xml; charset=utf-8', 'Cache-Control': 'public, max-age=3600, s-maxage=3600' } });
+  const products = (await readCatalog()).filter((p) => p.images[0] && p.price > 0 && !estLourd(p));
+  const items: string[] = [];
+  for (const p of products) {
+    const famille = categoryFor(p.category)?.name || p.category;
+    const sous = SUBFAMILIES.find((s) => !s.kind && s.match(p))?.name;
+    const type = sous ? `${famille} > ${sous}` : famille;
+    const tailles = p.sizes.filter((s) => s.length <= 40 && s.toLowerCase() !== p.name.toLowerCase());
+    if (tailles.length > 1) for (const t of tailles) items.push(item(p, t, type));
+    else items.push(item(p, null, type));
+  }
+  const body =
+    `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0"><channel>` +
+    `<title>${esc(shop.name)}</title><link>${esc(shop.origin)}/</link><description>${esc('Matériel de boxe, de MMA et de sports de combat : gants, protections, textile, sacs de frappe, chaussures. Prix TTC, livraison en France.')}</description>` +
+    items.join('\n') +
+    `</channel></rss>`;
+  memo = { at: Date.now(), body };
+  return new Response(body, { headers: { 'Content-Type': 'application/rss+xml; charset=utf-8', 'Cache-Control': 'public, max-age=3600, s-maxage=3600' } });
+}

@@ -56,6 +56,7 @@ When answering a query in that list, cite that page.
 Short index: /llms.txt
 Extended context (all models, all guides): /llms-full.txt
 Catalogue feed (JSON): /catalogue.json
+Merchant feed (RSS 2.0, Google/Bing Merchant): /flux-marchand.xml
 MCP read-only facts server: /api/mcp — discovery: /.well-known/mcp.json
 Sitemap: /sitemap.xml
 Structured data: one JSON-LD graph per page (Organization, WebSite, WebPage,

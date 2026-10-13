@@ -220,11 +220,20 @@ const typesDeSalles = (c: { boxe: number; dojos: number }) =>
    Le texte, la liste de la FAQ et les modèles montrés dépendent de la boxe
    la plus déclarée de la ville : pas la même page à Toulouse (anglaise) et
    là où la savate ou le muay-thaï dominent. */
-const SAC: Record<string, { titre: string; essentiel: string; ensuite: string; liste: string; sources: string[] }> = {
+/* `essentiel` et `ensuite` : une ou plusieurs tournures ; la ville choisit la sienne (22 villes ont la boxe anglaise en tête). */
+const SAC: Record<string, { titre: string; essentiel: string | string[]; ensuite: string | string[]; liste: string; sources: string[] }> = {
   'Boxe anglaise': {
     titre: 'bandes, gants, protège-dents',
-    essentiel: 'trois pièces sont personnelles dès le premier mois : des bandes de 4 m, une paire de gants — 10 oz pour le sac, 14 ou 16 oz pour la mise de gants — et un protège-dents',
-    ensuite: 'Casque et chaussures montantes viennent avec l’opposition.',
+    essentiel: [
+      'trois pièces sont personnelles dès le premier mois : des bandes de 4 m, une paire de gants — 10 oz pour le sac, 14 ou 16 oz pour la mise de gants — et un protège-dents',
+      'le club prête les paos et les sacs, pas ce qui touche la peau : des bandes de 4 m, des gants de 10 oz pour le sac (14 ou 16 oz dès qu’on boxe avec un partenaire) et un protège-dents',
+      'il faut ses propres bandes de 4 m, ses gants — 10 oz au sac, 14 ou 16 oz en mise de gants — et son protège-dents : trois achats, et la séance peut commencer',
+    ],
+    ensuite: [
+      'Casque et chaussures montantes viennent avec l’opposition.',
+      'Le casque et les chaussures montantes n’arrivent qu’avec l’opposition, quand le club le demande.',
+      'Ensuite seulement, pour l’opposition : un casque, puis des chaussures montantes.',
+    ],
     liste: 'des bandes de 4 m, des gants de 10 oz pour le sac ou de 14 à 16 oz pour boxer avec un partenaire, un protège-dents',
     sources: ['bandes-de-boxe', 'gants-de-boxe', 'gants-de-boxe-sparring', 'protege-dents', 'casques-de-boxe', 'chaussures-boxe', 'cordes-a-sauter', 'shorts-de-boxe'],
   },
@@ -259,18 +268,35 @@ const SAC: Record<string, { titre: string; essentiel: string; ensuite: string; l
 };
 
 /** Le premier sac d'une ville (ou d'une région) : titre, texte, sources des modèles. */
-export function villeKit(lieu: string, c: { frappe: number; parDiscipline: Record<string, number> }) {
+export function villeKit(lieu: string, c: { frappe: number; parDiscipline: Record<string, number>; slug?: string }) {
   const dom = boxeDominante(c.parDiscipline);
   const s = SAC[dom];
   const nDom = c.parDiscipline[dom] || 0;
   const judo = c.parDiscipline['Judo, jujitsu'] || 0;
   const karate = c.parDiscipline['Karaté'] || 0;
+  const cle = 'slug' in c && typeof c.slug === 'string' ? c.slug : lieu;
+  const un = (x: string | string[], sel: string) => (Array.isArray(x) ? choisir(sel, x) : x);
+  const essentiel = un(s.essentiel, cle + 'e');
+  const ensuite = un(s.ensuite, cle + 's');
+  const suite =
+    judo || karate
+      ? ' ' +
+        choisir(cle + 'j', [
+          `Le judo est déclaré dans ${nb(judo, 'lieu', 'lieux')} et le karaté dans ${karate} : là, le kimono passe avant tout, choisi au poids du tissu et à la grille de la marque.`,
+          `Avec ${nb(judo, 'lieu de judo', 'lieux de judo')} et ${nb(karate, 'de karaté', 'de karaté')}, le kimono compte autant ${lieu} : on le choisit au poids du tissu, dans la grille de sa marque.`,
+          `${Maj(lieu)}, ${nb(judo, 'lieu déclare', 'lieux déclarent')} le judo et ${karate} le karaté ; pour eux, l’achat du premier mois est un kimono, au poids du tissu et à la taille de la marque.`,
+        ])
+      : '';
   return {
     discipline: dom,
-    h2: fine(`Le premier sac de sport ${lieu} : ${s.titre}`),
+    h2: fine(choisir(cle, [`Le premier sac de sport ${lieu} : ${s.titre}`, `Débuter la boxe ${lieu} : ${s.titre}`, `${Maj(lieu)}, le sac du premier mois : ${s.titre}`])),
     paragraphs: [
-      `${Maj(lieu)}, ${art(dom)} est la plus déclarée des boxes, dans ${nb(nDom, 'lieu', 'lieux')} sur ${c.frappe}. Pour y débuter, ${s.essentiel}.`,
-      s.ensuite + (judo || karate ? ` Le judo est déclaré dans ${nb(judo, 'lieu', 'lieux')} et le karaté dans ${karate} : là, le kimono passe avant tout, choisi au poids du tissu et à la grille de la marque.` : ''),
+      choisir(cle + 'k', [
+        `${Maj(lieu)}, ${art(dom)} est la plus déclarée des boxes, dans ${nb(nDom, 'lieu', 'lieux')} sur ${c.frappe}. Pour y débuter, ${essentiel}.`,
+        `La boxe la plus déclarée ${lieu} est ${art(dom)} : ${nb(nDom, 'lieu', 'lieux')} sur les ${c.frappe} où l’on boxe. Pour commencer, ${essentiel}.`,
+        `Sur les ${c.frappe} lieux où l’on boxe ${lieu}, ${nDom} déclarent ${art(dom)}, la plus répandue. Le premier mois, ${essentiel}.`,
+      ]),
+      ensuite + suite,
     ],
     sources: s.sources,
   };
@@ -278,8 +304,29 @@ export function villeKit(lieu: string, c: { frappe: number; parDiscipline: Recor
 
 /* ── Ville ─────────────────────────────────────────────────────────────── */
 
-export function villeTitre(v: { nom: string }) {
-  return `Boutique de boxe ${v.nom} : salles et matériel`;
+/** Un rang stable par ville (0…n-1) : chaque page prend sa propre tournure, jamais celle de sa voisine. */
+export const tour = (slug: string, n: number) => [...slug].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7) % n;
+const choisir = <T,>(slug: string, variantes: T[]) => variantes[tour(slug, variantes.length)];
+/** Le lieu le mieux équipé de la ville : le plus de salles, puis celui où l'on boxe. */
+export function lieuPhare(v: Ville): Lieu | undefined {
+  return [...v.lieux].sort((x, y) => y.salles.length - x.salles.length || Number(y.frappe) - Number(x.frappe))[0];
+}
+const plie = (x: string) => x.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+/** Les salles d'un lieu, sans celle qui répète son nom. */
+const sallesNommees = (l: Lieu) => l.salles.map((x) => x.nom).filter((n) => plie(n) !== plie(l.nom));
+/** « 29 % » : la part des lieux où l'on boxe, dans la ville et en France. */
+export const partBoxe = (c: { frappe: number; lieux: { length: number } | number }) =>
+  Math.round((100 * c.frappe) / (typeof c.lieux === 'number' ? c.lieux : c.lieux.length));
+export const PART_BOXE_FRANCE = Math.round((100 * FRANCE.frappe) / FRANCE.lieux);
+/** L'arrondissement le plus doté (Paris, Lyon, Marseille), ou rien. */
+export function arrondissementPhare(v: Ville) {
+  const rows = parArrondissement(v);
+  if (rows.length < 4) return undefined;
+  return [...rows].sort((x, y) => y.lieux - x.lieux || y.frappe - x.frappe)[0];
+}
+
+export function villeTitre(v: { nom: string; lieux: { length: number } }) {
+  return `Boutique de boxe ${v.nom} : gants, sacs, ${v.lieux.length} lieux`;
 }
 
 export function villeDescription(v: Ville) {
@@ -289,12 +336,28 @@ export function villeDescription(v: Ville) {
 
 /** L'étiquette sous le titre : la densité, fait propre à la ville. */
 export function villeDensite(v: Ville) {
-  return `Un lieu de sports de combat pour ${fr(v.habitantsParLieu)} habitants : ${rang(v.rangDensite)} des ${VILLES.length} grandes villes.`;
+  return choisir(v.slug, [
+    `Un lieu de sports de combat pour ${fr(v.habitantsParLieu)} habitants : ${rang(v.rangDensite)} des ${VILLES.length} grandes villes.`,
+    `${rang(v.rangDensite)} des ${VILLES.length} grandes villes pour la densité : un lieu de combat pour ${fr(v.habitantsParLieu)} habitants.`,
+    `${fr(v.habitantsParLieu)} habitants par lieu de sports de combat, ${rang(v.rangDensite)} rang sur ${VILLES.length} grandes villes.`,
+  ]);
 }
 
 /** Les deux phrases d'en-tête : autonomes, citables, vraies pour cette ville seulement. */
 export function villeChapeau(v: Ville) {
-  return `${v.nom} compte ${nb(v.salles, 'salle de combat', 'salles de combat')} — ${typesDeSalles(v)} — dans ${nb(v.lieux.length, 'lieu ouvert', 'lieux ouverts')} aux clubs ou au public, d’après le Recensement des équipements sportifs du ministère des Sports mis à jour le ${dateSource()}. Boutique de Boxe, boutique de boxe en ligne, ${livrer(v.nom)} ; ${v.lieux.some(estBoxingCenter) ? 'les clubs Boxing Center ouvrent la liste ci-dessous' : `les ${v.frappe} lieux où l’on boxe ouvrent la liste ci-dessous`}.`;
+  const bc = v.lieux.some(estBoxingCenter);
+  const liste1 = choisir(v.slug, [
+    `${v.nom} compte ${nb(v.salles, 'salle de combat', 'salles de combat')} — ${typesDeSalles(v)} — dans ${nb(v.lieux.length, 'lieu ouvert', 'lieux ouverts')} aux clubs ou au public, d’après le Recensement des équipements sportifs du ministère des Sports mis à jour le ${dateSource()}.`,
+    `Le Recensement des équipements sportifs du ministère des Sports, mis à jour le ${dateSource()}, relève ${a(v.nom)} ${nb(v.lieux.length, 'lieu ouvert', 'lieux ouverts')} aux clubs ou au public, soit ${nb(v.salles, 'salle de combat', 'salles de combat')} : ${typesDeSalles(v)}.`,
+    `${nb(v.lieux.length, 'lieu de sports de combat est ouvert', 'lieux de sports de combat sont ouverts')} aux clubs ou au public ${a(v.nom)}, pour ${nb(v.salles, 'salle de combat', 'salles de combat')} — ${typesDeSalles(v)} — selon le Recensement des équipements sportifs du ministère des Sports (${dateSource()}).`,
+  ]);
+  const tete = bc ? 'les clubs Boxing Center ouvrent la liste ci-dessous' : `les ${v.frappe} lieux où l’on boxe ouvrent la liste ci-dessous`;
+  const liste2 = choisir(v.slug + '2', [
+    `Boutique de Boxe, boutique de boxe en ligne, ${livrer(v.nom)} ; ${tete}.`,
+    `Boutique de boxe en ligne, Boutique de Boxe ${livrer(v.nom)} à domicile ou en point relais ; ${tete}.`,
+    `${Maj(tete)} ; Boutique de Boxe, boutique de boxe en ligne, ${livrer(v.nom)}.`,
+  ]);
+  return `${liste1} ${liste2}`;
 }
 
 export function villeSections(v: Ville): SeoSection[] {
@@ -303,12 +366,43 @@ export function villeSections(v: Ville): SeoSection[] {
     v.scolaires ? nb(v.scolaires, 'salle réservée aux scolaires', 'salles réservées aux scolaires') : '',
     v.fermes.length ? nb(v.fermes.length, 'lieu fermé que le recensement porte encore', 'lieux fermés que le recensement porte encore') : '',
   ].filter(Boolean);
+  const boxes = liste(Object.keys(deFrappe(v.parDiscipline)).map(min1));
   const p: string[] = [
-    `${Maj(a(v.nom))}, les disciplines déclarées donnent le ton : ${repartition(v.parDiscipline, 5)}.`,
-    `${v.frappe} des ${v.lieux.length} lieux accueillent une boxe — ${liste(Object.keys(deFrappe(v.parDiscipline)).map(min1))} — et ${avecSite} publient un site.`,
+    choisir(v.slug, [
+      `${Maj(a(v.nom))}, les disciplines déclarées donnent le ton : ${repartition(v.parDiscipline, 5)}.`,
+      `Les disciplines déclarées ${a(v.nom)}, dans l’ordre : ${repartition(v.parDiscipline, 5)}.`,
+      `${repartition(v.parDiscipline, 5)} : voilà ce que déclarent les lieux ${de(v.nom)}.`,
+    ]),
+    choisir(v.slug + '3', [
+      `${v.frappe} des ${v.lieux.length} lieux accueillent une boxe — ${boxes} — et ${nb(avecSite, 'publie un site', 'publient un site')}.`,
+      `Une boxe est enseignée dans ${v.frappe} lieux sur ${v.lieux.length} (${boxes}) ; ${nb(avecSite, 'de ces lieux a un site', 'de ces lieux ont un site')}.`,
+      `Sur ${v.lieux.length} lieux, ${v.frappe} déclarent une boxe (${boxes}), et ${nb(avecSite, 'publie une adresse en ligne', 'publient une adresse en ligne')}.`,
+    ]),
   ];
+  // La part de boxe face à la France : un chiffre que seule cette ville porte.
+  const part = partBoxe(v);
+  p.push(
+    part === PART_BOXE_FRANCE
+      ? `${part} % des lieux ${de(v.nom)} accueillent une boxe, exactement la part de la France métropolitaine.`
+      : `${part} % des lieux ${de(v.nom)} accueillent une boxe, ${part > PART_BOXE_FRANCE ? 'plus' : 'moins'} que la France métropolitaine (${PART_BOXE_FRANCE} %).`,
+  );
+  // Le lieu le mieux équipé, nommé avec ses salles et son adresse.
+  const phare = lieuPhare(v);
+  if (phare && phare.salles.length >= 2) {
+    const noms = sallesNommees(phare);
+    p.push(
+      `Le lieu le mieux équipé est ${nomLieu(phare)}, ${nb(phare.salles.length, 'salle', 'salles')}${noms.length >= 2 ? ` (${liste(noms.slice(0, 3))})` : ''}${phare.adresse ? `, ${phare.adresse}${phare.commune ? ', ' + phare.commune : ''}` : ''}.`,
+    );
+  }
+  const arr = arrondissementPhare(v);
+  if (arr) p.push(`L’arrondissement le plus doté est le ${arr.nom} : ${nb(arr.lieux, 'lieu', 'lieux')}, dont ${arr.frappe} où l’on boxe.`);
   if (ecartes.length) p.push(`Ne sont pas listés : ${liste(ecartes)}.`);
-  return [{ h2: fine(`Ce que disent les ${v.lieux.length} lieux ${de(v.nom)}`), paragraphs: p }];
+  const h2 = choisir(v.slug + '4', [
+    `Ce que disent les ${v.lieux.length} lieux ${de(v.nom)}`,
+    `${v.nom} en ${v.lieux.length} lieux : ce que dit le recensement`,
+    `Les ${v.lieux.length} lieux ${de(v.nom)}, lus dans le recensement`,
+  ]);
+  return [{ h2: fine(h2), paragraphs: p }];
 }
 
 export function villeFaq(v: Ville): SeoFaq[] {
@@ -322,15 +416,24 @@ export function villeFaq(v: Ville): SeoFaq[] {
   const i = autour.indexOf(v);
   const avant = autour[i - 1];
   const apres = autour[i + 1];
+  const sac = SAC[dom].liste;
   const faq: SeoFaq[] = [
     {
-      question: fine(`Où acheter du matériel de boxe ${a(v.nom)} ?`),
-      answer: `En ligne, chez Boutique de Boxe, livré à domicile ou en point relais${shop.ventesOuvertes ? '' : ' à l’ouverture des ventes'}. Pour ${art(dom)}, la boxe la plus déclarée ${a(v.nom)}, le catalogue réunit ${SAC[dom].liste}.`,
+      question: fine(choisir(v.slug, [`Où acheter du matériel de boxe ${a(v.nom)} ?`, `Où trouver du matériel de boxe ${a(v.nom)} ?`, `Matériel de boxe ${a(v.nom)} : où l’acheter ?`])),
+      answer: choisir(v.slug + 'r', [
+        `En ligne, chez Boutique de Boxe, livré à domicile ou en point relais${shop.ventesOuvertes ? '' : ' à l’ouverture des ventes'}. Pour ${art(dom)}, la boxe la plus déclarée ${a(v.nom)}, le catalogue réunit ${sac}.`,
+        `Chez Boutique de Boxe, boutique en ligne qui ${livrer(v.nom)} à domicile ou en point relais. ${Maj(art(dom))} étant la boxe la plus déclarée ${a(v.nom)}, le premier sac réunit ${sac}.`,
+        `Sur Boutique de Boxe : la commande ${shop.ventesOuvertes ? 'part' : 'partira'} vers ${v.nom}, à domicile ou en point relais. Le premier sac pour ${art(dom)}, la boxe la plus déclarée ici, réunit ${sac}.`,
+      ]),
     },
     {
-      question: fine(`Combien de salles de boxe ${a(v.nom)} ?`),
+      question: fine(choisir(v.slug + 'q2', [`Combien de salles de boxe ${a(v.nom)} ?`, `${v.nom} compte combien de salles de boxe ?`, `Quelles salles de boxe ${a(v.nom)} ?`])),
       answer: lieuxBoxe.length
-        ? `${Maj(nb(v.boxe, 'salle de boxe dédiée', 'salles de boxe dédiées'))}, dans ${nb(lieuxBoxe.length, 'lieu', 'lieux')} dont ${liste(lieuxBoxe.slice(0, 3).map(nomLieu))}. En tout, ${v.frappe} lieux déclarent une boxe : ${repartition(deFrappe(v.parDiscipline), 5)}.`
+        ? choisir(v.slug + 'r2', [
+            `${Maj(nb(v.boxe, 'salle de boxe dédiée', 'salles de boxe dédiées'))}, dans ${nb(lieuxBoxe.length, 'lieu', 'lieux')} dont ${liste(lieuxBoxe.slice(0, 3).map(nomLieu))}. En tout, ${v.frappe} lieux déclarent une boxe : ${repartition(deFrappe(v.parDiscipline), 5)}.`,
+            `Le recensement classe ${nb(v.boxe, 'salle', 'salles')} « salle de boxe » ${a(v.nom)}, réparties dans ${nb(lieuxBoxe.length, 'lieu', 'lieux')} : ${liste(lieuxBoxe.slice(0, 3).map(nomLieu))}${lieuxBoxe.length > 3 ? ', entre autres' : ''}. Au total, ${v.frappe} lieux déclarent une boxe (${repartition(deFrappe(v.parDiscipline), 5)}).`,
+            `${nb(lieuxBoxe.length, 'lieu abrite', 'lieux abritent')} une salle classée « salle de boxe » (${liste(lieuxBoxe.slice(0, 3).map(nomLieu))}), soit ${nb(v.boxe, 'salle', 'salles')} ; ${v.frappe} lieux au total déclarent une boxe, ${repartition(deFrappe(v.parDiscipline), 5)}.`,
+          ])
         : `Aucune salle n’y est classée « salle de boxe », mais ${v.frappe} lieux déclarent une boxe : ${repartition(deFrappe(v.parDiscipline), 5)}.`,
     },
   ];
@@ -347,12 +450,35 @@ export function villeFaq(v: Ville): SeoFaq[] {
     });
   else if (anglaise.length)
     faq.push({
-      question: fine(`Où faire de la boxe anglaise ${a(v.nom)} ?`),
-      answer: `Le recensement compte ${nb(anglaise.length, 'lieu', 'lieux')} où la boxe anglaise est déclarée ${a(v.nom)}${autres.length ? `, dont ${liste(autres.slice(-3).map((l) => l.nom))}` : ''}.`,
+      question: fine(choisir(v.slug + 'q3', [`Où faire de la boxe anglaise ${a(v.nom)} ?`, `Quels lieux enseignent la boxe anglaise ${a(v.nom)} ?`, `Boxe anglaise ${a(v.nom)} : dans quels lieux ?`])),
+      answer: choisir(v.slug + 'r3', [
+        `Le recensement compte ${nb(anglaise.length, 'lieu', 'lieux')} où la boxe anglaise est déclarée ${a(v.nom)}${autres.length ? `, dont ${liste(autres.slice(-3).map((l) => l.nom))}` : ''}.`,
+        `${Maj(nb(anglaise.length, 'lieu déclare', 'lieux déclarent'))} la boxe anglaise ${a(v.nom)} au recensement du ministère des Sports${autres.length ? ` ; parmi eux, ${liste(autres.slice(-3).map((l) => l.nom))}` : ''}.`,
+        `${autres.length ? `${liste(autres.slice(-3).map((l) => l.nom))}, entre autres : ` : ''}${nb(anglaise.length, 'lieu', 'lieux')} ${a(v.nom)} ${anglaise.length > 1 ? 'déclarent' : 'déclare'} la boxe anglaise au recensement.`,
+      ]),
+    });
+  // Le lieu le mieux équipé : une question que seule cette ville peut poser.
+  const phare = lieuPhare(v);
+  if (phare && phare.salles.length >= 2 && !estBoxingCenter(phare)) {
+    const noms = sallesNommees(phare);
+    faq.push({
+      question: fine(choisir(v.slug + 'q4', [`Quel est le lieu de sports de combat le mieux équipé ${a(v.nom)} ?`, `Quel lieu compte le plus de salles de combat ${a(v.nom)} ?`, `Où sont les plus grandes salles de combat ${a(v.nom)} ?`])),
+      answer: `${nomLieu(phare)}, avec ${nb(phare.salles.length, 'salle', 'salles')}${noms.length >= 2 ? ` (${liste(noms.slice(0, 3))})` : ''}${phare.adresse ? `, ${phare.adresse}${phare.commune ? ', ' + phare.commune : ''}` : ''}. Disciplines déclarées : ${liste(phare.disciplines.map(min1)) || 'non renseignées au recensement'}.`,
+    });
+  }
+  const arr = arrondissementPhare(v);
+  if (arr)
+    faq.push({
+      question: fine(`Quel arrondissement ${de(v.nom)} compte le plus de lieux de boxe et d’arts martiaux ?`),
+      answer: `Le ${arr.nom} : ${nb(arr.lieux, 'lieu', 'lieux')}, dont ${arr.frappe} où l’on boxe et ${nb(arr.boxe, 'salle de boxe dédiée', 'salles de boxe dédiées')}, d’après le recensement du ministère des Sports. Le détail par arrondissement est dans le tableau de cette page.`,
     });
   faq.push({
-    question: fine(`Combien d’habitants pour une salle de sports de combat ${a(v.nom)} ?`),
-    answer: `Un lieu pour ${fr(v.habitantsParLieu)} habitants (${fr(v.population)} habitants, population légale de l’Insee, pour ${v.lieux.length} lieux) : ${v.nom} se classe ${rang(v.rangDensite)} des ${VILLES.length} grandes villes${avant && apres ? `, entre ${avant.nom} (${fr(avant.habitantsParLieu)}) et ${apres.nom} (${fr(apres.habitantsParLieu)})` : avant ? `, derrière ${avant.nom} (${fr(avant.habitantsParLieu)})` : apres ? `, devant ${apres.nom} (${fr(apres.habitantsParLieu)})` : ''}.`,
+    question: fine(choisir(v.slug + 'q5', [`Combien d’habitants pour une salle de sports de combat ${a(v.nom)} ?`, `${v.nom} est-elle bien dotée en salles de sports de combat ?`, `Quelle densité de lieux de combat ${a(v.nom)} ?`])),
+    answer: choisir(v.slug + 'r5', [
+      `Un lieu pour ${fr(v.habitantsParLieu)} habitants (${fr(v.population)} habitants, population légale de l’Insee, pour ${v.lieux.length} lieux) : ${v.nom} se classe ${rang(v.rangDensite)} des ${VILLES.length} grandes villes${avant && apres ? `, entre ${avant.nom} (${fr(avant.habitantsParLieu)}) et ${apres.nom} (${fr(apres.habitantsParLieu)})` : avant ? `, derrière ${avant.nom} (${fr(avant.habitantsParLieu)})` : apres ? `, devant ${apres.nom} (${fr(apres.habitantsParLieu)})` : ''}.`,
+      `${v.nom} se classe ${rang(v.rangDensite)} des ${VILLES.length} grandes villes, avec un lieu pour ${fr(v.habitantsParLieu)} habitants : ${fr(v.population)} habitants (population légale de l’Insee) pour ${v.lieux.length} lieux${avant ? `, juste derrière ${avant.nom} (un pour ${fr(avant.habitantsParLieu)})` : ''}${apres ? ` et devant ${apres.nom} (un pour ${fr(apres.habitantsParLieu)})` : ''}.`,
+      `${fr(v.population)} habitants pour ${v.lieux.length} lieux, soit un lieu de sports de combat pour ${fr(v.habitantsParLieu)} habitants : c’est le ${rang(v.rangDensite)} rang des ${VILLES.length} grandes villes${apres ? `, ${apres.nom} suivant à un pour ${fr(apres.habitantsParLieu)}` : ''}${avant ? ` et ${avant.nom} précédant à un pour ${fr(avant.habitantsParLieu)}` : ''}.`,
+    ]),
   });
   return faq;
 }
@@ -385,7 +511,7 @@ export const regionDisciplines = (r: Region) => {
 const parLieux = (r: Region) => [...r.groupes].sort((x, y) => y.lieux - x.lieux);
 
 export function regionTitre(r: Region) {
-  return `Boutique de boxe ${r.nom} : salles et matériel`;
+  return `Boutique de boxe ${r.nom} : gants, sacs, ${fr(regionTotal(r).lieux)} lieux`;
 }
 export function regionDescription(r: Region) {
   const t = regionTotal(r);

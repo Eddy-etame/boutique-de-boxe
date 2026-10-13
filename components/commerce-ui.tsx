@@ -602,7 +602,12 @@ function EmailStatus({ status, email }: { status: string; email?: string }) {
   );
 }
 
-export function CartPage() {
+/**
+ * `paiementPret` (13/10/2026) : le serveur dit si PayPlug peut encaisser (clé live posée, mode live).
+ * Ventes ouvertes mais paiement pas encore branché : le panier redevient « Enregistrer mes choix »,
+ * et le dit honnêtement — jamais un bouton « payer » qui échoue.
+ */
+export function CartPage({ paiementPret = true }: { paiementPret?: boolean }) {
   const {
     cart,
     error: cartError,
@@ -634,7 +639,8 @@ export function CartPage() {
   const fieldId = useId();
   // Ventes fermées (Eddy, 29/09) : aucun paiement, pas même simulé. Le panier se termine par
   // « Enregistrer mes choix » : prénom, e-mail, mobile facultatif — un contact à prévenir à l’ouverture.
-  const choix = !shop.ventesOuvertes;
+  const indisponible = shop.ventesOuvertes && !paiementPret;
+  const choix = !shop.ventesOuvertes || indisponible;
   const [firstName, setFirstName] = useState('');
   const [leadPostcode, setLeadPostcode] = useState('');
   const [smsOk, setSmsOk] = useState(false);
@@ -836,7 +842,11 @@ export function CartPage() {
           )}
         </h1>
         <p>
-          {choix
+          {indisponible
+            ? step === 1 && saved === null
+              ? 'Le paiement en ligne est momentanément indisponible. Enregistrez vos choix : on vous écrit dès qu’il est rétabli, votre panier vous attend.'
+              : 'Aucun paiement pour l’instant : vos choix sont gardés, on vous écrit dès que le paiement en ligne est rétabli.'
+            : choix
             ? step === 1 && saved === null
               ? 'Ajustez les quantités, puis enregistrez vos choix : on vous prévient le jour de l’ouverture des ventes.'
               : 'Aucun paiement : les ventes ne sont pas encore ouvertes. Vos choix sont gardés pour ce jour-là.'
@@ -845,7 +855,7 @@ export function CartPage() {
               : 'Vos coordonnées, la livraison, puis le paiement par carte sur la page sécurisée de PayPlug. La confirmation arrive par e-mail.'}
         </p>
         <span className="simulation-stamp">
-          {choix ? `Ventes le ${shop.ouverture.court} · Aucun paiement` : 'Paiement sécurisé · Carte bancaire · PayPlug'}
+          {indisponible ? 'Paiement en ligne momentanément indisponible' : choix ? `Ventes le ${shop.ouverture.court} · Aucun paiement` : 'Paiement sécurisé · Carte bancaire · PayPlug'}
         </span>
       </header>
       <Steps current={saved !== null ? 3 : step} labels={choix ? ['L’équipement', 'Vos coordonnées', 'C’est enregistré'] : ['L’équipement', 'La livraison', 'Le paiement']} />
@@ -882,7 +892,7 @@ export function CartPage() {
           <Check size={42} strokeWidth={1.2} aria-hidden="true" />
           <h2>{saved ? `Merci ${saved}, vos choix sont gardés.` : 'Vos choix sont gardés.'}</h2>
           <p>
-            Le jour de l’ouverture des ventes, un e-mail vous le dira{phone.trim() && smsOk ? ', et un SMS' : ''}. Votre panier reste ici, prêt pour ce jour-là.
+            {indisponible ? 'Dès que le paiement en ligne est rétabli, un e-mail vous le dira' : 'Le jour de l’ouverture des ventes, un e-mail vous le dira'}{phone.trim() && smsOk ? ', et un SMS' : ''}. Votre panier reste ici, prêt pour ce jour-là.
           </p>
           <a className="button button-dark" href={CATALOGUE}>
             Continuer à choisir <ArrowUpRight size={18} aria-hidden="true" />
@@ -1140,7 +1150,7 @@ export function CartPage() {
                       required
                     />
                     <span>
-                      J’accepte que Boutique de Boxe garde ces choix et me prévienne de l’ouverture des ventes. Un lien de désinscription dans chaque message.
+                      {indisponible ? 'J’accepte que Boutique de Boxe garde ces choix et m’écrive dès que le paiement en ligne est rétabli.' : 'J’accepte que Boutique de Boxe garde ces choix et me prévienne de l’ouverture des ventes.'} Un lien de désinscription dans chaque message.
                     </span>
                   </label>
                   <p className="commerce-caption">

@@ -29,13 +29,18 @@ export const metadata: Metadata = {
   publisher: shop.entity,
   category: 'shopping',
   robots: { index: true, follow: true },
-  // Google Search Console : la balise de vérification arrive par variable d’environnement, jamais en dur.
+  // Search Console, Bing Webmaster, Yandex Webmaster : les balises de vérification arrivent par
+  // variable d’environnement (projet Vercel), jamais en dur. Yandex ajouté le 13/10/2026.
   ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ||
-  process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION
+  process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION ||
+  process.env.NEXT_PUBLIC_YANDEX_SITE_VERIFICATION
     ? {
         verification: {
           ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
             ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }
+            : {}),
+          ...(process.env.NEXT_PUBLIC_YANDEX_SITE_VERIFICATION
+            ? { yandex: process.env.NEXT_PUBLIC_YANDEX_SITE_VERIFICATION }
             : {}),
           ...(process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION
             ? {

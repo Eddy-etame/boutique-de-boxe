@@ -91,6 +91,7 @@ function agents() {
     '## Interfaces pour les moteurs et assistants',
     `- Contexte complet, tous les modèles : ${urlOf('/llms-full.txt')}`,
     `- Flux JSON du catalogue : ${urlOf('/catalogue.json')}`,
+    `- Flux marchand (RSS Google Merchant / Bing Merchant, prix TTC et livraison) : ${urlOf('/flux-marchand.xml')}`,
     `- Serveur MCP : ${urlOf('/api/mcp')} — découverte : ${urlOf('/.well-known/mcp.json')}. Outils : recherche, fiches, guides, comparaison, sac de séance, poids de gants, marques, sélection de la semaine, observatoire des prix, inscription consentie à l’ouverture.`,
     `- Règles d’usage pour les IA : ${urlOf('/ai.txt')} · Paternité : ${urlOf('/humans.txt')}`,
     `- Plan du site : ${urlOf('/sitemap.xml')}`,

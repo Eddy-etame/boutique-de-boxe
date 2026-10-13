@@ -36,6 +36,7 @@ import {
 } from '@/components/editorial-pages';
 import { ContactForm, Unsubscribe } from '@/components/contact-form';
 import { PayplugReturn } from '@/components/payplug-settings';
+import { payplugSettings } from '@/lib/payplug';
 import { CartPage, ReceiptPage } from '@/components/commerce-ui';
 import selection from '@/lib/data/selection.json';
 import { ogImage } from '@/lib/og';
@@ -217,6 +218,11 @@ export async function generateMetadata({
       : {}),
   };
 }
+/** PayPlug peut-il encaisser ? Live avec sa clé, ou test hors production (13/10/2026). Jamais une clé lue ailleurs. */
+function paiementPret() {
+  const s = payplugSettings(process.env as unknown as Parameters<typeof payplugSettings>[0]);
+  return s.liveEnabled || (s.hostedTestEnabled && process.env.NODE_ENV !== 'production');
+}
 export default async function Page({ params, searchParams }: Props) {
   const { slug } = await params;
   const path = slug.join('/');
@@ -229,7 +235,7 @@ export default async function Page({ params, searchParams }: Props) {
   if (path === 'panier')
     return (
       <main id="contenu" className="page-wrap">
-        <CartPage />
+        <CartPage paiementPret={paiementPret()} />
       </main>
     );
   if (path === 'recu')

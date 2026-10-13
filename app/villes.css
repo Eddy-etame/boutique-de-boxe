@@ -81,3 +81,9 @@
 .materiel-rayons { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
 .materiel-rayons li { line-height: 1.35; }
 .materiel-rayons small { display: block; font-size: 12px; color: var(--muted); }
+
+/* 13/10 — la grille produit ↔ lieu : rayons depuis la ville, régions sur le carrefour, villes sur les rayons. */
+.ville-rayons { margin-top: 22px; }
+.ville-regions > div { margin-top: 26px; }
+.ville-regions h3 { font: 800 clamp(18px, 1.6vw, 24px) / 1.1 Barlow, Impact, sans-serif; text-transform: uppercase; margin: 0 0 10px; }
+.hub-villes p { font-size: 13px; line-height: 1.55; color: var(--muted); margin: 0 0 12px; }
