@@ -32,7 +32,10 @@ const state = () => (globalThis.__clubSync ??= { snapshot: null, pending: null, 
 async function refresh(): Promise<void> {
   const s = state();
   try {
-    const res = await fetch(CLUB_URL, { signal: AbortSignal.timeout(8000), cache: 'no-store', headers: { Accept: 'application/json' } });
+    // Cache de cinq minutes (13/10/2026) : « cache: 'no-store' » faisait échouer la régénération de l'accueil
+    // (« Page changed from static to dynamic at runtime / », 500 vus en production) ; le mémo ci-dessous
+    // tient déjà la fraîcheur, et les prix du club ne changent pas à la minute.
+    const res = await fetch(CLUB_URL, { signal: AbortSignal.timeout(8000), next: { revalidate: 300 }, headers: { Accept: 'application/json' } });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = (await res.json()) as { synced_at?: string; products?: ClubProduct[] };
     const rows = (data.products || []).filter((p) => p && typeof p.id === 'string' && Number.isInteger(p.price_cents) && p.price_cents > 0);
