@@ -69,14 +69,14 @@ export function brandCopy(b: Brand) {
   const top = b.families.slice(0, 3).map((f) => lower(f.name));
   const sizes = [...new Set(b.products.flatMap((p) => p.sizes.map((s) => s.split(' (')[0])))].filter((s) => s.length <= 8).slice(0, 8);
   const title = `${b.name} : ${top[0] || 'matériel de boxe'}, ${n} modèles ${b.name}`.slice(0, 60);
-  const description = `${b.name} chez Boutique de Boxe : ${n} modèles, ${list(top)}, de ${money(b.min)} à ${money(b.max)}. Tailles, photos et prix prévus à l’ouverture des ventes.`.slice(0, 158);
-  const intro = `${n} modèles ${b.name} au catalogue : ${list(b.families.map((f) => `${f.count} en ${lower(f.name)}`))}. Les prix vont de ${money(b.min)} à ${money(b.max)}. Chaque fiche donne les tailles réellement proposées et le prix prévu à l’ouverture des ventes.`;
+  const description = `${b.name} chez Boutique de Boxe : ${n} modèles, ${list(top)}, de ${money(b.min)} à ${money(b.max)}. Tailles, photos et prix de vente TTC.`.slice(0, 158);
+  const intro = `${n} modèles ${b.name} au catalogue : ${list(b.families.map((f) => `${f.count} en ${lower(f.name)}`))}. Les prix vont de ${money(b.min)} à ${money(b.max)}. Chaque fiche donne les tailles réellement proposées et le prix de vente TTC.`;
   const faq: SeoFaq[] = [
     { question: `Quels produits ${b.name} trouve-t-on chez Boutique de Boxe ?`, answer: `${n} modèles ${b.name} : ${list(b.families.map((f) => `${f.count} en ${lower(f.name)}`))}. La liste complète est sur cette page, avec un filtre par équipement, par taille et par budget.` },
-    { question: `À quel prix sont les produits ${b.name} ?`, answer: `De ${money(b.min)} à ${money(b.max)}, selon le modèle. Ce sont les prix prévus à l’ouverture des ventes ; ils sont affichés sur chaque fiche.` },
+    { question: `À quel prix sont les produits ${b.name} ?`, answer: `De ${money(b.min)} à ${money(b.max)}, selon le modèle. Ce sont les prix de vente TTC, affichés sur chaque fiche.` },
     ...(sizes.length >= 3 ? [{ question: `Quelles tailles ${b.name} proposez-vous ?`, answer: `Selon le modèle : ${sizes.join(', ')}. Les tailles ne se transposent pas d’une marque à l’autre : suivez le guide de tailles de ${b.name} indiqué sur la fiche.` }] : []),
-    { question: `Quand pourrai-je acheter du ${b.name} ?`, answer: 'Les ventes ouvrent le 20 octobre 2026. Laissez votre e-mail sur la fiche du modèle qui vous intéresse : vous êtes prévenu le matin de l’ouverture. D’ici là, vous pouvez remplir votre panier et enregistrer vos choix.' },
-    { question: `Livrez-vous les produits ${b.name} partout en France ?`, answer: 'Oui, dans toute la France métropolitaine, à domicile ou en point relais. Le matériel lourd (sacs de frappe, bases) est livré à domicile seulement.' },
+    { question: `Peut-on acheter du ${b.name} en ligne ?`, answer: 'Oui, depuis le 13 octobre 2026 : chaque modèle se commande sur sa fiche et se paie par carte sur la page sécurisée de PayPlug.' },
+    { question: `Livrez-vous les produits ${b.name} partout en France ?`, answer: 'Oui, dans toute la France continentale, à domicile ou en point relais. Le matériel lourd (sacs de frappe, bases, portiques) se livre à domicile, sur devis.' },
   ];
   return { title, description, intro, faq };
 }

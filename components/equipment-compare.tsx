@@ -38,7 +38,7 @@ export function EquipmentCompare({ items }: { items: Product[] }) {
       label: 'Rembourrage',
       values: pair.map((p) => value(p, /rembourrage|mousse/i)),
     },
-    { label: 'Prix prévu', values: pair.map((p) => money(p.price)) },
+    { label: 'Prix TTC', values: pair.map((p) => money(p.price)) },
   ];
   return (
     <section className="comparison-section section-pad" id="comparer">

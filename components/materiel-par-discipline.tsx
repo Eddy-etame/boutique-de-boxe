@@ -93,7 +93,7 @@ export function MaterielParDiscipline({ all }: { all: Product[] }) {
             </tbody>
           </table>
           <p className="hub-prices-note">
-            {`Lieux : ${SOURCE.nom}, ${SOURCE.editeur}, mis à jour le ${dateSource()} ; le recensement ne distingue ni le MMA ni le jiu-jitsu brésilien. Modèles et prix : le catalogue du jour, prix prévus à l’ouverture des ventes.`}
+            {`Lieux : ${SOURCE.nom}, ${SOURCE.editeur}, mis à jour le ${dateSource()} ; le recensement ne distingue ni le MMA ni le jiu-jitsu brésilien. Modèles et prix : le catalogue du jour, prix de vente TTC.`}
           </p>
         </div>
       </section>

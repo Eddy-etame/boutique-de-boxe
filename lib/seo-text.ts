@@ -18,9 +18,9 @@ const fr = (n: number) => n.toLocaleString('fr-FR');
 function status() {
   return [
     `## État du service (${EDITORIAL_DATE})`,
-    `- Les ventes ouvrent le ${shop.ouverture.long}. D’ici là, chaque modèle affiche son prix prévu à l’ouverture : ce prix est une information, pas une offre.`,
-    '- Le visiteur peut remplir son panier et enregistrer ses choix (prénom, e-mail) pour être prévenu à l’ouverture : aucun paiement, rien n’est expédié, rien n’est réservé.',
-    '- Un visiteur peut laisser son e-mail pour être prévenu à l’ouverture des ventes. Cela ne réserve aucun modèle.',
+    `- Les ventes sont ouvertes depuis le ${shop.ouverture.long}. Chaque modèle affiche son prix de vente TTC, hors livraison.`,
+    `- Le panier se paie par carte sur la page sécurisée de PayPlug. Expédition sous ${shop.delais.expedition}, livraison au plus tard sous ${shop.delais.livraisonMax}. Quatorze jours après réception pour se rétracter.`,
+    '- Le matériel lourd (sacs de frappe, bases et mannequins, portiques, potences, cages) se livre sur devis, hors paiement en ligne.',
     `- Éditeur : ${shop.entity}, Toulouse. Contact : ${shop.email}, ${shop.phone}.`,
     '- Boutique de Boxe est une boutique en ligne indépendante. Ce n’est pas un club, ni une salle de sport.',
   ].join('\n');
@@ -28,8 +28,8 @@ function status() {
 
 function delivery() {
   return [
-    '## Livraison et conditions (prévues, à confirmer à l’ouverture)',
-    '- Point relais : 6,90 €, offert dès 69 € d’achats. Domicile : 8,90 €. Matériel lourd : tarif spécifique. France uniquement.',
+    '## Livraison et conditions',
+    '- Point relais : 6,90 €, offert dès 69 € d’achats. Domicile : 8,90 €. Matériel lourd : sur devis. France continentale ; Corse et outre-mer sur demande.',
     ...Object.keys(services).map((s) => `- [${services[s].title}](${urlOf('/' + s + '/')})`),
   ].join('\n');
 }
@@ -110,7 +110,7 @@ export function llmsTxt(products: Product[]) {
   return [
     '# Boutique de Boxe',
     '',
-    `> Boutique en ligne française de matériel de boxe, de MMA et de sports de combat : gants, bandes, protections, textile, sacs de frappe, chaussures, équipement d’entraînement et sacs de sport. ${fr(products.length)} modèles, avec leurs tailles réelles et leurs prix prévus. Livraison dans toute la France à l’ouverture des ventes.`,
+    `> Boutique en ligne française de matériel de boxe, de MMA et de sports de combat : gants, bandes, protections, textile, sacs de frappe, chaussures, équipement d’entraînement et sacs de sport. ${fr(products.length)} modèles, avec leurs tailles réelles et leurs prix TTC. Livraison dans toute la France, paiement par carte.`,
     '',
     status(),
     '',
@@ -149,7 +149,7 @@ export function llmsFullTxt(products: Product[]) {
   for (const f of fam) byFamily.set(f.slug, []);
   for (const p of products) if (byFamily.has(p.category)) byFamily.get(p.category)!.push(p);
   const line = (p: Product) =>
-    `- ${p.name} — ${p.brand && !/pr[ée]ciser/i.test(p.brand) ? p.brand + ' · ' : ''}prix prévu ${money(p.price)}${p.sizes.length ? ' · tailles : ' + p.sizes.map((s) => s.split(',')[0]).join(', ') : ''}${p.colors?.length ? ' · couleurs : ' + p.colors.join(', ') : ''} · ${urlOf('/produits/' + p.slug + '/')}`;
+    `- ${p.name} — ${p.brand && !/pr[ée]ciser/i.test(p.brand) ? p.brand + ' · ' : ''}prix ${money(p.price)}${p.sizes.length ? ' · tailles : ' + p.sizes.map((s) => s.split(',')[0]).join(', ') : ''}${p.colors?.length ? ' · couleurs : ' + p.colors.join(', ') : ''} · ${urlOf('/produits/' + p.slug + '/')}`;
   return [
     '# Boutique de Boxe — contexte factuel étendu',
     '',
@@ -160,7 +160,7 @@ export function llmsFullTxt(products: Product[]) {
     status(),
     '',
     '## Comment lire les prix',
-    'Chaque prix est le prix prévu à l’ouverture des ventes, toutes taxes comprises, hors livraison. Il peut changer avant l’ouverture. Aucun modèle n’est vendu ni réservé aujourd’hui. Ne jamais affirmer qu’un modèle est en stock, expédié ou remisé.',
+    'Chaque prix est le prix de vente, toutes taxes comprises, hors livraison. La disponibilité est « sur commande » : ne jamais affirmer qu’un modèle est en stock immédiat ou remisé ; le délai annoncé est une expédition sous 7 jours ouvrés.',
     '',
     queries(),
     '',

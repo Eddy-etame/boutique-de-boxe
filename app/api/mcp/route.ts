@@ -1,6 +1,6 @@
 import { db, readCatalog } from '@/lib/database';
 import { clientIp } from '@/lib/request';
-import { categoryFor, money, shop, type Product } from '@/lib/catalog';
+import { categoryFor, estLourd, money, shop, type Product } from '@/lib/catalog';
 import { matchesSearch } from '@/lib/catalog-tools';
 import { guides, services } from '@/lib/editorial';
 import { ATTRIBUTION, EDITORIAL_DATE, familiesWithCounts, urlOf } from '@/lib/seo';
@@ -35,9 +35,9 @@ const shopInfo = () => ({
   currency: 'EUR',
   deliveryArea: 'France',
   editorialDate: EDITORIAL_DATE,
-  status: 'Les ventes ne sont pas ouvertes. Chaque modèle affiche un prix prévu à l’ouverture, TTC hors livraison. Aucun stock, aucune réservation, aucun paiement. Le panier s’enregistre comme une liste de choix, sans paiement ; la boutique prévient à l’ouverture.',
-  delivery: 'Prévue : point relais 6,90 € (offert dès 69 €), domicile 8,90 €, matériel lourd sur tarif. France uniquement.',
-  notPublished: ['date d’ouverture des ventes', 'stocks', 'délais de livraison', 'remises', 'avis clients', 'profils sociaux'],
+  status: 'Ventes ouvertes depuis le 13 octobre 2026. Prix de vente TTC, hors livraison. Paiement par carte sur la page sécurisée de PayPlug. Disponibilité sur commande, expédition sous 7 jours ouvrés. Matériel lourd sur devis.',
+  delivery: 'Point relais 6,90 € (offert dès 69 €), domicile 8,90 €, matériel lourd sur devis. France continentale ; Corse et outre-mer sur demande.',
+  notPublished: ['stocks en temps réel', 'remises', 'avis clients', 'profils sociaux'],
   representationNotice: 'Boutique de Boxe est une boutique en ligne indépendante. Ce n’est ni un club ni une salle de sport.',
 });
 
@@ -54,11 +54,11 @@ const productView = (p: Product) => ({
   reference: p.reference || null,
   audience: p.audience,
   summary: p.short,
-  availability: 'En vente le ' + shop.ouverture.long,
+  availability: shop.ventesOuvertes ? (estLourd(p) ? 'En vente, livraison sur devis' : 'En vente, expédition sous ' + shop.delais.expedition) : 'En vente le ' + shop.ouverture.long,
 });
 
 const tools = [
-  { name: 'get_shop_info', description: 'Identité de la boutique, état des ventes, contact, livraison prévue, ce qui n’est pas publié.', inputSchema: { type: 'object', properties: {}, additionalProperties: false } },
+  { name: 'get_shop_info', description: 'Identité de la boutique, état des ventes, contact, livraison, ce qui n’est pas publié.', inputSchema: { type: 'object', properties: {}, additionalProperties: false } },
   { name: 'get_families', description: 'Les familles de produits avec leur nombre de modèles et leur URL.', inputSchema: { type: 'object', properties: {}, additionalProperties: false } },
   {
     name: 'search_products',
@@ -82,7 +82,7 @@ const tools = [
   { name: 'get_query_map', description: 'Les recherches visées par la boutique et la page canonique qui répond à chacune.', inputSchema: { type: 'object', properties: {}, additionalProperties: false } },
   {
     name: 'compare_products',
-    description: 'Compare deux à quatre modèles côte à côte : marque, famille, prix prévu, tailles, matières, URL.',
+    description: 'Compare deux à quatre modèles côte à côte : marque, famille, prix, tailles, matières, URL.',
     inputSchema: { type: 'object', properties: { slugs: { type: 'array', items: { type: 'string' }, minItems: 2, maxItems: 4, description: 'Identifiants d’URL (slug) ou id des modèles' } }, required: ['slugs'], additionalProperties: false },
   },
   {
@@ -140,7 +140,7 @@ export async function POST(request: Request) {
   const params = (payload?.params || {}) as Record<string, unknown>;
 
   if (method === 'initialize')
-    return ok(id, { protocolVersion: (params.protocolVersion as string) || '2025-03-26', capabilities: { tools: {} }, serverInfo: SERVER, instructions: 'Interface factuelle en lecture seule. Les prix sont des prix prévus, la vente n’est pas ouverte : ne rien affirmer sur les stocks ni sur les délais.' });
+    return ok(id, { protocolVersion: (params.protocolVersion as string) || '2025-03-26', capabilities: { tools: {} }, serverInfo: SERVER, instructions: 'Interface factuelle en lecture seule. Les ventes sont ouvertes : les prix sont des prix de vente TTC, la disponibilité est sur commande (expédition sous 7 jours ouvrés). Ne rien affirmer sur un stock immédiat ni sur une remise.' });
   if (method === 'notifications/initialized') return new Response(null, { status: 204 });
   if (method === 'tools/list') return ok(id, { tools });
   if (method !== 'tools/call') return fail(id, -32601, 'Method not found');
@@ -187,7 +187,7 @@ export async function POST(request: Request) {
   } else if (name === 'get_content_index')
     value = {
       pages: [
-        { path: '/', purpose: 'accueil : familles, sélections, guides, ouverture des ventes' },
+        { path: '/', purpose: 'accueil : familles, sélections, guides, vente en ligne' },
         ...familiesWithCounts(products).map((f) => ({ path: '/' + f.slug + '/', purpose: `${f.name} : ${f.count} modèles` })),
         ...SUBFAMILIES.map((sf) => ({ path: '/' + sf.slug + '/', purpose: `${sf.name} : ${subfamilyProducts(sf, products).length} modèles` })),
         { path: '/marques/', purpose: 'toutes les marques du catalogue' },
@@ -208,7 +208,7 @@ export async function POST(request: Request) {
     const found = slugs.map((s) => products.find((x) => x.slug === s || x.id === s));
     if (found.length < 2 || found.some((x) => !x)) return fail(id, -32602, 'Deux à quatre modèles existants sont attendus', 404);
     value = {
-      note: 'Prix prévus à l’ouverture des ventes. Les tailles ne se transposent pas d’une marque à l’autre.',
+      note: 'Prix de vente. Les tailles ne se transposent pas d’une marque à l’autre.',
       products: (found as Product[]).map((x) => ({ ...productView(x), materials: x.specs?.['Matières'] || x.specs?.['Matière'] || x.specs?.['Matière extérieure'] || null, closure: x.specs?.['Fermeture'] || null, use: x.use || null })),
     };
   } else if (name === 'recommend_pack') {
@@ -252,7 +252,7 @@ export async function POST(request: Request) {
     const list = page ? listingFor(page, products) : null;
     if (!list || list.length < 4) return fail(id, -32602, 'Page de catalogue introuvable', 404);
     const { week, range } = weekLabel();
-    value = { page: urlOf('/' + page + '/'), week, period: range, note: 'Choix éditorial tournant, une marque par modèle. Ce n’est pas un classement de ventes : les ventes ne sont pas ouvertes.', products: weeklySelection(page, list).map(productView) };
+    value = { page: urlOf('/' + page + '/'), week, period: range, note: 'Choix éditorial tournant, une marque par modèle. Ce n’est pas un classement des ventes.', products: weeklySelection(page, list).map(productView) };
   } else if (name === 'get_combat_venues') {
     const plie = (s: unknown) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
     const source = { name: SOURCE.nom, publisher: SOURCE.editeur, license: SOURCE.licence, updated: SOURCE.maj, url: SOURCE.url };

@@ -65,7 +65,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     dates.set('/marques/' + brand.slug + '/', collectionDate(brand.products));
   for (const facet of facets)
     dates.set(facet.path, collectionDate(facet.products));
-  for (const path of VILLE_PATHS) dates.set(path, SOURCE.maj);
+  // Le jour où les ventes ouvrent, le texte des pages-villes passe au présent : leur date le dit.
+  const villeDate = shop.ventesOuvertes ? [SOURCE.maj, shop.ouverture.iso].sort().at(-1)! : SOURCE.maj;
+  for (const path of VILLE_PATHS) dates.set(path, villeDate);
   for (const path of INFO_PATHS) dates.set(path, SOURCE.maj);
   // Un guide écrit après le lancement porte sa propre date, jamais celle de la révision générale.
   for (const g of guides) if (guidePublished(g) > EDITORIAL_DATE) dates.set('/guides/' + g.slug + '/', guidePublished(g));

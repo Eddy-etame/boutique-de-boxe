@@ -8,7 +8,7 @@ import {
   type PayplugBinding,
   type ProviderMode,
 } from './payplug';
-import { shop, money } from './catalog';
+import { shop, money, estLourd } from './catalog';
 import { suspicion } from './alerts';
 import { clientIp } from './request';
 import { validateRelayPoint, relayLabel, type RelayPoint } from './boxtal';
@@ -53,6 +53,9 @@ type Attempt = {
   refunded_cents: number;
   notified_at?: string | null;
   notify_error?: string | null;
+  notify_claim?: string | null;
+  client_sent_at?: string | null;
+  shop_sent_at?: string | null;
 };
 /** Le numéro de commande montré au client, sur PayPlug et dans les e-mails. */
 export const reference = (id: string) => 'BDB-' + id.slice(0, 8).toUpperCase();
@@ -68,6 +71,9 @@ type Stored = {
   phone?: string;
   relay?: RelayPoint | null;
   optin?: boolean;
+  /** Version des CGV acceptées et heure de l'acceptation (preuve du consentement). */
+  cgvVersion?: string;
+  cgvAt?: string;
 };
 const stored = (a: Attempt): Partial<Stored> => {
   try {
@@ -90,6 +96,8 @@ async function ensureColumns() {
   const database = await db();
   await database.prepare('ALTER TABLE payment_attempts ADD COLUMN IF NOT EXISTS notified_at text').run();
   await database.prepare('ALTER TABLE payment_attempts ADD COLUMN IF NOT EXISTS notify_error text').run();
+  for (const column of ['notify_claim', 'client_sent_at', 'shop_sent_at'])
+    await database.prepare(`ALTER TABLE payment_attempts ADD COLUMN IF NOT EXISTS ${column} text`).run();
   columnsReady = true;
 }
 const sellingMode = (mode: string | undefined): mode is ProviderMode =>
@@ -290,6 +298,13 @@ export async function payplugGet(request: Request, action: string) {
         new Date(Date.now() - 120000).toISOString(),
       )
       .run();
+    // Une notification perdue et un client qui ferme l'onglet laisseraient une commande payée « en attente » :
+    // l'ouverture des réglages relit chez PayPlug les commandes encore ouvertes des trois derniers jours.
+    const open = await database
+      .prepare("SELECT * FROM payment_attempts WHERE status IN ('pending','unconfirmed') AND provider_id IS NOT NULL AND created_at>? ORDER BY created_at DESC LIMIT 8")
+      .bind(new Date(Date.now() - 3 * 86400000).toISOString())
+      .all<Attempt>();
+    for (const a of open.results) await reconcile(a).catch(() => undefined);
     const attempts = await database
       .prepare('SELECT * FROM payment_attempts ORDER BY created_at DESC LIMIT 100')
       .all<Attempt>();
@@ -310,6 +325,8 @@ export async function payplugGet(request: Request, action: string) {
         lines: linesOf(a),
         notifiedAt: a.notified_at || null,
         notifyError: a.notify_error || null,
+        clientSentAt: a.client_sent_at || null,
+        shopSentAt: a.shop_sent_at || null,
       })),
     });
   }
@@ -320,7 +337,7 @@ export async function payplugPost(request: Request, action: string) {
   if (action === 'ipn') {
     // En simulation, aucune notification n'est attendue ni acceptée.
     if (!sellingMode(env.COMMERCE_MODE))
-      return reply({ received: true, ignored: true });
+      return reply({ error: 'Paiements suspendus : notification à représenter.' }, 503);
     if (!request.headers.get('content-type')?.includes('application/json'))
       return reply({ error: 'Format invalide.' }, 400);
     let data;
@@ -381,7 +398,7 @@ export async function payplugPost(request: Request, action: string) {
           ? 'Le paiement en ligne est momentanément indisponible. Votre panier est conservé.'
           : 'Les ventes ne sont pas encore ouvertes.',
       },
-      shop.ventesOuvertes ? 503 : 403,
+      shop.ventesOuvertes ? 409 : 403,
     );
   if (!sellingMode(env.COMMERCE_MODE))
     return reply(
@@ -437,7 +454,8 @@ export async function payplugPost(request: Request, action: string) {
   if (
     !token ||
     !uuid(data.requestKey) ||
-    !(data.cgv === true || (admin && data.testConsent === true)) ||
+    // Le « test » de l'atelier n'existe qu'en mode test : en live, même l'équipe accepte les CGV.
+    !(data.cgv === true || (admin && env.COMMERCE_MODE === 'payplug_test' && data.testConsent === true)) ||
     !Number.isSafeInteger(data.quotedTotal) ||
     !Number.isSafeInteger(data.quotedRevision)
   )
@@ -478,6 +496,12 @@ export async function payplugPost(request: Request, action: string) {
       { error: 'Vérifiez vos coordonnées (adresse en France métropolitaine).' },
       400,
     );
+  // France métropolitaine continentale : la Corse (20…), l'outre-mer (97…) et Monaco (98…) sont sur demande.
+  if (/^(?:20|97|98)/.test(b.postcode))
+    return reply(
+      { error: 'La livraison en ligne couvre la France continentale. Pour la Corse ou l’outre-mer, écrivez-nous : nous vous faisons une proposition.' },
+      400,
+    );
   const address2 = typeof b.address2 === 'string' ? b.address2.trim() : '';
   const billing = {
     first_name: b.first_name.trim(),
@@ -513,7 +537,7 @@ export async function payplugPost(request: Request, action: string) {
     .first<Attempt>();
   if (previous)
     return previous.fingerprint === fingerprint
-      ? reply({ attempt: safe(previous) })
+      ? reply({ attempt: admin ? safe(previous) : publicView(previous) })
       : reply({ error: 'Cette tentative correspond à un autre contenu.' }, 409);
   const cart = await resolveCart(token),
     shipping = shippingFor(cart.subtotal, delivery),
@@ -526,6 +550,16 @@ export async function payplugPost(request: Request, action: string) {
   )
     return reply(
       { error: 'Le panier a changé. Vérifiez le montant et les références.' },
+      409,
+    );
+  // Matériel lourd : sur devis (décision du 13/10/2026), jamais au tarif d'un colis ordinaire.
+  const lourds = cart.items.filter((line) => estLourd(line));
+  if (lourds.length)
+    return reply(
+      {
+        error: `Livraison sur devis pour ${lourds.map((l) => l.name).join(', ')} : retirez ${lourds.length > 1 ? 'ces modèles' : 'ce modèle'} du panier pour payer le reste, et écrivez-nous pour le devis.`,
+        heavy: lourds.map((l) => l.productId),
+      },
       409,
     );
   if (total < 30 || total > 2000000)
@@ -546,39 +580,50 @@ export async function payplugPost(request: Request, action: string) {
       409,
     );
   }
-  // Un paiement refusé par la banque, ou abandonné sur la page PayPlug, libère le panier : le client
-  // doit pouvoir réessayer. On relit d'abord PayPlug : un paiement en réalité payé, ou en cours de
-  // vérification, garde le panier (jamais deux paiements pour un même panier).
+  // Un même panier ne se paie qu'une fois (unicité panier + révision). Pour que le client puisse
+  // réessayer, la tentative qui tient le panier est libérée seulement si elle ne peut plus être payée :
+  // refusée (carte refusée, expirée, abandonnée), ou sans lien de paiement jamais remis au client.
+  // Une tentative encore payable est relue chez PayPlug, puis abandonnée chez PayPlug (PATCH aborted)
+  // avant toute nouvelle tentative : jamais deux paiements ouverts pour un panier.
   let revision = cart.revision;
   const holder = await database
     .prepare('SELECT * FROM payment_attempts WHERE cart_id=? AND cart_revision=?')
     .bind(token, cart.revision)
     .first<Attempt>();
-  if (holder && holder.provider_id && ['pending', 'failed'].includes(holder.status)) {
+  if (holder && holder.status !== 'paid') {
+    const young = holder.status === 'creating' && Date.now() - Date.parse(holder.updated_at) < 120000;
+    if (young) return reply({ error: 'Un paiement est en cours de préparation pour ce panier. Patientez quelques secondes.' }, 409);
     let fresh: Attempt | null = holder;
-    try {
-      fresh = await reconcile(holder);
-    } catch {
-      fresh = null;
+    if (holder.provider_id) {
+      try {
+        fresh = await reconcile(holder);
+        if (fresh.status === 'pending' && fresh.fingerprint === fingerprint && fresh.payment_url)
+          return reply({ attempt: admin ? safe(fresh) : publicView(fresh) });
+        if (fresh.status === 'pending' && fresh.payment_url)
+          fresh = await applyVerified(
+            fresh,
+            await createPayplug(env).abortAndVerifyPayment(fresh.provider_id!, binding(fresh)),
+          );
+      } catch {
+        fresh = null;
+      }
     }
     if (!fresh)
-      return reply({ error: 'Le paiement précédent n’a pas pu être vérifié. Réessayez dans un instant.' }, 503);
-    if (fresh.status === 'pending' && fresh.fingerprint === fingerprint && fresh.payment_url)
-      return reply({ attempt: safe(fresh) });
-    if (fresh.status === 'pending' || fresh.status === 'failed') {
-      const bumped = await database
-        .prepare('UPDATE carts SET revision=revision+1,updated_at=? WHERE id=? AND revision=? RETURNING revision')
-        .bind(new Date().toISOString(), token, cart.revision)
-        .first<number>('revision');
-      if (!bumped) return reply({ error: 'Le panier a changé pendant la préparation.' }, 409);
-      revision = bumped;
-    } else if (fresh.status === 'paid') {
-      return reply({ attempt: safe(fresh) });
-    }
+      return reply({ error: 'Le paiement précédent n’a pas pu être vérifié. Réessayez dans un instant.' }, 409);
+    if (fresh.status === 'paid') return reply({ attempt: admin ? safe(fresh) : publicView(fresh) });
+    const payable = fresh.status === 'pending' && Boolean(fresh.payment_url);
+    if (payable)
+      return reply({ error: 'Un paiement est encore ouvert pour ce panier : reprenez-le, ou réessayez dans quelques minutes.' }, 409);
+    const bumped = await database
+      .prepare('UPDATE carts SET revision=revision+1,updated_at=? WHERE id=? AND revision=? RETURNING revision')
+      .bind(new Date().toISOString(), token, cart.revision)
+      .first<number>('revision');
+    if (!bumped) return reply({ error: 'Le panier a changé pendant la préparation.' }, 409);
+    revision = bumped;
   }
   const id = crypto.randomUUID(),
     now = new Date().toISOString();
-  const keep: Stored = { ...billing, phone, relay, optin };
+  const keep: Stored = { ...billing, phone, relay, optin, cgvVersion: shop.cgvVersion, cgvAt: now };
   try {
     const row = await database
       .prepare(
@@ -620,7 +665,7 @@ export async function payplugPost(request: Request, action: string) {
       .bind(token, data.requestKey)
       .first<Attempt>();
     if (raced?.fingerprint === fingerprint)
-      return reply({ attempt: safe(raced) });
+      return reply({ attempt: admin ? safe(raced) : publicView(raced) });
     return reply(
       {
         error:
@@ -636,7 +681,8 @@ export async function payplugPost(request: Request, action: string) {
       billing,
       reference: reference(a.id),
     });
-    return reply({ attempt: safe(await applyVerified(a, payment)) }, 201);
+    const created = await applyVerified(a, payment);
+    return reply({ attempt: admin ? safe(created) : publicView(created) }, 201);
   } catch (error) {
     if (!(error instanceof PayplugError)) console.error('PayPlug create: erreur interne', (error as Error)?.message);
     const uncertain = !(error instanceof PayplugError) || error.ambiguous;
@@ -656,7 +702,8 @@ export async function payplugPost(request: Request, action: string) {
         id,
       )
       .run();
-    return reply({ attempt: safe((await byId(id))!) }, uncertain ? 202 : 422);
+    const failed = (await byId(id))!;
+    return reply({ attempt: admin ? safe(failed) : publicView(failed) }, uncertain ? 202 : 422);
   }
 }
 
@@ -670,7 +717,17 @@ function deliveryText(a: Attempt) {
       : 'En point relais, le plus proche de votre adresse : il vous est confirmé par e-mail avant l’expédition.';
   return `À domicile : ${b.address1 || ''}${b.address2 ? ', ' + b.address2 : ''}, ${b.postcode || ''} ${b.city || ''}`;
 }
-function orderMail(a: Attempt, forShop: boolean) {
+const RETRACTATION = [
+  'Formulaire de rétractation (à renvoyer seulement si vous souhaitez vous rétracter) :',
+  `À l’attention de ${shop.entity} — ${shop.name}, ${shop.address}, ${shop.email} :`,
+  'Je vous notifie par la présente ma rétractation du contrat portant sur la vente du bien ci-dessous :',
+  'Commandé le / reçu le :',
+  'Nom du consommateur :',
+  'Adresse du consommateur :',
+  'Signature du consommateur (uniquement en cas de notification sur papier) :',
+  'Date :',
+];
+function orderMail(a: Attempt, forShop: boolean, twins: string[]) {
   const b = stored(a);
   const ref = reference(a.id);
   const when = new Date(a.paid_at || a.created_at).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' });
@@ -684,7 +741,8 @@ function orderMail(a: Attempt, forShop: boolean) {
   const text = [
     forShop
       ? `Nouvelle commande payée ${ref}${test ? ' (paiement de TEST, aucun débit réel)' : ''}`
-      : `Bonjour ${b.first_name || ''},`,
+      : `Bonjour ${b.first_name || ''},${test ? ' (paiement de TEST : aucun débit réel)' : ''}`,
+    ...(forShop && twins.length ? ['', `ATTENTION : ce même panier a déjà une commande payée (${twins.join(', ')}). Vérifier un double paiement avant d’expédier.`] : []),
     '',
     forShop
       ? `Client : ${b.first_name || ''} ${b.last_name || ''} <${a.email}>${b.phone ? ' · ' + b.phone : ''}`
@@ -698,56 +756,81 @@ function orderMail(a: Attempt, forShop: boolean) {
     deliveryText(a),
     '',
     forShop
-      ? `Lettre d’information : ${b.optin ? 'oui' : 'non'}`
-      : `Un e-mail vous prévient à l’expédition. Vous disposez de 14 jours après réception pour vous rétracter : ${shop.origin}/retours/ — conditions générales de vente : ${shop.origin}/conditions-generales-de-vente/. Une question : répondez à cet e-mail.`,
+      ? `Lettre d’information : ${b.optin ? 'oui' : 'non'} · CGV ${b.cgvVersion || '?'} acceptées le ${b.cgvAt || '?'}`
+      : `Expédition sous ${shop.delais.expedition}, livraison au plus tard sous ${shop.delais.livraisonMax}. Vous disposez de 14 jours après réception pour vous rétracter (retour à vos frais, remboursement sous 14 jours) : ${shop.origin}/retours/ — conditions générales de vente (version du ${b.cgvVersion || shop.cgvVersion}) : ${shop.origin}/conditions-generales-de-vente/. Une question : répondez à cet e-mail.`,
+    ...(forShop ? [] : ['', ...RETRACTATION]),
     '',
     `${shop.name} — ${legal}`,
   ].join('\n');
   const cell = 'padding:10px 0;border-bottom:1px solid #ddd';
   const html = `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>${esc(ref)}</title></head><body style="margin:0;background:#efeee8;color:#1c211e;font:15px/1.6 Arial,sans-serif"><div style="max-width:620px;margin:0 auto;padding:32px 24px;background:#ffffff"><p style="font-weight:bold;letter-spacing:.04em;margin:0 0 24px">BOUTIQUE<br>DE BOXE.</p>${
     forShop
-      ? `<h1 style="font-size:26px;line-height:1.15;margin:0 0 12px">Nouvelle commande ${esc(ref)}</h1><p style="margin:0 0 4px">${test ? '<b>Paiement de TEST : aucun débit réel, ne pas expédier.</b>' : 'Paiement réel confirmé par PayPlug.'}</p><p style="margin:0 0 16px">${esc(b.first_name)} ${esc(b.last_name)} · <a href="mailto:${esc(a.email)}">${esc(a.email)}</a>${b.phone ? ' · ' + esc(b.phone) : ''}</p>`
-      : `<h1 style="font-size:28px;line-height:1.1;margin:0 0 12px">Merci ${esc(b.first_name)}, votre commande est confirmée.</h1><p style="margin:0 0 16px">Commande <b>${esc(ref)}</b>, payée le ${esc(when)}.</p>`
+      ? `<h1 style="font-size:26px;line-height:1.15;margin:0 0 12px">Nouvelle commande ${esc(ref)}</h1><p style="margin:0 0 4px">${test ? '<b>Paiement de TEST : aucun débit réel, ne pas expédier.</b>' : 'Paiement réel confirmé par PayPlug.'}</p>${twins.length ? `<p style="margin:0 0 8px;color:#a01818"><b>Attention : ce même panier a déjà une commande payée (${esc(twins.join(', '))}). Vérifier un double paiement avant d’expédier.</b></p>` : ''}<p style="margin:0 0 16px">${esc(b.first_name)} ${esc(b.last_name)} · <a href="mailto:${esc(a.email)}">${esc(a.email)}</a>${b.phone ? ' · ' + esc(b.phone) : ''}</p>`
+      : `<h1 style="font-size:28px;line-height:1.1;margin:0 0 12px">Merci ${esc(b.first_name)}, votre commande est confirmée.</h1><p style="margin:0 0 16px">Commande <b>${esc(ref)}</b>, payée le ${esc(when)}.${test ? ' <b>Paiement de test : aucun débit réel.</b>' : ''}</p>`
   }<table style="width:100%;border-collapse:collapse;margin:8px 0 16px">${rows
     .map((r) => `<tr><td style="${cell}">${esc(r.label)}</td><td style="${cell};text-align:right;white-space:nowrap">${esc(r.amount)}</td></tr>`)
     .join('')}<tr><td style="${cell}">${esc(shippingLabel)}</td><td style="${cell};text-align:right">${esc(money(a.shipping))}</td></tr><tr><td style="padding:12px 0;font-weight:bold">Total TTC payé</td><td style="padding:12px 0;text-align:right;font-weight:bold">${esc(money(a.total))}</td></tr></table><p style="margin:0 0 16px">${esc(deliveryText(a))}</p>${
     forShop
-      ? `<p style="margin:0 0 16px">PayPlug : ${esc(a.provider_id)} · lettre d’information : ${b.optin ? 'oui' : 'non'}</p>`
-      : `<p style="margin:0 0 16px">Un e-mail vous prévient à l’expédition. Vous disposez de 14 jours après réception pour vous rétracter : <a href="${shop.origin}/retours/">retours et rétractation</a>. Nos <a href="${shop.origin}/conditions-generales-de-vente/">conditions générales de vente</a> s’appliquent à cette commande. Une question : répondez simplement à cet e-mail.</p>`
+      ? `<p style="margin:0 0 16px">PayPlug : ${esc(a.provider_id)} · lettre d’information : ${b.optin ? 'oui' : 'non'} · CGV ${esc(b.cgvVersion || '?')} acceptées le ${esc(b.cgvAt || '?')}</p>`
+      : `<p style="margin:0 0 16px">Expédition sous ${esc(shop.delais.expedition)}, livraison au plus tard sous ${esc(shop.delais.livraisonMax)}. Vous disposez de 14 jours après réception pour vous rétracter, retour à vos frais, remboursement sous 14 jours : <a href="${shop.origin}/retours/">retours et rétractation</a>. Nos <a href="${shop.origin}/conditions-generales-de-vente/">conditions générales de vente</a> (version du ${esc(b.cgvVersion || shop.cgvVersion)}) s’appliquent à cette commande. Une question : répondez simplement à cet e-mail.</p><p style="font-size:13px;color:#3d443f;margin:16px 0 0;padding:12px;border:1px solid #ddd">${RETRACTATION.map(esc).join('<br>')}</p>`
   }<p style="font-size:12px;color:#596059;margin:24px 0 0">${esc(shop.name)} — ${esc(legal)}</p></div></body></html>`;
   return {
     subject: forShop
       ? `${test ? '[TEST] ' : ''}Nouvelle commande ${ref} · ${money(a.total)}`
-      : `Votre commande ${ref} est confirmée — Boutique de Boxe`,
+      : `${test ? '[TEST] ' : ''}Votre commande ${ref} est confirmée — Boutique de Boxe`,
     text,
     html,
   };
 }
 /**
- * Les deux e-mails d'une commande payée (client, boutique), une seule fois : la commande est
- * réclamée par `notified_at` ; un échec la rend pour un nouvel essai (notification, retour client,
- * réglages). Resend reçoit une clé d'idempotence : un nouvel essai ne double pas un e-mail parti.
+ * Les deux e-mails d'une commande payée, une seule fois chacun : la boutique d'abord (une commande
+ * payée ne doit jamais passer inaperçue), puis le client. La commande est réservée pour 5 minutes
+ * (`notify_claim`) ; chaque envoi réussi est daté à part (`shop_sent_at`, `client_sent_at`) ; un échec
+ * laisse la réservation expirer et la notification suivante (PayPlug, retour du client, réglages)
+ * reprend là où l'envoi s'est arrêté. Resend reçoit en plus une clé d'idempotence.
  */
 export async function notifyPaid(id: string) {
   try {
     await ensureColumns();
     const database = await db();
+    const now = new Date().toISOString();
     const claimed = await database
-      .prepare("UPDATE payment_attempts SET notified_at=? WHERE id=? AND status='paid' AND notified_at IS NULL RETURNING id")
-      .bind(new Date().toISOString(), id)
+      .prepare(
+        "UPDATE payment_attempts SET notify_claim=? WHERE id=? AND status='paid' AND notified_at IS NULL AND (notify_claim IS NULL OR notify_claim<?) RETURNING id",
+      )
+      .bind(now, id, new Date(Date.now() - 5 * 60000).toISOString())
       .first();
     if (!claimed) return;
     const a = (await byId(id))!;
     try {
       if (!mailerConfigured()) throw new Error('Aucun service d’envoi configuré (RESEND_API_KEY).');
-      await sendMail({ to: a.email, ...orderMail(a, false), key: `commande/${a.id}/client` });
-      const shopTo = (process.env.ADMIN_EMAIL || '').trim() || shop.email;
-      await sendMail({ to: shopTo, ...orderMail(a, true), key: `commande/${a.id}/boutique` });
-      await database.prepare('UPDATE payment_attempts SET notify_error=NULL WHERE id=?').bind(id).run();
+      if (!a.shop_sent_at) {
+        const shopTo = (process.env.ADMIN_EMAIL || '').trim() || shop.email;
+        // Deux commandes payées pour un même panier : signalées à la boutique (remboursement à étudier).
+        const twins = await database
+          .prepare("SELECT id FROM payment_attempts WHERE cart_id=? AND status='paid' AND id<>?")
+          .bind(a.cart_id, a.id)
+          .all<{ id: string }>();
+        await sendMail({
+          to: shopTo,
+          ...orderMail(a, true, twins.results.map((t) => reference(t.id))),
+          key: `commande/${a.id}/boutique`,
+          transactional: true,
+        });
+        await database.prepare('UPDATE payment_attempts SET shop_sent_at=? WHERE id=?').bind(new Date().toISOString(), id).run();
+      }
+      if (!a.client_sent_at) {
+        await sendMail({ to: a.email, ...orderMail(a, false, []), key: `commande/${a.id}/client`, transactional: true });
+        await database.prepare('UPDATE payment_attempts SET client_sent_at=? WHERE id=?').bind(new Date().toISOString(), id).run();
+      }
+      await database
+        .prepare('UPDATE payment_attempts SET notified_at=?, notify_error=NULL, notify_claim=NULL WHERE id=?')
+        .bind(new Date().toISOString(), id)
+        .run();
     } catch (error) {
       console.error('commande', reference(id), 'e-mails non partis :', (error as Error)?.message);
       await database
-        .prepare('UPDATE payment_attempts SET notified_at=NULL, notify_error=? WHERE id=?')
+        .prepare('UPDATE payment_attempts SET notify_claim=NULL, notify_error=? WHERE id=?')
         .bind(String((error as Error)?.message || 'erreur').slice(0, 200), id)
         .run();
     }

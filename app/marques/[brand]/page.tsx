@@ -96,7 +96,7 @@ export default async function BrandPage({ params, searchParams }: Props) {
         <section className="keyword-hub">
           <div className="hub-prices">
             <table>
-              <caption>{b.name} : les prix prévus, par équipement</caption>
+              <caption>{b.name} : les prix, par équipement</caption>
               <thead>
                 <tr>
                   <th scope="col">Équipement</th>

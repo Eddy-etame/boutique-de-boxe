@@ -67,11 +67,11 @@ export default async function ObservatoryPage() {
   const sentences = observatorySentences(o);
   const dated = new Date(o.generated).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
   const faq: SeoFaq[] = [
-    { question: 'D’où viennent ces prix ?', answer: `Du catalogue de la boutique : ${o.products} modèles avec un prix prévu à l’ouverture des ventes, TTC, hors livraison. Chaque ligne compte les modèles, puis donne le prix le plus bas, les quartiles, la médiane, la moyenne et le prix le plus haut. Rien n’est estimé ni pondéré.` },
+    { question: 'D’où viennent ces prix ?', answer: `Du catalogue de la boutique : ${o.products} modèles avec un prix de vente TTC, hors livraison. Chaque ligne compte les modèles, puis donne le prix le plus bas, les quartiles, la médiane, la moyenne et le prix le plus haut. Rien n’est estimé ni pondéré.` },
     { question: 'Pourquoi le prix médian plutôt que le prix moyen ?', answer: 'La médiane partage les modèles en deux moitiés égales : la moitié coûte moins, l’autre plus. Elle ne bouge pas quand un modèle très cher entre au catalogue, alors que la moyenne monte. Les deux sont publiés.' },
     { question: 'À quelle fréquence le relevé change-t-il ?', answer: 'Il est recalculé à chaque consultation à partir du catalogue et daté à la semaine. Quand un prix ou un modèle change, le relevé change avec lui. Le JSON porte la date exacte de génération.' },
     { question: 'Puis-je reprendre ces chiffres ?', answer: `Oui, en citant la source : « Observatoire des prix, ${shop.name}, ${dated} », avec un lien vers cette page. Le JSON et le CSV sont libres d’accès pour un usage éditorial, comparatif ou de recherche.` },
-    { question: 'Ces prix sont-ils ceux des autres boutiques ?', answer: 'Non. Ce sont les prix prévus de ce catalogue à l’ouverture des ventes. Ils ne décrivent pas le marché entier, seulement les modèles proposés ici, ce qui reste le relevé le plus large publié en France pour ce matériel.' },
+    { question: 'Ces prix sont-ils ceux des autres boutiques ?', answer: 'Non. Ce sont les prix de vente de ce catalogue. Ils ne décrivent pas le marché entier, seulement les modèles proposés ici, ce qui reste le relevé le plus large publié en France pour ce matériel.' },
   ];
   const dataset = {
     '@type': 'Dataset',
@@ -118,7 +118,7 @@ export default async function ObservatoryPage() {
         <div>
           <div className="label">Combien coûtent des gants de boxe, un casque, un sac de frappe.</div>
           <p>
-            Le relevé des prix prévus du catalogue, au {dated} : {o.products} modèles, {o.brands} marques, par équipement, par marque et par
+            Le relevé des prix TTC du catalogue, au {dated} : {o.products} modèles, {o.brands} marques, par équipement, par marque et par
             poids de gant. Le prix le plus bas, la médiane, la moyenne, le plus haut. Des chiffres à citer, ouverts en JSON et en CSV.
           </p>
         </div>
@@ -168,16 +168,16 @@ export default async function ObservatoryPage() {
 
       <section className="keyword-hub observatory">
         <h2>Par équipement.</h2>
-        <Table id="par-equipement" caption="Prix prévus par famille d’équipement" head="Équipement" rows={o.families} />
+        <Table id="par-equipement" caption="Prix par famille d’équipement" head="Équipement" rows={o.families} />
         <h2>Gants de boxe, par poids.</h2>
-        <Table id="par-poids" caption="Prix prévus des gants de boxe selon le poids en onces" head="Poids" rows={o.weights} />
+        <Table id="par-poids" caption="Prix des gants de boxe selon le poids en onces" head="Poids" rows={o.weights} />
         <p className="hub-prices-note">
           Un modèle proposé en plusieurs poids compte dans chaque poids. Quel poids pour vous ? <a href="/outils/poids-de-gants/">Le calculateur répond en trois questions.</a>
         </p>
         <h2>Gants de boxe, par marque.</h2>
-        <Table id="gants-par-marque" caption="Prix prévus des gants de boxe par marque, du prix médian le plus bas au plus haut" head="Marque" rows={o.gloveBrands} />
+        <Table id="gants-par-marque" caption="Prix des gants de boxe par marque, du prix médian le plus bas au plus haut" head="Marque" rows={o.gloveBrands} />
         <h2>Toutes les marques.</h2>
-        <Table id="par-marque" caption="Prix prévus par marque, tout équipement confondu" head="Marque" rows={o.brands_rows} />
+        <Table id="par-marque" caption="Prix par marque, tout équipement confondu" head="Marque" rows={o.brands_rows} />
         <p className="hub-prices-note">
           Base : {o.basis} Les quartiles partagent les modèles en quatre groupes égaux ; la médiane est le milieu.
         </p>

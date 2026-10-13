@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: 'Boutique de Boxe',
     short_name: 'Boutique de Boxe',
     description:
-      'Matériel de boxe, MMA et sports de combat : gants, bandes, protections, textile et sacs, avec les vraies tailles et les prix prévus.',
+      'Matériel de boxe, MMA et sports de combat : gants, bandes, protections, textile et sacs, avec les vraies tailles et les prix TTC.',
     lang: 'fr',
     start_url: '/?source=pwa',
     scope: '/',

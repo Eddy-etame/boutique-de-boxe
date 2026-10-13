@@ -1,4 +1,4 @@
-import { listItem, money, type Product } from '@/lib/catalog';
+import { listItem, money, shop, type Product } from '@/lib/catalog';
 import { brandsOf, priceTable } from '@/lib/brands';
 import { mostViewed, weekLabel, weeklySelection } from '@/lib/hub';
 import { QUERY_MAP } from '@/lib/seo-copy';
@@ -96,7 +96,7 @@ export async function KeywordHub({
         </div>
         <p>
           Quatre modèles choisis {range}, une marque par modèle. La sélection change chaque lundi ; les
-          prix sont ceux prévus à l’ouverture des ventes.
+          prix sont {shop.ventesOuvertes ? 'les prix de vente TTC' : 'ceux prévus à l’ouverture des ventes'}.
         </p>
       </header>
       <div className="product-grid hub-grid">
@@ -114,7 +114,7 @@ export async function KeywordHub({
             </div>
             <p>
               Les modèles les plus regardés sur cette page cette semaine, d’après les visites de la
-              boutique. Pas des ventes : les ventes ouvrent le 20 octobre.
+              boutique{shop.ventesOuvertes ? ', pas un classement des ventes.' : '. Pas des ventes : les ventes ouvrent le ' + shop.ouverture.court + '.'}
             </p>
           </header>
           <div className="product-grid hub-grid">
@@ -129,7 +129,7 @@ export async function KeywordHub({
         <div className="hub-prices">
           <table>
             <caption>
-              {name} : les prix prévus, {byBrand ? 'par marque' : 'par équipement'}
+              {name} : les prix, {byBrand ? 'par marque' : 'par équipement'}
             </caption>
             <thead>
               <tr>
@@ -276,7 +276,11 @@ export async function KeywordHub({
               <a href="/plan-du-site/">Le plan du site</a>
             </li>
             <li>
-              <a href="/#ouverture">Être prévenu à l’ouverture des ventes</a>
+              {shop.ventesOuvertes ? (
+                <a href="/vente-materiel-de-boxe/">Comment se passe la vente</a>
+              ) : (
+                <a href="/#ouverture">Être prévenu à l’ouverture des ventes</a>
+              )}
             </li>
           </ul>
         </div>

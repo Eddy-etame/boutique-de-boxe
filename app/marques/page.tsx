@@ -11,7 +11,7 @@ import { brandFamilyFacet } from '@/lib/facets';
 export const revalidate = 60;
 const TITLE = 'Marques de boxe et de MMA : Elion, Fairtex, Cleto Reyes, Venum';
 const DESCRIPTION =
-  'Toutes les marques de la Boutique de Boxe : Elion, Fairtex, Cleto Reyes, Everlast, Adidas, Venum, Twins, Metal Boxe. Modèles, équipements et prix prévus par marque.';
+  'Toutes les marques de la Boutique de Boxe : Elion, Fairtex, Cleto Reyes, Everlast, Adidas, Venum, Twins, Metal Boxe. Modèles, équipements et prix TTC par marque.';
 
 export const metadata: Metadata = {
   title: { absolute: TITLE },
@@ -55,7 +55,7 @@ export default async function BrandsIndex() {
         </div>
         <p>
           Les marques de boxe et les marques de MMA du catalogue. Chacune a sa page : ses modèles, ses
-          équipements, ses tailles et ses prix prévus. Une marque n’y figure que si le catalogue en
+          équipements, ses tailles et ses prix TTC. Une marque n’y figure que si le catalogue en
           porte au moins six modèles.
         </p>
       </section>

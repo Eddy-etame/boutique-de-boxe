@@ -81,7 +81,7 @@ export function observatory(products: Product[], now = new Date()) {
     generated: now.toISOString(),
     week: { year, week, monday: monday.toISOString().slice(0, 10) },
     currency: 'EUR',
-    basis: 'Prix prévus à l’ouverture des ventes, TTC, hors livraison. Un modèle = un prix (celui de la fiche, hors déclinaisons).',
+    basis: 'Prix de vente, TTC, hors livraison. Un modèle = un prix (celui de la fiche, hors déclinaisons).',
     products: priced.length,
     brands: brands.length,
     all,

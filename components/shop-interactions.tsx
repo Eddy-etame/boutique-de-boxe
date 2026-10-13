@@ -39,6 +39,7 @@ import {
   variantPrice,
   categoryFor,
   shop,
+  estLourd,
 } from '@/lib/catalog';
 import { AddToCart, QuickAdd, PackAdd } from './commerce-ui';
 import selection from '@/lib/data/selection.json';
@@ -106,7 +107,7 @@ export function ProductCard({
           {p.variants?.some((v) => v.price !== p.price) ? 'Dès ' : ''}
           {money(p.price)}
         </strong>{' '}
-        <span>prix prévu</span>
+        <span>prix</span>
         <QuickAdd product={p} />
       </div>
     </article>
@@ -495,7 +496,7 @@ export function Catalog({
         <span key={count} className="catalog-count-value">
           {count} {count === 1 ? 'modèle' : 'modèles'}
         </span>{' '}
-        <span>{'EN VENTE LE ' + shop.ouverture.court.toUpperCase()}</span>
+        <span>{shop.ventesOuvertes ? 'EN VENTE' : 'EN VENTE LE ' + shop.ouverture.court.toUpperCase()}</span>
       </div>
       {result.length ? (
         <>
@@ -761,7 +762,7 @@ export function SessionChooser({ items }: { items: Product[] }) {
                 <p>{r.condition}</p>
               </details>
               <strong>
-                {money(p.price)} <small>prix prévu</small>
+                {money(p.price)} <small>prix</small>
               </strong>
             </div>
           </article>
@@ -960,11 +961,15 @@ export function ProductDetails({ product: p }: { product: Product }) {
               : ''}
             {money(variantPrice(p, size))}
           </strong>
-          <span>Prix prévu à l’ouverture des ventes</span>
+          <span>Prix TTC</span>
         </div>
         <div className="availability">
           <span className="status-dot" />
-          {'En vente le ' + shop.ouverture.long}
+          {shop.ventesOuvertes
+            ? estLourd(p)
+              ? 'En vente · livraison sur devis'
+              : `En vente · expédition sous ${shop.delais.expedition}`
+            : 'En vente le ' + shop.ouverture.long}
         </div>
         {p.sizes.length > 0 && (
           <fieldset className="variant-picker">
@@ -1017,6 +1022,7 @@ export function ProductDetails({ product: p }: { product: Product }) {
           ))}
         </div>
         {/* Avant l’ouverture des ventes, l’appel à l’action est l’inscription : le billet d’ouverture du modèle. */}
+        {!shop.ventesOuvertes && (
         <section className="launch-ticket" id="billet" aria-labelledby="billet-titre">
           <span className="eyebrow">BILLET D’OUVERTURE</span>
           <p id="billet-titre" className="launch-ticket-title">
@@ -1037,9 +1043,29 @@ export function ProductDetails({ product: p }: { product: Product }) {
             labels={{ field: 'Votre adresse e-mail' }}
           />
         </section>
+        )}
         <div ref={buyRef} className="buy-anchor">
-          <p className="trial-lead">Ou ajoutez-le à votre panier et enregistrez vos choix, sans payer.</p>
-          <AddToCart key={p.id + size} product={p} variant={size} />
+          {!shop.ventesOuvertes ? (
+            <>
+              <p className="trial-lead">Ou ajoutez-le à votre panier et enregistrez vos choix, sans payer.</p>
+              <AddToCart key={p.id + size} product={p} variant={size} />
+            </>
+          ) : estLourd(p) ? (
+            <>
+              <p className="trial-lead">
+                Matériel lourd : la livraison se fait sur devis. Écrivez-nous avec le modèle et votre code postal, la
+                réponse arrive par e-mail.
+              </p>
+              <a className="button button-dark" href="/contact/">
+                Demander le devis de livraison <ArrowUpRight size={17} aria-hidden="true" />
+              </a>
+            </>
+          ) : (
+            <>
+              <p className="trial-lead">Paiement par carte sur la page sécurisée de PayPlug, livraison dans toute la France.</p>
+              <AddToCart key={p.id + size} product={p} variant={size} />
+            </>
+          )}
         </div>
         <div className="detail-assurances">
           <span>
@@ -1048,11 +1074,13 @@ export function ProductDetails({ product: p }: { product: Product }) {
           </span>{' '}
           <span>
             <Check size={15} />
-            Vos choix gardés, sans paiement
+            {shop.ventesOuvertes ? 'Rétractation sous 14 jours' : 'Vos choix gardés, sans paiement'}
           </span>
         </div>
         <a href="/livraison/" className="inline-link">
-          Livraison en France : tarifs prévus à l’ouverture{' '}
+          {shop.ventesOuvertes
+            ? 'Livraison en France : point relais 6,90 €, offert dès 69 €'
+            : 'Livraison en France : tarifs prévus à l’ouverture'}{' '}
           <ArrowUpRight size={15} />
         </a>
       </div>
@@ -1066,6 +1094,7 @@ export function ProductDetails({ product: p }: { product: Product }) {
             {size || (p.sizes.length > 0 ? 'Taille à choisir' : cleanName(p))}
           </span>
         </div>
+        {!shop.ventesOuvertes && (
         <button
           type="button"
           className="button sticky-alert"
@@ -1082,6 +1111,7 @@ export function ProductDetails({ product: p }: { product: Product }) {
         >
           Me prévenir <ArrowUpRight size={17} aria-hidden="true" />
         </button>
+        )}
         <button
           type="button"
           className="button button-dark sticky-add"
@@ -1231,7 +1261,9 @@ export function AlertForm({
           onClick={() => {
             setStep(null);
             setState(
-              'C’est noté. Vous recevrez un e-mail à l’ouverture des ventes. Vous pouvez vous désinscrire à tout moment.',
+              shop.ventesOuvertes
+                ? 'C’est noté. Vous recevrez un seul e-mail, quand le modèle arrive. Vous pouvez vous désinscrire à tout moment.'
+                : 'C’est noté. Vous recevrez un e-mail à l’ouverture des ventes. Vous pouvez vous désinscrire à tout moment.',
             );
           }}
         >

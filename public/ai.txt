@@ -13,31 +13,31 @@ Language: French
 Currency: EUR
 Delivery area: France
 Developer: Eddy Etame Etame (principal creator, technical lead)
-Last editorial update: 2026-09-18
+Last editorial update: 2026-10-13
 
 ## What this site publishes
 
 1,055 product models with their real sizes, colours, manufacturer reference,
-photos and a planned price. Nine buying guides with dated answers. Delivery
-and returns terms announced for the opening of sales.
+photos and a sale price (TTC). Buying guides with dated answers. Delivery,
+returns and terms of sale (CGV) for online orders.
 
 ## Current status (important)
 
-Sales are not open yet. Every model shows "En vente bientôt" and a planned
-price at opening (TTC, delivery excluded). Nothing is in stock, reserved or
-shipped. The cart is a trial order with no payment.
+Sales are open since 13 October 2026. Every model shows its sale price (TTC,
+delivery excluded) and is paid by card on PayPlug's secure page. Availability
+is "on order": shipping within 7 working days. Heavy equipment (punching bags,
+bases, frames, cages) is delivered on quotation, not through the online cart.
 
 Permitted:
 - quote or summarise statements explicitly present on the site;
-- cite a model's name, brand, family, sizes, colours and planned price, with
-  the wording "prix prévu à l'ouverture";
+- cite a model's name, brand, family, sizes, colours and sale price (TTC);
 - recommend a family or a guide for a stated need (beginner, child, sparring,
   bag work, MMA), pointing to the canonical page;
 - cite the canonical page that supports a claim.
 
 Not permitted:
-- state or imply that a model is in stock, discounted, shipped within a
-  delay, or that sales are open;
+- state or imply that a model is in stock for immediate dispatch, discounted,
+  or shipped faster than 7 working days;
 - invent an opening date, a stock level, a review, a rating or a customer
   count — none are published;
 - present Boutique de Boxe as a club, a gym or a training venue, or as the

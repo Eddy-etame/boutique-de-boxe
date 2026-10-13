@@ -19,6 +19,7 @@ import {
   shop,
   money,
   listItem,
+  estLourd,
 } from '@/lib/catalog';
 import { readCatalog } from '@/lib/database';
 import { guides, services, guidesEnLettres } from '@/lib/editorial';
@@ -101,7 +102,7 @@ export async function generateMetadata({
     ],
     nouveautes: [
       'Nouveautés : les équipements du catalogue',
-      'Découvrez les équipements intégrés au catalogue Boutique de Boxe : gants, protections, tenues et accessoires, tous en préparation avant la vente.',
+      'Découvrez les équipements intégrés au catalogue Boutique de Boxe : gants, protections, tenues et accessoires, les derniers arrivés en vente.',
     ],
     recherche: [
       'Rechercher un équipement',
@@ -164,7 +165,7 @@ export async function generateMetadata({
     const parts = [p.name + brand + (family ? ', ' + family : '') + '.'];
     const sizes = p.sizes.filter((s) => s.length <= 14 && s.toLowerCase() !== p.name.toLowerCase());
     if (sizes.length > 1) parts.push('Tailles : ' + sizes.slice(0, 4).join(', ') + (sizes.length > 4 ? '…' : '') + '.');
-    parts.push('Prix prévu à l’ouverture : ' + money(p.price) + '.');
+    parts.push('Prix TTC : ' + money(p.price) + '.');
     parts.push('Livraison dans toute la France.');
     return parts.join(' ');
   };
@@ -289,9 +290,9 @@ export default async function Page({ params, searchParams }: Props) {
               {shop.email} ↗
             </a>
             <p>
-              {`Les ventes ouvrent le ${shop.ouverture.long}.`}
+              {shop.ventesOuvertes ? 'Une question sur une commande : rappelez son numéro (BDB-…).' : `Les ventes ouvrent le ${shop.ouverture.long}.`}
               <br />
-              Vous pouvez déjà enregistrer vos choix depuis le panier.
+              {shop.ventesOuvertes ? 'La réponse arrive par e-mail, en général sous un jour ouvré.' : 'Vous pouvez déjà enregistrer vos choix depuis le panier.'}
             </p>
             <div className="contact-mark" aria-hidden="true">
               BOUTIQUE
@@ -453,7 +454,13 @@ export default async function Page({ params, searchParams }: Props) {
                 )}
                 <tr>
                   <th scope="row">Disponibilité</th>
-                  <td>{'En vente le ' + shop.ouverture.long}</td>
+                  <td>
+                    {shop.ventesOuvertes
+                      ? estLourd(p)
+                        ? 'En vente, livraison sur devis'
+                        : `En vente, expédition sous ${shop.delais.expedition}`
+                      : 'En vente le ' + shop.ouverture.long}
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -501,7 +508,7 @@ export default async function Page({ params, searchParams }: Props) {
             <h1>{sub.name}</h1>
           </div>
           <div>
-            <div className="label">{data.length} modèles, avec leurs tailles et leurs prix prévus.</div>
+            <div className="label">{data.length} modèles, avec leurs tailles et leurs prix TTC.</div>
             <p>{sub.intro}</p>
           </div>
         </section>
@@ -604,7 +611,7 @@ export default async function Page({ params, searchParams }: Props) {
               {cat?.intro ||
                 (query
                   ? `${data.length} ${data.length === 1 ? 'modèle répond' : 'modèles répondent'} à « ${query} ». Affinez avec les filtres, ou changez de mot.`
-                  : 'Tous les modèles du catalogue, avec leurs tailles et leurs prix prévus à l’ouverture des ventes.')}
+                  : 'Tous les modèles du catalogue, avec leurs tailles et leurs prix de vente TTC.')}
             </p>
           </div>
         </section>

@@ -1,5 +1,5 @@
 import { readCatalog } from '@/lib/database';
-import { categoryFor, money, shop } from '@/lib/catalog';
+import { categoryFor, estLourd, money, shop } from '@/lib/catalog';
 import { ATTRIBUTION, EDITORIAL_DATE, familiesWithCounts, urlOf } from '@/lib/seo';
 
 /** Flux machine du catalogue : un objet par modèle, sans offre commerciale tant que la vente n’est pas ouverte. */
@@ -24,7 +24,7 @@ export async function GET() {
     url: shop.origin,
     generated: new Date().toISOString(),
     editorialDate: EDITORIAL_DATE,
-    status: 'Ventes non ouvertes. Prix prévus à l’ouverture, TTC hors livraison. Aucun stock, aucune réservation.',
+    status: 'Ventes ouvertes depuis le 13 octobre 2026. Prix de vente TTC, hors livraison. Disponibilité sur commande, expédition sous 7 jours ouvrés ; matériel lourd sur devis.',
     currency: 'EUR',
     deliveryArea: 'FR',
     publisher: shop.entity,
@@ -46,7 +46,7 @@ export async function GET() {
       colors: p.colors || [],
       reference: p.reference || null,
       audience: p.audience,
-      availability: 'En vente le ' + shop.ouverture.long,
+      availability: shop.ventesOuvertes ? (estLourd(p) ? 'En vente, livraison sur devis' : 'En vente, expédition sous ' + shop.delais.expedition) : 'En vente le ' + shop.ouverture.long,
     })),
   };
   const serialized = JSON.stringify(body);

@@ -83,15 +83,14 @@ test('while sales are closed, create and reconcile are owner only and require sa
 });
 
 for (const mode of ['simulation', 'invalid']) {
-  test(`${mode} cannot create a PayPlug payment and IPN is ignored`, async () => {
+  test(`${mode} cannot create a PayPlug payment and IPN is deferred (503, PayPlug retries)`, async () => {
     const h = harness({ mode });
     assert.equal((await h.post('create', payload)).status, 409);
     const ipn = await h.post('ipn', {
       id: 'pay_12345678',
       metadata: { attempt_id: key },
     });
-    assert.equal(ipn.status, 200);
-    assert.equal((await ipn.json()).ignored, true);
+    assert.equal(ipn.status, 503);
     assert.equal(h.adapterCalls.length, 0);
     assert.equal(h.rows.size, 0);
   });
@@ -402,20 +401,24 @@ test('stored-ID IPN upstream retrieval failure requests provider retry', async (
   assert.equal(h.calls('verify').length, 1);
 });
 
-test('definite create failure retains the cart revision reservation', async () => {
+test('a definite create failure never handed a payment link: a new key may try again (13/10/2026)', async () => {
+  let reject = true;
   const h = harness({
     onCreate: async () => {
-      throw new PayplugError('create_rejected', { upstreamStatus: 400 });
+      if (reject) throw new PayplugError('create_rejected', { upstreamStatus: 400 });
+      return payment();
     },
   });
   const initial = await h.post('create', payload);
   assert.equal(initial.status, 422);
   assert.equal((await initial.json()).attempt.status, 'failed');
-  assert.equal(
-    (await h.post('create', { ...payload, requestKey: secondKey })).status,
-    409,
-  );
-  assert.equal(h.calls('create').length, 1);
+  // La même clé rend la même tentative refusée ; une nouvelle clé libère le panier.
+  assert.equal((await h.post('create', payload)).status, 200);
+  reject = false;
+  const retry = await h.post('create', { ...payload, requestKey: secondKey });
+  assert.equal(retry.status, 201);
+  assert.equal(h.calls('create').length, 2);
+  assert.equal(h.cart.revision, 2);
 });
 
 test('browser status is verified server-side; query paid=true supplies no evidence', async () => {
@@ -719,6 +722,7 @@ function harness({
   nodeEnv = 'production',
   mailOn = true,
   mailFails = 0,
+  onAbort,
 } = {}) {
   const rows = new Map();
   const mails = [];
@@ -773,11 +777,11 @@ function harness({
             cart.updated_at = updated;
             return cart.revision;
           }
-          if (sql.startsWith('UPDATE payment_attempts SET notified_at=? WHERE id=?')) {
-            const [at, id] = values;
+          if (sql.startsWith('UPDATE payment_attempts SET notify_claim=? WHERE id=?')) {
+            const [at, id, expired] = values;
             const row = rows.get(id);
-            if (row && row.status === 'paid' && !row.notified_at) {
-              row.notified_at = at;
+            if (row && row.status === 'paid' && !row.notified_at && (!row.notify_claim || row.notify_claim < expired)) {
+              row.notify_claim = at;
               return { id };
             }
             return null;
@@ -866,19 +870,33 @@ function harness({
         async all() {
           if (sql.startsWith('SELECT * FROM payment_attempts ORDER BY created_at DESC'))
             return { results: clone([...rows.values()]) };
+          if (sql.startsWith("SELECT * FROM payment_attempts WHERE status IN ('pending','unconfirmed') AND provider_id IS NOT NULL"))
+            return { results: clone([...rows.values()].filter((r) => ['pending', 'unconfirmed'].includes(r.status) && r.provider_id && r.created_at > values[0])) };
+          if (sql.startsWith("SELECT id FROM payment_attempts WHERE cart_id=? AND status='paid' AND id<>?"))
+            return { results: [...rows.values()].filter((r) => r.cart_id === values[0] && r.status === 'paid' && r.id !== values[1]).map((r) => ({ id: r.id })) };
           throw new Error(`Unmocked SQL all: ${sql}`);
         },
         async run() {
           if (sql.startsWith('ALTER TABLE payment_attempts ADD COLUMN IF NOT EXISTS')) return {};
-          if (sql.startsWith('UPDATE payment_attempts SET notify_error=NULL')) {
-            const row = rows.get(values[0]);
-            if (row) row.notify_error = null;
+          if (sql.startsWith('UPDATE payment_attempts SET shop_sent_at=?')) {
+            const row = rows.get(values[1]);
+            if (row) row.shop_sent_at = values[0];
             return {};
           }
-          if (sql.startsWith('UPDATE payment_attempts SET notified_at=NULL, notify_error=?')) {
+          if (sql.startsWith('UPDATE payment_attempts SET client_sent_at=?')) {
+            const row = rows.get(values[1]);
+            if (row) row.client_sent_at = values[0];
+            return {};
+          }
+          if (sql.startsWith('UPDATE payment_attempts SET notified_at=?, notify_error=NULL, notify_claim=NULL')) {
+            const row = rows.get(values[1]);
+            if (row) Object.assign(row, { notified_at: values[0], notify_error: null, notify_claim: null });
+            return {};
+          }
+          if (sql.startsWith('UPDATE payment_attempts SET notify_claim=NULL, notify_error=?')) {
             const [message, id] = values;
             const row = rows.get(id);
-            if (row) Object.assign(row, { notified_at: null, notify_error: message });
+            if (row) Object.assign(row, { notify_claim: null, notify_error: message });
             return {};
           }
           if (sql.includes("SET status='unconfirmed'")) {
@@ -1014,6 +1032,10 @@ function harness({
       adapterCalls.push({ kind: 'verify', data, binding, expectedId });
       return onVerify ? onVerify(data, binding, expectedId) : payment();
     },
+    async abortAndVerifyPayment(id, binding) {
+      adapterCalls.push({ kind: 'abort', id, binding });
+      return onAbort ? onAbort(id, binding) : payment('failed');
+    },
   };
   const exports = {};
   const context = vm.createContext({
@@ -1039,8 +1061,11 @@ function harness({
             address: 'adresse',
             email: 'boutique@example.invalid',
             phone: '00',
+            cgvVersion: '2026-10-13',
+            delais: { expedition: '7 jours ouvrés', livraisonMax: '30 jours' },
           },
           money: (cents) => (cents / 100).toFixed(2) + ' EUR',
+          estLourd: (p) => /^(?:demi-)?(?:sac de frappe|base de frappe|mannequin|portique|potence|cage)/i.test(p.name.trim()),
         };
       if (specifier === './alerts')
         return { suspicion: (email) => (/^r\.o\.b\.o\.t/.test(email) ? 'robot' : null) };
@@ -1158,7 +1183,7 @@ test('public create is refused while sales are closed, even in live mode', async
 
 test('public test mode never opens in production (owner only)', async () => {
   const h = harness({ admin: false, ventes: true, mode: 'payplug_test', nodeEnv: 'production' });
-  assert.equal((await h.post('create', publicPayload)).status, 503);
+  assert.equal((await h.post('create', publicPayload)).status, 409);
   assert.equal(h.rows.size, 0);
   const local = harness({ admin: false, ventes: true, mode: 'payplug_test', nodeEnv: 'development' });
   // shippingFor est simulé à 890 : le total cité doit suivre le serveur, pas le navigateur.
@@ -1225,7 +1250,11 @@ test('a paid order sends the customer and shop e-mails exactly once', async () =
   await h.get('status', attempt.id);
   await h.flush();
   assert.equal(h.mails.length, 2);
-  assert.deepEqual(h.mails.map((m) => m.to).sort(), ['nobody@example.invalid', 'owner@example.invalid']);
+  assert.deepEqual(h.mails.map((m) => m.to), ['owner@example.invalid', 'nobody@example.invalid'], 'the shop is told first');
+  assert.ok(h.mails.every((m) => m.transactional === true), 'order mails never starve behind the newsletter quota');
+  assert.match(h.mails[1].text, /Formulaire de rétractation/);
+  const row = h.rows.get(attempt.id);
+  assert.equal(JSON.parse(row.billing).cgvVersion, '2026-10-13');
   assert.match(h.mails.find((m) => m.to === 'nobody@example.invalid').subject, /BDB-[0-9A-F]{8}/);
   assert.equal(h.mails.find((m) => m.to === 'owner@example.invalid').subject.startsWith('[TEST]'), false);
   assert.ok(h.mails.every((m) => typeof m.key === 'string' && m.key.startsWith('commande/')));
@@ -1237,7 +1266,7 @@ test('a failed e-mail releases the claim and is retried on the next status read'
   const { attempt } = await (await h.post('create', { ...publicPayload, quotedTotal: 4890 })).json();
   await h.post('ipn', { id: 'pay_12345678' });
   await h.flush();
-  assert.equal(h.rows.get(attempt.id).notified_at, null);
+  assert.equal(h.rows.get(attempt.id).notified_at ?? null, null);
   assert.match(h.rows.get(attempt.id).notify_error, /Resend 500/);
   await h.get('status', attempt.id);
   await h.flush();
@@ -1285,4 +1314,86 @@ test('a holder actually paid at PayPlug is never released for a second payment',
   assert.equal((await again.json()).attempt.status, 'paid');
   assert.equal(h.calls('create').length, 1);
   assert.equal(h.rows.get(first.attempt.id).status, 'paid');
+});
+
+test('heavy equipment is quoted, never charged at the parcel rate', async () => {
+  const h = relayHarness();
+  h.cart.items.push({ productId: 'bag', name: 'Sac de frappe Elion 1,35 m 45 kg', variant: '', quantity: 1, price: 19900 });
+  const r = await h.post('create', { ...publicPayload, quotedTotal: 4890 });
+  assert.equal(r.status, 409);
+  const body = await r.json();
+  assert.deepEqual(body.heavy, ['bag']);
+  assert.match(body.error, /devis/);
+  assert.equal(h.rows.size, 0);
+  assert.equal(h.adapterCalls.length, 0);
+});
+
+test('Corsica, overseas and Monaco postcodes are on request', async () => {
+  for (const postcode of ['20000', '97400', '98000']) {
+    const h = relayHarness();
+    const r = await h.post('create', { ...publicPayload, quotedTotal: 4890, billing: { ...publicPayload.billing, postcode } });
+    assert.equal(r.status, 400, postcode);
+    assert.equal(h.rows.size, 0);
+  }
+});
+
+test('a payable payment with changed details is aborted at PayPlug before a new one exists', async () => {
+  const h = relayHarness({ onRetrieve: async () => payment('pending'), onAbort: async () => payment('failed') });
+  const first = await (await h.post('create', { ...publicPayload, quotedTotal: 4890 })).json();
+  const changed = await h.post('create', { ...publicPayload, quotedTotal: 4890, requestKey: secondKey, phone: '' });
+  assert.equal(changed.status, 201);
+  assert.equal(h.calls('abort').length, 1);
+  assert.equal(h.calls('abort')[0].id, 'pay_12345678');
+  assert.equal(h.rows.get(first.attempt.id).status, 'failed');
+  assert.equal(h.calls('create').length, 2);
+});
+
+test('if PayPlug will not abort an open payment, no second payment is created', async () => {
+  const h = relayHarness({ onRetrieve: async () => payment('pending'), onAbort: async () => payment('pending') });
+  await h.post('create', { ...publicPayload, quotedTotal: 4890 });
+  const changed = await h.post('create', { ...publicPayload, quotedTotal: 4890, requestKey: secondKey, phone: '' });
+  assert.equal(changed.status, 409);
+  assert.equal(h.calls('create').length, 1);
+});
+
+test('in live mode the owner cannot use the test consent to skip the CGV', async () => {
+  const h = harness({ admin: true, ventes: true, mode: 'payplug_live' });
+  assert.equal((await h.post('create', payload)).status, 400);
+  assert.equal(h.rows.size, 0);
+});
+
+test('public create responses never show the PayPlug identifier or the error journal', async () => {
+  const h = relayHarness();
+  const body = await (await h.post('create', { ...publicPayload, quotedTotal: 4890 })).json();
+  assert.equal(body.attempt.providerId, undefined);
+  assert.equal(body.attempt.error, undefined);
+  assert.ok(body.attempt.paymentUrl);
+});
+
+test('a second paid order on the same cart is flagged to the shop as a possible double payment', async () => {
+  const h = relayHarness({ onVerify: async () => payment('paid'), onRetrieve: async () => payment('paid') });
+  const first = await (await h.post('create', { ...publicPayload, quotedTotal: 4890 })).json();
+  await h.post('ipn', { id: 'pay_12345678' });
+  await h.flush();
+  const twin = { ...h.rows.get(first.attempt.id), id: '30000000-0000-4000-8000-000000000003', provider_id: 'pay_99999999', notified_at: null, notify_claim: null, shop_sent_at: null, client_sent_at: null, request_key: 'other', cart_revision: 9 };
+  h.rows.set(twin.id, twin);
+  await h.get('status', twin.id);
+  await h.flush();
+  const shopMail = h.mails.filter((m) => m.to === 'owner@example.invalid').at(-1);
+  assert.match(shopMail.text, /ATTENTION : ce même panier a déjà une commande payée/);
+});
+
+test('owner settings re-read open payments at PayPlug (lost notification) and send the e-mails', async () => {
+  let state = 'pending';
+  const h = relayHarness({ onRetrieve: async () => payment(state) });
+  const first = await (await h.post('create', { ...publicPayload, quotedTotal: 4890 })).json();
+  state = 'paid';
+  const owner = harness({ onRetrieve: async () => payment('paid') });
+  // Même base simulée : on rejoue la lecture des réglages par l'équipe sur la ligne existante.
+  owner.rows.set(first.attempt.id, { ...h.rows.get(first.attempt.id) });
+  const r = await owner.get('settings');
+  assert.equal(r.status, 200);
+  await owner.flush();
+  assert.equal(owner.rows.get(first.attempt.id).status, 'paid');
+  assert.equal(owner.mails.length, 2);
 });

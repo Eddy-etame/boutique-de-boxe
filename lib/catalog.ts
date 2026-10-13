@@ -64,14 +64,27 @@ export const shop = {
   director: 'Sébastien DUTILH',
   // Un seul interrupteur pour le jour J (29/09) : les pages-villes et le carrefour passent
   // du futur (« livrera dès l’ouverture des ventes ») au présent quand il vaut true.
-  ventesOuvertes: false,
+  ventesOuvertes: true,
   /** Date d'ouverture des ventes annoncée par le propriétaire (3 octobre 2026 : « let's just say the 20th »).
    *  Elle ne change rien à l'interrupteur ci-dessus : elle ne fait que s'afficher. */
-  ouverture: { iso: '2026-10-20', long: '20 octobre 2026', court: '20 octobre' },
+  // Avancée au 13 octobre 2026 par le propriétaire (« open payments today ») : les ventes sont ouvertes.
+  ouverture: { iso: '2026-10-13', long: '13 octobre 2026', court: '13 octobre' },
   /** Disponibilité publiée dans l'offre de chaque fiche le jour où les ventes ouvrent (schema.org) :
    *  'InStock' si le stock est réellement là, 'BackOrder' si la commande part chez le fournisseur. À confirmer le jour J. */
-  disponibiliteOffre: 'InStock' as 'InStock' | 'BackOrder',
+  // 13/10/2026 : stock ou commande fournisseur pas encore tranché par le propriétaire → « sur commande ».
+  disponibiliteOffre: 'BackOrder' as 'InStock' | 'BackOrder',
+  /** Délais annoncés (CGV, livraison, fiches) tant que le propriétaire n'a pas fixé mieux (13/10/2026). */
+  delais: { expedition: '7 jours ouvrés', livraisonMax: '30 jours' },
+  /** Version des CGV acceptée à la commande ; elle est enregistrée avec chaque commande. */
+  cgvVersion: '2026-10-13',
 };
+/**
+ * Matériel lourd ou encombrant (13/10/2026, décision du propriétaire : « sur devis pour l'instant ») :
+ * sacs de frappe, bases et mannequins, portiques, potences, cages. Ces modèles ne passent pas au
+ * paiement en ligne ; un accessoire « pour sac de frappe » (chaîne, attache, ressort) n'en est pas.
+ */
+export const estLourd = (p: { name: string }) =>
+  /^(?:demi-)?(?:sac de frappe|base de frappe|mannequin|portique|potence|cage)\b/i.test(p.name.trim());
 export const variantPrice = (p:Product, label:string) => p.variants?.find(v=>v.label===label)?.price ?? p.price;
 export const money = (cents: number) =>
   new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(
@@ -94,7 +107,7 @@ export const categories: Category[] = [
     label: 'Gants de boxe, du 4 au 20 oz.',
     intro: 'Choisissez d’abord l’usage : sac, technique ou partenaire. Comparez ensuite le poids, la fermeture et la matière. Les tailles enfant sont indiquées sur chaque fiche.',
     description:
-      'Découvrez les gants de boxe Metal Boxe : Blade, ERGO 90, Sparring et ONE enfant. Comparez les modèles, les poids et les prix prévus à l’ouverture.',
+      'Découvrez les gants de boxe Metal Boxe : Blade, ERGO 90, Sparring et ONE enfant. Comparez les modèles, les poids et les prix TTC.',
     families: ['gants-de-boxe'],
     guide: 'choisir-gants-boxe',
     number: '01',
@@ -116,7 +129,7 @@ export const categories: Category[] = [
     label: 'Casques, protège-dents, tibias, coquilles.',
     intro: 'Chaque protection a ses propres tailles et ses propres réglages. Vérifiez l’ajustement et suivez la notice du fabricant.',
     description:
-      'Protège-dents adulte et enfant, protège-tibias pieds : comparez les protections de boxe et sports de combat, tailles et prix prévus.',
+      'Protège-dents adulte et enfant, protège-tibias pieds : comparez les protections de boxe et sports de combat, tailles et prix TTC.',
     families: ['protections-boxe'],
     guide: 'choisir-protections',
     number: '03',
@@ -127,7 +140,7 @@ export const categories: Category[] = [
     label: 'Shorts, t-shirts, rashguards.',
     intro: 'Suivez le guide de tailles de la marque, pas une équivalence entre marques. Chaque fiche indique les tailles réellement disponibles.',
     description:
-      'Découvrez le textile de boxe : débardeurs, ensembles enfant, shorts et vêtements d’entraînement. Modèles, tailles et prix prévus à l’ouverture.',
+      'Découvrez le textile de boxe : débardeurs, ensembles enfant, shorts et vêtements d’entraînement. Modèles, tailles et prix TTC.',
     families: ['textile-boxe'],
     guide: 'guide-des-tailles',
     number: '04',
@@ -158,7 +171,7 @@ export const categories: Category[] = [
     slug: 'materiel-boxe',
     name: 'Matériel de boxe',
     label: 'Tout le matériel de boxe, du premier cours au ring.',
-    intro: 'Le matériel de boxe tient en huit rayons : gants, bandes et accessoires, protections, textile, sacs de frappe, chaussures, matériel d’entraînement et sacs de sport. Pour la boxe anglaise comme pour la boxe thaï, le kick-boxing ou la savate, chaque modèle est donné avec ses tailles réelles et son prix prévu.',
+    intro: 'Le matériel de boxe tient en huit rayons : gants, bandes et accessoires, protections, textile, sacs de frappe, chaussures, matériel d’entraînement et sacs de sport. Pour la boxe anglaise comme pour la boxe thaï, le kick-boxing ou la savate, chaque modèle est donné avec ses tailles réelles et son prix.',
     description:
       'Matériel de boxe : gants, bandes, protections, tenues, sacs de frappe et chaussures, pour la boxe anglaise, la boxe thaï, le kick-boxing et la savate. Le catalogue et les guides d’achat Boutique de Boxe.',
     families: [
@@ -211,8 +224,8 @@ export const categories: Category[] = [
   {slug:'chaussures-boxe',name:'Chaussures de boxe et de lutte',label: 'Chaussures de boxe et de lutte.',intro: 'Pointures du 31 au 49 selon les modèles. Comparez la semelle et la tenue de la cheville sur chaque fiche.',description:'Chaussures de boxe et de lutte : modèles, pointures, maintien et semelles. Comparez les caractéristiques du catalogue Boutique de Boxe.',families:['chaussures-boxe'],guide:'guide-des-tailles',number:'07'},
   {slug:'equipement-entrainement',name:'Équipement d’entraînement',label: 'Pattes d’ours, paos, cordes.',intro: 'Le matériel qui se tient en main ou qui équipe l’espace d’entraînement : pattes d’ours, paos, cordes à sauter, élastiques.',description:'Équipement d’entraînement pour la boxe et les sports de combat : pattes d’ours, paos, cibles et préparation physique. Fiches et caractéristiques.',families:['equipement-entrainement'],guide:'debuter-boxe',number:'08'},
   {slug:'sacs-de-sport',name:'Sacs de sport',label: 'Pour transporter tout le reste.',intro: 'Sac à dos, sac de sport ou convertible : comparez le volume, les ouvertures et le portage sur chaque fiche.',description:'Sacs de sport pour votre équipement de boxe : formats, volumes, compartiments et modes de portage. Découvrez les modèles du catalogue.',families:['sacs-de-sport'],guide:'debuter-boxe',number:'09'},
-  {slug:'arts-martiaux',name:'Arts martiaux',label: 'Kimonos, ceintures, armes d’entraînement.',intro: 'Kimonos de JJB de A0 à A4, kimonos de karaté, ceintures et armes d’entraînement. Suivez le tableau taille et poids de la marque.',description:'Matériel d’arts martiaux : kimonos de JJB et de karaté, ceintures, tenues et armes d’entraînement. Tailles réelles et prix prévus.',families:['arts-martiaux'],guide:'choisir-protections',number:'10'},
-  {slug:'boutique-boxe',name:'Boutique boxe',label: 'Toute la boutique de boxe en ligne.',intro: 'Tout le matériel de boxe et de sports de combat, avec ses tailles réelles et ses prix prévus. Cherchez un modèle, une marque ou une famille.',description:'Boutique boxe en ligne : plus de 1 000 modèles de matériel de boxe, MMA et sports de combat. Gants, bandes, protections, sacs de frappe. Livraison dans toute la France.',families:[],guide:'debuter-boxe',number:'00'},
+  {slug:'arts-martiaux',name:'Arts martiaux',label: 'Kimonos, ceintures, armes d’entraînement.',intro: 'Kimonos de JJB de A0 à A4, kimonos de karaté, ceintures et armes d’entraînement. Suivez le tableau taille et poids de la marque.',description:'Matériel d’arts martiaux : kimonos de JJB et de karaté, ceintures, tenues et armes d’entraînement. Tailles réelles et prix TTC.',families:['arts-martiaux'],guide:'choisir-protections',number:'10'},
+  {slug:'boutique-boxe',name:'Boutique boxe',label: 'Toute la boutique de boxe en ligne.',intro: 'Tout le matériel de boxe et de sports de combat, avec ses tailles réelles et ses prix TTC. Cherchez un modèle, une marque ou une famille.',description:'Boutique boxe en ligne : plus de 1 000 modèles de matériel de boxe, MMA et sports de combat. Gants, bandes, protections, sacs de frappe. Livraison dans toute la France.',families:[],guide:'debuter-boxe',number:'00'},
 ];
 export const categoryFor = (slug: string) =>
   categories.find((c) => c.slug === slug);

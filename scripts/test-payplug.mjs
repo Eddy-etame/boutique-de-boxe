@@ -36,7 +36,7 @@ const billing = {
 const env = {
   COMMERCE_MODE: 'payplug_test',
   PAYPLUG_TEST_SECRET_KEY: 'sk_test_MOCKKEYONLY',
-  PAYPLUG_PUBLIC_BASE_URL: 'https://boutique-de-boxe.com',
+  PAYPLUG_PUBLIC_BASE_URL: 'https://www.boutique-de-boxe.com',
 };
 const paymentId = 'pay_MockPaymentIdentifier123';
 const pending = () => ({
@@ -151,6 +151,22 @@ test('live (13/10/2026) uses only an sk_live_ key, names the order and requires 
   assert.equal(settings.liveEnabled, true);
   assert.deepEqual(settings.issues, []);
   assert.deepEqual(payplugSettings({ ...live, PAYPLUG_LIVE_SECRET_KEY: '' }).issues, ['live_key_missing']);
+});
+test('abort sends PATCH {aborted:true} to the exact payment, then trusts only the authenticated GET', async () => {
+  const failed = { ...pending(), failure: { code: 'aborted', message: 'aborted' } };
+  const h = harness(failed, 200);
+  const result = await h.adapter.abortAndVerifyPayment(paymentId, binding);
+  assert.equal(result.state, 'failed');
+  assert.equal(h.calls.length, 2);
+  assert.equal(h.calls[0].init.method, 'PATCH');
+  assert.ok(String(h.calls[0].url).endsWith('/payments/' + paymentId));
+  assert.deepEqual(JSON.parse(h.calls[0].init.body), { aborted: true });
+  assert.equal(h.calls[1].init.method, 'GET');
+  // Un refus d'abandon (déjà payé) n'empêche pas la relecture : c'est elle qui tranche.
+  const paidObject = { ...pending(), is_paid: true, paid_at: 1789000000 };
+  const refused = harness(paidObject, 200);
+  const r = await refused.adapter.abortAndVerifyPayment(paymentId, binding);
+  assert.equal(r.state, 'paid');
 });
 test('wrong-mode key, unsupported API version, unknown mode and unowned origins fail closed', async () => {
   const patches = [

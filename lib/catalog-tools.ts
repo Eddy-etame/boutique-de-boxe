@@ -73,7 +73,7 @@ export function registerCatalogTools(
             name: p.name,
             path: '/produits/' + p.slug + '/',
             priceIndicativeEUR: p.price / 100,
-            status: 'Bientôt disponible',
+            status: 'En vente',
           })),
       };
     },

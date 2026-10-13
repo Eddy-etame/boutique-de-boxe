@@ -13,6 +13,8 @@ type Customer = {
   phone?: string;
   relay?: { name: string; address: string; postcode: string; city: string; network: string; code: string } | null;
   optin?: boolean;
+  cgvVersion?: string;
+  cgvAt?: string;
 };
 type Attempt = {
   id: string;
@@ -288,6 +290,7 @@ export function PayplugSettings() {
           >
             Relire la configuration
           </button>
+          {!live && (
           <section className="payment-sandbox">
             <h3>Parcours PayPlug de test</h3>
             <p>
@@ -406,6 +409,7 @@ export function PayplugSettings() {
               </div>
             )}
           </section>
+          )}
           <section>
             <h3>Les commandes PayPlug</h3>
             <p>
@@ -451,6 +455,7 @@ export function PayplugSettings() {
                       {a.createdAt && new Date(a.createdAt).toLocaleString('fr-FR')}
                       {a.paidAt && <> · payée le {new Date(a.paidAt).toLocaleString('fr-FR')}</>}
                       {a.status === 'paid' && (a.notifiedAt ? ' · e-mails envoyés' : ' · e-mails en attente')}
+                      {a.customer?.cgvAt && <> · CGV {a.customer.cgvVersion} acceptées</>}
                       {a.notifyError && <> · e-mail : {a.notifyError}</>}
                       <br />
                       <code>{a.providerId || a.id}</code>
@@ -560,7 +565,7 @@ export function PayplugReturn({ id, cancelled = false }: { id: string; cancelled
         <>
           <p role="status">
             {paid
-              ? 'Le paiement est confirmé par PayPlug. Un e-mail récapitulatif part à l’adresse indiquée ; un second vous prévient à l’expédition.'
+              ? 'Le paiement est confirmé par PayPlug. Un e-mail récapitulatif part à l’adresse indiquée, avec les conditions de vente et le formulaire de rétractation.'
               : a.status === 'failed'
                 ? 'Aucun montant n’a été débité. Votre panier est conservé : vous pouvez réessayer, avec la même carte ou une autre.'
                 : cancelled

@@ -84,7 +84,16 @@ export class QuotaExhausted extends Error {
 }
 
 /** `key` : un envoi identifié (lettre + destinataire) que Resend ne délivre qu'une fois, même rejoué. */
-export type Mail = { to: string; subject: string; text: string; html: string; headers?: Record<string, string>; key?: string };
+export type Mail = {
+  to: string;
+  subject: string;
+  text: string;
+  html: string;
+  headers?: Record<string, string>;
+  key?: string;
+  /** E-mail de commande (13/10/2026) : jamais bloqué par le quota réservé à la lettre ; il est compté quand même. */
+  transactional?: boolean;
+};
 
 const pause = (ms: number) => new Promise((r) => setTimeout(r, ms));
 // Resend accepte deux requêtes par seconde : on espace les envois d'une même instance.
@@ -134,7 +143,8 @@ export async function sendMail(mail: Mail): Promise<{ account: string; id: strin
       .prepare(
         'INSERT INTO mail_quota (account, day, sent) VALUES (?, ?, 1) ON CONFLICT (account, day) DO UPDATE SET sent = mail_quota.sent + 1 WHERE mail_quota.sent < ? RETURNING sent',
       )
-      .bind(account.label, day, account.quota)
+      // Une commande payée passe au-delà du quota de la lettre (20 envois de marge) : la lettre ne peut pas l'affamer.
+      .bind(account.label, day, account.quota + (mail.transactional ? 20 : 0))
       .first<number>('sent');
     if (claimed === null || claimed === undefined) continue;
     try {

@@ -2,10 +2,9 @@ import { clientIp } from '@/lib/request';
 import { clientsReport, clientsCsv,
   alertsCsv, ensureBuyerColumns } from '@/lib/clients';
 import { receiptPdf } from '@/lib/receipt-pdf';
-import { boxtalConfigured, boxtalMapToken, parseRelay, validateRelayPoint } from '@/lib/boxtal';
+import { boxtalConfigured, boxtalMapToken, parseRelay } from '@/lib/boxtal';
 import { newsletterStatus, saveCampaign, sendBatch, sendTest } from '@/lib/newsletter';
 import { db, isAdmin, readCatalog, adminEmail } from '@/lib/database';
-import { after } from 'next/server';
 
 export const maxDuration = 60;
 import { shop } from '@/lib/catalog';
@@ -14,7 +13,6 @@ import {
   cartToken,
   resolveCart,
   buildCart,
-  shippingFor,
   sendReceipt,
   recoverStaleEmailClaims,
   uuid,
@@ -419,210 +417,11 @@ export async function POST(request: Request, context: Context) {
     }
     if (action !== 'checkout')
       return reply({ error: 'Ressource introuvable.' }, 404);
-    // Ventes fermées : aucun paiement, pas même simulé (Eddy, 29/09). Le même interrupteur rouvre ce parcours le jour J.
+    // Plus aucun paiement simulé (13/10/2026) : ventes fermées, on enregistre ses choix ; ventes ouvertes,
+    // le vrai paiement passe par PayPlug (/api/payplug/create). Ce parcours d'essai ne rouvre jamais.
     if (!shop.ventesOuvertes)
       return reply({ error: 'Les ventes ne sont pas encore ouvertes : enregistrez vos choix, on vous prévient à l’ouverture.' }, 403);
-    if (
-      !existingToken ||
-      !uuid(data.idempotencyKey) ||
-      typeof data.name !== 'string' ||
-      data.name.trim().length < 2 ||
-      data.name.length > 100 ||
-      typeof data.email !== 'string' ||
-      data.email.length > 254 ||
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email) ||
-      !['relay', 'home'].includes(data.delivery) ||
-      !['approved', 'declined'].includes(data.paymentOutcome) ||
-      data.consent !== true ||
-      !Number.isInteger(data.quotedTotal) ||
-      (data.phone !== undefined && (typeof data.phone !== 'string' || data.phone.length > 30 || !/^[+0-9 ().-]*$/.test(data.phone))) ||
-      (data.optin !== undefined && typeof data.optin !== 'boolean') ||
-      typeof data.address1 !== 'string' ||
-      data.address1.trim().length < 3 ||
-      data.address1.length > 150 ||
-      (data.address2 !== undefined && (typeof data.address2 !== 'string' || data.address2.length > 150)) ||
-      typeof data.postcode !== 'string' ||
-      !/^\d{5}$/.test(data.postcode.trim()) ||
-      typeof data.city !== 'string' ||
-      data.city.trim().length < 2 ||
-      data.city.length > 100
-    )
-      return reply(
-        {
-          error:
-            'Vérifiez vos coordonnées et confirmez le caractère simulé du paiement.',
-        },
-        400,
-      );
-    if (!Number.isInteger(data.quotedRevision) || data.quotedRevision < 1)
-      return reply({ error: 'Rechargez le panier avant de confirmer.' }, 400);
-    const phone = typeof data.phone === 'string' ? data.phone.trim() : '';
-    const optin = data.optin === true ? 1 : 0;
-    // Le point relais est facultatif tant que la carte n’est pas ouverte ; s’il est envoyé, il doit être complet.
-    if (data.relay !== undefined && (data.delivery !== 'relay' || !validateRelayPoint(data.relay)))
-      return reply({ error: 'Le point relais envoyé est incomplet. Choisissez-le à nouveau sur la carte.' }, 400);
-    const relay = data.delivery === 'relay' && data.relay !== undefined ? validateRelayPoint(data.relay) : null;
-    const address = {
-      address1: data.address1.trim(),
-      address2: typeof data.address2 === 'string' ? data.address2.trim() : '',
-      postcode: data.postcode.trim(),
-      city: data.city.trim(),
-    };
-    const fingerprint = JSON.stringify([
-      data.name.trim(),
-      data.email.trim().toLowerCase(),
-      data.delivery,
-      data.paymentOutcome,
-      data.quotedTotal,
-      data.quotedRevision,
-      phone,
-      optin,
-      address,
-      relay,
-    ]);
-    await ensureBuyerColumns();
-    const previous = await database
-      .prepare(
-        'SELECT * FROM simulation_orders WHERE cart_id=? AND idempotency_key=?',
-      )
-      .bind(token, data.idempotencyKey)
-      .first<Order>();
-    if (previous)
-      return previous.fingerprint === fingerprint
-        ? reply(
-            {
-              id: previous.id,
-              status: previous.status,
-              emailStatus: previous.email_status,
-            },
-            200,
-          )
-        : reply(
-            {
-              error:
-                'Cette tentative a déjà été utilisée avec un autre contenu. Rechargez le panier.',
-            },
-            409,
-          );
-    const cart = await resolveCart(token);
-    if (!cart.items.length)
-      return reply({ error: 'Votre panier est vide.' }, 400);
-    const shipping = shippingFor(cart.subtotal, data.delivery);
-    const total = cart.subtotal + shipping;
-    if (
-      data.quotedTotal !== total ||
-      data.quotedRevision !== cart.revision ||
-      cart.notices.length
-    )
-      return reply(
-        {
-          error:
-            'Le catalogue ou le panier a changé. Rechargez le panier pour vérifier le montant.',
-        },
-        409,
-      );
-    const id = crypto.randomUUID();
-    const status =
-      data.paymentOutcome === 'approved'
-        ? 'simulated_paid'
-        : 'simulated_declined';
-    const statements = [
-      // Verrouille la ligne du panier pour la durée de la transaction : deux
-      // validations simultanées du même panier sont sérialisées côté Postgres.
-      database.prepare('SELECT revision FROM carts WHERE id=? FOR UPDATE').bind(token),
-      database
-        .prepare(
-          'INSERT INTO simulation_orders(id,cart_id,idempotency_key,fingerprint,name,email,lines,subtotal,shipping,total,delivery,status,created_at,email_status,phone,optin,address1,address2,postcode,city,relay_point) SELECT ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? FROM carts WHERE id=? AND revision=? AND expires_at>?',
-        )
-        .bind(
-          id,
-          token,
-          data.idempotencyKey,
-          fingerprint,
-          data.name.trim(),
-          data.email.trim().toLowerCase(),
-          JSON.stringify(cart.items),
-          cart.subtotal,
-          shipping,
-          total,
-          data.delivery,
-          status,
-          new Date().toISOString(),
-          status === 'simulated_paid' ? 'pending' : 'not_applicable',
-          phone,
-          optin,
-          address.address1,
-          address.address2,
-          address.postcode,
-          address.city,
-          relay ? JSON.stringify(relay) : '',
-          token,
-          cart.revision,
-          Date.now(),
-        ),
-    ];
-    if (status === 'simulated_paid')
-      statements.push(
-        database
-          .prepare(
-            "UPDATE carts SET payload='[]',updated_at=?,revision=revision+1 WHERE id=? AND revision=? AND EXISTS(SELECT 1 FROM simulation_orders WHERE id=?)",
-          )
-          .bind(new Date().toISOString(), token, cart.revision, id),
-      );
-    try {
-      await database.batch(statements);
-    } catch (error) {
-      const race = await database
-        .prepare(
-          'SELECT id,status,email_status,fingerprint FROM simulation_orders WHERE cart_id=? AND idempotency_key=?',
-        )
-        .bind(token, data.idempotencyKey)
-        .first<Order>();
-      if (race && race.fingerprint === fingerprint)
-        return reply({
-          id: race.id,
-          status: race.status,
-          emailStatus: race.email_status,
-        });
-      throw error;
-    }
-    const order = await database
-      .prepare('SELECT * FROM simulation_orders WHERE id=?')
-      .bind(id)
-      .first<Order>();
-    if (!order) {
-      const replay = await database
-        .prepare(
-          'SELECT * FROM simulation_orders WHERE cart_id=? AND idempotency_key=?',
-        )
-        .bind(token, data.idempotencyKey)
-        .first<Order>();
-      if (replay?.fingerprint === fingerprint)
-        return reply({
-          id: replay.id,
-          status: replay.status,
-          emailStatus: replay.email_status,
-        });
-      return reply(
-        {
-          error: 'Une autre tentative a déjà modifié ce panier. Rechargez-le.',
-        },
-        409,
-      );
-    }
-    // Le reçu part après la réponse : le client n’attend plus l’aller-retour e-mail.
-    if (order && status === 'simulated_paid')
-      after(() => sendReceipt(order).catch(() => undefined));
-    return reply(
-      {
-        id,
-        status,
-        emailStatus:
-          status === 'simulated_paid' ? 'pending' : 'not_applicable',
-      },
-      201,
-      cookie,
-    );
+    return reply({ error: 'Le paiement se fait désormais par carte, depuis le panier.' }, 410);
   } catch (error) {
     if (error instanceof SyntaxError)
       return reply({ error: 'Demande illisible.' }, 400);

@@ -17,10 +17,11 @@ import type { Subfamily } from './subfamilies';
 import { PAGE_SIZE } from './pagination';
 
 /** Date de la dernière révision éditoriale, publiée dans les fichiers agents et les pages. */
-export const EDITORIAL_DATE = '2026-09-18';
+export const EDITORIAL_DATE = '2026-10-13';
 /** Dernière révision du gabarit des fiches et des pages de catalogue (texte visible changé partout) :
- *  3 octobre 2026 (place dans la famille, questions), 4 octobre (date d’ouverture des ventes). */
-export const CATALOGUE_REVISION = '2026-10-04';
+ *  3 octobre 2026 (place dans la famille, questions), 4 octobre (date d’ouverture des ventes),
+ *  13 octobre (ventes ouvertes : offre, prix de vente, disponibilité, livraison au présent). */
+export const CATALOGUE_REVISION = '2026-10-13';
 
 /** Paternité technique déclarée par le propriétaire du projet. */
 export const ATTRIBUTION = {
@@ -222,7 +223,7 @@ export function websiteNode() {
     url: shop.origin,
     name: shop.name,
     alternateName: ['Boutique de Boxe en ligne', 'Boxing Boutique', 'boutique-de-boxe.com'],
-    description: 'Matériel de boxe, MMA et sports de combat : plus de 1 000 modèles avec leurs tailles et leurs prix prévus, ' + guidesEnLettres() + ' guides d’achat.',
+    description: 'Matériel de boxe, MMA et sports de combat : plus de 1 000 modèles avec leurs tailles et leurs prix, ' + guidesEnLettres() + ' guides d’achat.',
     inLanguage: 'fr-FR',
     publisher: { '@id': ID('organisation') },
     dateModified: EDITORIAL_DATE,
@@ -319,10 +320,10 @@ function productCore(p: Product) {
     ...(material ? { material } : {}),
     ...(family ? { category: family.name } : {}),
     ...(p.audience === 'enfant' ? { audience: { '@type': 'PeopleAudience', suggestedMaxAge: 15, audienceType: 'enfant' } } : {}),
-    // Pas d’offre tant que la vente n’est pas ouverte : le prix prévu est une donnée, pas une proposition de vente.
+    // Pas d’offre tant que la vente n’est pas ouverte : le prix est une donnée, pas une proposition de vente.
     // Le jour J (shop.ventesOuvertes), l’offre complète s’allume d’elle-même.
     ...(shop.ventesOuvertes && p.price > 0 ? { offers: offerOf(p) } : {}),
-    additionalProperty: [{ '@type': 'PropertyValue', name: 'Prix prévu à l’ouverture des ventes', value: money(p.price) }, { '@type': 'PropertyValue', name: 'Disponibilité', value: shop.ventesOuvertes ? 'En vente' : 'En vente le ' + shop.ouverture.long }],
+    additionalProperty: [{ '@type': 'PropertyValue', name: 'Prix TTC', value: money(p.price) }, { '@type': 'PropertyValue', name: 'Disponibilité', value: shop.ventesOuvertes ? 'En vente' : 'En vente le ' + shop.ouverture.long }],
     isFamilyFriendly: true,
     inLanguage: 'fr-FR',
   };
@@ -447,7 +448,7 @@ export function homeGraph(products: Product[], faq: SeoFaq[] = []) {
     itemListElement: fam.map((f, i) => ({ '@type': 'ListItem', position: i + 1, name: `${f.name} (${f.count})`, url: f.url })),
   };
   return graph([
-    webPageNode({ path: '/', name: 'Boutique de Boxe : matériel de boxe, MMA et sports de combat', description: `${products.length.toLocaleString('fr-FR')} modèles : gants, bandes, protections, textile, sacs de frappe, chaussures. Tailles réelles, prix prévus, livraison dans toute la France.`, image: '/vignette/x/home.png', about: [ENTITY.boxe, ENTITY.mma, ENTITY.sportsDeCombat].map(thing), keywords: PAGE_KEYWORDS[''], mainEntity: list['@id'], breadcrumb: false }),
+    webPageNode({ path: '/', name: 'Boutique de Boxe : matériel de boxe, MMA et sports de combat', description: `${products.length.toLocaleString('fr-FR')} modèles : gants, bandes, protections, textile, sacs de frappe, chaussures. Tailles réelles, prix TTC, livraison dans toute la France.`, image: '/vignette/x/home.png', about: [ENTITY.boxe, ENTITY.mma, ENTITY.sportsDeCombat].map(thing), keywords: PAGE_KEYWORDS[''], mainEntity: list['@id'], breadcrumb: false }),
     list,
     ...(faq.length ? [faqNode('/', faq)] : []),
   ]);

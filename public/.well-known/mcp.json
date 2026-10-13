@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "name": "boutique-de-boxe-information-server",
-  "description": "Faits sur Boutique de Boxe : identité, état des ventes, familles, modèles (nom, marque, tailles, couleurs, prix prévu), guides d’achat, comparaison, sac de séance, poids de gants, observatoire des prix. Une seule écriture : l’inscription consentie à l’alerte d’ouverture.",
+  "description": "Faits sur Boutique de Boxe : identité, état des ventes, familles, modèles (nom, marque, tailles, couleurs, prix TTC), guides d’achat, comparaison, sac de séance, poids de gants, observatoire des prix. Lecture seule : aucun outil n’écrit.",
   "url": "https://www.boutique-de-boxe.com",
   "endpoint": "https://www.boutique-de-boxe.com/api/mcp",
   "transport": "streamable-http",
@@ -14,11 +14,10 @@
     "currency": "EUR",
     "deliveryArea": "France",
     "email": "boxingcenter31@gmail.com",
-    "status": "Ventes non ouvertes. Prix prévus à l’ouverture. Aucun stock ni réservation."
+    "status": "Ventes ouvertes depuis le 13 octobre 2026. Prix de vente TTC. Disponibilité sur commande, expédition sous 7 jours ouvrés."
   },
   "not_published": [
-    "date d’ouverture des ventes",
-    "stocks et délais de livraison",
+    "stocks en temps réel",
     "remises, avis et notes",
     "profils sociaux"
   ],

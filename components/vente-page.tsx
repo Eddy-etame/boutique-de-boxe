@@ -24,7 +24,7 @@ const PATH = '/' + VENTE + '/';
 export const VENTE_TITRE = 'Vente matériel de boxe en ligne : gants, sacs, protections';
 export const VENTE_DESCRIPTION = shop.ventesOuvertes
   ? 'Vente matériel de boxe en ligne : plus de 1 000 modèles en dix rayons, livrés en France en point relais ou à domicile, 14 jours pour changer d’avis.'
-  : 'Vente matériel de boxe en ligne : plus de 1 000 modèles en dix rayons, prix prévus affichés, livraison en France. Ouverture des ventes le 20 octobre 2026.';
+  : `Vente matériel de boxe en ligne : plus de 1 000 modèles en dix rayons, prix TTC affichés, livraison en France. Ouverture des ventes le ${shop.ouverture.long}.`;
 const KEYWORDS = ['vente matériel de boxe', 'vente matériel boxe', 'acheter matériel de boxe', 'vente de matériel de boxe en ligne', 'magasin matériel de boxe', 'prix matériel de boxe', 'vente gants de boxe', 'vente sac de frappe'];
 
 export const venteMetadata = (): Metadata => ({
@@ -97,7 +97,7 @@ export function venteFaq(): SeoFaq[] {
     { question: 'Les prix affichés comprennent-ils la TVA ?', answer: 'Oui : chaque prix est donné toutes taxes comprises, hors frais de livraison. Les frais de livraison s’ajoutent au panier avant la validation, jamais après.' },
     { question: 'Comment paie-t-on ?', answer: `${ouvert ? 'Par carte bancaire' : 'À l’ouverture des ventes, par carte bancaire'}, sur la page de paiement de PayPlug, prestataire français agréé. Le numéro de carte ne passe pas par la boutique, qui n’en conserve aucun.` },
     { question: 'Vendez-vous aux clubs et aux associations ?', answer: 'Oui. Pour équiper une salle ou grouper une commande, écrivez depuis la page contact avec les quantités et les tailles : vous recevez une proposition par e-mail.' },
-    { question: 'Vente matériel boxe : livrez-vous hors de France ?', answer: 'Pas à l’ouverture. La boutique livre la France métropolitaine, en point relais ou à domicile ; pour la Corse, l’outre-mer et l’étranger, rien n’est encore arrêté.' },
+    { question: 'Vente matériel boxe : livrez-vous hors de France ?', answer: ouvert ? 'La commande en ligne livre la France continentale, en point relais ou à domicile. Pour la Corse, l’outre-mer ou l’étranger, écrivez-nous : vous recevez une proposition par e-mail.' : 'Pas à l’ouverture. La boutique livre la France métropolitaine, en point relais ou à domicile ; pour la Corse, l’outre-mer et l’étranger, rien n’est encore arrêté.' },
   ];
 }
 
@@ -109,15 +109,15 @@ function sections(): SeoSection[] {
       paragraphs: [
         ouvert
           ? 'Vous choisissez un modèle, sa taille dans la grille du fabricant et sa couleur, puis vous validez le panier. Le paiement se fait par carte sur la page sécurisée de PayPlug ; la boutique ne voit aucun numéro de carte.'
-          : 'Aujourd’hui, vous choisissez : chaque fiche donne les tailles du fabricant, les couleurs et le prix prévu. Le panier garde vos choix avec votre prénom et votre e-mail ; aucun paiement n’est demandé, aucun article n’est mis de côté, et un seul message vous prévient le jour de l’ouverture.',
-        ouvert ? 'Un e-mail confirme la commande, un second annonce l’expédition.' : 'Le jour de l’ouverture, la commande se réglera par carte sur la page sécurisée de PayPlug, prestataire de paiement français : la boutique ne verra aucun numéro de carte.',
+          : 'Aujourd’hui, vous choisissez : chaque fiche donne les tailles du fabricant, les couleurs et le prix. Le panier garde vos choix avec votre prénom et votre e-mail ; aucun paiement n’est demandé, aucun article n’est mis de côté, et un seul message vous prévient le jour de l’ouverture.',
+        ouvert ? `Un e-mail confirme la commande, avec les conditions de vente et le formulaire de rétractation. L’expédition part sous ${shop.delais.expedition}.` : 'Le jour de l’ouverture, la commande se réglera par carte sur la page sécurisée de PayPlug, prestataire de paiement français : la boutique ne verra aucun numéro de carte.',
       ],
     },
     {
       h2: 'Ce que le prix comprend',
       paragraphs: [
         'Un prix affiché est un prix toutes taxes comprises, pour un article neuf, hors livraison. « Dès » devant un prix signale un modèle dont les tailles ou les couleurs n’ont pas toutes le même tarif : le montant exact apparaît quand la déclinaison est choisie.',
-        ouvert ? 'Les frais de livraison s’ajoutent dans le panier, avant le paiement.' : 'Tant que les ventes ne sont pas ouvertes, ce prix est un prix prévu : il peut bouger à la marge d’ici l’ouverture, et le prix payé sera celui du jour de la commande.',
+        ouvert ? 'Les frais de livraison s’ajoutent dans le panier, avant le paiement.' : 'Tant que les ventes ne sont pas ouvertes, ce prix est un prix : il peut bouger à la marge d’ici l’ouverture, et le prix payé sera celui du jour de la commande.',
       ],
     },
     {
@@ -214,7 +214,7 @@ export function VentePage({ all }: { all: Product[] }) {
 
       <div className="ville-tableau">
         <section className="keyword-hub observatory">
-          <h2>{ouvert ? 'Vente matériel de boxe : les prix, rayon par rayon.' : 'Vente matériel de boxe : les prix prévus, rayon par rayon.'}</h2>
+          <h2>{ouvert ? 'Vente matériel de boxe : les prix, rayon par rayon.' : 'Vente matériel de boxe : les prix, rayon par rayon.'}</h2>
           <div className="hub-prices vente-rayons" id="rayons">
             <table>
               <caption>Les dix rayons de la boutique, leurs modèles et leurs prix</caption>

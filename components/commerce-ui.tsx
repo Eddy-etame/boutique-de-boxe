@@ -25,7 +25,7 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { RelayPicker } from './relay-picker';
 import { relayLabel, type RelayPoint } from '@/lib/boxtal';
-import { money, shop, type Product } from '@/lib/catalog';
+import { estLourd, money, shop, type Product } from '@/lib/catalog';
 import type { Cart, CartLine, Order } from '@/lib/commerce';
 
 const CART_EVENT = 'boutique:cart-changed';
@@ -277,7 +277,7 @@ export function AddToCart({
       <p id={helpId} className="commerce-caption">
         {!valid
           ? (labels.choose ?? 'Choisissez une taille pour ajouter ce modèle.')
-          : (labels.note ?? 'Dans vos choix : rien n’est payé, on vous prévient à l’ouverture.')}
+          : (labels.note ?? (shop.ventesOuvertes ? 'Paiement par carte au moment de commander.' : 'Dans vos choix : rien n’est payé, on vous prévient à l’ouverture.'))}
       </p>
       {error && (
         <p role="alert" className="commerce-error">
@@ -642,6 +642,8 @@ export function CartPage() {
   const [saved, setSaved] = useState<string | null>(null);
   const shipping = cart ? shippingEstimate(cart.subtotal, delivery) : 0;
   const total = (cart?.subtotal ?? 0) + shipping;
+  // Matériel lourd (13/10/2026) : livraison sur devis, hors paiement en ligne.
+  const lourds = !choix && cart ? cart.items.filter((line) => estLourd(line)) : [];
   const locked = busy || uncertain;
 
   function moveTo(next: 1 | 2) {
@@ -1042,6 +1044,17 @@ export function CartPage() {
                       </li>
                     ))}
                   </ul>
+                  {lourds.length > 0 && (
+                    <div className="commerce-notices" role="status">
+                      <p>
+                        <strong>Livraison sur devis : {lourds.map((l) => l.name).join(', ')}.</strong>
+                      </p>
+                      <p>
+                        Le matériel lourd ou encombrant ne se paie pas en ligne : retirez-le pour payer le
+                        reste, et <a href="/contact/">écrivez-nous</a> pour recevoir le devis de livraison.
+                      </p>
+                    </div>
+                  )}
                   <a href={CATALOGUE} className="text-button cart-continue">
                     <ArrowLeft size={16} aria-hidden="true" /> Compléter mon
                     équipement
@@ -1261,7 +1274,7 @@ export function CartPage() {
                         />
                       </label>
                     </div>
-                    <p className="commerce-caption">Livraison en France métropolitaine.</p>
+                    <p className="commerce-caption">Livraison en France continentale. Corse et outre-mer : <a href="/contact/">sur demande</a>.</p>
                     <label className="simulation-consent checkout-optin" htmlFor={`${fieldId}-optin`}>
                       <input
                         id={`${fieldId}-optin`}
@@ -1409,7 +1422,7 @@ export function CartPage() {
                 )}
               </dl>
               <p className="commerce-caption">
-                {choix ? 'Prix prévus à l’ouverture des ventes.' : 'Prix TTC. Le montant est recalculé et vérifié à la validation.'}
+                {choix ? 'Prix de vente.' : 'Prix TTC. Le montant est recalculé et vérifié à la validation.'}
               </p>
               {step === 1 ? (
                 <button
@@ -1419,7 +1432,8 @@ export function CartPage() {
                     cartBusyNow ||
                     loading ||
                     !cart.items.length ||
-                    cart.notices.length > 0
+                    cart.notices.length > 0 ||
+                    lourds.length > 0
                   }
                   onClick={() => moveTo(2)}
                 >

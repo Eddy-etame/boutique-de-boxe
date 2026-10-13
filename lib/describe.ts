@@ -6,7 +6,7 @@ import { guides } from './editorial';
  * ne varient jamais. Aucune phrase copiée d’un fournisseur, aucun stock, aucune
  * remise, aucune date.
  */
-import { categoryFor, money, shop, type Product } from './catalog';
+import { categoryFor, estLourd, money, shop, type Product } from './catalog';
 import { productObject } from './seo';
 import { dansLeRayon, ENFANT } from './rayons';
 import { ouncesOf } from './facets';
@@ -85,11 +85,17 @@ export function longDescription(p: Product): string {
   if (p.reference && p.referenceLabel === 'Référence') parts.push(`Référence fabricant : ${p.reference}.`);
   parts.push(
     pick(p.id, [
-      `Prix prévu à l’ouverture des ventes : ${money(p.price)}, toutes taxes comprises, hors livraison.`,
-      `Le prix prévu à l’ouverture est de ${money(p.price)} TTC, livraison en sus.`,
+      `Prix : ${money(p.price)}, toutes taxes comprises, hors livraison.`,
+      `Le prix est de ${money(p.price)} TTC, livraison en sus.`,
     ], 5),
   );
-  parts.push(pick(p.id, ['La vente n’est pas encore ouverte : rien n’est débité ni réservé. Vous pouvez déjà le mettre dans votre panier, enregistrer vos choix et être prévenu.', `En vente le ${shop.ouverture.long} : aucun paiement d’ici là. Laissez votre e-mail pour être prévenu à l’ouverture.`], 6));
+  parts.push(
+    shop.ventesOuvertes
+      ? estLourd(p)
+        ? 'Livraison sur devis : écrivez-nous avec ce modèle et votre code postal, la réponse arrive par e-mail.'
+        : pick(p.id, [`En vente : paiement par carte sur la page sécurisée de PayPlug, expédition sous ${shop.delais.expedition}.`, 'Commande en ligne, paiement par carte, et quatorze jours après réception pour changer d’avis.'], 6)
+      : pick(p.id, ['La vente n’est pas encore ouverte : rien n’est débité ni réservé. Vous pouvez déjà le mettre dans votre panier, enregistrer vos choix et être prévenu.', `En vente le ${shop.ouverture.long} : aucun paiement d’ici là. Laissez votre e-mail pour être prévenu à l’ouverture.`], 6),
+  );
   return parts.join(' ');
 }
 
@@ -185,19 +191,19 @@ export function productFaq(p: Product): { question: string; answer: string }[] {
   const sizes = p.sizes.map((s) => s.split(',')[0]);
   const disciplines = disciplinesOf(p);
   const level = practiceLevel(p).charAt(0).toLowerCase() + practiceLevel(p).slice(1);
-  const heavy = /sac de frappe|base de frappe|poire|punching|mannequin|bob\b/i.test(p.name + ' ' + p.category);
+  const heavy = estLourd(p);
   const size =
     sizes.length > 1
       ? `${p.name} existe en ${sizes.length} tailles : ${sizes.join(', ')}. Choisissez d’après l’usage, avec le guide « ${guideTitle} » lié sur cette fiche ; en cas de doute entre deux tailles, écrivez-nous depuis la page contact.`
       : sizes.length === 1
         ? `${p.name} existe en une seule taille : ${sizes[0]}. Le guide « ${guideTitle} » donne les repères de la famille.`
-        : `Les tailles de ${p.name} ne sont pas encore renseignées dans le catalogue. Cela ne signifie pas que le modèle est en taille unique : vérifiez le guide « ${guideTitle} » ou écrivez-nous avant l’ouverture des ventes.`;
+        : `Les tailles de ${p.name} ne sont pas encore renseignées dans le catalogue. Cela ne signifie pas que le modèle est en taille unique : vérifiez le guide « ${guideTitle} » ou écrivez-nous avant de commander.`;
   return [
     { question: `Quelle taille choisir pour ${short} ?`, answer: size },
     { question: `${cap(short)} : pour quelle pratique et quel niveau ?`, answer: `${disciplines.join(', ')}, niveau ${level}. ${p.short}` },
     { question: `Comment entretenir ${short} ?`, answer: careAdvice(p) },
-    { question: `${cap(short)} : quel prix, et à partir de quand ?`, answer: `Le prix prévu à l’ouverture est de ${(p.price / 100).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}, TTC hors livraison. Les ventes ouvrent le ${shop.ouverture.long} : laissez votre e-mail sur la fiche pour être prévenu ce matin-là ; vous pouvez déjà enregistrer vos choix depuis le panier.` },
-    { question: `${cap(short)} : comment se passe la livraison ?`, answer: heavy ? 'À domicile uniquement, dans toute la France métropolitaine, avec un tarif de matériel lourd indiqué avant validation ; le point relais n’accepte pas les colis lourds.' : `Dans toute la France métropolitaine, en point relais (6,90 €, offerts dès 69 € d’achats) ou à domicile (8,90 €), aux tarifs prévus à l’ouverture.${p.price > 0 ? (p.price < 6900 ? ` À ${money(p.price)}, il reste ${money(6900 - p.price)} d’achats avant la livraison offerte en point relais.` : ` À ${money(p.price)}, ce modèle passe à lui seul le seuil de la livraison offerte en point relais.`) : ''}` },
-    { question: `${cap(short)} : retour ou échange possibles ?`, answer: `Oui, dès l’ouverture des ventes : quatorze jours de rétractation, article non porté et dans son emballage.${sizes.length > 1 ? ` Pour passer d’une taille à l’autre (${sizes.slice(0, 5).join(', ')}${sizes.length > 5 ? '…' : ''}), écrivez-nous avec la référence de la commande.` : ' Pour un échange, écrivez-nous avec la référence de la commande.'}` },
+    { question: `${cap(short)} : quel prix, et quand est-il expédié ?`, answer: `Le prix est de ${(p.price / 100).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })} TTC, hors livraison. ${heavy ? 'Ce modèle lourd se livre sur devis : écrivez-nous avec votre code postal.' : `Payé par carte en ligne, il part sous ${shop.delais.expedition}.`}` },
+    { question: `${cap(short)} : comment se passe la livraison ?`, answer: heavy ? 'À domicile, sur devis, dans toute la France continentale : écrivez-nous avec le modèle et votre code postal ; le point relais n’accepte pas les colis lourds.' : `Dans toute la France continentale, en point relais (6,90 €, offerts dès 69 € d’achats) ou à domicile (8,90 €).${p.price > 0 ? (p.price < 6900 ? ` À ${money(p.price)}, il reste ${money(6900 - p.price)} d’achats avant la livraison offerte en point relais.` : ` À ${money(p.price)}, ce modèle passe à lui seul le seuil de la livraison offerte en point relais.`) : ''}` },
+    { question: `${cap(short)} : retour ou échange possibles ?`, answer: `Oui : quatorze jours de rétractation après réception, article non utilisé et dans son emballage, retour à vos frais.${sizes.length > 1 ? ` Pour passer d’une taille à l’autre (${sizes.slice(0, 5).join(', ')}${sizes.length > 5 ? '…' : ''}), écrivez-nous avec la référence de la commande.` : ' Pour un échange, écrivez-nous avec la référence de la commande.'}` },
   ];
 }

@@ -5,10 +5,8 @@ export const PAYPLUG_API_VERSION = '2019-08-06';
 // Ventes ouvertes le 13/10/2026 : le mode live PayPlug est autorisé (clé sk_live_ dans l'environnement).
 export const LIVE_PAYMENT_RELEASED = true;
 const API_ORIGIN = 'https://api.payplug.com/v1';
-export const PAYPLUG_OWNED_ORIGINS = [
-  'https://boutique-de-boxe.com',
-  'https://www.boutique-de-boxe.com',
-] as const;
+// www seulement : le domaine nu redirige (308) vers www, et une notification redirigée se perd.
+export const PAYPLUG_OWNED_ORIGINS = ['https://www.boutique-de-boxe.com'] as const;
 
 export type CommerceMode = 'simulation' | 'payplug_test' | 'payplug_live';
 export type ProviderMode = Exclude<CommerceMode, 'simulation'>;
@@ -393,12 +391,13 @@ export function createPayplug(
     };
   }
   async function request(
-    method: 'POST' | 'GET',
+    method: 'POST' | 'GET' | 'PATCH',
     path: string,
     payload?: unknown,
   ) {
     const { key } = enabled();
     const creating = method === 'POST';
+    const sending = method !== 'GET';
     let response: Response;
     try {
       response = await fetcher(`${API_ORIGIN}${path}`, {
@@ -410,13 +409,13 @@ export function createPayplug(
           Authorization: `Bearer ${key}`,
           'PayPlug-Version': PAYPLUG_API_VERSION,
           Accept: 'application/json',
-          ...(creating ? { 'Content-Type': 'application/json' } : {}),
+          ...(sending ? { 'Content-Type': 'application/json' } : {}),
         },
-        ...(creating ? { body: JSON.stringify(payload) } : {}),
+        ...(sending ? { body: JSON.stringify(payload) } : {}),
       });
     } catch (cause) {
       // Journal technique sans corps de réponse : nom et message de l'erreur réseau seulement.
-      console.error('PayPlug', creating ? 'create' : 'retrieve', 'fetch failed:', (cause as Error)?.name, (cause as Error)?.message);
+      console.error('PayPlug', creating ? 'create' : method === 'PATCH' ? 'abort' : 'retrieve', 'fetch failed:', (cause as Error)?.name, (cause as Error)?.message);
       throw new PayplugError(
         creating ? 'create_unconfirmed' : 'retrieve_failed',
         { ambiguous: creating },
@@ -527,6 +526,22 @@ export function createPayplug(
       }
     },
     retrieveAndVerifyPayment,
+    /**
+     * Abandonne un paiement encore impayé (PATCH /payments/{id} {"aborted": true}, doc PayPlug v1),
+     * puis relit le paiement : l'état rendu est celui du GET authentifié, jamais celui supposé.
+     * Un paiement déjà payé ne peut pas être abandonné : la relecture le dira « paid ».
+     */
+    async abortAndVerifyPayment(id: string, binding: PaymentBinding) {
+      const { mode } = enabled();
+      validateBinding(binding, mode);
+      if (!isPayplugPaymentId(id)) throw new PayplugError('invalid_input');
+      try {
+        await request('PATCH', `/payments/${encodeURIComponent(id)}`, { aborted: true });
+      } catch {
+        /* déjà payé, déjà échoué ou indisponible : la relecture tranche */
+      }
+      return retrieveAndVerifyPayment(id, binding);
+    },
     async verifyNotification(
       body: unknown,
       binding: PaymentBinding,

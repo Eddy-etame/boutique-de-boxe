@@ -14,7 +14,7 @@ import { MerciPhone } from '@/components/merci-phone';
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'Merci, vous êtes inscrit',
-  description: 'Votre inscription à l’ouverture des ventes de Boutique de Boxe est enregistrée.',
+  description: 'Votre inscription auprès de Boutique de Boxe est enregistrée.',
   robots: { index: false, follow: true },
   alternates: { canonical: '/merci/' },
 };
@@ -36,12 +36,12 @@ export default async function MerciPage({ searchParams }: Props) {
         <h1>
           Merci.
           <br />
-          {already ? 'Vous étiez déjà de la partie.' : 'Vous serez prévenu le jour J.'}
+          {already ? 'Vous étiez déjà de la partie.' : 'C’est enregistré.'}
         </h1>
         <p>
           {already
-            ? 'Cette adresse est déjà inscrite : un seul e-mail, le matin de l’ouverture des ventes, rien d’autre.'
-            : 'Un seul e-mail, le matin de l’ouverture des ventes' + (model ? `, pour ${model.name}` : '') + '. Rien d’autre, et un lien de désinscription dedans.'}
+            ? 'Cette adresse est déjà inscrite : rien n’a été ajouté.'
+            : 'Un seul e-mail' + (model ? `, quand ${model.name} sera disponible` : ', le jour où le modèle demandé arrive') + '. Rien d’autre, et un lien de désinscription dedans.'}
         </p>
         {ref && email && !already && <MerciPhone email={email} reference={ref} />}
         <div className="merci-next">
@@ -53,7 +53,7 @@ export default async function MerciPage({ searchParams }: Props) {
       {picks.length > 0 && (
         <section className="merci-picks">
           <h2>
-            En attendant l’ouverture,
+            Pour continuer,
             <br />
             quatre modèles de la semaine.
           </h2>

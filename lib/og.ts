@@ -24,7 +24,7 @@ export type Card = {
   photos: string[];
   photoLabel: string;
   path: string;
-  /** Fiche produit : la photo détourée, posée sur la scène, et le prix prévu en clair. */
+  /** Fiche produit : la photo détourée, posée sur la scène, et le prix en clair. */
   cut?: { src: string; mode: 'pose' | 'cadre'; tint: string; vivid: boolean; lum: number };
   price?: string;
 };
@@ -73,7 +73,7 @@ function categoryCard(c: Category, products: Product[]): Card {
     facts: [
       { label: 'MODÈLES', value: fr(items.length) },
       { label: 'MARQUES', value: fr(brands.size) },
-      { label: 'PRIX', value: 'Prévus à l’ouverture' },
+      { label: 'PRIX', value: 'TTC, en vente' },
     ],
     photos: photosOf(items),
     photoLabel: 'LES MODÈLES',
@@ -90,7 +90,7 @@ function subfamilyCard(s: Subfamily, products: Product[]): Card {
     facts: [
       { label: 'MODÈLES', value: fr(items.length) },
       { label: 'FAMILLE', value: parent?.name || 'Catalogue' },
-      { label: 'PRIX', value: 'Prévus à l’ouverture' },
+      { label: 'PRIX', value: 'TTC, en vente' },
     ],
     photos: photosOf(items),
     photoLabel: 'LES MODÈLES',
@@ -148,7 +148,7 @@ const PAGES: Record<string, (products: Product[]) => Card> = {
     facts: [
       { label: 'MODÈLES', value: fr(products.length) },
       { label: 'FAMILLES', value: '10' },
-      { label: 'PRIX', value: 'Prévus à l’ouverture' },
+      { label: 'PRIX', value: 'TTC, en vente' },
     ],
     photos: photosOf([...products].reverse()),
     photoLabel: 'LES MODÈLES',

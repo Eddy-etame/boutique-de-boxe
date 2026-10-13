@@ -44,7 +44,7 @@ function sacs(all: Product[]) {
   });
 }
 
-const NOTE = 'Somme du premier prix, puis du prix médian, de chaque rayon de la ligne, modèles adultes seulement. Prix prévus à l’ouverture des ventes, calculés sur le catalogue du jour.';
+const NOTE = 'Somme du premier prix, puis du prix médian, de chaque rayon de la ligne, modèles adultes seulement. Prix de vente, calculés sur le catalogue du jour.';
 
 /** /materiel-boxe/ : les trois sacs, côte à côte. */
 export function MaterielParNiveau({ all }: { all: Product[] }) {
@@ -198,10 +198,10 @@ export function KitDiscipline({ discipline, nom, all }: { discipline: string; no
           <p className="hub-prices-note">
             {lieux ? (
               <>
-                Lieux : <a href={SOURCE.url}>{SOURCE.nom}</a>, {SOURCE.editeur}, mis à jour le {dateSource()}. Modèles et prix : le catalogue du jour, prix prévus à l’ouverture des ventes.
+                Lieux : <a href={SOURCE.url}>{SOURCE.nom}</a>, {SOURCE.editeur}, mis à jour le {dateSource()}. Modèles et prix : le catalogue du jour, prix de vente TTC.
               </>
             ) : (
-              'Modèles et prix : le catalogue du jour, prix prévus à l’ouverture des ventes. Le recensement du ministère des Sports ne distingue pas cette discipline.'
+              'Modèles et prix : le catalogue du jour, prix de vente TTC. Le recensement du ministère des Sports ne distingue pas cette discipline.'
             )}
           </p>
         </div>
@@ -216,7 +216,7 @@ export function budgetFaq(all: Product[]): SeoFaq[] {
   return [
     {
       question: 'Combien coûte un équipement de boxe complet ?',
-      answer: `Pour débuter, des bandes, des gants et un protège-dents reviennent à ${money(debut.des)} au premier prix du catalogue et à ${money(debut.median)} au prix médian. Le sac de sparring, avec le casque et la coquille, va de ${money(regulier.des)} à ${money(regulier.median)} ; celui de compétition, avec les chaussures et le short, de ${money(ring.des)} à ${money(ring.median)}. Prix prévus à l’ouverture des ventes.`,
+      answer: `Pour débuter, des bandes, des gants et un protège-dents reviennent à ${money(debut.des)} au premier prix du catalogue et à ${money(debut.median)} au prix médian. Le sac de sparring, avec le casque et la coquille, va de ${money(regulier.des)} à ${money(regulier.median)} ; celui de compétition, avec les chaussures et le short, de ${money(ring.des)} à ${money(ring.median)}. Prix de vente.`,
     },
   ];
 }

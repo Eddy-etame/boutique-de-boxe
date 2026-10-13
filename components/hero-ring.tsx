@@ -6,7 +6,7 @@ import { money, type Product } from '@/lib/catalog';
 /**
  * Le ring de l’accueil : quatre modèles, un par round, sous un projecteur qui suit le pointeur.
  * Chaque modèle est présenté comme un boxeur avant le combat : sa « fiche de pesée » (marque,
- * tailles, prix prévu).
+ * tailles, prix).
  *
  * Les modèles glissent comme n’importe quelle surface tactile : la piste est un défilement natif
  * à crans (scroll-snap). Le doigt, le pavé tactile, la molette horizontale, le clavier et les
@@ -189,7 +189,7 @@ export function HeroRing({ items, labels = [] }: { items: Product[]; labels?: st
             <dd>{p.sizes.length ? p.sizes.slice(0, 4).map((s) => s.split(' (')[0]).join(' · ') : 'Taille unique'}</dd>
           </div>
           <div>
-            <dt>Prix prévu</dt>
+            <dt>Prix TTC</dt>
             <dd className="hero-tape-price">{money(p.price)}</dd>
           </div>
         </dl>

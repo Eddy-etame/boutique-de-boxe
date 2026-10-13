@@ -45,8 +45,10 @@ export function Header() {
     <>
       <div className="launch-strip">
         <span className="status-dot" />
-        {'OUVERTURE DES VENTES LE ' + shop.ouverture.court.toUpperCase()}{' '}
-        <a href="/offres-de-lancement/">
+        {shop.ventesOuvertes
+          ? 'VENTES OUVERTES · POINT RELAIS OFFERT DÈS 69 €'
+          : 'OUVERTURE DES VENTES LE ' + shop.ouverture.court.toUpperCase()}{' '}
+        <a href={shop.ventesOuvertes ? '/livraison/' : '/offres-de-lancement/'}>
           En savoir plus <ArrowUpRight size={13} />
         </a>
       </div>
@@ -174,11 +176,19 @@ export function Footer() {
       <div className="footer-opening">
         <span>
           <i className="status-dot" aria-hidden="true" />
-          <strong>Les ventes arrivent.</strong> Préparez votre sélection dès
-          maintenant.
+          {shop.ventesOuvertes ? (
+            <>
+              <strong>Les ventes sont ouvertes.</strong> Paiement par carte, livraison dans toute la France.
+            </>
+          ) : (
+            <>
+              <strong>Les ventes arrivent.</strong> Préparez votre sélection dès maintenant.
+            </>
+          )}
         </span>
-        <a href="/#ouverture">
-          Être prévenu à l’ouverture <ArrowRight size={18} aria-hidden="true" />
+        <a href={shop.ventesOuvertes ? '/vente-materiel-de-boxe/' : '/#ouverture'}>
+          {shop.ventesOuvertes ? 'Comment se passe la vente' : 'Être prévenu à l’ouverture'}{' '}
+          <ArrowRight size={18} aria-hidden="true" />
         </a>
       </div>
       <div className="footer-grid">
@@ -186,7 +196,7 @@ export function Footer() {
           <Brand />
           <p className="footer-blurb">
             Matériel de boxe, MMA et arts martiaux. Des modèles à examiner, des
-            guides pour choisir. Livraison en France à l’ouverture des ventes.
+            guides pour choisir. {shop.ventesOuvertes ? 'Livraison dans toute la France.' : 'Livraison en France à l’ouverture des ventes.'}
           </p>
           <a href="/contact/" className="email-link">
             Une question sur le matériel ?{' '}
@@ -230,7 +240,7 @@ export function Footer() {
         <nav aria-labelledby="footer-service">
           <h3 id="footer-service">Vos questions</h3>
           <a href="/faq/">Questions fréquentes</a>{' '}
-          <a href="/livraison/">Livraison et frais prévus</a>{' '}
+          <a href="/livraison/">{shop.ventesOuvertes ? 'Livraison et frais' : 'Livraison et frais prévus'}</a>{' '}
           <a href="/retours/">Retours</a>{' '}
           <a href="/vente-materiel-de-boxe/">Comment se passe la vente</a>{' '}
           <a href="/contact/">Nous contacter</a>{' '}

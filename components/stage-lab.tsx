@@ -136,7 +136,7 @@ export function StageLab({ items }: { items: Product[] }) {
               <a href={`/produits/${p.slug}/`}>{p.name.split(' — ')[0]}</a>
             </h3>
             <p>
-              <strong>{money(p.price)}</strong> <span>prix prévu</span>
+              <strong>{money(p.price)}</strong> <span>prix</span>
             </p>
           </article>
         ))}

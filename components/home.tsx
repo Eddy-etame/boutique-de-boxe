@@ -58,15 +58,29 @@ export default function Home({ items }: { items: Product[] }) {
               <br />
               Le matériel des salles, livré chez vous, dans toute la France.
               <br />
-              {`Ouverture des ventes le ${shop.ouverture.long}.`}{' '}
-              <a href="#ouverture">Laissez votre e-mail</a>, on vous prévient le
-              matin même.
+              {shop.ventesOuvertes ? (
+                <>
+                  Les ventes sont ouvertes : paiement par carte sur la page sécurisée de PayPlug.{' '}
+                  <a href="/vente-materiel-de-boxe/">Comment se passe la vente</a>.
+                </>
+              ) : (
+                <>
+                  {`Ouverture des ventes le ${shop.ouverture.long}.`}{' '}
+                  <a href="#ouverture">Laissez votre e-mail</a>, on vous prévient le matin même.
+                </>
+              )}
             </p>
           </div>
           <div className="hero-actions">
-            <a href="#ouverture" className="button button-tape">
-              Me prévenir à l’ouverture <ArrowDown size={20} />
-            </a>
+            {shop.ventesOuvertes ? (
+              <a href="/materiel-boxe/" className="button button-tape">
+                Matériel de boxe <ArrowDown size={20} />
+              </a>
+            ) : (
+              <a href="#ouverture" className="button button-tape">
+                Me prévenir à l’ouverture <ArrowDown size={20} />
+              </a>
+            )}
             <a href="/boutique-boxe/" className="button button-dark">
               Voir tout le matériel <ArrowUpRight size={20} />
             </a>
@@ -215,6 +229,7 @@ export default function Home({ items }: { items: Product[] }) {
           </a>
         </div>
       </section>
+      {!shop.ventesOuvertes && (
       <section id="ouverture" className="opening-note section-pad" data-reveal>
         <div>
           <span className="eyebrow">OUVERTURE DES VENTES</span>
@@ -229,12 +244,13 @@ export default function Home({ items }: { items: Product[] }) {
         </div>
         <AlertForm />
       </section>
+      )}
       {/* L’accueil n’a pas le conteneur des pages : la FAQ prend la gouttière des sections. */}
       <div className="home-faq section-pad">
         <div className="home-faq-intro">
           <span className="eyebrow">AVANT DE COMMANDER</span>
           <p>
-            Ouverture des ventes, panier, livraison, tailles, marques
+            {shop.ventesOuvertes ? 'Paiement, livraison, retours, tailles, marques' : 'Ouverture des ventes, panier, livraison, tailles, marques'}
             : les réponses courtes, sans chercher.
           </p>
           <a className="inline-link" href="/faq/">
