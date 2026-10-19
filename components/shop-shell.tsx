@@ -278,6 +278,15 @@ export function Footer() {
     </footer>
   );
 }
+/**
+ * Identifiant du déploiement, figé au build : Vercel le fournit (identifiant de déploiement, sinon
+ * commit). Le service worker s’enregistre en /sw.js?v=<build> : une nouvelle adresse à chaque mise en
+ * ligne, donc un service worker neuf qui vide les caches du précédent (public/sw.js lit ce ?v=).
+ * Sans identifiant (build local), /sw.js et sa version fixe, comme avant.
+ */
+const BUILD = (process.env.NEXT_PUBLIC_VERCEL_DEPLOYMENT_ID || process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA || process.env.NEXT_DEPLOYMENT_ID || '').slice(0, 40);
+const SW_URL = BUILD ? '/sw.js?v=' + encodeURIComponent(BUILD) : '/sw.js';
+
 export function Motion() {
   const pathname = usePathname();
   useEffect(() => {
@@ -351,7 +360,7 @@ export function Motion() {
     stage?.addEventListener('pointermove', onMove);
     stage?.addEventListener('pointerleave', onLeave);
     if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator)
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
+      navigator.serviceWorker.register(SW_URL).catch(() => {});
     // Un seul élément peut porter « product-hero » : à deux, Chrome annule la transition
     // (InvalidStateError). La photo cliquée ne prend le nom que si l’on part vers sa fiche,
     // et la photo principale de la fiche courante le lui cède.
