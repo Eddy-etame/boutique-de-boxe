@@ -100,8 +100,17 @@ export async function resolveCart(
     catalog ? Promise.resolve(catalog) : readCatalog(),
   ]);
   const raw: CartItem[] =
-    stored && stored.expires_at > Date.now() ? JSON.parse(stored.payload) : [];
+    stored && stored.expires_at > Date.now() ? lirePanier(stored.payload) : [];
   return buildCart(raw, products, stored?.revision || 0);
+}
+/** Un panier stocké illisible (écriture coupée, ancien format) devient un panier vide au lieu de faire tomber la page. */
+function lirePanier(payload: string): CartItem[] {
+  try {
+    const v = JSON.parse(payload);
+    return Array.isArray(v) ? v : [];
+  } catch {
+    return [];
+  }
 }
 export function shippingFor(subtotal: number, delivery: string) {
   return fraisDeLivraison(delivery, subtotal);
