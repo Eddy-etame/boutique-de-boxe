@@ -320,6 +320,5 @@ export function cleanName(p: Product) {
     .replace(' — noir et blanc', '')
     .replace(' — gel thermoformable', '');
 }
-export function jsonLd(data: unknown) {
-  return JSON.stringify(data).replace(/</g, '\\u003c');
-}
+/** Une seule fonction d'échappement pour tout le JSON-LD du site (< > & U+2028 U+2029) : lib/json-ld.ts. */
+export { jsonLd } from './json-ld';
