@@ -67,7 +67,13 @@ function readRelayPoint(v: unknown): RelayPoint | null {
 }
 
 /** Le réseau tel que la carte le nomme (« MONR_NETWORK », ou « MONR »), ramené à un réseau de RELAY_NETWORKS ; sinon null. */
-export const knownNetwork = (network: string) => RELAY_NETWORKS.find((n) => n.code === network || n.code === network + '_NETWORK')?.code ?? null;
+const cleReseau = (s: string) => s.toUpperCase().replace(/[^A-Z0-9]/g, '');
+/** La carte peut nommer le réseau « MONR_NETWORK », « MONR », « MONR_xxx » ou « Mondial Relay » : tous reviennent au même réseau connu. Un réseau absent de RELAY_NETWORKS reste refusé. */
+export const knownNetwork = (network: string) =>
+  RELAY_NETWORKS.find((n) => {
+    const c = cleReseau(network);
+    return n.code === network || n.code === network + '_NETWORK' || c === cleReseau(n.code.split('_')[0]) || c.startsWith(cleReseau(n.code.split('_')[0])) || c === cleReseau(n.name);
+  })?.code ?? null;
 
 /** Corse (20…), outre-mer (97…) et Monaco (98…) : hors de la livraison en ligne, sur demande seulement. */
 export const HORS_CONTINENT = /^(?:20|97|98)/;
