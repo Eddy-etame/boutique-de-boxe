@@ -52,8 +52,7 @@ export type RelayPoint = { code: string; network: string; name: string; address:
 
 const text = (v: unknown, max: number) => (typeof v === 'string' && v.trim().length > 0 && v.length <= max ? v.trim() : null);
 
-/** Valide ce que le navigateur envoie ; null si ce n’est pas un point relais complet. */
-export function validateRelayPoint(v: unknown): RelayPoint | null {
+function readRelayPoint(v: unknown): RelayPoint | null {
   if (!v || typeof v !== 'object') return null;
   const o = v as Record<string, unknown>;
   const code = text(o.code, 60);
@@ -67,6 +66,23 @@ export function validateRelayPoint(v: unknown): RelayPoint | null {
   return { code, network, name, address, postcode, city };
 }
 
+/** Le réseau tel que la carte le nomme (« MONR_NETWORK », ou « MONR »), ramené à un réseau de RELAY_NETWORKS ; sinon null. */
+export const knownNetwork = (network: string) => RELAY_NETWORKS.find((n) => n.code === network || n.code === network + '_NETWORK')?.code ?? null;
+
+/** Corse (20…), outre-mer (97…) et Monaco (98…) : hors de la livraison en ligne, sur demande seulement. */
+export const HORS_CONTINENT = /^(?:20|97|98)/;
+
+/**
+ * Valide ce que le navigateur envoie pour une commande (19/10, D20) ; null si ce n’est pas un point
+ * relais complet, ou si son réseau n’est pas l’un de ceux de la carte (RELAY_NETWORKS). La zone
+ * (France continentale) se juge à part, sur le code postal du point : voir HORS_CONTINENT.
+ */
+export function validateRelayPoint(v: unknown): RelayPoint | null {
+  const r = readRelayPoint(v);
+  const network = r && knownNetwork(r.network);
+  return r && network ? { ...r, network } : null;
+}
+
 export const networkName = (code: string) => RELAY_NETWORKS.find((n) => n.code === code)?.name || code;
 
 /** Une ligne lisible : « Mondial Relay · Tabac du Centre, 12 rue de Fenouillet, 31200 Toulouse ». */
@@ -74,10 +90,11 @@ export function relayLabel(r: RelayPoint) {
   return `${networkName(r.network)} · ${r.name}, ${r.address}, ${r.postcode} ${r.city}`;
 }
 
+/** Relit un point gardé sur une commande (sans le contrôle du réseau : les anciennes commandes restent lisibles). */
 export function parseRelay(stored: string | null | undefined): RelayPoint | null {
   if (!stored) return null;
   try {
-    return validateRelayPoint(JSON.parse(stored));
+    return readRelayPoint(JSON.parse(stored));
   } catch {
     return null;
   }

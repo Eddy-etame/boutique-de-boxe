@@ -1,17 +1,18 @@
 import { after } from 'next/server';
-import { db, runtime, isAdmin, readCatalog } from './database';
+import { db, runtime, isAdmin, readCatalog, readCatalogFresh, ensureSchema } from './database';
 import { cartToken, resolveCart, shippingFor, uuid, type CartLine } from './commerce';
 import {
   createPayplug,
   payplugSettings,
   PayplugError,
   type PayplugBinding,
+  type PayplugEnvironment,
   type ProviderMode,
 } from './payplug';
 import { shop, money, lourdDuCatalogue } from './catalog';
 import { suspicion } from './alerts';
 import { clientIp } from './request';
-import { validateRelayPoint, relayLabel, type RelayPoint } from './boxtal';
+import { validateRelayPoint, relayLabel, HORS_CONTINENT, type RelayPoint } from './boxtal';
 import { mailerConfigured, sendMail } from './mailer';
 
 /**
@@ -89,17 +90,19 @@ const linesOf = (a: Attempt): CartLine[] => {
     return [];
   }
 };
-let columnsReady = false;
-/** Colonnes ajoutées sans migration manuelle, au premier passage (même principe que lib/clients.ts). */
-async function ensureColumns() {
-  if (columnsReady) return;
-  const database = await db();
-  await database.prepare('ALTER TABLE payment_attempts ADD COLUMN IF NOT EXISTS notified_at text').run();
-  await database.prepare('ALTER TABLE payment_attempts ADD COLUMN IF NOT EXISTS notify_error text').run();
-  for (const column of ['notify_claim', 'client_sent_at', 'shop_sent_at'])
-    await database.prepare(`ALTER TABLE payment_attempts ADD COLUMN IF NOT EXISTS ${column} text`).run();
-  columnsReady = true;
-}
+/**
+ * Colonnes des e-mails de commande (19/10, D14). Plus jamais dans le chemin du paiement ni de l'IPN :
+ * seulement après la réponse (notifyPaid, confié à after()) et à l'ouverture de l'atelier ; une fois
+ * par instance, et un ALTER TABLE seulement s'il en manque une (lib/database.ts, ensureSchema).
+ * Le SQL est aussi dans drizzle/0006_schema_du_service.sql.
+ */
+const NOTIFY_COLUMNS = ['notified_at', 'notify_error', 'notify_claim', 'client_sent_at', 'shop_sent_at'];
+const ensureColumns = () =>
+  ensureSchema(
+    'payment_attempts.notify',
+    `SELECT ${NOTIFY_COLUMNS.length} - count(*) AS missing FROM pg_attribute WHERE attrelid = to_regclass('payment_attempts') AND NOT attisdropped AND attname IN (${NOTIFY_COLUMNS.map((c) => `'${c}'`).join(',')})`,
+    NOTIFY_COLUMNS.map((c) => `ALTER TABLE payment_attempts ADD COLUMN IF NOT EXISTS ${c} text`),
+  );
 const sellingMode = (mode: string | undefined): mode is ProviderMode =>
   mode === 'payplug_live' || mode === 'payplug_test';
 /** Paiement public : ventes ouvertes et vrai paiement ; le mode test ne s'ouvre au public qu'en local. */
@@ -132,6 +135,12 @@ const reply = (data: unknown, status = 200) =>
       'Referrer-Policy': 'no-referrer',
     },
   });
+/**
+ * Chaque tentative se relit avec la clé de SON mode (19/10, D17), quel que soit COMMERCE_MODE
+ * aujourd'hui : repasser en simulation ou en test ne gèle plus les paiements live en cours (IPN,
+ * retour du client, atelier), et inversement.
+ */
+const adapterFor = (env: PayplugEnvironment, a: Pick<Attempt, 'mode'>) => createPayplug({ ...env, COMMERCE_MODE: a.mode });
 function binding(a: Attempt): PayplugBinding {
   return {
     orderId: a.id,
@@ -247,7 +256,7 @@ async function reconcile(a: Attempt) {
   if (!a.provider_id) return a;
   return applyVerified(
     a,
-    await createPayplug(await runtime()).retrieveAndVerifyPayment(
+    await adapterFor(await runtime(), a).retrieveAndVerifyPayment(
       a.provider_id,
       binding(a),
     ),
@@ -259,7 +268,6 @@ export async function payplugGet(request: Request, action: string) {
   if (action === 'status') {
     const id = new URL(request.url).searchParams.get('id');
     if (!uuid(id)) return reply({ error: 'Référence invalide.' }, 400);
-    await ensureColumns();
     const a = await byId(id);
     if (!a) return reply({ error: 'Commande introuvable.' }, 404);
     const admin = await isAdmin();
@@ -335,9 +343,8 @@ export async function payplugGet(request: Request, action: string) {
 export async function payplugPost(request: Request, action: string) {
   const env = await runtime();
   if (action === 'ipn') {
-    // En simulation, aucune notification n'est attendue ni acceptée.
-    if (!sellingMode(env.COMMERCE_MODE))
-      return reply({ error: 'Paiements suspendus : notification à représenter.' }, 503);
+    // Quel que soit COMMERCE_MODE (D17) : une notification se rapporte à une tentative existante,
+    // relue plus bas avec la clé de son propre mode. Sans tentative, PayPlug représentera.
     if (!request.headers.get('content-type')?.includes('application/json'))
       return reply({ error: 'Format invalide.' }, 400);
     let data;
@@ -348,22 +355,32 @@ export async function payplugPost(request: Request, action: string) {
     }
     if (typeof data.id !== 'string' || !/^pay_[A-Za-z0-9]+$/.test(data.id))
       return reply({ received: true, ignored: true });
-    await ensureColumns();
+    // Limite de débit (D28) : une notification forgée déclenche une lecture authentifiée chez PayPlug.
+    // 300 par heure et par adresse : très au-dessus du trafic réel de PayPlug pour cette boutique.
+    if (await tooMany(request, 'ipn', 300))
+      return reply({ error: 'Trop de notifications.' }, 429);
     const database = await db();
     let a = await database
       .prepare('SELECT * FROM payment_attempts WHERE provider_id=?')
       .bind(data.id)
       .first<Attempt>();
     // Metadata is only a lookup hint; the authenticated API response must verify the full binding.
+    // L'indice ne vaut que pour une tentative de moins d'une heure encore en préparation ou en attente
+    // (D28) — ou dont la création est restée incertaine sans identifiant PayPlug connu : c'est alors la
+    // seule façon de rattacher le paiement que PayPlug a pu créer pendant le délai dépassé.
     const hint = new URL(request.url).searchParams.get('attempt');
-    if (!a && uuid(hint)) a = await byId(hint);
+    if (!a && uuid(hint)) {
+      const hinted = await byId(hint);
+      const open = hinted && (['creating', 'pending'].includes(hinted.status) || (hinted.status === 'unconfirmed' && !hinted.provider_id));
+      if (open && Date.now() - Date.parse(hinted.created_at) < 3600000) a = hinted;
+    }
     if (!a)
       return reply(
         { error: 'Association en cours ; notification à représenter.' },
         503,
       );
     try {
-      const adapter = createPayplug(env);
+      const adapter = adapterFor(env, a);
       const verified = a.provider_id
         ? await adapter.verifyNotification(data, binding(a), a.provider_id)
         : await adapter.retrieveAndVerifyPayment(data.id, binding(a));
@@ -400,17 +417,13 @@ export async function payplugPost(request: Request, action: string) {
       },
       shop.ventesOuvertes ? 409 : 403,
     );
-  if (!sellingMode(env.COMMERCE_MODE))
-    return reply(
-      { error: 'Le paiement en ligne est momentanément indisponible. Votre panier est conservé.' },
-      409,
-    );
   let data;
   try {
     data = await boundedBody(request);
   } catch {
     return reply({ error: 'Demande invalide.' }, 400);
   }
+  // L'atelier relit une tentative quel que soit le mode courant (D17) : clé du mode de la tentative.
   if (action === 'reconcile') {
     if (!admin) return reply({ error: 'Accès réservé.' }, 403);
     if (!uuid(data.id)) return reply({ error: 'Référence invalide.' }, 400);
@@ -426,7 +439,7 @@ export async function payplugPost(request: Request, action: string) {
     try {
       const updated = await applyVerified(
         a,
-        await createPayplug(env).retrieveAndVerifyPayment(id, binding(a)),
+        await adapterFor(env, a).retrieveAndVerifyPayment(id, binding(a)),
       );
       if (updated.status === 'paid' && !updated.notified_at) after(() => notifyPaid(updated.id));
       return reply({ attempt: safe(updated) });
@@ -443,6 +456,11 @@ export async function payplugPost(request: Request, action: string) {
   }
   if (action !== 'create')
     return reply({ error: 'Ressource introuvable.' }, 404);
+  if (!sellingMode(env.COMMERCE_MODE))
+    return reply(
+      { error: 'Le paiement en ligne est momentanément indisponible. Votre panier est conservé.' },
+      409,
+    );
   // Pot de miel : un humain ne voit pas ce champ. Le robot est noté au journal, rien n'est enregistré.
   if (typeof data.website === 'string' && data.website.trim()) {
     console.warn('payplug create: pot de miel rempli');
@@ -469,6 +487,12 @@ export async function payplugPost(request: Request, action: string) {
   if (data.relay !== undefined && (delivery !== 'relay' || !validateRelayPoint(data.relay)))
     return reply({ error: 'Le point relais envoyé est incomplet. Choisissez-le à nouveau sur la carte.' }, 400);
   const relay = delivery === 'relay' && data.relay !== undefined ? validateRelayPoint(data.relay) : null;
+  // Le point relais suit la même règle que l'adresse (D20) : France continentale seulement.
+  if (relay && HORS_CONTINENT.test(relay.postcode))
+    return reply(
+      { error: 'Ce point relais est hors de la France continentale. Choisissez-en un autre, ou écrivez-nous pour la Corse ou l’outre-mer : nous vous faisons une proposition.' },
+      400,
+    );
   const phone = typeof data.phone === 'string' ? data.phone.trim() : '';
   if (phone && !/^[+0-9 ().-]{6,30}$/.test(phone))
     return reply({ error: 'Vérifiez le numéro de téléphone.' }, 400);
@@ -497,7 +521,7 @@ export async function payplugPost(request: Request, action: string) {
       400,
     );
   // France métropolitaine continentale : la Corse (20…), l'outre-mer (97…) et Monaco (98…) sont sur demande.
-  if (/^(?:20|97|98)/.test(b.postcode))
+  if (HORS_CONTINENT.test(b.postcode))
     return reply(
       { error: 'La livraison en ligne couvre la France continentale. Pour la Corse ou l’outre-mer, écrivez-nous : nous vous faisons une proposition.' },
       400,
@@ -530,7 +554,6 @@ export async function payplugPost(request: Request, action: string) {
     optin,
   ]);
   const database = await db();
-  await ensureColumns();
   const previous = await database
     .prepare('SELECT * FROM payment_attempts WHERE cart_id=? AND request_key=?')
     .bind(token, data.requestKey)
@@ -562,10 +585,18 @@ export async function payplugPost(request: Request, action: string) {
       );
     return reply({ attempt: admin ? safe(current) : publicView(current) });
   }
-  const catalog = await readCatalog();
-  const cart = await resolveCart(token, catalog),
+  let catalog = await readCatalog();
+  let cart = await resolveCart(token, catalog),
     shipping = shippingFor(cart.subtotal, delivery),
     total = cart.subtotal + shipping;
+  // Un écart de montant peut venir du mémo d'une minute de cette instance (prix modifié à l'atelier ou
+  // relevé du club tout juste réécrit) : on relit le catalogue sans mémo avant de dire « Le panier a changé ».
+  if (cart.items.length && data.quotedRevision === cart.revision && data.quotedTotal !== total) {
+    catalog = await readCatalogFresh();
+    cart = await resolveCart(token, catalog);
+    shipping = shippingFor(cart.subtotal, delivery);
+    total = cart.subtotal + shipping;
+  }
   if (
     !cart.items.length ||
     cart.notices.length ||
@@ -626,7 +657,7 @@ export async function payplugPost(request: Request, action: string) {
       if (fresh.status === 'pending' && fresh.payment_url)
         fresh = await applyVerified(
           fresh,
-          await adapter.abortAndVerifyPayment(fresh.provider_id!, binding(fresh)),
+          await adapterFor(env, fresh).abortAndVerifyPayment(fresh.provider_id!, binding(fresh)),
         );
     } catch {
       fresh = null;
@@ -660,7 +691,7 @@ export async function payplugPost(request: Request, action: string) {
         if (fresh.status === 'pending' && fresh.payment_url)
           fresh = await applyVerified(
             fresh,
-            await createPayplug(env).abortAndVerifyPayment(fresh.provider_id!, binding(fresh)),
+            await adapterFor(env, fresh).abortAndVerifyPayment(fresh.provider_id!, binding(fresh)),
           );
       } catch {
         fresh = null;
@@ -715,7 +746,13 @@ export async function payplugPost(request: Request, action: string) {
         { error: 'Le panier a changé pendant la préparation.' },
         409,
       );
-  } catch {
+  } catch (error) {
+    // Seule une réservation concurrente (index unique, 23505) veut dire « déjà préparé » (D35) ;
+    // toute autre erreur de base est une indisponibilité : le client réessaie, rien n'est créé.
+    if ((error as { code?: string })?.code && (error as { code?: string }).code !== '23505') {
+      console.error('payplug create: réservation impossible', (error as { code?: string }).code);
+      return reply({ error: 'Le paiement en ligne est momentanément indisponible. Votre panier est conservé : réessayez dans un instant.' }, 503);
+    }
     const raced = await database
       .prepare(
         'SELECT * FROM payment_attempts WHERE cart_id=? AND request_key=?',
@@ -737,6 +774,23 @@ export async function payplugPost(request: Request, action: string) {
     const payment = await adapter.createHostedPayment({
       binding: binding(a),
       billing,
+      // Retrait en point relais (D21) : PayPlug reçoit l'adresse du point, qualifiée SHIP_TO_STORE
+      // (3-D Secure et antifraude) ; à domicile, l'adresse de facturation (BILLING).
+      ...(relay
+        ? {
+            shipping: {
+              first_name: billing.first_name,
+              last_name: billing.last_name,
+              email: billing.email,
+              address1: relay.address,
+              address2: relay.name,
+              postcode: relay.postcode,
+              city: relay.city,
+              country: 'FR' as const,
+              delivery_type: 'SHIP_TO_STORE' as const,
+            },
+          }
+        : {}),
       reference: reference(a.id),
     });
     const created = await applyVerified(a, payment);

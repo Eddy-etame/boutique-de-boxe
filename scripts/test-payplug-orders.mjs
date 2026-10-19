@@ -20,6 +20,14 @@ const compiled = ts.transpileModule(source, {
   },
 }).outputText;
 // La vraie règle du matériel lourd (lib/catalog.ts, sans import) : le test juge ce que juge la boutique.
+// Le vrai contrôle du point relais (lib/boxtal.ts, sans import) : réseaux de la carte, champs complets.
+const boxtalModule = {};
+vm.runInNewContext(
+  ts.transpileModule(readFileSync(resolve(root, 'lib/boxtal.ts'), 'utf8'), {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+  }).outputText,
+  { exports: boxtalModule, process: { env: {} } },
+);
 const catalogModule = {};
 vm.runInNewContext(
   ts.transpileModule(readFileSync(resolve(root, 'lib/catalog.ts'), 'utf8'), {
@@ -740,7 +748,10 @@ function harness({
   const rows = new Map();
   const mails = [];
   const later = [];
-  let rateHits = 0;
+  const rateHits = new Map();
+  const schemaCalls = [];
+  const adapterModes = [];
+  let freshReads = 0;
   let failures = mailFails;
   const cart = {
     id: cartId,
@@ -778,7 +789,10 @@ function harness({
           return this;
         },
         async first() {
-          if (sql.startsWith('INSERT INTO rate_limits')) return ++rateHits;
+          if (sql.startsWith('INSERT INTO rate_limits')) {
+            rateHits.set(values[0], (rateHits.get(values[0]) || 0) + 1);
+            return rateHits.get(values[0]);
+          }
           if (sql === 'SELECT * FROM payment_attempts WHERE cart_id=? AND cart_revision=?')
             return clone(
               [...rows.values()].find((row) => row.cart_id === values[0] && row.cart_revision === values[1]) ?? null,
@@ -1086,11 +1100,7 @@ function harness({
       if (specifier === './alerts')
         return { suspicion: (email) => (/^r\.o\.b\.o\.t/.test(email) ? 'robot' : null) };
       if (specifier === './request') return { clientIp: () => '203.0.113.7' };
-      if (specifier === './boxtal')
-        return {
-          validateRelayPoint: (v) => (v && typeof v === 'object' && v.code && v.name && /^\d{5}$/.test(v.postcode || '') ? v : null),
-          relayLabel: (r) => r.name,
-        };
+      if (specifier === './boxtal') return boxtalModule;
       if (specifier === './mailer')
         return {
           mailerConfigured: () => mailOn,
@@ -1109,6 +1119,14 @@ function harness({
           runtime: async () => ({ COMMERCE_MODE: mode }),
           isAdmin: async () => admin,
           readCatalog: async () => clone(catalog),
+          readCatalogFresh: async () => {
+            freshReads++;
+            return clone(catalog);
+          },
+          ensureSchema: async (name) => {
+            schemaCalls.push(name);
+            return true;
+          },
         };
       if (specifier === './commerce')
         return {
@@ -1128,8 +1146,11 @@ function harness({
         return {
           PayplugError,
           payplugSettings: () => ({ mode, issues }),
-          createPayplug: () => {
-            if (mode !== 'payplug_test' && mode !== 'payplug_live') throw new PayplugError('disabled');
+          // Comme le vrai : la clé (et donc le mode) vient de l'environnement passé, pas de l'interrupteur courant.
+          createPayplug: (env) => {
+            const m = env?.COMMERCE_MODE;
+            if (m !== 'payplug_test' && m !== 'payplug_live') throw new PayplugError('disabled');
+            adapterModes.push(m);
             return adapter;
           },
         };
@@ -1144,6 +1165,15 @@ function harness({
     rows,
     cart,
     mails,
+    schemaCalls,
+    adapterModes,
+    get freshReads() {
+      return freshReads;
+    },
+    /** Change l'interrupteur des ventes en cours de test (COMMERCE_MODE). */
+    setMode: (next) => {
+      mode = next;
+    },
     /** Exécute ce que la route a confié à after() (e-mails de commande), comme Next après la réponse. */
     flush: async () => {
       while (later.length) await later.shift()();
@@ -1552,4 +1582,98 @@ test('heavy equipment is judged on the catalogue entry, not only on the line nam
   assert.equal(r.status, 409);
   assert.deepEqual((await r.json()).heavy, ['station']);
   assert.equal(h.rows.size, 0);
+});
+
+// --- Robustesse du 19/10 (D12, D14, D17, D20, D21, D28, D35) ---
+
+const relay = { code: 'FR-12345', network: 'MONR_NETWORK', name: 'Tabac du Ring', address: '4 rue des Cordes', postcode: '31000', city: 'Toulouse' };
+
+test('D17: switching COMMERCE_MODE does not freeze live attempts (IPN, status, reconcile use the attempt mode)', async () => {
+  const h = relayHarness({ onVerify: async () => payment('paid'), onRetrieve: async () => payment('paid') });
+  const { attempt } = await (await h.post('create', { ...publicPayload, quotedTotal: 4890 })).json();
+  assert.equal(h.rows.get(attempt.id).mode, 'payplug_live');
+  for (const next of ['simulation', 'payplug_test']) {
+    h.setMode(next);
+    h.adapterModes.length = 0;
+    assert.equal((await h.post('ipn', { id: 'pay_12345678' })).status, 200);
+    assert.deepEqual(h.adapterModes, ['payplug_live']);
+  }
+  assert.equal(h.rows.get(attempt.id).status, 'paid');
+  // L'atelier relit aussi la tentative live alors que l'interrupteur est en simulation.
+  h.setMode('simulation');
+  const owner = harness({ mode: 'simulation', onRetrieve: async () => payment('paid') });
+  owner.rows.set(attempt.id, { ...h.rows.get(attempt.id) });
+  const r = await owner.post('reconcile', { id: attempt.id });
+  assert.equal(r.status, 200);
+  assert.deepEqual(owner.adapterModes, ['payplug_live']);
+  // Mais aucune création hors mode de vente.
+  assert.equal((await owner.post('create', payload)).status, 409);
+});
+
+test('D28: the attempt hint only serves a young creating/pending attempt; old or settled ones are ignored', async () => {
+  const h = harness({ onRetrieve: async () => payment('paid') });
+  const id = '30000000-0000-4000-8000-000000000001';
+  const base = { id, cart_id: cartId, request_key: key, fingerprint: '', cart_revision: 1, mode: 'payplug_test', name: 'T L', email: 'nobody@example.invalid', billing: '{}', lines: '[]', subtotal: 4000, shipping: 890, total: 4890, delivery: 'home', provider_id: null, payment_url: null, error: null, paid_at: null, refunded_cents: 0, updated_at: new Date().toISOString() };
+  h.rows.set(id, { ...base, status: 'pending', created_at: new Date(Date.now() - 2 * 3600000).toISOString() });
+  assert.equal((await h.post('ipn', { id: 'pay_12345678' }, { attemptHint: id })).status, 503);
+  h.rows.set(id, { ...base, status: 'failed', created_at: new Date().toISOString() });
+  assert.equal((await h.post('ipn', { id: 'pay_12345678' }, { attemptHint: id })).status, 503);
+  assert.equal(h.adapterCalls.length, 0);
+  h.rows.set(id, { ...base, status: 'pending', created_at: new Date().toISOString() });
+  assert.equal((await h.post('ipn', { id: 'pay_12345678' }, { attemptHint: id })).status, 200);
+  assert.equal(h.calls('retrieve').length, 1);
+});
+
+test('D28: IPN is rate limited per address before any lookup or provider call', async () => {
+  const h = harness();
+  let last;
+  for (let i = 0; i < 301; i++) last = await h.post('ipn', { id: 'pay_unknown99' });
+  assert.equal(last.status, 429);
+  assert.equal(h.adapterCalls.length, 0);
+});
+
+test('D14: create, IPN and status never touch the schema; the order e-mails ensure it after the response', async () => {
+  const h = harness({ onVerify: async () => payment('paid') });
+  const { attempt } = await (await h.post('create', payload)).json();
+  await h.post('ipn', { id: 'pay_12345678' });
+  await h.get('status', attempt.id);
+  assert.deepEqual(h.schemaCalls, []);
+  await h.flush();
+  assert.ok(h.schemaCalls.length >= 1 && h.schemaCalls.every((n) => n === 'payment_attempts.notify'));
+});
+
+test('D20: relay point must belong to a map network and to mainland France', async () => {
+  const h = relayHarness();
+  const send = (r) => h.post('create', { ...publicPayload, quotedTotal: 4890, relay: r });
+  assert.equal((await send({ ...relay, network: 'FAKE_NETWORK' })).status, 400);
+  const corse = await send({ ...relay, postcode: '20000', city: 'Ajaccio' });
+  assert.equal(corse.status, 400);
+  assert.match((await corse.json()).error, /France continentale/);
+  assert.equal((await send({ ...relay, postcode: '97400', city: 'Saint-Denis' })).status, 400);
+  assert.equal(h.rows.size, 0);
+  assert.equal(h.adapterCalls.length, 0);
+});
+
+test('D21: a relay order sends PayPlug the relay address as SHIP_TO_STORE; home delivery keeps billing', async () => {
+  const h = relayHarness();
+  const r = await h.post('create', { ...publicPayload, quotedTotal: 4890, relay: { ...relay, network: 'MONR' } });
+  assert.equal(r.status, 201);
+  const { shipping } = h.calls('create')[0].args;
+  assert.equal(shipping.delivery_type, 'SHIP_TO_STORE');
+  assert.equal(shipping.address1, relay.address);
+  assert.equal(shipping.postcode, relay.postcode);
+  assert.equal(shipping.first_name, 'Test');
+  const stored = JSON.parse([...h.rows.values()][0].billing);
+  assert.equal(stored.relay.network, 'MONR_NETWORK');
+  const home = relayHarness();
+  assert.equal((await home.post('create', { ...publicPayload, delivery: 'home', quotedTotal: 4890 })).status, 201);
+  assert.equal(home.calls('create')[0].args.shipping, undefined);
+});
+
+test('D12: a price gap is re-checked on a fresh catalogue before answering « Le panier a changé »', async () => {
+  const h = relayHarness();
+  assert.equal((await h.post('create', { ...publicPayload, quotedTotal: 4790 })).status, 409);
+  assert.equal(h.freshReads, 1);
+  assert.equal((await h.post('create', { ...publicPayload, quotedTotal: 4890 })).status, 201);
+  assert.equal(h.freshReads, 1);
 });
