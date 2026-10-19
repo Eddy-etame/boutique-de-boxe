@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { categoryFor, getCategoryProducts, listItem, type Product } from '@/lib/catalog';
+import { categoryFor, getCategoryProducts, listItem, shop, type Product } from '@/lib/catalog';
 import { SUBFAMILIES, subfamilyProducts } from '@/lib/subfamilies';
 import { graph, urlOf, webPageNode, faqNode } from '@/lib/seo';
 import { ogImage } from '@/lib/og';
@@ -396,6 +396,9 @@ function adressePostale(adresse: string) {
   return { '@type': 'PostalAddress', streetAddress: rue, ...(cp ? { postalCode: cp, addressLocality: ville } : {}), addressCountry: 'FR' };
 }
 
+/** Date de révision des pages-villes : le recensement, ou le jour où leur texte est passé au présent (ventes ouvertes).
+ *  La même date dans le plan du site (app/sitemap.ts) et dans le graphe de la page. */
+export const VILLES_DATE = shop.ventesOuvertes ? [SOURCE.maj, shop.ouverture.iso].sort().at(-1)! : SOURCE.maj;
 const sourceNode = () => ({ '@type': 'Dataset', name: SOURCE.nom, url: SOURCE.url, license: SOURCE.licenceUrl, creator: { '@type': 'GovernmentOrganization', name: 'Ministère des Sports' }, dateModified: SOURCE.maj });
 
 /* ── Page d'une ville ──────────────────────────────────────────────────── */
@@ -414,7 +417,7 @@ export function VillePage({ ville: v, all }: { ville: Ville; all: Product[] }) {
         dangerouslySetInnerHTML={{
           __html: graph([
             {
-              ...webPageNode({ path, name: titre, description: villeDescription(v), type: 'CollectionPage', image: '/vignette/x/boutique-de-boxe-' + v.slug + '.png', dateModified: SOURCE.maj, keywords: ['boutique de boxe ' + v.nom.toLowerCase(), 'salle de boxe ' + v.nom], mainEntity: urlOf(path) + '#lieux' }),
+              ...webPageNode({ path, name: titre, description: villeDescription(v), type: 'CollectionPage', image: '/vignette/x/boutique-de-boxe-' + v.slug + '.png', dateModified: VILLES_DATE, keywords: ['boutique de boxe ' + v.nom.toLowerCase(), 'salle de boxe ' + v.nom], mainEntity: urlOf(path) + '#lieux' }),
               spatialCoverage: { '@type': 'City', name: v.nom, containedInPlace: { '@type': 'AdministrativeArea', name: v.departement } },
               isBasedOn: sourceNode(),
             },
@@ -536,7 +539,7 @@ export function RegionPage({ region: r, all }: { region: Region; all: Product[] 
         dangerouslySetInnerHTML={{
           __html: graph([
             {
-              ...webPageNode({ path, name: titre, description: regionDescription(r), type: 'CollectionPage', image: '/vignette/x/boutique-de-boxe-' + r.slug + '.png', dateModified: SOURCE.maj, keywords: ['boutique de boxe ' + r.nom.toLowerCase()], mainEntity: urlOf(path) + '#departements' }),
+              ...webPageNode({ path, name: titre, description: regionDescription(r), type: 'CollectionPage', image: '/vignette/x/boutique-de-boxe-' + r.slug + '.png', dateModified: VILLES_DATE, keywords: ['boutique de boxe ' + r.nom.toLowerCase()], mainEntity: urlOf(path) + '#departements' }),
               spatialCoverage: { '@type': 'AdministrativeArea', name: r.nom },
               isBasedOn: sourceNode(),
             },
@@ -645,7 +648,7 @@ export function CarrefourPage({ all }: { all: Product[] }) {
         dangerouslySetInnerHTML={{
           __html: graph([
             {
-              ...webPageNode({ path: HUB_PATH, name: CARREFOUR_TITRE, description: CARREFOUR_DESCRIPTION, type: 'CollectionPage', image: '/vignette/x/' + CARREFOUR + '.png', dateModified: SOURCE.maj, keywords: ['boutique sport de combat france', 'boutique sport de combat'], mainEntity: urlOf(HUB_PATH) + '#villes' }),
+              ...webPageNode({ path: HUB_PATH, name: CARREFOUR_TITRE, description: CARREFOUR_DESCRIPTION, type: 'CollectionPage', image: '/vignette/x/' + CARREFOUR + '.png', dateModified: VILLES_DATE, keywords: ['boutique sport de combat france', 'boutique sport de combat'], mainEntity: urlOf(HUB_PATH) + '#villes' }),
               isBasedOn: sourceNode(),
             },
             {

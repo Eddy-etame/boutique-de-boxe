@@ -7,6 +7,7 @@ import { SUBFAMILIES, subfamilyProducts } from '@/lib/subfamilies';
 import { brandsOf } from '@/lib/brands';
 import { allFacets } from '@/lib/facets';
 import { VILLES, REGIONS, CARREFOUR, SOURCE, villePath } from '@/lib/villes';
+import { VILLES_DATE } from '@/components/ville-page';
 const SUBFAMILY_PATHS = new Set(SUBFAMILIES.map((s) => '/' + s.slug + '/'));
 const TOOL_PATHS = new Set(['/observatoire-des-prix/', '/outils/poids-de-gants/']);
 // « Vente matériel de boxe » (03/10) : une page de catalogue qui n'est pas une famille ; ses chiffres suivent le catalogue.
@@ -53,6 +54,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ]),
   );
 
+  // Une recherche par chemin au lieu de parcourir le catalogue pour chacune des 1 240 adresses.
+  const bySlug = new Map(products.map((p) => ['/produits/' + p.slug + '/', p] as const));
   const allProductsDate = collectionDate(products);
   for (const path of ['/', '/marques/', '/observatoire-des-prix/', '/nouveautes/', VENTE_PATH, '/plan-du-site/'])
     dates.set(path, allProductsDate);
@@ -66,8 +69,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const facet of facets)
     dates.set(facet.path, collectionDate(facet.products));
   // Le jour où les ventes ouvrent, le texte des pages-villes passe au présent : leur date le dit.
-  const villeDate = shop.ventesOuvertes ? [SOURCE.maj, shop.ouverture.iso].sort().at(-1)! : SOURCE.maj;
-  for (const path of VILLE_PATHS) dates.set(path, villeDate);
+  for (const path of VILLE_PATHS) dates.set(path, VILLES_DATE);
   for (const path of INFO_PATHS) dates.set(path, SOURCE.maj);
   // Un guide écrit après le lancement porte sa propre date, jamais celle de la révision générale.
   for (const g of guides) if (guidePublished(g) > EDITORIAL_DATE) dates.set('/guides/' + g.slug + '/', guidePublished(g));
@@ -92,7 +94,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/contact/',
     '/plan-du-site/',
   ].map((path) => {
-    const product = path.startsWith('/produits/') ? products.find((p) => '/produits/' + p.slug + '/' === path) : undefined;
+    const product = path.startsWith('/produits/') ? bySlug.get(path) : undefined;
     const kind = path === '/' ? 'home' : product ? 'product' : VILLE_PATHS.has(path) || INFO_PATHS.has(path) ? 'ville' : SUBFAMILY_PATHS.has(path) || path.startsWith('/marques/') || /^\/gants-de-boxe-[a-z0-9-]+\/$/.test(path) ? 'subfamily' : TOOL_PATHS.has(path) ? 'index' : path.startsWith('/guides/') ? 'guide' : categoryFor(path.replace(/^\/|\/$/g, '')) || path === VENTE_PATH ? 'category' : path === '/nouveautes/' || path === '/guides/' ? 'index' : 'service';
     return {
       url: shop.origin + path,
