@@ -3,10 +3,10 @@ import { categoryFor } from '@/lib/catalog';
 import { parseRelay, relayLabel } from '@/lib/boxtal';
 
 /**
- * Clients et ventes de la boutique, lus depuis les commandes d’essai approuvées
- * et les paiements PayPlug confirmés. Sert l’onglet « Clients & ventes » de
- * l’atelier et les exports CSV. Aucun chiffre ici n’est un encaissement tant
- * que la boutique reste en simulation.
+ * Clients et ventes de la boutique, lus depuis les paiements PayPlug confirmés (et, pour mémoire, les
+ * commandes d’essai de septembre). Sert l’onglet « Clients & ventes » de l’atelier et les exports CSV.
+ * Le chiffre d’affaires ne compte que les paiements réels encaissés : statut « paid » en mode live
+ * (19/10/2026) — ni les essais simulés, ni les paiements de test.
  */
 type OrderRow = {
   id: string;
@@ -59,21 +59,42 @@ async function orders(days: number): Promise<OrderRow[]> {
   const payplug = (
     await database
       .prepare(
-        "SELECT id,name,email,billing,lines,subtotal,shipping,total,delivery,status,created_at FROM payment_attempts WHERE status='paid' AND created_at>=? ORDER BY created_at DESC LIMIT 5000",
+        "SELECT id,name,email,billing,lines,subtotal,shipping,total,delivery,status,created_at FROM payment_attempts WHERE status='paid' AND mode='payplug_live' AND created_at>=? ORDER BY created_at DESC LIMIT 5000",
       )
       .bind(since)
       .all<Omit<OrderRow, 'source' | 'phone' | 'optin' | 'address1' | 'address2' | 'postcode' | 'city'> & { billing: string }>()
   ).results.map((o) => {
-    // L’adresse de facturation PayPlug sert d’adresse de livraison faute de mieux.
+    // La commande garde ce que le client a saisi (lib/payplug-orders.ts, Stored) : téléphone, accord à la
+    // lettre, adresse, et le point relais choisi. L’adresse de facturation sert d’adresse à domicile.
     let b: Record<string, unknown> = {};
     try { b = JSON.parse(o.billing || '{}'); } catch { /* facturation illisible */ }
     const str = (v: unknown) => (typeof v === 'string' ? v : '');
-    return { ...o, phone: str(b.mobile_phone_number), optin: 0, address1: str(b.address1), address2: str(b.address2), postcode: str(b.postcode), city: str(b.city), source: 'payplug' as const, status: 'paid' };
+    return { ...o, phone: str(b.phone) || str(b.mobile_phone_number), optin: b.optin === true ? 1 : 0, address1: str(b.address1), address2: str(b.address2), postcode: str(b.postcode), city: str(b.city), relay_point: b.relay && typeof b.relay === 'object' ? JSON.stringify(b.relay) : '', source: 'payplug' as const, status: 'paid' };
   });
   return [...essais, ...payplug].sort((a, b) => (a.created_at < b.created_at ? 1 : -1));
 }
 
-const approved = (o: OrderRow) => o.status === 'simulated_paid' || o.status === 'paid';
+/** Une vente réelle : un paiement PayPlug live encaissé (la requête ne lit que ceux-là). */
+const approved = (o: OrderRow) => o.source === 'payplug' && o.status === 'paid';
+/** Un essai de septembre refusé ; un essai « approuvé » n’est ni une vente ni un refus. */
+const declinedRow = (o: OrderRow) => o.source === 'essai' && o.status !== 'simulated_paid';
+/** Le numéro de commande que voit le client (BDB-…), comme sur PayPlug et dans les e-mails. */
+const orderRef = (o: OrderRow) => (o.source === 'payplug' ? 'BDB-' + o.id.slice(0, 8).toUpperCase() : o.id);
+const saleRow = (o: OrderRow, nameOf: (id: string, fallback?: string) => string) => ({
+  id: o.id,
+  reference: orderRef(o),
+  name: o.name,
+  email: o.email,
+  phone: o.phone || '',
+  optin: Boolean(o.optin),
+  address: [o.address1, o.address2, [o.postcode, o.city].filter(Boolean).join(' ')].filter(Boolean).join(', '),
+  delivery: o.delivery + (parseRelay(o.relay_point) ? ' · ' + relayLabel(parseRelay(o.relay_point)!) : ''),
+  total: o.total,
+  status: o.status,
+  source: o.source,
+  createdAt: o.created_at,
+  items: parseLines(o).map((l) => nameOf(l.productId, l.name) + (l.variant ? ' · ' + l.variant : '') + ' × ' + l.quantity),
+});
 const parseLines = (o: OrderRow): Line[] => {
   try {
     const v = JSON.parse(o.lines);
@@ -83,7 +104,8 @@ const parseLines = (o: OrderRow): Line[] => {
   }
 };
 
-export async function clientsReport(days: number) {
+/** `allSales` : toutes les ventes de la période (export CSV), pas seulement les 50 dernières de l’écran. */
+export async function clientsReport(days: number, allSales = false) {
   const [rows, products] = await Promise.all([orders(days), readCatalog()]);
   const byId = new Map(products.map((p) => [p.id, p]));
   const nameOf = (id: string, fallback?: string) => byId.get(id)?.name || fallback || id;
@@ -105,7 +127,7 @@ export async function clientsReport(days: number) {
     if (approved(o)) {
       c.approved++;
       c.total += o.total;
-    } else c.declined++;
+    } else if (declinedRow(o)) c.declined++;
     if (o.phone && !c.phone) c.phone = o.phone;
     const address = [o.address1, o.address2, [o.postcode, o.city].filter(Boolean).join(' ')].filter(Boolean).join(', ');
     if (address && (!c.address || o.created_at >= c.last)) c.address = address;
@@ -181,7 +203,7 @@ export async function clientsReport(days: number) {
       withPhone: list.filter((c) => c.phone).length,
       orders: rows.length,
       approved: paid.length,
-      declined: rows.length - paid.length,
+      declined: rows.filter(declinedRow).length,
       revenue,
       averageBasket: paid.length ? Math.round(revenue / paid.length) : 0,
       repeatClients: list.filter((c) => c.approved > 1).length,
@@ -193,7 +215,8 @@ export async function clientsReport(days: number) {
     brands: [...byBrand.entries()].map(([name, v]) => ({ name, ...v })).sort((a, b) => b.revenue - a.revenue).slice(0, 15),
     deliveries: [...byDelivery.entries()].map(([mode, n]) => ({ mode, n })),
     funnel,
-    recent: rows.slice(0, 50).map((o) => ({ id: o.id, name: o.name, email: o.email, phone: o.phone || '', address: [o.address1, o.address2, [o.postcode, o.city].filter(Boolean).join(' ')].filter(Boolean).join(', '), delivery: o.delivery + (parseRelay(o.relay_point) ? ' · ' + relayLabel(parseRelay(o.relay_point)!) : ''), total: o.total, status: o.status, source: o.source, createdAt: o.created_at, items: parseLines(o).map((l) => nameOf(l.productId, l.name) + (l.variant ? ' · ' + l.variant : '') + ' × ' + l.quantity) })),
+    recent: rows.slice(0, 50).map((o) => saleRow(o, nameOf)),
+    ...(allSales ? { sales: rows.map((o) => saleRow(o, nameOf)) } : {}),
   };
 }
 
@@ -223,16 +246,17 @@ export async function alertsCsv() {
 }
 
 export async function clientsCsv(kind: 'clients' | 'ventes', days: number) {
-  const r = await clientsReport(days);
+  const r = await clientsReport(days, kind === 'ventes');
   const lines: string[] = [];
   if (kind === 'clients') {
     lines.push(['Nom', 'E-mail', 'Téléphone', 'Adresse', 'Accord e-mail', 'Commandes', 'Approuvées', 'Refusées', 'Total (€)', 'Première commande', 'Dernière commande', 'Modèles', 'Origine'].join(';'));
     for (const c of r.clients)
       lines.push([c.name, c.email, c.phone, c.address, c.optin ? 'oui' : 'non', c.orders, c.approved, c.declined, euros(c.total), c.first.slice(0, 10), c.last.slice(0, 10), c.items.join(' | '), c.sources.join(' | ')].map(cell).join(';'));
   } else {
-    lines.push(['Date', 'Référence', 'Client', 'E-mail', 'Téléphone', 'Adresse', 'Livraison', 'Statut', 'Origine', 'Total (€)', 'Articles'].join(';'));
-    for (const o of r.recent)
-      lines.push([o.createdAt.slice(0, 19).replace('T', ' '), o.id, o.name, o.email, o.phone, o.address, o.delivery, o.status, o.source, euros(o.total), o.items.join(' | ')].map(cell).join(';'));
+    lines.push(['Date', 'Référence', 'Client', 'E-mail', 'Téléphone', 'Adresse', 'Livraison', 'Accord e-mail', 'Statut', 'Origine', 'Total (€)', 'Articles'].join(';'));
+    // Toute la période demandée, pas seulement les 50 dernières commandes de l’écran.
+    for (const o of r.sales ?? r.recent)
+      lines.push([o.createdAt.slice(0, 19).replace('T', ' '), o.reference, o.name, o.email, o.phone, o.address, o.delivery, o.optin ? 'oui' : 'non', o.status, o.source, euros(o.total), o.items.join(' | ')].map(cell).join(';'));
   }
   return '\ufeff' + lines.join('\r\n') + '\r\n';
 }
