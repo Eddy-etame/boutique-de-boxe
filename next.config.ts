@@ -37,7 +37,15 @@ const securityHeaders = [
   { key: 'X-Frame-Options', value: 'DENY' },
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
   { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), payment=(self), usb=(), browsing-topics=()' },
+  // Une page d'un autre site qui ouvre la boutique dans une fenêtre perd toute prise sur elle (pas de
+  // redirection à distance de l'onglet, pas de fuite par window.opener). « allow-popups » laisse
+  // intactes les fenêtres que la boutique ou ses prestataires (carte Boxtal) ouvriraient eux-mêmes.
+  { key: 'Cross-Origin-Opener-Policy', value: 'same-origin-allow-popups' },
 ];
+// Pour retirer 'unsafe-inline' de script-src, il faudrait un nonce par requête (posé par proxy.ts et
+// repris par Next sur ses scripts en ligne) : toutes les pages deviendraient dynamiques, sans cache
+// statique ni ISR. Une empreinte (sha256) ne suffit pas : les scripts en ligne de Next changent à
+// chaque page. D'ici là, tout JSON écrit dans une page passe par jsonLd() (lib/json-ld.ts).
 
 const nextConfig: NextConfig = {
   trailingSlash: true,
