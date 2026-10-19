@@ -1,4 +1,4 @@
-import { db, isAdmin, readCatalog } from '@/lib/database';
+import { db, isAdmin, readCatalog, ensureSchema } from '@/lib/database';
 import { clientIp } from '@/lib/request';
 import { categoryFor } from '@/lib/catalog';
 import { SUBFAMILIES } from '@/lib/subfamilies';
@@ -20,18 +20,25 @@ const TYPES = new Set(['view', 'leave', 'click', 'add_to_cart', 'alert_submit', 
 const reply = (data: unknown, status = 200) => Response.json(data, { status, headers: { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' } });
 const cookie = (request: Request, name: string) => request.headers.get('cookie')?.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]+)'))?.[1];
 
-let tableReady = false;
-async function ensureTable() {
-  if (tableReady) return;
-  const database = await db();
-  await database.prepare('CREATE TABLE IF NOT EXISTS events (id text PRIMARY KEY, vid text NOT NULL, sid text NOT NULL, type text NOT NULL, path text NOT NULL, referrer text NOT NULL DEFAULT \'\', data text NOT NULL DEFAULT \'{}\', device text NOT NULL DEFAULT \'\', created_at text NOT NULL)').run();
-  await database.prepare('CREATE INDEX IF NOT EXISTS events_created ON events (created_at)').run();
-  await database.prepare('CREATE INDEX IF NOT EXISTS events_sid ON events (sid)').run();
-  await database.prepare('CREATE INDEX IF NOT EXISTS events_path_type ON events (path, type)').run();
-  // Meme regle que les autres tables : securite par ligne activee, le service seul lit et ecrit.
-  await database.prepare('ALTER TABLE events ENABLE ROW LEVEL SECURITY').run();
-  tableReady = true;
-}
+/**
+ * Table des événements (19/10, D14) : une lecture du catalogue système par instance ; CREATE et
+ * ALTER TABLE seulement s'il manque la table, un index ou la RLS, avec lock_timeout (lib/database.ts).
+ * Avant, l'ALTER TABLE ... ENABLE ROW LEVEL SECURITY prenait un verrou exclusif à chaque démarrage,
+ * en file derrière un rapport d'audience de 365 jours. SQL complet : drizzle/0006_schema_du_service.sql.
+ */
+const ensureTable = () =>
+  ensureSchema(
+    'events',
+    "SELECT (CASE WHEN to_regclass('events') IS NULL THEN 1 ELSE 0 END) + (CASE WHEN to_regclass('events_created') IS NULL THEN 1 ELSE 0 END) + (CASE WHEN to_regclass('events_sid') IS NULL THEN 1 ELSE 0 END) + (CASE WHEN to_regclass('events_path_type') IS NULL THEN 1 ELSE 0 END) + (SELECT count(*) FROM pg_class WHERE oid = to_regclass('events') AND NOT relrowsecurity) AS missing",
+    [
+      "CREATE TABLE IF NOT EXISTS events (id text PRIMARY KEY, vid text NOT NULL, sid text NOT NULL, type text NOT NULL, path text NOT NULL, referrer text NOT NULL DEFAULT '', data text NOT NULL DEFAULT '{}', device text NOT NULL DEFAULT '', created_at text NOT NULL)",
+      'CREATE INDEX IF NOT EXISTS events_created ON events (created_at)',
+      'CREATE INDEX IF NOT EXISTS events_sid ON events (sid)',
+      'CREATE INDEX IF NOT EXISTS events_path_type ON events (path, type)',
+      // Même règle que les autres tables : sécurité par ligne activée, le service seul lit et écrit.
+      'ALTER TABLE events ENABLE ROW LEVEL SECURITY',
+    ],
+  );
 
 // Seules ces cles sont conservees ; les nombres sont bornes, les textes coupes.
 const NUM_KEYS = new Set(['w', 'h', 'dwell', 'depth', 'results']);
