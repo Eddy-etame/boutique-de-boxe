@@ -4,15 +4,20 @@ import type { Product } from './catalog';
  * Synchronisation avec la boutique du club (boutique.boxingcenter.fr).
  *
  * Treize références sont vendues aux deux endroits. La boutique du club fait foi : son catalogue
- * public (`/api/materiel`) donne le prix, le prix barré et l’état de chaque référence. Ici, on le
- * relit toutes les quinze minutes et le prix du club remplace le nôtre à la lecture du catalogue.
+ * public (`/api/materiel`) donne le prix, le prix barré et l’état de chaque référence.
  *
- * Jamais bloquant : la page n’attend pas le club. Tant que la première lecture n’est pas revenue,
- * et si le club ne répond plus, le dernier relevé connu sert, sinon le prix du fichier. Un prix
- * aberrant (moins de la moitié ou plus du double du nôtre) n’est pas appliqué : il est signalé.
+ * Un seul relevé pour toutes les instances (19/10, D12) : il est gardé en base (table club_snapshot,
+ * une ligne, une date) et lu avec le catalogue, de façon synchrone. Chaque instance applique donc le
+ * même prix : la fiche, le panier et le paiement ne se contredisent plus (« Le panier a changé »
+ * au hasard d’une instance froide). Quand le relevé a plus de quinze minutes, l’instance qui le
+ * remarque relit le club en arrière-plan et réécrit la ligne ; si le club ne répond plus, toutes
+ * gardent le même dernier relevé. Sans base (panne), le dernier relevé lu par l’instance sert.
+ *
+ * Une référence désactivée au club est retirée de la vente ici aussi. Un prix aberrant (moins de la
+ * moitié ou plus du double du nôtre) n’est pas appliqué : il est signalé (clubDifferences).
  */
 const CLUB_URL = 'https://boutique.boxingcenter.fr/api/materiel';
-const TTL = 15 * 60 * 1000;
+export const CLUB_TTL = 15 * 60 * 1000;
 
 export type ClubProduct = {
   id: string;
@@ -22,60 +27,83 @@ export type ClubProduct = {
   active?: boolean;
   combinations?: { label?: string; name?: string }[];
 };
-type Snapshot = { at: number; syncedAt: string; products: Map<string, ClubProduct> };
+export type Snapshot = { at: number; syncedAt: string; products: Map<string, ClubProduct> };
+/** La ligne de la table club_snapshot. */
+export type ClubRow = { payload: string; synced_at: string; read_at: number };
 
 declare global {
   var __clubSync: { snapshot: Snapshot | null; pending: Promise<void> | null; failedAt: number } | undefined;
 }
-const state = () => (globalThis.__clubSync ??= { snapshot: null, pending: null, failedAt: 0 });
+/** Le dernier relevé lu par cette instance (repli quand la base manque) et la relecture en cours. */
+export const clubState = () => (globalThis.__clubSync ??= { snapshot: null, pending: null, failedAt: 0 });
 
-async function refresh(): Promise<void> {
-  const s = state();
+/** Une référence exploitable : un identifiant, et un prix positif sauf si elle est désactivée. */
+const usable = (p: ClubProduct | null | undefined): p is ClubProduct =>
+  Boolean(p) &&
+  typeof p!.id === 'string' &&
+  (p!.active === false || (Number.isInteger(p!.price_cents) && p!.price_cents > 0));
+
+/** La ligne gardée en base → relevé ; null si elle manque ou ne se lit pas. */
+export function snapshotFromRow(row: ClubRow | null | undefined): Snapshot | null {
+  if (!row?.payload) return null;
   try {
-    // Cache de cinq minutes (13/10/2026) : « cache: 'no-store' » faisait échouer la régénération de l'accueil
-    // (« Page changed from static to dynamic at runtime / », 500 vus en production) ; le mémo ci-dessous
-    // tient déjà la fraîcheur, et les prix du club ne changent pas à la minute.
-    const res = await fetch(CLUB_URL, { signal: AbortSignal.timeout(8000), next: { revalidate: 300 }, headers: { Accept: 'application/json' } });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const data = (await res.json()) as { synced_at?: string; products?: ClubProduct[] };
-    const rows = (data.products || []).filter((p) => p && typeof p.id === 'string' && Number.isInteger(p.price_cents) && p.price_cents > 0);
-    if (!rows.length) throw new Error('catalogue vide');
-    s.snapshot = { at: Date.now(), syncedAt: data.synced_at || '', products: new Map(rows.map((p) => [p.id, p])) };
-  } catch (error) {
-    s.failedAt = Date.now();
-    console.error('club sync', error instanceof Error ? error.message : 'erreur');
-  } finally {
-    s.pending = null;
+    const rows = (JSON.parse(row.payload) as ClubProduct[]).filter(usable);
+    if (!rows.length) return null;
+    return { at: Number(row.read_at) || 0, syncedAt: row.synced_at || '', products: new Map(rows.map((p) => [p.id, p])) };
+  } catch {
+    return null;
   }
 }
 
-/** Dernier relevé connu ; relance une lecture en arrière-plan quand il a vieilli. */
-export function clubSnapshot(): Snapshot | null {
-  const s = state();
-  const stale = !s.snapshot || Date.now() - s.snapshot.at > TTL;
-  // Après un échec, on laisse une minute avant de réessayer.
-  if (stale && !s.pending && Date.now() - s.failedAt > 60000) s.pending = refresh();
-  return s.snapshot;
+/** Relit le catalogue public du club (8 s au plus) ; lève une erreur s’il ne répond pas ou s’il est vide. */
+export async function fetchClub(): Promise<{ syncedAt: string; products: ClubProduct[] }> {
+  // Cache de cinq minutes (13/10/2026) : « cache: 'no-store' » faisait échouer la régénération de l'accueil
+  // (« Page changed from static to dynamic at runtime / », 500 vus en production) ; le relevé en base
+  // tient déjà la fraîcheur, et les prix du club ne changent pas à la minute.
+  const res = await fetch(CLUB_URL, { signal: AbortSignal.timeout(8000), next: { revalidate: 300 }, headers: { Accept: 'application/json' } });
+  if (!res.ok) {
+    await res.body?.cancel().catch(() => undefined);
+    throw new Error('HTTP ' + res.status);
+  }
+  const data = (await res.json()) as { synced_at?: string; products?: ClubProduct[] };
+  // Seuls les champs utiles sont gardés : identifiant, prix, prix barré, état.
+  const products = (data.products || []).filter(usable).map(({ id, price_cents, price_was_cents, active }) => ({
+    id,
+    price_cents,
+    price_was_cents: price_was_cents ?? null,
+    ...(active === false ? { active: false } : {}),
+  }));
+  if (!products.length) throw new Error('catalogue vide');
+  return { syncedAt: typeof data.synced_at === 'string' ? data.synced_at.slice(0, 40) : '', products };
 }
 
-/** Pour les scripts et l’atelier : attend la lecture en cours. */
+/** Pour les scripts et l’atelier : relit le club tout de suite (sans passer par la base). */
 export async function clubSnapshotNow(): Promise<Snapshot | null> {
-  clubSnapshot();
-  await state().pending;
-  return state().snapshot;
+  try {
+    const data = await fetchClub();
+    return { at: Date.now(), syncedAt: data.syncedAt, products: new Map(data.products.map((p) => [p.id, p])) };
+  } catch {
+    return clubState().snapshot;
+  }
 }
 
 export type ClubDifference = { id: string; field: 'prix' | 'absent du club' | 'inactif au club' | 'prix aberrant'; ours: string; club: string };
 
-export function applyClub(products: Product[]): Product[] {
-  const snap = clubSnapshot();
+/**
+ * Le relevé appliqué au catalogue : prix du club, et retrait de la vente de ce que le club a
+ * désactivé (fiche, listes, panier et paiement ne le proposent plus). Sans relevé : inchangé.
+ */
+export function applyClub(products: Product[], snap: Snapshot | null): Product[] {
   if (!snap) return products;
-  return products.map((p) => {
+  const out: Product[] = [];
+  for (const p of products) {
     const c = snap.products.get(p.id);
-    if (!c || c.price_cents === p.price) return p;
-    if (c.price_cents < p.price * 0.5 || c.price_cents > p.price * 2) return p;
-    return { ...p, price: c.price_cents, variants: p.variants?.map((v) => (v.price === p.price ? { ...v, price: c.price_cents } : v)) };
-  });
+    if (!c) out.push(p);
+    else if (c.active === false) continue;
+    else if (c.price_cents === p.price || c.price_cents < p.price * 0.5 || c.price_cents > p.price * 2) out.push(p);
+    else out.push({ ...p, price: c.price_cents, variants: p.variants?.map((v) => (v.price === p.price ? { ...v, price: c.price_cents } : v)) });
+  }
+  return out;
 }
 
 export function clubDifferences(fileProducts: Product[], snap: Snapshot): ClubDifference[] {
