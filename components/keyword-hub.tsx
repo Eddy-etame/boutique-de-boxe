@@ -8,6 +8,7 @@ import { ozFacets, colourFacets, brandFamilyFacet } from '@/lib/facets';
 import { ProductCard } from './shop-interactions';
 import { dansLeRayon } from '@/lib/rayons';
 import { VILLES, REGIONS, CARREFOUR, FRAPPE, villePath } from '@/lib/villes';
+import { jsonLd } from '@/lib/json-ld';
 
 /* « Toucher toute la France » (13/10) : chaque page de catalogue nomme les grandes villes, avec le
    nombre de lieux où l'on pratique SA discipline (recensement du ministère des Sports), et les lie.
@@ -138,7 +139,7 @@ export async function KeywordHub({
 
   return (
     <section className="keyword-hub" aria-labelledby={'hub-' + scope}>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(graph) }} />
       <header className="hub-heading">
         <div>
           <span className="eyebrow">CETTE SEMAINE / SEMAINE {week}</span>
