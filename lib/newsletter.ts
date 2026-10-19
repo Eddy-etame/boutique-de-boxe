@@ -1,4 +1,5 @@
 import { db } from './database';
+import { activerRls } from './rls';
 import { suspicion, ensureChoices } from './alerts';
 import { shop } from './catalog';
 import { QuotaExhausted, mailerConfigured, mailerRoute, quotaToday, sendMail } from './mailer';
@@ -21,6 +22,7 @@ async function ensure() {
   const database = await db();
   await database.prepare('CREATE TABLE IF NOT EXISTS campaigns (id text PRIMARY KEY, subject text NOT NULL, body text NOT NULL, created_at text NOT NULL, updated_at text NOT NULL, test_sent_at text, started_at text, finished_at text)').run();
   await database.prepare('CREATE TABLE IF NOT EXISTS campaign_sends (campaign_id text NOT NULL, email text NOT NULL, status text NOT NULL, account text, error text, sent_at text NOT NULL, PRIMARY KEY (campaign_id, email))').run();
+  await activerRls(database, ['campaigns', 'campaign_sends']);
   ready = true;
 }
 

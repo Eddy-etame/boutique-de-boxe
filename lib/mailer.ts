@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 import { db } from './database';
+import { activerRls } from './rls';
 import { shop } from './catalog';
 
 /**
@@ -62,7 +63,9 @@ const today = () => new Date().toISOString().slice(0, 10);
 let quotaReady = false;
 async function ensureQuota() {
   if (quotaReady) return;
-  await (await db()).prepare('CREATE TABLE IF NOT EXISTS mail_quota (account text NOT NULL, day text NOT NULL, sent integer NOT NULL DEFAULT 0, PRIMARY KEY (account, day))').run();
+  const database = await db();
+  await database.prepare('CREATE TABLE IF NOT EXISTS mail_quota (account text NOT NULL, day text NOT NULL, sent integer NOT NULL DEFAULT 0, PRIMARY KEY (account, day))').run();
+  await activerRls(database, ['mail_quota']);
   quotaReady = true;
 }
 
