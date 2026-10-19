@@ -320,5 +320,13 @@ export function cleanName(p: Product) {
     .replace(' — noir et blanc', '')
     .replace(' — gel thermoformable', '');
 }
-/** Une seule fonction d'échappement pour tout le JSON-LD du site (< > & U+2028 U+2029) : lib/json-ld.ts. */
-export { jsonLd } from './json-ld';
+/**
+ * Données structurées sûres dans un <script type="application/ld+json"> : « < », « > », « & », U+2028 et
+ * U+2029 deviennent des séquences \uXXXX (JSON valide, lu à l'identique par les moteurs) ; un nom contenant
+ * « </script> » ne peut plus fermer la balise. Seule définition du site : lib/json-ld.ts la réexporte (ce module
+ * reste sans import relatif : les tests l'exécutent seul).
+ */
+const JSON_LD_A_ECHAPPER = /[<>&\u2028\u2029]/g;
+export function jsonLd(data: unknown): string {
+  return (JSON.stringify(data) ?? 'null').replace(JSON_LD_A_ECHAPPER, (c) => '\\u' + c.charCodeAt(0).toString(16).padStart(4, '0'));
+}

@@ -9,8 +9,4 @@
  *
  * Une seule fonction pour tout le site : chaque JSON écrit dans le HTML passe par elle.
  */
-const A_ECHAPPER = /[<>&\u2028\u2029]/g;
-
-export function jsonLd(data: unknown): string {
-  return (JSON.stringify(data) ?? 'null').replace(A_ECHAPPER, (c) => '\\u' + c.charCodeAt(0).toString(16).padStart(4, '0'));
-}
+export { jsonLd } from './catalog';
