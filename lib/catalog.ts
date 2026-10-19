@@ -126,6 +126,9 @@ export function lourdDuCatalogue(line: { productId: string; name: string; lourd?
 }
 /** Le chemin pour demander un devis de livraison : la page contact (modèle et code postal). */
 export const devisHref = '/contact/';
+/** Un modèle sans déclinaison que le fournisseur annonce « Taille unique » (étiquettes d’origine). */
+export const tailleUnique = (p: Product) =>
+  !p.sizes.length && Boolean(p.sourceSizes?.some((s) => /^taille unique/i.test(s.trim())));
 export const variantPrice = (p:Product, label:string) => p.variants?.find(v=>v.label===label)?.price ?? p.price;
 export const money = (cents: number) =>
   new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(
@@ -304,6 +307,8 @@ export function listItem(p: Product): Product {
     dateAdded: p.dateAdded,
     // cleanName() ne regarde que la présence du nom d’origine ; « Dès » ne demande qu’un autre prix.
     sourceName: p.sourceName ? '1' : undefined,
+    // « Taille unique » sur la carte seulement quand le fournisseur le dit (jamais une déclinaison du panier).
+    sourceSizes: tailleUnique(p) ? ['Taille unique'] : undefined,
     variants: other ? [{ id: '', reference: '', label: '', attributes: {}, price: other.price }] : undefined,
   };
 }

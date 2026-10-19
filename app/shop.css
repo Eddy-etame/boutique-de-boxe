@@ -3142,6 +3142,11 @@ html[data-motion='reduce'] .button:hover {
 .quick-add-button:hover, .quick-add-button:focus-visible, .quick-add.is-open .quick-add-button { background: var(--ink); color: #fff; }
 .quick-add-button:active { transform: scale(.94); }
 .quick-add-button:disabled { opacity: .5; cursor: progress; }
+/* Sur devis (matériel lourd) : pas de « + », un lien vers la demande de devis. */
+.quick-devis { margin-left: auto; min-height: 34px; padding: 0 10px; border: 1.5px solid var(--ink); display: inline-flex; align-items: center; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink); white-space: nowrap; }
+.quick-devis:hover, .quick-devis:focus-visible { background: var(--ink); color: #fff; }
+/* Le prix des cartes est TTC, dit en petit comme le « Prix TTC » de la fiche. */
+.price-row > .price-tax { font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
 .quick-add-sizes { position: absolute; left: auto; right: 0; bottom: calc(100% + 10px); z-index: 6; width: max-content; min-width: 176px; max-width: min(260px, 74vw); background: #fff; border: 1.5px solid var(--ink); padding: 12px; display: flex; flex-wrap: wrap; gap: 7px; box-shadow: 0 16px 38px rgba(20,22,18,.16); animation: quick-pop .28s var(--m-ease, ease) both; }
 .quick-add-sizes::after { content: ''; position: absolute; right: 12px; top: 100%; border: 7px solid transparent; border-top-color: var(--ink); }
 @keyframes quick-pop { from { opacity: 0; transform: translateY(8px) scale(.97); } to { opacity: 1; transform: none; } }
