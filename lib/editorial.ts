@@ -1,4 +1,5 @@
 import seed from './data/guides.json';
+import { livraison } from './catalog';
 export const guides = seed;
 export type Guide = (typeof seed)[number];
 /** Les guides du lancement datent du 9 septembre 2026 ; ceux écrits ensuite portent leur date (« published »). */
@@ -33,7 +34,7 @@ export const services: Record<string, Service> = {
       { question: 'Peut-on commander en ligne ?', answer: 'Oui, depuis le 13 octobre 2026. Choisissez vos modèles et vos tailles, indiquez la livraison, acceptez les conditions générales de vente, puis payez par carte sur la page sécurisée de PayPlug. Un e-mail confirme la commande.' },
       { question: 'Les prix affichés sont-ils définitifs ?', answer: 'Oui : ce sont les prix de vente, toutes taxes comprises, hors livraison. Le prix payé est celui affiché au moment de la commande ; les frais de livraison s’ajoutent au panier avant le paiement, jamais après.' },
       { question: 'Quand ma commande part-elle ?', answer: 'Sous 7 jours ouvrés après le paiement, et la livraison arrive au plus tard 30 jours après la commande. Si un modèle manque, nous vous écrivons avant tout envoi, et vous êtes remboursé si vous le souhaitez.' },
-      { question: 'Livrez-vous partout en France ?', answer: 'Dans toute la France continentale, à domicile ou en point relais : 6,90 € en point relais, offerts dès 69 € d’achats, et 8,90 € à domicile. Pour la Corse et l’outre-mer, écrivez-nous. Le matériel lourd, comme les sacs de frappe ou les portiques, se livre sur devis.' },
+      { question: 'Livrez-vous partout en France ?', answer: `Dans toute la ${livraison.zone}, à domicile ou en point relais : ${livraison.relais} en point relais, offerts dès ${livraison.franco} d’achats, et ${livraison.domicile} à domicile. Pour la Corse, l’outre-mer ou Monaco, écrivez-nous. Le matériel lourd, comme les sacs de frappe ou les portiques, se livre sur devis.` },
       { question: 'Comment choisir la taille de mes gants ?', answer: 'Par l’usage, pas par la main : 10 oz pour le sac, 12 oz pour la technique, 14 à 16 oz avec un partenaire. Les onces sont un poids de rembourrage. Le guide des tailles et le guide des onces détaillent chaque cas, gants, textile, chaussures et enfants compris.' },
       { question: 'Puis-je retourner ou échanger un article ?', answer: 'Oui : vous avez quatorze jours après la réception pour vous rétracter, sans avoir à vous justifier. L’article revient non utilisé, dans son emballage, à vos frais ; vous êtes remboursé sous quatorze jours, livraison initiale comprise. Pour un échange de taille, écrivez-nous avec le numéro de commande.' },
       { question: 'Le paiement est-il sécurisé ?', answer: 'Oui. Le paiement passe par PayPlug, établissement de paiement français agréé : la carte est saisie sur sa page sécurisée, jamais sur la boutique, qui ne conserve aucun numéro de carte.' },
@@ -46,14 +47,14 @@ export const services: Record<string, Service> = {
   },
   livraison: {
     faq: [
-      { question: 'Quels sont les frais de livraison ?', answer: 'Point relais : 6,90 €, offerts dès 69 € d’achats. Domicile : 8,90 €. Le montant s’affiche dans le panier avant le paiement. Le matériel lourd (sacs de frappe, bases et mannequins, portiques, potences) se livre sur devis.' },
+      { question: 'Quels sont les frais de livraison ?', answer: `Point relais : ${livraison.relais}, offerts dès ${livraison.franco} d’achats. Domicile : ${livraison.domicile}. Le montant s’affiche dans le panier avant le paiement. Le matériel lourd (sacs de frappe, bases et mannequins, portiques, potences, cages, tatamis) se livre sur devis.` },
       { question: 'Livrez-vous en dehors de la France continentale ?', answer: 'La commande en ligne livre la France continentale. Pour la Corse, l’outre-mer, Monaco ou l’étranger, écrivez-nous depuis la page contact : vous recevez une proposition par e-mail.' },
       { question: 'Quels sont les délais de livraison ?', answer: 'La commande part sous 7 jours ouvrés après le paiement, et arrive au plus tard 30 jours après la commande. Si un délai ne peut pas être tenu, nous vous écrivons avant, et vous pouvez annuler la commande et être remboursé.' },
       { question: 'Comment commander un sac de frappe ?', answer: 'Sur devis : écrivez-nous avec le modèle et votre code postal. Un sac de 45 kg ou un portique ne voyage pas comme un colis ordinaire ; le devis donne le prix et le délai de livraison à domicile, et vous décidez ensuite.' },
     ],
     title: 'Livraison en France',
     description:
-      'Livraison de Boutique de Boxe : point relais 6,90 € offert dès 69 €, domicile 8,90 €, expédition sous 7 jours ouvrés, matériel lourd sur devis.',
+      `Livraison de Boutique de Boxe : point relais ${livraison.relais} offert dès ${livraison.franco}, domicile ${livraison.domicile}, expédition sous 7 jours ouvrés, matériel lourd sur devis.`,
     eyebrow: 'LES CONDITIONS / LIVRAISON',
     sections: [
       {
@@ -65,7 +66,7 @@ export const services: Record<string, Service> = {
       {
         title: 'France continentale',
         paragraphs: [
-          'Point relais : 6,90 €, offerts dès 69 € d’achats. Livraison à domicile : 8,90 €. Quand la carte des points relais n’est pas affichée, le point le plus proche de votre adresse vous est confirmé par e-mail avant l’expédition.',
+          `Point relais : ${livraison.relais}, offerts dès ${livraison.franco} d’achats. Livraison à domicile : ${livraison.domicile}. Quand la carte des points relais n’est pas affichée, le point le plus proche de votre adresse vous est confirmé par e-mail avant l’expédition.`,
         ],
       },
       {
@@ -180,7 +181,7 @@ export const services: Record<string, Service> = {
       {
         title: 'Hébergement',
         paragraphs: [
-          'Le site est hébergé par Vercel Inc., 440 N Barranca Avenue #4133, Covina, CA 91723, États-Unis. Les données du catalogue et des demandes sont stockées chez Supabase Inc., dans la région Europe de l’Ouest (Londres).',
+          'Le site est hébergé par Vercel Inc., 440 N Barranca Avenue #4133, Covina, CA 91723, États-Unis. Les données du catalogue, des demandes et des commandes sont stockées chez Supabase Inc., dans la région Europe de l’Ouest (Londres, Royaume-Uni).',
         ],
       },
       {
@@ -232,7 +233,7 @@ export const services: Record<string, Service> = {
         paragraphs: [
           'Le client choisit ses produits et leurs tailles, puis indique ses coordonnées et le mode de livraison. Un récapitulatif présente les produits, les quantités, les frais de livraison et le total TTC. Après acceptation des présentes conditions, le bouton « Commander et payer » vaut commande avec obligation de paiement et ouvre la page de paiement sécurisée de PayPlug.',
           'Le contrat est conclu à la confirmation du paiement. Un e-mail de confirmation, envoyé à l’adresse indiquée, reprend le récapitulatif de la commande, les présentes conditions et le formulaire de rétractation. La commande est archivée par le vendeur et consultable sur demande.',
-          'Le matériel lourd ou encombrant (sacs de frappe, bases et mannequins de frappe, portiques, potences, cages) n’est pas vendu par le panier en ligne : il fait l’objet d’un devis de livraison par e-mail, accepté par le client avant toute commande. La commande en ligne livre la France continentale ; la Corse, l’outre-mer et l’étranger se traitent sur demande.',
+          `Le matériel lourd ou encombrant (sacs de frappe, bases et mannequins de frappe, portiques, potences, cages, tatamis, coins de ring) n’est pas vendu par le panier en ligne : il fait l’objet d’un devis de livraison par e-mail, accepté par le client avant toute commande. La commande en ligne livre la ${livraison.zone} ; la Corse, l’outre-mer, Monaco et l’étranger se traitent sur demande.`,
         ],
       },
       {
@@ -250,7 +251,7 @@ export const services: Record<string, Service> = {
       {
         title: '8. La livraison',
         paragraphs: [
-          'Frais : point relais 6,90 €, offerts dès 69 € d’achats ; domicile 8,90 €. La commande est expédiée sous 7 jours ouvrés après le paiement et livrée au plus tard 30 jours après la conclusion du contrat. En cas de dépassement, le client peut, après avoir enjoint le vendeur de livrer dans un délai supplémentaire raisonnable, résoudre le contrat par écrit et être remboursé dans les conditions des articles L. 216-6 et suivants du Code de la consommation.',
+          `Frais : point relais ${livraison.relais}, offerts dès ${livraison.franco} d’achats ; domicile ${livraison.domicile}. La commande est expédiée sous 7 jours ouvrés après le paiement et livrée au plus tard 30 jours après la conclusion du contrat. En cas de dépassement, le client peut, après avoir enjoint le vendeur de livrer dans un délai supplémentaire raisonnable, résoudre le contrat par écrit et être remboursé dans les conditions des articles L. 216-6 et suivants du Code de la consommation.`,
           'Le risque de perte ou d’endommagement est transféré au client lorsqu’il prend physiquement possession des produits. Le client est invité à vérifier le colis à réception et à signaler toute anomalie au transporteur et au vendeur.',
         ],
       },
@@ -309,13 +310,13 @@ export const services: Record<string, Service> = {
       {
         title: 'Contacts et alertes',
         paragraphs: [
-          'Le formulaire de contact collecte votre nom, votre e-mail et votre message afin de répondre à votre demande, sur la base de l’intérêt légitime de l’éditeur à traiter les sollicitations reçues. L’alerte collecte votre e-mail, le produit et éventuellement la taille demandée, sur la base de votre consentement. Ces données ne sont pas vendues.',
+          'Le formulaire de contact collecte votre nom, votre e-mail et votre message afin de répondre à votre demande, sur la base de l’intérêt légitime de l’éditeur à traiter les sollicitations reçues. La lettre de la boutique collecte votre e-mail, et éventuellement le produit et la taille qui vous intéressent, sur la base de votre consentement, pour vous écrire quand un modèle arrive ou revient au catalogue ; chaque message porte un lien de désinscription. Ces données ne sont pas vendues.',
         ],
       },
       {
         title: 'Destinataires et conservation',
         paragraphs: [
-          'L’équipe autorisée de la boutique peut consulter les demandes. L’hébergement repose sur Vercel (rendu en France) et la base de données sur Supabase (Union européenne). Des traitements peuvent avoir lieu hors de l’Union européenne dans le cadre des garanties contractuelles des prestataires. Les demandes sont conservées pendant leur traitement, puis revues et supprimées lorsqu’elles ne sont plus nécessaires. Les inscriptions aux alertes sont supprimées en cas de retrait du consentement.',
+          'L’équipe autorisée de la boutique peut consulter les demandes. L’hébergement repose sur Vercel (rendu à Paris) et la base de données sur Supabase, région Europe de l’Ouest (Londres, Royaume-Uni), hors de l’Union européenne. Ces transferts, comme ceux qui peuvent avoir lieu vers les États-Unis, s’appuient sur les garanties contractuelles des prestataires. Les demandes sont conservées pendant leur traitement, puis revues et supprimées lorsqu’elles ne sont plus nécessaires. Les inscriptions aux alertes sont supprimées en cas de retrait du consentement.',
         ],
       },
       {
@@ -329,7 +330,7 @@ export const services: Record<string, Service> = {
         title: 'Panier et choix enregistrés',
         paragraphs: [
           'Le panier utilise un cookie technique de 30 jours. Il contient un identifiant aléatoire ; les produits et quantités sont conservés côté serveur. La préparation de séance mémorise uniquement vos choix dans l’onglet en cours.',
-          'Quand vous enregistrez vos choix, votre prénom, votre e-mail, les modèles du panier et leur montant prévu sont conservés pour vous prévenir de l’ouverture des ventes, sur la base de votre consentement ; votre mobile, avec l’accord pour un SMS, et votre code postal le sont aussi si vous les laissez. Aucun numéro de carte n’est collecté. Le lien de désinscription de chaque message efface ces données ; vous pouvez aussi en demander la suppression à Boxing Center.',
+          'Avant le 13 octobre 2026, date d’ouverture des ventes, la boutique a enregistré des choix de panier (prénom, e-mail, modèles, montant, et parfois mobile et code postal) pour prévenir de cette ouverture. Cette finalité est échue : ces données ne servent à aucun autre envoi et sont supprimées sur simple demande ou par le lien de désinscription de chaque message. Aucun numéro de carte n’a été collecté.',
           'Le formulaire de contact peut transmettre votre demande à Inlett après son enregistrement dans la boutique. Une demande enregistrée ou acceptée par un prestataire d’envoi ne garantit pas la livraison de l’e-mail.',
         ],
       },
@@ -394,7 +395,7 @@ export const services: Record<string, Service> = {
       {
         title: 'Sans remise annoncée, sans engagement caché.',
         paragraphs: [
-          'Aucune remise de lancement n’est annoncée. La livraison en point relais est offerte dès 69 € d’achats, et vous avez quatorze jours après réception pour changer d’avis.',
+          `Aucune remise de lancement n’est annoncée. La livraison en point relais est offerte dès ${livraison.franco} d’achats, et vous avez quatorze jours après réception pour changer d’avis.`,
         ],
       },
     ],

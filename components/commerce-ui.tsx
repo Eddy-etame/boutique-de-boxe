@@ -25,7 +25,7 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { RelayPicker } from './relay-picker';
 import { relayLabel, type RelayPoint } from '@/lib/boxtal';
-import { devisHref, estLourd, money, shop } from '@/lib/catalog';
+import { devisHref, estLourd, fraisDeLivraison, livraison, money, shop } from '@/lib/catalog';
 import type { CartLine, Order } from '@/lib/commerce';
 // Le panier partagé (file d’attente, lecture, compteur) vit dans un petit module à part :
 // le header l’utilise sur chaque page sans charger ce tunnel de commande.
@@ -94,7 +94,7 @@ type CheckoutResponse = {
 // Display estimate only. Checkout must always validate the quote against the
 // server's shippingFor(), which remains authoritative.
 function shippingEstimate(subtotal: number, delivery: Delivery) {
-  return delivery === 'home' ? 890 : subtotal >= 6900 ? 0 : 690;
+  return fraisDeLivraison(delivery, subtotal);
 }
 
 function EmailStatus({ status, email }: { status: string; email?: string }) {
@@ -661,7 +661,7 @@ export function CartPage({ paiementPret = true }: { paiementPret?: boolean }) {
                 <form ref={form} className="checkout-form" id={`${fieldId}-checkout`} onSubmit={saveChoices}>
                   <fieldset disabled={busy} className="checkout-fields">
                     <legend>
-                      <span>01</span> Pour vous prévenir à l’ouverture
+                      <span>01</span> {indisponible ? 'Pour vous prévenir du retour du paiement' : 'Pour vous prévenir à l’ouverture'}
                     </legend>
                     <label htmlFor={`${fieldId}-prenom`}>
                       Prénom
@@ -720,7 +720,7 @@ export function CartPage({ paiementPret = true }: { paiementPret?: boolean }) {
                     {phone.trim() !== '' && (
                       <label className="simulation-consent checkout-optin" htmlFor={`${fieldId}-sms-choix`}>
                         <input id={`${fieldId}-sms-choix`} type="checkbox" checked={smsOk} onChange={(e) => setSmsOk(e.target.checked)} />
-                        <span>Un SMS le jour de l’ouverture, et rien d’autre.</span>
+                        <span>{indisponible ? 'Un SMS quand le paiement en ligne est rétabli, et rien d’autre.' : 'Un SMS le jour de l’ouverture, et rien d’autre.'}</span>
                       </label>
                     )}
                     <label className="honeypot" aria-hidden="true">
@@ -871,7 +871,7 @@ export function CartPage({ paiementPret = true }: { paiementPret?: boolean }) {
                         />
                       </label>
                     </div>
-                    <p className="commerce-caption">Livraison en France continentale. Corse et outre-mer : <a href="/contact/">sur demande</a>.</p>
+                    <p className="commerce-caption">Livraison en {livraison.zone}. Corse, outre-mer et Monaco : <a href="/contact/">sur demande</a>.</p>
                     <label className="simulation-consent checkout-optin" htmlFor={`${fieldId}-optin`}>
                       <input
                         id={`${fieldId}-optin`}
@@ -915,7 +915,7 @@ export function CartPage({ paiementPret = true }: { paiementPret?: boolean }) {
                         <span>
                           <strong>Point relais</strong>
                           <small>
-                            Offerte dès 69 € d’équipement.
+                            Offerte dès {livraison.franco} d’équipement.
                           </small>
                         </span>
                         <b>{money(shippingEstimate(cart.subtotal, 'relay'))}</b>
@@ -929,7 +929,7 @@ export function CartPage({ paiementPret = true }: { paiementPret?: boolean }) {
                           <strong>À domicile</strong>
                           <small>Remise en main propre à votre adresse.</small>
                         </span>
-                        <b>{money(890)}</b>
+                        <b>{money(shop.livraison.domicile)}</b>
                       </label>
                     </RadioGroup>
                     {delivery === 'relay' && <RelayPicker postcode={postcode} city={city} value={relay} onChange={setRelay} disabled={locked} />}

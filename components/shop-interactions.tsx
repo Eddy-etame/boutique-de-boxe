@@ -41,8 +41,7 @@ import {
   shop,
   estLourd,
   devisHref,
-  tailleUnique,
-} from '@/lib/catalog';
+  tailleUnique, livraison } from '@/lib/catalog';
 import { AddToCart, QuickAdd, PackAdd } from './cart-add';
 import selection from '@/lib/data/selection.json';
 import { spaced } from '@/lib/spaced';
@@ -1126,7 +1125,7 @@ export function ProductDetails({ product: p }: { product: Product }) {
           {shop.ventesOuvertes && estLourd(p)
             ? 'Livraison sur devis : demander le devis'
             : shop.ventesOuvertes
-            ? 'Livraison en France : point relais 6,90 €, offert dès 69 €'
+            ? `Livraison en France : point relais ${livraison.relais}, offert dès ${livraison.franco}`
             : 'Livraison en France : tarifs prévus à l’ouverture'}{' '}
           <ArrowUpRight size={15} />
         </a>
@@ -1244,94 +1243,6 @@ export function AlertForm({
   const [email, setEmail] = useState('');
   const [state, setState] = useState('');
   const [busy, setBusy] = useState(false);
-  // Deuxième temps, facultatif : l’e-mail est déjà enregistré, le numéro s’ajoute pour un SMS le jour J.
-  const [step, setStep] = useState<{ ref: string; email: string } | null>(null);
-  const [phone, setPhone] = useState('');
-  if (step)
-    return (
-      <form
-        className="alert-form alert-form-phone"
-        onSubmit={async (e) => {
-          e.preventDefault();
-          setBusy(true);
-          setState('');
-          try {
-            const r = await fetch('/api/alerts', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                email: step.email,
-                ref: step.ref,
-                phone,
-                smsConsent: true,
-                website: '',
-              }),
-            });
-            const data = (await r.json()) as { error?: string };
-            if (!r.ok)
-              throw new Error(data.error || 'Le numéro n’a pas pu être enregistré.');
-            setStep(null);
-            setPhone('');
-            setState(
-              'C’est noté : un e-mail et un SMS le jour de l’ouverture. Rien d’autre.',
-            );
-          } catch (err) {
-            setState(
-              err instanceof Error ? err.message : 'Un problème est survenu. Réessayez.',
-            );
-          } finally {
-            setBusy(false);
-          }
-        }}
-      >
-        <p className="alert-done" role="status">
-          <strong>Votre e-mail est enregistré.</strong> Un SMS en plus, le matin
-          de l’ouverture ? Facultatif.
-        </p>
-        <label htmlFor={`alert-phone-${productId}`}>Votre numéro de mobile</label>
-        <div className="alert-input">
-          <input
-            id={`alert-phone-${productId}`}
-            name="phone"
-            type="tel"
-            inputMode="tel"
-            required
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            maxLength={30}
-            placeholder="06 12 34 56 78"
-            autoComplete="tel"
-          />
-          <button disabled={busy} aria-label="Ajouter mon numéro">
-            {busy ? '…' : <ArrowRight size={20} />}
-          </button>
-        </div>
-        <label className="consent">
-          <input type="checkbox" name="smsConsent" required />
-          J’accepte de recevoir un SMS le jour de l’ouverture.{' '}
-          <a href="/confidentialite/">Confidentialité</a>
-        </label>
-        <button
-          type="button"
-          className="text-button"
-          onClick={() => {
-            setStep(null);
-            setState(
-              shop.ventesOuvertes
-                ? 'C’est noté. Vous recevrez un seul e-mail, quand le modèle arrive. Vous pouvez vous désinscrire à tout moment.'
-                : 'C’est noté. Vous recevrez un e-mail à l’ouverture des ventes. Vous pouvez vous désinscrire à tout moment.',
-            );
-          }}
-        >
-          Non merci, l’e-mail suffit
-        </button>
-        {state && (
-          <p role="alert" className="form-status">
-            {state}
-          </p>
-        )}
-      </form>
-    );
   return (
     <form
       className="alert-form"
@@ -1400,7 +1311,7 @@ export function AlertForm({
         </p>
       </noscript>
       <label htmlFor={`alert-${productId}`}>
-        {labels.field ?? 'Prévenez-moi à l’ouverture des ventes'}
+        {labels.field ?? 'Prévenez-moi quand le modèle arrive'}
       </label>
       <div className="alert-input">
         <input
@@ -1424,7 +1335,7 @@ export function AlertForm({
       <label className="consent">
         <input type="checkbox" name="consent" required />
         {labels.consent ??
-          'J’accepte de recevoir un e-mail à l’ouverture.'}{' '}
+          'J’accepte de recevoir un seul e-mail, à l’arrivée du modèle.'}{' '}
         <a href="/confidentialite/">Confidentialité</a>
       </label>
       {state && (

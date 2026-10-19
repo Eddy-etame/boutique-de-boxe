@@ -7,7 +7,7 @@ import { ProductCard } from '@/components/shop-interactions';
 import { MerciPhone } from '@/components/merci-phone';
 
 /**
- * La page « merci » : après l'inscription à l'alerte d'ouverture (la lettre), la boutique dit merci,
+ * La page « merci » : après l'inscription à l'alerte d'arrivée d'un modèle, la boutique dit merci,
  * propose le mobile en second temps (facultatif, référence à usage unique), puis quatre modèles
  * de la semaine pour continuer la visite. Privée par nature : jamais indexée.
  */

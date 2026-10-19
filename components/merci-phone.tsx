@@ -4,7 +4,7 @@ import { ArrowRight } from 'lucide-react';
 
 /**
  * Le second temps de l'inscription, sur la page merci : le mobile, facultatif, pour un SMS le jour
- * de l'ouverture. La référence n'a été rendue qu'une fois, à l'auteur de l'inscription ; elle ne
+ * où le modèle demandé arrive. La référence n'a été rendue qu'une fois, à l'auteur de l'inscription ; elle ne
  * sert qu'à cette écriture.
  */
 export function MerciPhone({ email, reference }: { email: string; reference: string }) {
@@ -14,7 +14,7 @@ export function MerciPhone({ email, reference }: { email: string; reference: str
   if (state === 'done')
     return (
       <p className="merci-phone-done" role="status">
-        <strong>C’est noté.</strong> Un e-mail et un SMS le matin de l’ouverture. Rien d’autre.
+        <strong>C’est noté.</strong> Un e-mail et un SMS le jour où le modèle arrive. Rien d’autre.
       </p>
     );
   if (state === 'skipped') return null;
@@ -41,7 +41,7 @@ export function MerciPhone({ email, reference }: { email: string; reference: str
       }}
     >
       <p className="alert-done">
-        <strong>Un SMS en plus, le matin de l’ouverture ?</strong> Facultatif : votre numéro ne sert qu’à ça.
+        <strong>Un SMS en plus, le jour où le modèle arrive ?</strong> Facultatif : votre numéro ne sert qu’à ça.
       </p>
       <label htmlFor="merci-phone">Votre numéro de mobile</label>
       <div className="alert-input">
@@ -52,7 +52,7 @@ export function MerciPhone({ email, reference }: { email: string; reference: str
       </div>
       <label className="consent">
         <input type="checkbox" name="smsConsent" required />
-        J’accepte de recevoir un SMS le jour de l’ouverture. <a href="/confidentialite/">Confidentialité</a>
+        J’accepte de recevoir un SMS le jour où le modèle arrive. <a href="/confidentialite/">Confidentialité</a>
       </label>
       <button type="button" className="text-button" onClick={() => setState('skipped')}>
         Non merci, l’e-mail suffit
