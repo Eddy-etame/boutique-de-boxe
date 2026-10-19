@@ -130,10 +130,11 @@ export const devisHref = '/contact/';
 export const tailleUnique = (p: Product) =>
   !p.sizes.length && Boolean(p.sourceSizes?.some((s) => /^taille unique/i.test(s.trim())));
 export const variantPrice = (p:Product, label:string) => p.variants?.find(v=>v.label===label)?.price ?? p.price;
+/** « 23 790,90 € » : l'espace fine de fr-FR (U+202F) manque à la police d'affichage, on garde l'insécable U+00A0. */
 export const money = (cents: number) =>
   new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(
     cents / 100,
-  );
+  ).replace(/\u202f/g, '\u00a0');
 export type Category = {
   slug: string;
   name: string;

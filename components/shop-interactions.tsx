@@ -186,7 +186,7 @@ export function HeroStage({ product: p }: { product: Product }) {
     >
       <div className="inspector-index">
         <span>
-          {p.brand} / {p.reference || p.sourceRef}
+          {badBrand(p.brand) ? null : <>{p.brand} / </>}{p.reference || p.sourceRef}
         </span>
         <span>LE MODÈLE EN DÉTAIL</span>
       </div>
@@ -935,7 +935,7 @@ export function ProductDetails({ product: p }: { product: Product }) {
           onPointerCancel={swipeEnd}
         >
           <span className="tiny-label">
-            {p.brand} / {p.reference || p.sourceRef}
+            {badBrand(p.brand) ? null : <>{p.brand} / </>}{p.reference || p.sourceRef}
           </span>
           {(() => {
             // Une seule image prioritaire par fiche : la photo de tête, en 480 ou 960 px selon l’écran.
@@ -994,7 +994,7 @@ export function ProductDetails({ product: p }: { product: Product }) {
       </div>
       <div className="product-information">
         <span className="eyebrow">
-          {p.brand} /{' '}
+          {badBrand(p.brand) ? null : <>{p.brand} /{' '}</>}
           {categoryFor(p.category)?.name ?? p.category.replaceAll('-', ' ')}
         </span>
         <h1>{cleanName(p)}</h1>
