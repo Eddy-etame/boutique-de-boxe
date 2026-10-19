@@ -281,7 +281,7 @@ export default async function Page({ params }: Props) {
             <span className="eyebrow">LES CARACTÉRISTIQUES</span>
             <table className="spec-table">
               <caption className="sr-only">
-                Caractéristiques de {p.name}
+                Caractéristiques techniques du modèle
               </caption>
               <tbody>
                 {Object.entries(p.specs).map(([key, value]) => (
@@ -314,7 +314,7 @@ export default async function Page({ params }: Props) {
             </table>
           </div>
         </section>
-        <SeoBody sections={[]} faq={productFaq(p)} heading="Questions sur ce modèle" />
+        <SeoBody sections={[]} faq={productFaq(p, products)} heading="Questions sur ce modèle" />
         {related.length > 0 && (
           <section className="related-section">
             <h2>Modèles proches.</h2>
@@ -325,7 +325,7 @@ export default async function Page({ params }: Props) {
             </div>
           </section>
         )}
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: productGraph(p, related, { description: longDescription(p), faq: productFaq(p) }) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: productGraph(p, related, { description: longDescription(p), faq: productFaq(p, products) }) }} />
       </main>
     );
   }
