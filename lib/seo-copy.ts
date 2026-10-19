@@ -1,3 +1,4 @@
+import { livraison } from './catalog';
 /**
  * Registre des requêtes et textes de fond des pages de catalogue.
  *
@@ -53,7 +54,7 @@ export const SEO_COPY: Record<string, SeoCopy> = {
         h2: 'Prix, livraison dans toute la France',
         paragraphs: [
           'Les ventes sont ouvertes depuis le 13 octobre 2026. Chaque fiche affiche son prix toutes taxes comprises, hors livraison ; le panier se paie par carte sur la page sécurisée de PayPlug, et la commande part sous 7 jours ouvrés.',
-          'Les conditions de livraison : point relais 6,90 €, offert dès 69 € d’achats ; domicile 8,90 € ; matériel lourd sur devis. Expédition sous 7 jours ouvrés, en France continentale.',
+          `Les conditions de livraison : ${livraison.tarifs} ; matériel lourd sur devis. Expédition sous 7 jours ouvrés, en ${livraison.zone}.`,
         ],
       },
       {
@@ -67,7 +68,7 @@ export const SEO_COPY: Record<string, SeoCopy> = {
       { question: 'Matos boxe : que trouve-t-on ici ?', answer: 'Tout le matos boxe d’une séance : bandes, gants du 4 au 20 oz, protège-dents, casque, sac de frappe, corde, short et chaussures. Le matos boxe, livré chez vous dans toute la France.' },
       { question: 'Boutique de Boxe est-elle liée à un club ?', answer: 'Non. Boutique de Boxe est une boutique en ligne de matériel de boxe et de sports de combat. Elle ne propose ni cours ni salle. L’éditeur est la société SAS BOXING CENTER, à Toulouse.' },
       { question: 'Peut-on commander en ligne ?', answer: 'Oui, depuis le 13 octobre 2026 : les prix affichés sont les prix de vente TTC, et le panier se paie par carte sur la page sécurisée de PayPlug.' },
-      { question: 'Livrez-vous partout en France ?', answer: 'Oui, dans toute la France continentale : point relais 6,90 €, offert dès 69 € d’achats, domicile 8,90 €. Le matériel lourd se livre sur devis ; la Corse et l’outre-mer, sur demande.' },
+      { question: 'Livrez-vous partout en France ?', answer: `Oui, dans toute la ${livraison.zone} : ${livraison.tarifs}. Le matériel lourd se livre sur devis ; la Corse, l’outre-mer et Monaco, sur demande.` },
     ],
   },
 
@@ -124,7 +125,7 @@ export const SEO_COPY: Record<string, SeoCopy> = {
       { question: 'Quel équipement boxe anglaise pour débuter ?', answer: 'L’équipement boxe anglaise de départ tient en quatre pièces : des bandes de 4,50 m, des gants de 12 oz, un protège-dents et une corde à sauter. Le casque et les chaussures viennent avec le sparring.' },
       { question: 'Quel matériel de boxe pour débuter ?', answer: 'Des bandes de 2,50 m ou 4,50 m et une paire de gants de 10 ou 12 oz. Ajoutez un protège-dents dès le premier travail à deux. Le reste attend que votre salle vous le demande.' },
       { question: 'Quel poids de gants de boxe choisir ?', answer: '10 oz pour le sac, 12 oz pour la technique, 14 ou 16 oz avec un partenaire. Votre salle peut imposer un poids pour le sparring : demandez avant d’acheter.' },
-      { question: 'Le matériel de boxe est-il livré partout en France ?', answer: 'Oui, dans toute la France continentale. Point relais 6,90 €, offert dès 69 € d’achats ; domicile 8,90 € ; sacs de frappe et matériel lourd sur devis.' },
+      { question: 'Le matériel de boxe est-il livré partout en France ?', answer: `Oui, dans toute la ${livraison.zone} : ${livraison.tarifs} ; sacs de frappe et matériel lourd sur devis.` },
       { question: 'Le même matériel sert-il pour la boxe anglaise et la boxe thaï ?', answer: 'Les gants, les bandes et le protège-dents, oui. La boxe thaï demande en plus des protège-tibias, une coquille et un short court ; la boxe anglaise, des chaussures montantes pour le ring.' },
       { question: 'Quel matériel de boxe pour s’entraîner à la maison ?', answer: 'Un sac de frappe à la mesure de votre plafond, ou un sac sur pied si vous ne pouvez pas percer, des gants de 10 ou 12 oz, des bandes et une corde à sauter. Mesurez la hauteur libre et vérifiez le support avant de choisir le sac.' },
       { question: 'Où acheter du matériel de boxe ?', answer: 'En ligne, sur Boutique de Boxe : plus de 1 000 modèles de gants, bandes, protections, sacs de frappe et chaussures, chacun avec les tailles de son fabricant et son prix. Certaines salles vendent aussi le matériel de base à l’accueil.' },
@@ -189,7 +190,7 @@ export const SEO_COPY: Record<string, SeoCopy> = {
     ],
     faq: [
       { question: 'Matériel sport de combat : par où commencer ?', answer: 'Le matériel sport de combat de départ tient en trois pièces : un protège-dents, des gants adaptés à la discipline, un short ou un kimono. Le reste, casque, protège-tibias, sac de frappe, vient avec la pratique.' },
-      { question: 'Le matériel sport de combat est-il livré dans toute la France ?', answer: 'Oui : chaque commande part vers toute la France métropolitaine, à domicile ou en point relais, sous 7 jours ouvrés après le paiement. Les tailles réelles et les prix TTC sont sur chaque fiche.' },
+      { question: 'Le matériel sport de combat est-il livré dans toute la France ?', answer: 'Oui : chaque commande part vers toute la France continentale, à domicile ou en point relais, sous 7 jours ouvrés après le paiement. Les tailles réelles et les prix TTC sont sur chaque fiche.' },
       { question: 'Quels sports de combat sont couverts ?', answer: 'Boxe anglaise, MMA, muay-thaï, kick-boxing, jiu-jitsu brésilien, savate et karaté. Chaque fiche indique la discipline concernée.' },
       { question: 'Le matériel est-il le même pour tous les sports de combat ?', answer: 'Non. Les gants, les protections et le textile changent selon la discipline. Un gant de boxe thaï n’a pas la coupe d’un gant de boxe anglaise ; un gant MMA laisse les doigts libres.' },
       { question: 'Expédiez-vous hors de France ?', answer: 'Pas par la commande en ligne, qui livre la France continentale, en point relais ou à domicile. Pour la Corse, l’outre-mer ou l’étranger, écrivez-nous : vous recevez une proposition par e-mail.' },
@@ -561,7 +562,7 @@ export const SEO_COPY: Record<string, SeoCopy> = {
 export const QUERY_MAP: { query: string; path: string; answer: string }[] = [
   // Les deux requêtes de tête (03/10) : chacune sa page, en premier dans les « recherches voisines » et dans le pied de page.
   { query: 'Matériel de boxe', path: '/materiel-boxe/', answer: 'Matériel de boxe : huit rayons, gants, bandes et accessoires, protections, textile, sacs de frappe, chaussures, matériel d’entraînement et sacs de sport, pour la boxe anglaise, la boxe thaï, le kick-boxing et la savate. Boutique de Boxe donne les tailles réelles et le prix de chaque modèle.' },
-  { query: 'Vente matériel de boxe', path: '/vente-materiel-de-boxe/', answer: 'Vente matériel de boxe en ligne : Boutique de Boxe, boutique en ligne installée à Toulouse, vend plus de 1 000 modèles en dix rayons, livrés en France métropolitaine en point relais ou à domicile, avec quatorze jours pour changer d’avis ; les ventes sont ouvertes depuis le 13 octobre 2026, paiement par carte.' },
+  { query: 'Vente matériel de boxe', path: '/vente-materiel-de-boxe/', answer: 'Vente matériel de boxe en ligne : Boutique de Boxe, boutique en ligne installée à Toulouse, vend plus de 1 000 modèles en dix rayons, livrés en France continentale en point relais ou à domicile, avec quatorze jours pour changer d’avis ; les ventes sont ouvertes depuis le 13 octobre 2026, paiement par carte.' },
   { query: 'Boutique boxe', path: '/boutique-boxe/', answer: 'Boutique boxe en ligne française et indépendante, Boutique de Boxe vend le matériel de boxe : gants, bandes, protections, textile, sacs de frappe, chaussures, du 4 oz enfant au 20 oz sparring, livrés dans toute la France.' },
   { query: 'Matos boxe', path: '/boutique-boxe/', answer: 'Matos boxe : gants du 4 au 20 oz, bandes, protège-dents, casques, sacs de frappe et chaussures, des marques Fairtex, Twins, Cleto Reyes, Elion, Adidas et Everlast, chez Boutique de Boxe, livrés dans toute la France.' },
   { query: 'Équipement boxe anglaise', path: '/materiel-boxe/', answer: 'Équipement boxe anglaise pour débuter : des bandes de 4,50 m, des gants de 12 oz, un protège-dents et une corde à sauter ; le casque et les chaussures arrivent avec le sparring. Boutique de Boxe les vend en ligne, livrés dans toute la France.' },
@@ -569,7 +570,7 @@ export const QUERY_MAP: { query: string; path: string; answer: string }[] = [
   { query: 'Équipement MMA', path: '/materiel-mma/', answer: 'Équipement MMA pour un premier cours : protège-dents, short sans poche, rashguard, puis les gants demandés par le club, gants MMA à doigts libres ou gants de boxe de 14 à 16 oz. Boutique de Boxe les vend en ligne avec leurs tailles réelles.' },
   { query: 'Matériel sport de combat', path: '/materiel-sport-de-combat/', answer: 'Matériel sport de combat pour la boxe anglaise, le MMA, le muay-thaï, le kick-boxing, le jiu-jitsu brésilien et la savate : gants, protections, textile, sacs de frappe et chaussures, chez Boutique de Boxe, livrés dans toute la France.' },
   { query: 'Sport de combat', path: '/sports-de-combat/', answer: 'Sport de combat : une discipline où deux personnes cherchent, selon des règles, à toucher, projeter ou immobiliser l’autre. En France métropolitaine, 6 158 lieux en déclarent au moins un d’après le recensement du ministère des Sports ; le judo y est le plus présent (4 914 lieux), la boxe anglaise la première des boxes (944).' },
-  { query: 'Boutique sport de combat France', path: '/boutique-sport-de-combat/', answer: 'Boutique sport de combat France : Boutique de Boxe expédie dans toute la France métropolitaine, à domicile ou en point relais, le matériel de boxe, de MMA et d’arts martiaux, avec les tailles réelles et les prix TTC.' },
+  { query: 'Boutique sport de combat France', path: '/boutique-sport-de-combat/', answer: 'Boutique sport de combat France : Boutique de Boxe expédie dans toute la France continentale, à domicile ou en point relais, le matériel de boxe, de MMA et d’arts martiaux, avec les tailles réelles et les prix TTC.' },
   { query: 'Boutique de boxe Toulouse', path: '/boutique-de-boxe-toulouse/', answer: 'Boutique de boxe Toulouse : Boutique de Boxe, boutique en ligne basée à Toulouse, recense les lieux de boxe et d’arts martiaux de la ville d’après le ministère des Sports, avec les clubs Boxing Center et le matériel que chacun demande.' },
   { query: 'Boutique de boxe Paris', path: '/boutique-de-boxe-paris/', answer: 'Boutique de boxe Paris : les lieux de boxe et d’arts martiaux de la capitale, arrondissement par arrondissement, d’après le recensement du ministère des Sports, avec leurs disciplines, leurs adresses et le matériel qu’ils demandent.' },
   { query: 'Boutique de boxe Île-de-France', path: '/boutique-de-boxe-ile-de-france/', answer: 'Boutique de boxe Île-de-France : hors Paris, les lieux de boxe et d’arts martiaux des sept départements franciliens, commune par commune, d’après le recensement du ministère des Sports.' },
@@ -602,8 +603,8 @@ export const QUERY_MAP: { query: string; path: string; answer: string }[] = [
 export const HOME_FAQ: SeoFaq[] = [
   { question: 'Qu’est-ce que Boutique de Boxe ?', answer: 'Boutique de Boxe est une boutique en ligne indépendante de matériel de boxe, de MMA et de sports de combat : plus de 1 000 modèles de gants, bandes, protections, textile, sacs de frappe et chaussures, avec leurs tailles réelles et leurs prix, livrés dans toute la France.' },
   { question: 'Les ventes sont-elles ouvertes ?', answer: 'Oui, depuis le 13 octobre 2026. Chaque modèle se commande en ligne et se paie par carte sur la page sécurisée de PayPlug.' },
-  { question: 'Comment commander ?', answer: 'Choisissez vos modèles et vos tailles, indiquez la livraison (point relais 6,90 €, offert dès 69 €, ou domicile 8,90 €), acceptez les conditions de vente, puis payez par carte. La commande part sous 7 jours ouvrés, et vous avez quatorze jours après réception pour changer d’avis.' },
-  { question: 'Livrez-vous dans toute la France ?', answer: 'Oui, France métropolitaine, à domicile ou en point relais : 6,90 € en relais, offerts dès 69 € d’achats, 8,90 € à domicile, tarif spécifique pour le matériel lourd.' },
+  { question: 'Comment commander ?', answer: `Choisissez vos modèles et vos tailles, indiquez la livraison (point relais ${livraison.relais}, offert dès ${livraison.franco}, ou domicile ${livraison.domicile}), acceptez les conditions de vente, puis payez par carte. La commande part sous 7 jours ouvrés, et vous avez quatorze jours après réception pour changer d’avis.` },
+  { question: 'Livrez-vous dans toute la France ?', answer: `Oui, en ${livraison.zone}, à domicile ou en point relais : ${livraison.tarifs} ; le matériel lourd se livre sur devis.` },
   { question: 'Comment choisir la taille de mes gants ?', answer: 'Par l’usage : 10 oz pour le sac, 12 oz pour la technique, 14 à 16 oz avec un partenaire. Les onces sont un poids, pas une taille de main ; le guide des tailles détaille gants, textile, chaussures et enfants.' },
   { question: 'Quelles marques proposez-vous ?', answer: 'Metal Boxe, Elion, Fairtex, Twins, Cleto Reyes, Adidas, Everlast, Venum, Manto, Athena Fightwear, Century, Shock Doctor, Under Armour : le matériel des salles, avec ses références fabricant.' },
 ];

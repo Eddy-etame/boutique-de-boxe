@@ -11,7 +11,7 @@ import {
   DialogDescription,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { categories, shop, jsonLd } from '@/lib/catalog';
+import { categories, shop, jsonLd, livraison } from '@/lib/catalog';
 import { CartLink } from './cart-link';
 import { HeaderSearch } from './header-search';
 import { spaced } from '@/lib/spaced';
@@ -46,7 +46,7 @@ export function Header() {
       <div className="launch-strip">
         <span className="status-dot" />
         {shop.ventesOuvertes
-          ? 'VENTES OUVERTES · POINT RELAIS OFFERT DÈS 69 €'
+          ? `VENTES OUVERTES · POINT RELAIS OFFERT DÈS ${livraison.franco}`
           : 'OUVERTURE DES VENTES LE ' + shop.ouverture.court.toUpperCase()}{' '}
         <a href={shop.ventesOuvertes ? '/livraison/' : '/offres-de-lancement/'}>
           En savoir plus <ArrowUpRight size={13} />

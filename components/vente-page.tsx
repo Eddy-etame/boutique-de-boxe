@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { categories, categoryFor, getCategoryProducts, listItem, money, shop, type Product } from '@/lib/catalog';
+import { categories, categoryFor, getCategoryProducts, listItem, money, shop, type Product, livraison } from '@/lib/catalog';
 import { SUBFAMILIES, subfamilyProducts } from '@/lib/subfamilies';
 import { graph, urlOf, webPageNode, faqNode } from '@/lib/seo';
 import { ogImage } from '@/lib/og';
@@ -97,7 +97,7 @@ export function venteFaq(): SeoFaq[] {
     { question: 'Les prix affichés comprennent-ils la TVA ?', answer: 'Oui : chaque prix est donné toutes taxes comprises, hors frais de livraison. Les frais de livraison s’ajoutent au panier avant la validation, jamais après.' },
     { question: 'Comment paie-t-on ?', answer: `${ouvert ? 'Par carte bancaire' : 'À l’ouverture des ventes, par carte bancaire'}, sur la page de paiement de PayPlug, prestataire français agréé. Le numéro de carte ne passe pas par la boutique, qui n’en conserve aucun.` },
     { question: 'Vendez-vous aux clubs et aux associations ?', answer: 'Oui. Pour équiper une salle ou grouper une commande, écrivez depuis la page contact avec les quantités et les tailles : vous recevez une proposition par e-mail.' },
-    { question: 'Vente matériel boxe : livrez-vous hors de France ?', answer: ouvert ? 'La commande en ligne livre la France continentale, en point relais ou à domicile. Pour la Corse, l’outre-mer ou l’étranger, écrivez-nous : vous recevez une proposition par e-mail.' : 'Pas à l’ouverture. La boutique livre la France métropolitaine, en point relais ou à domicile ; pour la Corse, l’outre-mer et l’étranger, rien n’est encore arrêté.' },
+    { question: 'Vente matériel boxe : livrez-vous hors de France ?', answer: ouvert ? `La commande en ligne livre la ${livraison.zone}, en point relais ou à domicile. Pour la Corse, l’outre-mer, Monaco ou l’étranger, écrivez-nous : vous recevez une proposition par e-mail.` : 'Pas à l’ouverture. La boutique livre la France métropolitaine, en point relais ou à domicile ; pour la Corse, l’outre-mer et l’étranger, rien n’est encore arrêté.' },
   ];
 }
 
@@ -123,7 +123,7 @@ function sections(): SeoSection[] {
     {
       h2: 'Livraison : point relais ou domicile',
       paragraphs: [
-        'La boutique expédie en France métropolitaine. En point relais, 6,90 €, et rien à partir de 69 € d’achats. À domicile, 8,90 €. Un sac de frappe, une base lestée ou tout autre matériel lourd se livre à domicile, sur devis : écrivez-nous avec le modèle et votre code postal.',
+        `La boutique expédie en ${livraison.zone}. En point relais, ${livraison.relais}, et rien à partir de ${livraison.franco} d’achats. À domicile, ${livraison.domicile}. Un sac de frappe, une base lestée ou tout autre matériel lourd se livre à domicile, sur devis : écrivez-nous avec le modèle et votre code postal.`,
       ],
     },
     {
@@ -189,7 +189,7 @@ export function VentePage({ all }: { all: Product[] }) {
         <div>
           <div className="label">Vente matériel de boxe : un vendeur, dix rayons, des prix affichés.</div>
           <p>
-            {`Boutique de Boxe ${ouvert ? 'vend en ligne' : 'prépare la vente en ligne de'} ${fr(all.length)} modèles de matériel de boxe et de sports de combat, de ${marques} marques, livrés en France métropolitaine en point relais ou à domicile. `}
+            {`Boutique de Boxe ${ouvert ? 'vend en ligne' : 'prépare la vente en ligne de'} ${fr(all.length)} modèles de matériel de boxe et de sports de combat, de ${marques} marques, livrés en ${livraison.zone} en point relais ou à domicile. `}
             {ouvert ? 'Chaque prix est donné toutes taxes comprises, et vous avez quatorze jours pour changer d’avis.' : `Les ventes ouvrent le ${shop.ouverture.long} : les prix affichés sont ceux prévus à l’ouverture, et le panier enregistre déjà vos choix, sans paiement.`}
           </p>
         </div>
@@ -201,7 +201,7 @@ export function VentePage({ all }: { all: Product[] }) {
             [
               [fr(all.length), ouvert ? 'modèles en vente' : 'modèles au catalogue'],
               [fr(marques), 'marques'],
-              ['6,90 €', 'en point relais, offerts dès 69 € d’achats'],
+              [livraison.relais, `en point relais, offerts dès ${livraison.franco} d’achats`],
               ['14 jours', 'pour changer d’avis'],
             ] as const
           ).map(([n, l]) => (

@@ -77,7 +77,32 @@ export const shop = {
   delais: { expedition: '7 jours ouvrés', livraisonMax: '30 jours' },
   /** Version des CGV acceptée à la commande ; elle est enregistrée avec chaque commande. */
   cgvVersion: '2026-10-13',
+  /**
+   * Livraison : SEULE source des montants (en centimes) et des conditions. Le calcul du panier
+   * (lib/commerce.ts), l'affichage du panier, le JSON-LD, le flux marchand et tous les textes
+   * (fiches, FAQ, CGV, page Livraison, bandeau, llms.txt) les lisent ici, par `livraison` ci-dessous.
+   * La commande en ligne livre la France continentale : la Corse (20…), l'outre-mer (97…) et
+   * Monaco (98…) sont refusés au paiement et traités sur demande ; le matériel lourd est sur devis.
+   */
+  livraison: { relais: 690, domicile: 890, franco: 6900 },
 };
+/** « 6,90 € », « 69 € » : un montant de livraison tel que les textes l'écrivent (sans « ,00 »). */
+const euros = (cents: number) =>
+  (cents % 100 === 0 ? String(cents / 100) : (cents / 100).toFixed(2).replace('.', ',')) + ' €';
+/** Les conditions de livraison, écrites une fois, pour tous les textes du site. */
+export const livraison = {
+  relais: euros(shop.livraison.relais),
+  domicile: euros(shop.livraison.domicile),
+  franco: euros(shop.livraison.franco),
+  zone: 'France continentale',
+  horsZone: 'Corse, outre-mer, Monaco et étranger sur demande',
+  /** « point relais 6,90 €, offert dès 69 € d’achats ; domicile 8,90 € » */
+  tarifs: `point relais ${euros(shop.livraison.relais)}, offert dès ${euros(shop.livraison.franco)} d’achats ; domicile ${euros(shop.livraison.domicile)}`,
+  lourd: 'le matériel lourd (sacs de frappe, bases, mannequins, portiques, potences, cages, tatamis) se livre à domicile, sur devis',
+};
+/** Frais de livraison d'un panier, en centimes : la règle qui fait foi au paiement. */
+export const fraisDeLivraison = (delivery: string, subtotal: number) =>
+  delivery === 'home' ? shop.livraison.domicile : subtotal >= shop.livraison.franco ? 0 : shop.livraison.relais;
 /**
  * Matériel lourd ou encombrant (13/10/2026, décision du propriétaire : « sur devis pour l'instant ») :
  * il ne s'ajoute pas au panier, ne passe pas au paiement en ligne et se livre sur devis. SEULE

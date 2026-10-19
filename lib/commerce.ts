@@ -1,5 +1,5 @@
 import { db, runtime, readCatalog } from './database';
-import { money, shop, variantPrice, type Product } from './catalog';
+import { fraisDeLivraison, money, shop, variantPrice, type Product } from './catalog';
 import { parseRelay, relayLabel } from './boxtal';
 
 export type CartItem = { productId: string; variant: string; quantity: number };
@@ -104,7 +104,7 @@ export async function resolveCart(
   return buildCart(raw, products, stored?.revision || 0);
 }
 export function shippingFor(subtotal: number, delivery: string) {
-  return delivery === 'home' ? 890 : subtotal >= 6900 ? 0 : 690;
+  return fraisDeLivraison(delivery, subtotal);
 }
 const escape = (s: string) =>
   s.replace(

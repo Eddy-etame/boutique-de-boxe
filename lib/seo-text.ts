@@ -3,7 +3,7 @@
  * catalogue). Générés depuis les données, jamais écrits à la main, donc jamais
  * en retard sur le site.
  */
-import { shop, money, type Product } from './catalog';
+import { shop, money, type Product, livraison } from './catalog';
 import { guides, services } from './editorial';
 import { ATTRIBUTION, EDITORIAL_DATE, familiesWithCounts, urlOf } from './seo';
 import { QUERY_MAP } from './seo-copy';
@@ -29,7 +29,7 @@ function status() {
 function delivery() {
   return [
     '## Livraison et conditions',
-    '- Point relais : 6,90 €, offert dès 69 € d’achats. Domicile : 8,90 €. Matériel lourd : sur devis. France continentale ; Corse et outre-mer sur demande.',
+    `- Livraison : ${livraison.tarifs}. Matériel lourd : sur devis. ${livraison.zone} ; ${livraison.horsZone}.`,
     ...Object.keys(services).map((s) => `- [${services[s].title}](${urlOf('/' + s + '/')})`),
   ].join('\n');
 }

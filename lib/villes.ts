@@ -196,12 +196,12 @@ export const fine = (s: string) => s.replace(/ ([:?;!])/g, ' $1');
    « livre Toulouse » ensuite (shop.ventesOuvertes, un seul interrupteur). */
 const livrer = (ou: string) => (shop.ventesOuvertes ? `livre ${ou}` : `livrera ${ou} dès l’ouverture des ventes`);
 export const livraison = (ou: string) =>
-  `Boutique de Boxe est une boutique en ligne : elle ${livrer(ou)}, comme le reste de la France métropolitaine, à domicile ou en point relais. ${shop.ventesOuvertes ? 'Les tarifs et les délais sont' : 'Les tarifs prévus sont'} sur la page Livraison.`;
+  `Boutique de Boxe est une boutique en ligne : elle ${livrer(ou)}, comme le reste de la France continentale, à domicile ou en point relais. ${shop.ventesOuvertes ? 'Les tarifs et les délais sont' : 'Les tarifs prévus sont'} sur la page Livraison.`;
 /** Le carrefour : la livraison dite sans ville. */
 export const livraisonPartout = () =>
   shop.ventesOuvertes
-    ? 'Où que vous soyez en France métropolitaine, la commande est livrée à domicile ou en point relais ; les tarifs et les délais sont sur la page Livraison.'
-    : 'Où que vous soyez en France métropolitaine, la commande sera livrée à domicile ou en point relais dès l’ouverture des ventes ; les tarifs prévus sont sur la page Livraison.';
+    ? 'Où que vous soyez en France continentale, la commande est livrée à domicile ou en point relais ; les tarifs et les délais sont sur la page Livraison.'
+    : 'Où que vous soyez en France continentale, la commande sera livrée à domicile ou en point relais dès l’ouverture des ventes ; les tarifs prévus sont sur la page Livraison.';
 
 /** « 15 en boxe anglaise, 8 en savate boxe française et 5 en full contact » */
 export function repartition(par: Record<string, number>, max = 3) {
@@ -577,7 +577,7 @@ export const CARREFOUR_TITRE = 'Boutique sport de combat France : par ville';
 export const CARREFOUR_DESCRIPTION =
   'Boutique sport de combat France : la boutique en ligne livre toute la France. Les lieux de boxe et d’arts martiaux des grandes villes, ville par ville.';
 export function carrefourChapeau(lieux: number) {
-  return `Boutique de Boxe est une boutique sport de combat en ligne, basée à Toulouse, qui ${livrer('toute la France métropolitaine')}. Ville par ville, ${fr(lieux)} lieux de boxe et d’arts martiaux sont recensés ici d’après le ministère des Sports, avec le matériel que chacun demande.`;
+  return `Boutique de Boxe est une boutique sport de combat en ligne, basée à Toulouse, qui ${livrer('toute la France continentale')}. Ville par ville, ${fr(lieux)} lieux de boxe et d’arts martiaux sont recensés ici d’après le ministère des Sports, avec le matériel que chacun demande.`;
 }
 /** Les chiffres de la France entière, en deux phrases citables. */
 export function franceEnChiffres() {
@@ -593,7 +593,7 @@ export function carrefourFaq(): SeoFaq[] {
   return [
     {
       question: fine('Existe-t-il une boutique sport de combat en ligne qui livre toute la France ?'),
-      answer: `Oui : Boutique de Boxe, boutique sport de combat France basée à Toulouse, ${livrer('toute la France métropolitaine')}, à domicile ou en point relais.`,
+      answer: `Oui : Boutique de Boxe, boutique sport de combat France basée à Toulouse, ${livrer('toute la France continentale')}, à domicile ou en point relais.`,
     },
     {
       question: fine('Quelle grande ville a le plus de salles de sports de combat par habitant ?'),

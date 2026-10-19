@@ -10,7 +10,7 @@
  * une phrase ou une donnée que le visiteur voit. Le script `scripts/audit-seo.mjs`
  * le vérifie.
  */
-import { shop, categories, categoryFor, getCategoryProducts, money, jsonLd, estLourd, variantPrice, type Product, type Category } from './catalog';
+import { shop, categories, categoryFor, getCategoryProducts, money, jsonLd, estLourd, variantPrice, type Product, type Category, fraisDeLivraison } from './catalog';
 import { guidePublished, guidesEnLettres, type Guide } from './editorial';
 import { SEO_COPY, type SeoFaq } from './seo-copy';
 import type { Subfamily } from './subfamilies';
@@ -108,8 +108,6 @@ export const ATTRIBUTION = {
 /** Profils officiels de la boutique. Vide tant qu’aucun n’est ouvert : ne rien inventer. */
 export const SAME_AS: string[] = [];
 
-/** Clé IndexNow : le fichier public/<clé>.txt prouve la propriété du domaine. */
-export const INDEXNOW_KEY = 'b7d1f0a3e9c24f6b8a5d3c1e7f9b2a4c';
 
 /** Entités vérifiées sur l’API Wikidata le 11 septembre 2026 (site frwiki). */
 export const ENTITY = {
@@ -359,14 +357,13 @@ function offerOf(p: Product, cents = p.price) {
     availability: 'https://schema.org/' + shop.disponibiliteOffre,
     itemCondition: 'https://schema.org/NewCondition',
     seller: { '@id': ID('organisation') },
-    // Le matériel lourd a un tarif « indiqué avant validation » : aucun tarif n’est publié pour lui.
-    // Aucun délai non plus : la page Livraison dit qu’il sera confirmé à l’ouverture.
+    // Le matériel lourd se livre sur devis : aucun tarif ni délai n’est publié pour lui.
     ...(lourd
       ? {}
       : {
           shippingDetails: [
-            { '@type': 'OfferShippingDetails', shippingDestination: zone, shippingRate: { '@type': 'MonetaryAmount', value: cents >= 6900 ? '0.00' : '6.90', currency: 'EUR' } },
-            { '@type': 'OfferShippingDetails', shippingDestination: zone, shippingRate: { '@type': 'MonetaryAmount', value: '8.90', currency: 'EUR' } },
+            { '@type': 'OfferShippingDetails', shippingDestination: zone, shippingRate: { '@type': 'MonetaryAmount', value: (fraisDeLivraison('relay', cents) / 100).toFixed(2), currency: 'EUR' } },
+            { '@type': 'OfferShippingDetails', shippingDestination: zone, shippingRate: { '@type': 'MonetaryAmount', value: (shop.livraison.domicile / 100).toFixed(2), currency: 'EUR' } },
           ],
         }),
     hasMerchantReturnPolicy: {

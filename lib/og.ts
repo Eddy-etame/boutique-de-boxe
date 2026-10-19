@@ -3,7 +3,7 @@
  * Plus aucun PNG dans le dépôt ; le nom, la marque, les tailles et la photo
  * viennent des données au moment de la requête, donc jamais en retard.
  */
-import { categoryFor, getCategoryProducts, money, shop, type Product, type Category } from './catalog';
+import { categoryFor, getCategoryProducts, money, shop, type Product, type Category, livraison } from './catalog';
 import { guides, services, guidePublished, dateEnLettres, type Guide } from './editorial';
 import { SEO_COPY } from './seo-copy';
 import { SUBFAMILIES, subfamilyProducts, type Subfamily } from './subfamilies';
@@ -159,7 +159,7 @@ const PAGES: Record<string, (products: Product[]) => Card> = {
     eyebrow: 'VENTE MATÉRIEL DE BOXE · EN LIGNE, LIVRÉ EN FRANCE',
     facts: [
       { label: 'MODÈLES', value: fr(products.length) },
-      { label: 'POINT RELAIS', value: '6,90 €, offert dès 69 €' },
+      { label: 'POINT RELAIS', value: `${livraison.relais}, offert dès ${livraison.franco}` },
       { label: 'POUR CHANGER D’AVIS', value: '14 jours' },
     ],
     photos: photosOf(products.filter((p) => p.category === 'sacs-de-sport' && p.cut?.mode === 'pose')),

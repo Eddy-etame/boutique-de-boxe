@@ -1,4 +1,4 @@
-import { listItem, money, shop, type Product } from '@/lib/catalog';
+import { listItem, money, shop, type Product, livraison } from '@/lib/catalog';
 import { brandsOf, priceTable } from '@/lib/brands';
 import { mostViewed, weekLabel, weeklySelection } from '@/lib/hub';
 import { QUERY_MAP } from '@/lib/seo-copy';
@@ -45,7 +45,7 @@ function Villes({ scope, name }: { scope: string; name: string }) {
     <div className="hub-villes">
       <h3>Livrés partout en France</h3>
       <p>
-        {`${name} : livraison dans toute la France continentale, en point relais (offert dès 69 €) ou à domicile. Les grandes villes, avec le nombre de lieux où l’on pratique ${label} :`}
+        {`${name} : livraison dans toute la ${livraison.zone}, en point relais (offert dès ${livraison.franco}) ou à domicile. Les grandes villes, avec le nombre de lieux où l’on pratique ${label} :`}
       </p>
       <ul>
         {villes.map(({ v, n }) => (

@@ -1,5 +1,5 @@
 import { readCatalog } from '@/lib/database';
-import { categoryFor, estLourd, shop, variantPrice, type Product } from '@/lib/catalog';
+import { categoryFor, estLourd, shop, variantPrice, type Product, fraisDeLivraison } from '@/lib/catalog';
 import { SUBFAMILIES } from '@/lib/subfamilies';
 import { urlOf } from '@/lib/seo';
 
@@ -56,9 +56,9 @@ function item(p: Product, taille: string | null, type: string, disponible: strin
     ...(taille ? [`<g:item_group_id>${esc(p.id)}</g:item_group_id>`, `<g:size>${esc(taille)}</g:size>`] : []),
     ...(p.colors?.length ? [`<g:color>${esc(p.colors.slice(0, 3).join('/'))}</g:color>`] : []),
     ...(p.audience === 'enfant' ? [`<g:age_group>kids</g:age_group>`] : []),
-    // Livraison réelle : point relais 6,90 € (offert dès 69 € d'achats), domicile 8,90 €.
-    `<g:shipping><g:country>FR</g:country><g:service>Point relais</g:service><g:price>${montant >= 6900 ? '0.00' : '6.90'} EUR</g:price></g:shipping>`,
-    `<g:shipping><g:country>FR</g:country><g:service>Domicile</g:service><g:price>8.90 EUR</g:price></g:shipping>`,
+    // Livraison réelle, lue dans la source unique (shop.livraison) : point relais, offert au-delà du franco.
+    `<g:shipping><g:country>FR</g:country><g:service>Point relais</g:service><g:price>${(fraisDeLivraison('relay', montant) / 100).toFixed(2)} EUR</g:price></g:shipping>`,
+    `<g:shipping><g:country>FR</g:country><g:service>Domicile</g:service><g:price>${(shop.livraison.domicile / 100).toFixed(2)} EUR</g:price></g:shipping>`,
   ];
   return `<item>${lignes.join('')}</item>`;
 }

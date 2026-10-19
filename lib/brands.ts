@@ -1,4 +1,4 @@
-import { categories, money, type Product } from './catalog';
+import { categories, money, type Product, livraison } from './catalog';
 import type { SeoFaq } from './seo-copy';
 
 /**
@@ -76,7 +76,7 @@ export function brandCopy(b: Brand) {
     { question: `À quel prix sont les produits ${b.name} ?`, answer: `De ${money(b.min)} à ${money(b.max)}, selon le modèle. Ce sont les prix de vente TTC, affichés sur chaque fiche.` },
     ...(sizes.length >= 3 ? [{ question: `Quelles tailles ${b.name} proposez-vous ?`, answer: `Selon le modèle : ${sizes.join(', ')}. Les tailles ne se transposent pas d’une marque à l’autre : suivez le guide de tailles de ${b.name} indiqué sur la fiche.` }] : []),
     { question: `Peut-on acheter du ${b.name} en ligne ?`, answer: 'Oui, depuis le 13 octobre 2026 : chaque modèle se commande sur sa fiche et se paie par carte sur la page sécurisée de PayPlug.' },
-    { question: `Livrez-vous les produits ${b.name} partout en France ?`, answer: 'Oui, dans toute la France continentale, à domicile ou en point relais. Le matériel lourd (sacs de frappe, bases, portiques) se livre à domicile, sur devis.' },
+    { question: `Livrez-vous les produits ${b.name} partout en France ?`, answer: `Oui, dans toute la ${livraison.zone}, à domicile ou en point relais (${livraison.tarifs}). Le matériel lourd (sacs de frappe, bases, portiques) se livre à domicile, sur devis.` },
   ];
   return { title, description, intro, faq };
 }
