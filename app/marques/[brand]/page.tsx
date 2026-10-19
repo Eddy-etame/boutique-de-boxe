@@ -9,21 +9,24 @@ import { ogImage } from '@/lib/og';
 import { Breadcrumb } from '@/components/shop-shell';
 import { Catalog } from '@/components/shop-interactions';
 import { SeoBody } from '@/components/seo-body';
-import { catalogPage, PAGE_SIZE } from '@/lib/pagination';
+import { PAGE_SIZE } from '@/lib/pagination';
 import { spaced } from '@/lib/spaced';
 
+/** HTML statique régénéré toutes les minutes ; `?page=N` se lit dans le navigateur (components/shop-interactions.tsx). */
 export const revalidate = 60;
 type Props = {
   params: Promise<{ brand: string }>;
-  searchParams: Promise<Record<string, string | undefined>>;
 };
 
-export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
+export async function generateStaticParams() {
+  return brandsOf(await readCatalog()).map((b) => ({ brand: b.slug }));
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { brand } = await params;
   const b = brandFor(brand, await readCatalog());
   if (!b) return { title: 'Page introuvable', robots: { index: false } };
-  const page = catalogPage((await searchParams).page, b.products.length);
-  if (page === null) notFound();
+  const page = 1;
   const copy = brandCopy(b);
   const canonical = '/marques/' + b.slug + '/' + (page > 1 ? '?page=' + page : '');
   const title = copy.title + (page > 1 ? ` — Page ${page}` : '');
@@ -41,13 +44,12 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   };
 }
 
-export default async function BrandPage({ params, searchParams }: Props) {
+export default async function BrandPage({ params }: Props) {
   const { brand } = await params;
   const products = await readCatalog();
   const b = brandFor(brand, products);
   if (!b) notFound();
-  const currentPage = catalogPage((await searchParams).page, b.products.length);
-  if (currentPage === null) notFound();
+  const currentPage = 1;
   const pageItems = b.products.slice(
     (currentPage - 1) * PAGE_SIZE,
     currentPage * PAGE_SIZE,

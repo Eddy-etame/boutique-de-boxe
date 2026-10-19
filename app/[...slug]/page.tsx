@@ -1,14 +1,15 @@
 import { catalogPage, PAGE_SIZE } from '@/lib/pagination';
-import { productGraph, collectionGraph, subfamilyGraph, serviceGraph, subfamilyKeywords, productKeywords, categoryKeywords, guideKeywords, pageKeywords } from '@/lib/seo';
+import { productGraph, collectionGraph, subfamilyGraph, serviceGraph } from '@/lib/seo';
+import { slugMetadata, splitPage } from './metadata';
+import { SeanceContext } from '@/components/seance-context';
 import { SEO_COPY } from '@/lib/seo-copy';
 import { subfamilyFor, subfamiliesOf, subfamilyProducts } from '@/lib/subfamilies';
 import { longDescription, practiceLevel, disciplinesOf, careAdvice, productFaq, placeDansLaFamille } from '@/lib/describe';
 import { SUBFAMILIES } from '@/lib/subfamilies';
-import { matchesSearch } from '@/lib/catalog-tools';
 import { SeoBody } from '@/components/seo-body';
 import { KeywordHub } from '@/components/keyword-hub';
-import { FacetPage, facetMetadata } from '@/components/facet-page';
-import { facetFor, brandFamilyFacet } from '@/lib/facets';
+import { FacetPage } from '@/components/facet-page';
+import { facetFor, brandFamilyFacet, allFacets } from '@/lib/facets';
 import { brandFor, brandSlug } from '@/lib/brands';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
@@ -17,12 +18,11 @@ import {
   getCategoryProducts,
   categories,
   shop,
-  money,
   listItem,
   estLourd,
 } from '@/lib/catalog';
 import { readCatalog } from '@/lib/database';
-import { guides, services, guidesEnLettres } from '@/lib/editorial';
+import { guides, services } from '@/lib/editorial';
 import { Breadcrumb, ArrowLink } from '@/components/shop-shell';
 import {
   Catalog,
@@ -34,214 +34,67 @@ import {
   GuidePage,
   ServicePage,
 } from '@/components/editorial-pages';
-import { ContactForm, Unsubscribe } from '@/components/contact-form';
-import { PayplugReturn } from '@/components/payplug-settings';
+import { ContactForm } from '@/components/contact-form';
 import { payplugSettings } from '@/lib/payplug';
-import { CartPage, ReceiptPage } from '@/components/commerce-ui';
+import { CartPage } from '@/components/commerce-ui';
 import selection from '@/lib/data/selection.json';
-import { ogImage } from '@/lib/og';
 import { spaced } from '@/lib/spaced';
-import { villeFor, regionFor, CARREFOUR } from '@/lib/villes';
-import { VillePage, RegionPage, CarrefourPage, villeMetadata, regionMetadata, carrefourMetadata } from '@/components/ville-page';
+import { villeFor, regionFor, CARREFOUR, VILLES, REGIONS, villePath } from '@/lib/villes';
+import { VillePage, RegionPage, CarrefourPage } from '@/components/ville-page';
 import { MaterielParDiscipline, materielFaq } from '@/components/materiel-par-discipline';
 import { entrelace } from '@/lib/rayons';
-import { VentePage, venteMetadata, VENTE } from '@/components/vente-page';
-import { PlanDuSite, PLAN, PLAN_TITRE, PLAN_DESCRIPTION } from '@/components/plan-du-site';
-import { DisciplinesPage, disciplinesMetadata, DISCIPLINES_PAGES } from '@/components/disciplines-page';
+import { VentePage, VENTE } from '@/components/vente-page';
+import { PlanDuSite, PLAN } from '@/components/plan-du-site';
+import { DisciplinesPage, DISCIPLINES_PAGES } from '@/components/disciplines-page';
 import { MaterielParNiveau, KitNiveau, KitDiscipline, budgetFaq } from '@/components/materiel-de-boxe';
+/**
+ * Fiches, rayons, sous-familles, pages-villes, guides : un HTML statique régénéré toutes les minutes
+ * (ISR), servi par le CDN. Rien ici ne lit la requête : `?seance=` se lit dans le navigateur, les
+ * filtres, le tri et la recherche aussi. Les pages qui dépendent de la requête (retour de paiement,
+ * reçu, désinscription, recherche) ont leur propre route, rendue à chaque visite.
+ */
 export const revalidate = 60;
 type Props = {
   params: Promise<{ slug: string[] }>;
-  searchParams: Promise<Record<string, string | undefined>>;
 };
-export async function generateMetadata({
-  params,
-  searchParams,
-}: Props): Promise<Metadata> {
-  const { slug } = await params;
-  const path = slug.join('/');
-  // Pages-villes et carrefour « Boutique sport de combat France » (29/09) : tout vient de lib/villes.ts.
-  if (slug.length === 1) {
-    const ville = villeFor(path);
-    if (ville) return villeMetadata(ville);
-    const region = regionFor(path);
-    if (region) return regionMetadata(region);
-    if (path === CARREFOUR) return carrefourMetadata();
-    if (path === VENTE) return venteMetadata();
-    if (DISCIPLINES_PAGES[path]) return disciplinesMetadata(DISCIPLINES_PAGES[path]);
-  }
+/** Les pages les plus lourdes à rendre sont prêtes dès le déploiement ; les fiches se rendent à la première visite. */
+export async function generateStaticParams() {
   const products = await readCatalog();
-  const product =
-    slug[0] === 'produits'
-      ? products.find((p) => p.slug === slug[1])
-      : undefined;
-  const cat = categoryFor(path);
-  const sub = subfamilyFor(path);
-  const facet = slug.length === 1 ? facetFor(path, products) : null;
-  const paginationCount = facet
-    ? facet.products.length
-    : sub
-      ? subfamilyProducts(sub, products).length
-      : cat
-        ? getCategoryProducts(cat, products).length
-        : path === 'nouveautes'
-          ? products.length
-          : null;
-  const paginated = paginationCount !== null;
-  const page = paginated
-    ? catalogPage((await searchParams).page, paginationCount)
-    : 1;
-  if (page === null) notFound();
-  if (facet) return facetMetadata(facet, page);
-  const guide =
-    slug[0] === 'guides' ? guides.find((g) => g.slug === slug[1]) : undefined;
-  const service = services[path];
-  const special: Record<string, [string, string]> = {
-    guides: [
-      'Guides d’achat boxe, MMA et sports de combat',
-      guidesEnLettres().charAt(0).toUpperCase() + guidesEnLettres().slice(1) + ' guides pour choisir gants, protections et équipement de boxe ou MMA selon votre pratique. Les tailles, les onces et les critères utiles.',
-    ],
-    nouveautes: [
-      'Nouveautés : les équipements du catalogue',
-      'Découvrez les équipements intégrés au catalogue Boutique de Boxe : gants, protections, tenues et accessoires, les derniers arrivés en vente.',
-    ],
-    recherche: [
-      'Rechercher un équipement',
-      'Recherchez un modèle, une marque ou une famille d’équipement dans le catalogue Boutique de Boxe.',
-    ],
-    [PLAN]: [PLAN_TITRE, PLAN_DESCRIPTION],
-    contact: [
-      'Contact : une question sur le matériel ?',
-      'Écrivez à Boutique de Boxe pour une question sur un modèle, une taille ou une fiche produit. Réponse par e-mail.',
-    ],
-    confirmation: [
-      'Demande enregistrée',
-      'Confirmation de votre demande auprès de Boutique de Boxe.',
-    ],
-    'paiement-retour': [
-      'Votre commande',
-      'Confirmation du paiement de votre commande Boutique de Boxe.',
-    ],
-    panier: [
-      'Votre panier',
-      'Remplissez votre panier et enregistrez vos choix, sans payer.',
-    ],
-    recu: [
-      'Votre reçu de simulation',
-      'Reçu privé de votre commande d’essai. Aucun paiement réel.',
-    ],
-    admin: ['Administration', 'Gestion privée du catalogue et des demandes.'],
-    desinscription: [
-      'Désinscription des alertes',
-      'Gérer votre inscription à une alerte Boutique de Boxe.',
-    ],
-  };
-  const title =
-    product?.name ||
-    (cat && (SEO_COPY[cat.slug]?.title || cat.name)) ||
-    sub?.title ||
-    guide?.title ||
-    service?.title ||
-    special[path]?.[0] ||
-    'Page introuvable';
-  const canonical =
-    '/' + path + '/' + (paginated && page > 1 ? '?page=' + page : '');
-  const pageTitle = title + (paginated && page > 1 ? ' — Page ' + page : '');
-  const og = product
-    ? ogImage('p', product.slug, product.name)
-    : cat
-      ? ogImage('c', cat.slug, cat.name)
-      : sub
-        ? ogImage('s', sub.slug, sub.name)
-        : guide
-          ? ogImage('g', guide.slug, guide.title)
-          : service || special[path]
-            ? ogImage('x', path, title)
-            : undefined;
-  const trimmed = (s: string, max: number) =>
-    s.length <= max ? s : s.slice(0, max - 1).replace(/[\s,;:·—-]+\S*$/, '').trim() + '…';
-  const describe = (p: NonNullable<typeof product>) => {
-    const family = categoryFor(p.category)?.name.toLowerCase();
-    const brand = p.brand && !/pr[ée]ciser/i.test(p.brand) && !p.name.toLowerCase().includes(p.brand.toLowerCase()) ? ' ' + p.brand : '';
-    const parts = [p.name + brand + (family ? ', ' + family : '') + '.'];
-    const sizes = p.sizes.filter((s) => s.length <= 14 && s.toLowerCase() !== p.name.toLowerCase());
-    if (sizes.length > 1) parts.push('Tailles : ' + sizes.slice(0, 4).join(', ') + (sizes.length > 4 ? '…' : '') + '.');
-    parts.push('Prix TTC : ' + money(p.price) + '.');
-    parts.push('Livraison dans toute la France.');
-    return parts.join(' ');
-  };
-  const rawDescription =
-    (product
-      ? product.seoDescription && product.seoDescription.length >= 80
-        ? product.seoDescription
-        : describe(product)
-      : undefined) ||
-    (cat && (SEO_COPY[cat.slug]?.description || cat.description)) ||
-    sub?.description ||
-    guide?.description ||
-    service?.description ||
-    special[path]?.[1] ||
-    'Cette page n’existe pas.';
-  const description = trimmed(
-    paginated && page > 1
-      ? `Page ${page} sur ${Math.ceil(paginationCount / PAGE_SIZE)}. ${rawDescription}`
-      : rawDescription,
-    158,
-  );
-  const seoTitle = pageTitle.length > 41 ? { absolute: pageTitle } : pageTitle;
-  return {
-    title: seoTitle,
-    description,
-    // le premier mot-clé est toujours une phrase visible de la page (son titre) ; l’audit le vérifie
-    keywords: product ? productKeywords(product) : cat ? categoryKeywords(cat) : sub ? subfamilyKeywords(sub) : guide ? guideKeywords(guide) : [(service?.title || special[path]?.[0] || '').toLowerCase(), ...(pageKeywords(path) || [])].filter(Boolean),
-    alternates: { canonical, languages: { 'fr-FR': canonical, 'x-default': canonical } },
-    openGraph: {
-      title: pageTitle,
-      description,
-      url: canonical,
-      siteName: shop.name,
-      locale: 'fr_FR',
-      type: guide ? 'article' : 'website',
-      ...(og ? { images: og } : {}),
-    },
-    ...([
-      'paiement-retour',
-      'panier',
-      'recu',
-      'admin',
-      'merci',
-      'recherche',
-      'desinscription',
-      'confirmation',
-    ].includes(path)
-      ? { robots: { index: false, follow: path === 'recherche' } }
-      : {}),
-  };
+  const paths = [
+    ...categories.map((c) => c.slug),
+    ...SUBFAMILIES.map((s) => s.slug),
+    ...allFacets(products).map((f) => f.path.replace(/^\/|\/$/g, '')),
+    ...[...VILLES, ...REGIONS].map((v) => villePath(v.slug).replace(/^\/|\/$/g, '')),
+    CARREFOUR,
+    VENTE,
+    PLAN,
+    ...Object.keys(DISCIPLINES_PAGES),
+    'nouveautes',
+    'guides',
+    ...guides.map((g) => 'guides/' + g.slug),
+    ...Object.keys(services),
+    'contact',
+    'panier',
+  ];
+  return [...new Set(paths)].filter((p) => p && (!p.includes('/') || p.startsWith('guides/'))).map((p) => ({ slug: p.split('/') }));
+}
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  return slugMetadata((await params).slug);
 }
 /** PayPlug peut-il encaisser ? Live avec sa clé, ou test hors production (13/10/2026). Jamais une clé lue ailleurs. */
 function paiementPret() {
   const s = payplugSettings(process.env as unknown as Parameters<typeof payplugSettings>[0]);
   return s.liveEnabled || (s.hostedTestEnabled && process.env.NODE_ENV !== 'production');
 }
-export default async function Page({ params, searchParams }: Props) {
-  const { slug } = await params;
-  const path = slug.join('/');
-  if (path === 'paiement-retour')
-    return (
-      <main id="contenu" className="page-wrap">
-        <PayplugReturn id={(await searchParams).id || ''} cancelled={(await searchParams).cancel === '1'} />
-      </main>
-    );
+export default async function Page({ params }: Props) {
+  const { slug, path, page: pageParam } = splitPage((await params).slug);
+  // Le segment interne de page ne vaut que pour une liste ; ailleurs, l’adresse n’existe pas.
+  const listPage = (count: number) => catalogPage(pageParam, count);
+  if (pageParam !== undefined && !(categoryFor(path) || subfamilyFor(path) || path === 'nouveautes' || facetFor(path, await readCatalog()))) notFound();
   if (path === 'panier')
     return (
       <main id="contenu" className="page-wrap">
         <CartPage paiementPret={paiementPret()} />
-      </main>
-    );
-  if (path === 'recu')
-    return (
-      <main id="contenu" className="page-wrap">
-        <ReceiptPage id={(await searchParams).id || ''} />
       </main>
     );
   if (path === 'confirmation')
@@ -312,14 +165,8 @@ export default async function Page({ params, searchParams }: Props) {
         </div>
       </main>
     );
-  if (path === 'desinscription')
-    return (
-      <main id="contenu" className="page-wrap">
-        <Unsubscribe token={(await searchParams).token || ''} all={(await searchParams).tout === '1'} />
-      </main>
-    );
   const products = await readCatalog();
-  if (slug.length === 1) {
+  if (slug.length === 1 && pageParam === undefined) {
     const ville = villeFor(path);
     if (ville) return <VillePage ville={ville} all={products} />;
     const region = regionFor(path);
@@ -353,9 +200,11 @@ export default async function Page({ params, searchParams }: Props) {
     ];
     const brand = !p.brand || /pr[ée]ciser|^Sélection /i.test(p.brand) ? null : brandFor(brandSlug(p.brand), products);
     const brandFamily = brand ? brandFamilyFacet(brand, p.category) : null;
-    const contextKey = (await searchParams).seance;
-    const session = selection.sessions.find((s) => s.key === contextKey);
-    const reason = session?.products.find((r) => r.id === p.id);
+    // « Dans votre sac de séance » : la séance vient de `?seance=`, lue dans le navigateur.
+    const seances = selection.sessions.flatMap((s) => {
+      const r = s.products.find((x) => x.id === p.id);
+      return r ? [{ key: s.key, name: s.name, reason: r.reason }] : [];
+    });
     // Trois niveaux quand la sous-famille existe : famille → sous-famille → modèle.
     const sub = subfamiliesOf(p.category).find((x) => x.match(p));
     return (
@@ -367,14 +216,7 @@ export default async function Page({ params, searchParams }: Props) {
             { label: p.name },
           ]}
         />
-        {reason && (
-          <aside className="product-context">
-            <span className="eyebrow">DANS VOTRE SAC DE SÉANCE</span>
-            <strong>{session!.name}</strong>
-            <p>{reason.reason}</p>
-            <a href="/#preparer">Revoir ma préparation ↗</a>
-          </aside>
-        )}
+        {seances.length > 0 && <SeanceContext seances={seances} />}
         <ProductDetails product={p} />
         <section className="spec-section">
           <div>
@@ -489,14 +331,14 @@ export default async function Page({ params, searchParams }: Props) {
   }
   const facet = slug.length === 1 ? facetFor(path, products) : null;
   if (facet) {
-    const currentPage = catalogPage((await searchParams).page, facet.products.length);
+    const currentPage = listPage(facet.products.length);
     if (currentPage === null) notFound();
     return <FacetPage facet={facet} all={products} page={currentPage} />;
   }
   const sub = subfamilyFor(path);
   if (sub) {
     const data = subfamilyProducts(sub, products);
-    const currentPage = catalogPage((await searchParams).page, data.length);
+    const currentPage = listPage(data.length);
     if (currentPage === null) notFound();
     const pageItems = data.slice(
       (currentPage - 1) * PAGE_SIZE,
@@ -547,19 +389,14 @@ export default async function Page({ params, searchParams }: Props) {
     );
   }
   const cat = categoryFor(path);
-  if (cat || path === 'nouveautes' || path === 'recherche') {
-    // La page de résultats arrive déjà filtrée par la saisie de l'entête (?q=), sans attendre le script.
-    const query = path === 'recherche' ? ((await searchParams).q || '').slice(0, 80).trim() : '';
+  if (cat || path === 'nouveautes') {
+    // La recherche (?q=) a sa propre route, app/recherche/page.tsx.
     const data = cat
       ? cat.slug === 'materiel-sport-de-combat'
         ? entrelace(getCategoryProducts(cat, products))
         : getCategoryProducts(cat, products)
-      : path === 'nouveautes'
-        ? [...products].reverse()
-        : query
-          ? products.filter((p) => matchesSearch(p, query))
-          : products;
-    const currentPage = catalogPage((await searchParams).page, data.length);
+      : [...products].reverse();
+    const currentPage = listPage(data.length);
     if (currentPage === null) notFound();
     // « Matériel sport de combat » (29/09) : le tableau par discipline et ses questions, tirés du recensement du ministère.
     const materiel = cat?.slug === 'materiel-sport-de-combat';
@@ -572,41 +409,33 @@ export default async function Page({ params, searchParams }: Props) {
           items={[
             {
               label:
-                cat?.name ||
-                (path === 'recherche' ? 'Recherche' : 'Nouveautés'),
+                cat?.name || 'Nouveautés',
             },
           ]}
         />
-        {path !== 'recherche' && (
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: collectionGraph({
-                path: '/' + path + '/',
-                name: cat?.name || 'Nouveautés',
-                description: cat?.description || 'Les derniers modèles ajoutés au catalogue Boutique de Boxe.',
-                items: data.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE),
-                total: data.length,
-                page: currentPage,
-                perPage: PAGE_SIZE,
-                category: cat,
-                faq,
-              }),
-            }}
-          />
-        )}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: collectionGraph({
+              path: '/' + path + '/',
+              name: cat?.name || 'Nouveautés',
+              description: cat?.description || 'Les derniers modèles ajoutés au catalogue Boutique de Boxe.',
+              items: data.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE),
+              total: data.length,
+              page: currentPage,
+              perPage: PAGE_SIZE,
+              category: cat,
+              faq,
+            }),
+          }}
+        />
         <section className="page-heading">
           <div>
             <span className="eyebrow">
               {(cat && SEO_COPY[cat.slug]?.eyebrow) || 'LE CATALOGUE / ' + (cat?.number || 'INDEX')}
             </span>
             <h1>
-              {cat?.name ||
-                (path === 'recherche'
-                  ? query
-                    ? `« ${query} »`
-                    : 'Rechercher'
-                  : 'Les nouveautés')}
+              {cat?.name || 'Les nouveautés'}
             </h1>
           </div>
           <div>
@@ -614,10 +443,7 @@ export default async function Page({ params, searchParams }: Props) {
               {cat?.label || 'Tous les modèles.'}
             </div>
             <p>
-              {cat?.intro ||
-                (query
-                  ? `${data.length} ${data.length === 1 ? 'modèle répond' : 'modèles répondent'} à « ${query} ». Affinez avec les filtres, ou changez de mot.`
-                  : 'Tous les modèles du catalogue, avec leurs tailles et leurs prix de vente TTC.')}
+              {cat?.intro || 'Tous les modèles du catalogue, avec leurs tailles et leurs prix de vente TTC.'}
             </p>
           </div>
         </section>
@@ -638,7 +464,6 @@ export default async function Page({ params, searchParams }: Props) {
           items={data.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map(listItem)}
           total={data.length}
           scope={path}
-          initialQuery={query}
           initialPage={currentPage}
           showFamilies={!cat || cat.families.length > 1}
         />
