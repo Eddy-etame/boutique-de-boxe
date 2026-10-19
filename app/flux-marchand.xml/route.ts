@@ -12,8 +12,8 @@ import { urlOf } from '@/lib/seo';
  */
 export const dynamic = 'force-dynamic';
 
-const esc = (v: unknown) =>
-  String(v ?? '').replace(/[<>&"']/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&apos;' })[c]!);
+const esc = (v: string) =>
+  v.replace(/[<>&"']/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&apos;' })[c]!);
 const texte = (s: string) => s.replace(/\s+/g, ' ').trim().slice(0, 4990);
 const prix = (cents: number) => (cents / 100).toFixed(2) + ' EUR';
 const abs = (src: string) => (/^https?:\/\//.test(src) ? src : urlOf(src));
@@ -21,9 +21,24 @@ const badBrand = (b: string) => !b || /pr[ée]ciser/i.test(b);
 
 let memo: { at: number; body: string } | null = null;
 
-function item(p: Product, taille: string | null, type: string) {
+/** Jours ouvrés du délai d'expédition annoncé (« 7 jours ouvrés »). */
+const JOURS_OUVRES = Number(/\d+/.exec(shop.delais.expedition)?.[0] || 7);
+/** Date de disponibilité d'un article sur commande : aujourd'hui + le délai, week-ends sautés (ISO 8601). */
+function dateDisponibilite(from = new Date()): string {
+  const d = new Date(Date.UTC(from.getUTCFullYear(), from.getUTCMonth(), from.getUTCDate(), 12));
+  let restants = JOURS_OUVRES;
+  while (restants > 0) {
+    d.setUTCDate(d.getUTCDate() + 1);
+    const jour = d.getUTCDay();
+    if (jour !== 0 && jour !== 6) restants--;
+  }
+  return d.toISOString().slice(0, 16) + '+0000';
+}
+
+function item(p: Product, taille: string | null, type: string, disponible: string) {
   const id = taille ? `${p.id}-${taille.replace(/[^A-Za-z0-9]+/g, '-')}` : p.id;
-  const montant = variantPrice(p, taille || '');
+  // Le prix de la page d'arrivée : celui de la taille quand elles ont toutes le même, sinon le « Dès ».
+  const montant = taille ? variantPrice(p, taille) : p.price;
   const lignes = [
     `<g:id>${esc(id)}</g:id>`,
     `<g:title>${esc(texte(taille ? `${p.name} — ${taille}` : p.name).slice(0, 150))}</g:title>`,
@@ -32,6 +47,7 @@ function item(p: Product, taille: string | null, type: string) {
     `<g:image_link>${esc(abs(p.images[0].src))}</g:image_link>`,
     ...p.images.slice(1, 6).map((i) => `<g:additional_image_link>${esc(abs(i.src))}</g:additional_image_link>`),
     `<g:availability>${shop.disponibiliteOffre === 'InStock' ? 'in_stock' : 'backorder'}</g:availability>`,
+    ...(shop.disponibiliteOffre === 'InStock' ? [] : [`<g:availability_date>${disponible}</g:availability_date>`]),
     `<g:price>${prix(montant)}</g:price>`,
     `<g:condition>new</g:condition>`,
     ...(badBrand(p.brand) ? [] : [`<g:brand>${esc(p.brand)}</g:brand>`]),
@@ -52,13 +68,16 @@ export async function GET() {
     return new Response(memo.body, { headers: { 'Content-Type': 'application/rss+xml; charset=utf-8', 'Cache-Control': 'public, max-age=3600, s-maxage=3600' } });
   const products = (await readCatalog()).filter((p) => p.images[0] && p.price > 0 && !estLourd(p));
   const items: string[] = [];
+  const disponible = dateDisponibilite();
   for (const p of products) {
     const famille = categoryFor(p.category)?.name || p.category;
     const sous = SUBFAMILIES.find((s) => !s.kind && s.match(p))?.name;
     const type = sous ? `${famille} > ${sous}` : famille;
     const tailles = p.sizes.filter((s) => s.length <= 40 && s.toLowerCase() !== p.name.toLowerCase());
-    if (tailles.length > 1) for (const t of tailles) items.push(item(p, t, type));
-    else items.push(item(p, null, type));
+    // Tailles en articles distincts seulement quand elles ont toutes le prix affiché par la page.
+    const memePrix = tailles.every((t) => variantPrice(p, t) === p.price);
+    if (tailles.length > 1 && memePrix) for (const t of tailles) items.push(item(p, t, type, disponible));
+    else items.push(item(p, null, type, disponible));
   }
   const body =
     `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0"><channel>` +

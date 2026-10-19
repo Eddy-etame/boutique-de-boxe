@@ -10,7 +10,7 @@
  * une phrase ou une donnée que le visiteur voit. Le script `scripts/audit-seo.mjs`
  * le vérifie.
  */
-import { shop, categories, categoryFor, getCategoryProducts, money, jsonLd, type Product, type Category } from './catalog';
+import { shop, categories, categoryFor, getCategoryProducts, money, jsonLd, estLourd, variantPrice, type Product, type Category } from './catalog';
 import { guidePublished, guidesEnLettres, type Guide } from './editorial';
 import { SEO_COPY, type SeoFaq } from './seo-copy';
 import type { Subfamily } from './subfamilies';
@@ -22,6 +22,81 @@ export const EDITORIAL_DATE = '2026-10-13';
  *  3 octobre 2026 (place dans la famille, questions), 4 octobre (date d’ouverture des ventes),
  *  13 octobre (ventes ouvertes : offre, prix de vente, disponibilité, livraison au présent). */
 export const CATALOGUE_REVISION = '2026-10-13';
+
+/* ------------------------------------------------------------- titres courts */
+
+/** Longueur d’un titre que Google affiche en entier (environ 600 px). */
+export const TITRE_MAX = 60;
+
+/** Titres éditoriaux trop longs : la balise <title> se raccourcit, le H1 ne change pas. */
+const TITRES_COURTS: Record<string, string> = {
+  'Équipement de boxe et de combat pour femme : choisir la bonne coupe': 'Équipement de boxe pour femme : choisir la bonne coupe',
+};
+
+/** Raccourcis sûrs : le mot-clé de tête (« Gants de boxe », « Sac de frappe »…) reste en tête. */
+const ALLEGEMENTS: [RegExp, string][] = [
+  [/^Gants de boxe d[’']entraînement /i, 'Gants de boxe '],
+  [/\s+50th Anniversary\b/gi, ''],
+  [/\s+[ée]dition (?:limitée|collector)\b/gi, ''],
+  [/\bmultiboxe boxe\b/gi, 'multiboxe'],
+  [/(\d) mètres\b/g, '$1 m'],
+];
+const LIEN_PENDANT = /\s+(?:×|x|et|de|du|des|à|en|pour|avec|manches|-|—)$/i;
+
+function raccourcir(name: string): string {
+  let t = name.replace(/\s+/g, ' ').trim();
+  if (t.length <= TITRE_MAX) return t;
+  for (const [re, by] of ALLEGEMENTS) t = t.replace(re, by).replace(/\s+/g, ' ').trim();
+  // Le nom répété en fin de titre (« Station d’entraînement Focusmaster Century Station d’entraînement »).
+  const words = t.split(' ');
+  for (let n = Math.floor(words.length / 2); n >= 2; n--) {
+    const head = words.slice(0, n).join(' ');
+    if (words.slice(-n).join(' ').toLowerCase() === head.toLowerCase()) {
+      t = words.slice(0, -n).join(' ');
+      break;
+    }
+  }
+  if (t.length <= TITRE_MAX) return t;
+  // Sinon : la tête (trois mots) et la fin après la virgule (couleur, coloris) restent ; le milieu perd
+  // ses derniers mots, jamais un mot coupé, jamais un « × » ou un « et » laissé en suspens.
+  const comma = t.indexOf(',');
+  const before = (comma > 0 ? t.slice(0, comma) : t).split(' ');
+  const tail = comma > 0 ? t.slice(comma) : '';
+  if (before.length <= 3) return t;
+  const head = before.slice(0, 3);
+  let middle = before.slice(3);
+  const build = () => [...head, ...middle].join(' ').replace(LIEN_PENDANT, '') + tail;
+  while (middle.length && build().length > TITRE_MAX) {
+    middle = middle.slice(0, -1);
+    while (middle.length && LIEN_PENDANT.test(' ' + middle.at(-1))) middle = middle.slice(0, -1);
+  }
+  return build();
+}
+
+const titresDuCatalogue = new WeakMap<Product[], Map<string, string>>();
+/**
+ * Le titre de la balise <title>, 60 caractères au plus quand c’est possible sans perte :
+ * pour une fiche, jamais le titre d’une autre fiche (sinon le nom entier reste).
+ */
+export function titreCourt(x: Product | string, all: Product[] = []): string {
+  if (typeof x === 'string') return x.length <= TITRE_MAX ? x : TITRES_COURTS[x] || x;
+  if (x.name.length <= TITRE_MAX) return x.name;
+  let map = titresDuCatalogue.get(all);
+  if (!map) {
+    map = new Map();
+    const used = new Map<string, number>();
+    const proposed = all.map((p) => [p.id, raccourcir(p.name)] as const);
+    for (const p of all) used.set(p.name.toLowerCase(), (used.get(p.name.toLowerCase()) || 0) + 1);
+    for (const [, t] of proposed) used.set(t.toLowerCase(), (used.get(t.toLowerCase()) || 0) + 1);
+    for (const p of all) {
+      const t = raccourcir(p.name);
+      // Un titre raccourci qui égale un autre nom ou un autre titre raccourci : on garde le nom entier.
+      map.set(p.id, t === p.name || (used.get(t.toLowerCase()) || 0) <= 1 ? t : p.name);
+    }
+    titresDuCatalogue.set(all, map);
+  }
+  return map.get(x.id) ?? raccourcir(x.name);
+}
 
 /** Paternité technique déclarée par le propriétaire du projet. */
 export const ATTRIBUTION = {
@@ -269,14 +344,17 @@ export function webPageNode(o: { path: string; name: string; description: string
   };
 }
 
-/** L’offre d’une fiche, publiée seulement quand les ventes sont ouvertes. */
-function offerOf(p: Product) {
-  const lourd = /sac de frappe|base de frappe|mannequin|portique|potence|\bcage\b|\bring\b/i.test(p.name);
+/**
+ * L’offre d’une fiche (ou d’une de ses tailles), publiée seulement quand les ventes sont ouvertes.
+ * « Lourd » se lit dans `estLourd()` (lib/catalog.ts), la règle du panier et du flux : une seule définition.
+ */
+function offerOf(p: Product, cents = p.price) {
+  const lourd = estLourd(p);
   const zone = { '@type': 'DefinedRegion', addressCountry: 'FR' };
   return {
     '@type': 'Offer',
     url: urlOf('/produits/' + p.slug + '/'),
-    price: (p.price / 100).toFixed(2),
+    price: (cents / 100).toFixed(2),
     priceCurrency: 'EUR',
     availability: 'https://schema.org/' + shop.disponibiliteOffre,
     itemCondition: 'https://schema.org/NewCondition',
@@ -287,7 +365,7 @@ function offerOf(p: Product) {
       ? {}
       : {
           shippingDetails: [
-            { '@type': 'OfferShippingDetails', shippingDestination: zone, shippingRate: { '@type': 'MonetaryAmount', value: p.price >= 6900 ? '0.00' : '6.90', currency: 'EUR' } },
+            { '@type': 'OfferShippingDetails', shippingDestination: zone, shippingRate: { '@type': 'MonetaryAmount', value: cents >= 6900 ? '0.00' : '6.90', currency: 'EUR' } },
             { '@type': 'OfferShippingDetails', shippingDestination: zone, shippingRate: { '@type': 'MonetaryAmount', value: '8.90', currency: 'EUR' } },
           ],
         }),
@@ -329,34 +407,59 @@ function productCore(p: Product) {
   };
 }
 
-/** Fiche produit : WebPage (ItemPage), Product, ProductGroup des tailles, modèles proches, fil d’Ariane. */
+/**
+ * Les tailles d’une fiche publiées en variantes (documentation Google « Variantes de produits ») :
+ * seulement quand toutes les tailles ont le prix affiché sur la page. Chaque variante porte alors son
+ * offre complète (prix, devise, disponibilité, URL, livraison, retours), son image et son @id.
+ * Une fiche dont les tailles changent de prix affiche « Dès … » : elle reste un Product unique, à ce
+ * prix-là, avec ses tailles en liste, tant qu’aucune adresse ne présélectionne une taille.
+ */
+export function variantesPubliables(p: Product) {
+  return p.sizes.length > 1 && p.sizes.every((s) => variantPrice(p, s) === p.price);
+}
+
+/** Fiche produit : WebPage (ItemPage), Product (ou ProductGroup des tailles), modèles proches, fil d’Ariane. */
 export function productGraph(p: Product, related: Product[], opts: { description?: string; faq?: SeoFaq[] } = {}) {
   const path = '/produits/' + p.slug + '/';
   const family = categoryFor(p.category);
-  const product = {
-    ...productCore(p),
+  const core = productCore(p);
+  const withVariants = variantesPubliables(p) && shop.ventesOuvertes && p.price > 0;
+  const base = {
+    ...core,
     ...(opts.description ? { description: opts.description } : {}),
     mainEntityOfPage: { '@id': urlOf(path) + '#webpage' },
     ...(related.length ? { isRelatedTo: related.slice(0, 4).map((r) => ({ '@id': urlOf('/produits/' + r.slug + '/') + '#product' })) } : {}),
-    ...(p.sizes.length > 1 ? { isVariantOf: { '@id': urlOf(path) + '#group' } } : {}),
   };
-  const group =
-    p.sizes.length > 1
-      ? {
-          '@type': 'ProductGroup',
-          '@id': urlOf(path) + '#group',
-          name: p.name,
-          productGroupID: p.id,
-          url: urlOf(path),
-          ...(!badBrand(p.brand) ? { brand: { '@type': 'Brand', name: p.brand } } : {}),
-          variesBy: ['https://schema.org/size'],
-          hasVariant: p.sizes.map((s) => ({ '@type': 'Product', name: `${p.name} — ${s}`, size: s.split(',')[0], sku: `${p.sourceRef || p.id}-${s.replace(/[^\p{L}\p{N}]+/gu, '-')}` })),
-        }
-      : null;
+  let product: Record<string, unknown> & { '@id': string } = base;
+  if (withVariants) {
+    // Le nœud de la fiche devient le groupe : les offres sont portées par chaque taille, pas par le groupe.
+    const { offers: _offers, size: _size, sku: _sku, ...group } = base;
+    void _offers;
+    void _size;
+    void _sku;
+    const sku = (s: string) => `${p.sourceRef || p.id}-${s.replace(/[^\p{L}\p{N}]+/gu, '-')}`;
+    product = {
+      ...group,
+      '@type': 'ProductGroup',
+      productGroupID: p.sourceRef || p.id,
+      variesBy: ['https://schema.org/size'],
+      hasVariant: p.sizes.map((s) => ({
+        '@type': 'Product',
+        '@id': urlOf(path) + '#taille-' + sku(s).toLowerCase(),
+        name: `${p.name} — ${s}`,
+        size: s.split(',')[0],
+        sku: sku(s),
+        image: core.image,
+        url: urlOf(path),
+        ...(core.brand ? { brand: core.brand } : {}),
+        ...(core.color ? { color: core.color } : {}),
+        offers: offerOf(p, variantPrice(p, s)),
+      })),
+    };
+  }
   return graph([
     webPageNode({ path, name: p.name, description: p.short, type: 'ItemPage', image: p.images[0]?.src, dateModified: [EDITORIAL_DATE, CATALOGUE_REVISION, p.updatedAt || p.dateAdded || EDITORIAL_DATE].sort().at(-1)!.slice(0, 10), about: family ? (CATEGORY_ENTITY[family.slug] || []).map(thing) : [], keywords: productKeywords(p), mainEntity: product['@id'] }),
     product,
-    ...(group ? [group] : []),
     ...(opts.faq?.length ? [faqNode(path, opts.faq)] : []),
   ]);
 }

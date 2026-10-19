@@ -4,7 +4,7 @@ import { listItem, shop } from '@/lib/catalog';
 import { GLOVE_WEIGHTS, ouncesOf } from '@/lib/facets';
 import { weeklySelection } from '@/lib/hub';
 import { parseNumber, parseUsage, recommendGloveWeight, USAGES } from '@/lib/glove-weight';
-import { graph, urlOf, webPageNode, breadcrumbNode, faqNode } from '@/lib/seo';
+import { graph, urlOf, webPageNode, faqNode } from '@/lib/seo';
 import { ogImage } from '@/lib/og';
 import { Breadcrumb, ArrowLink } from '@/components/shop-shell';
 import { GloveWeightTool, type WeightFacts } from '@/components/glove-weight-tool';
@@ -13,9 +13,9 @@ import type { SeoFaq } from '@/lib/seo-copy';
 
 export const dynamic = 'force-dynamic';
 const PATH = '/outils/poids-de-gants/';
-const TITLE = 'Quel poids de gants de boxe choisir ? Le calculateur en onces';
+const TITLE = 'Quel poids de gants de boxe choisir ? Calculateur en onces';
 const DESCRIPTION =
-  'Calculateur de poids de gants de boxe : la séance, votre poids, votre âge, et la réponse en onces (8, 10, 12, 14, 16 ou 18 oz) d’après notre guide, avec les modèles à ce poids et leurs prix.';
+  'Calculateur de poids de gants de boxe : la séance, votre poids, votre âge, et la réponse en onces (8 à 18 oz), avec les modèles à ce poids et leurs prix.';
 type Props = { searchParams: Promise<Record<string, string | undefined>> };
 
 export const metadata: Metadata = {
@@ -70,7 +70,6 @@ export default async function GloveWeightPage({ searchParams }: Props) {
         dangerouslySetInnerHTML={{
           __html: graph([
             webPageNode({ path: PATH, name: TITLE, description: DESCRIPTION, image: '/vignette/x/outils/poids-de-gants.png', mainEntity: app['@id'], keywords: ['quel poids de gants de boxe', 'calculateur poids gants de boxe'] }),
-            breadcrumbNode(PATH, [{ label: 'Gants de boxe', href: '/gants-de-boxe/' }, { label: 'Quel poids de gants ?' }]),
             app,
             faqNode(PATH, FAQ),
           ]),

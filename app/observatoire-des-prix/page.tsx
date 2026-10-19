@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { readCatalog } from '@/lib/database';
 import { money, shop } from '@/lib/catalog';
 import { observatory, observatorySentences, type PriceRow } from '@/lib/observatory';
-import { graph, urlOf, webPageNode, breadcrumbNode, faqNode } from '@/lib/seo';
+import { graph, urlOf, webPageNode, faqNode } from '@/lib/seo';
 import { ogImage } from '@/lib/og';
 import { Breadcrumb, ArrowLink } from '@/components/shop-shell';
 import type { SeoFaq } from '@/lib/seo-copy';
@@ -10,9 +10,9 @@ import { SeoBody } from '@/components/seo-body';
 
 export const revalidate = 60;
 const PATH = '/observatoire-des-prix/';
-const TITLE = 'Observatoire des prix du matériel de boxe : gants, casques, sacs';
+const TITLE = 'Observatoire des prix du matériel de boxe : gants, casques';
 const DESCRIPTION =
-  'Combien coûtent des gants de boxe, un casque, un sac de frappe ? Prix minimum, médian et maximum par équipement, par marque et par poids de gant, relevés sur le catalogue. Données ouvertes, à citer.';
+  'Combien coûtent des gants de boxe, un casque, un sac de frappe ? Prix minimum, médian et maximum par équipement, par marque et par poids de gant.';
 
 export const metadata: Metadata = {
   title: { absolute: TITLE },
@@ -100,7 +100,6 @@ export default async function ObservatoryPage() {
         dangerouslySetInnerHTML={{
           __html: graph([
             webPageNode({ path: PATH, name: TITLE, description: DESCRIPTION, image: '/vignette/x/observatoire-des-prix.png', mainEntity: dataset['@id'], dateModified: o.generated.slice(0, 10), keywords: ['observatoire des prix', 'prix gants de boxe'] }),
-            breadcrumbNode(PATH, [{ label: 'Observatoire des prix' }]),
             dataset,
             faqNode(PATH, faq),
           ]),

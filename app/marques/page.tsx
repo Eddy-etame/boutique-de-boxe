@@ -2,16 +2,16 @@ import type { Metadata } from 'next';
 import { readCatalog } from '@/lib/database';
 import { money } from '@/lib/catalog';
 import { brandsOf } from '@/lib/brands';
-import { graph, urlOf, webPageNode, breadcrumbNode } from '@/lib/seo';
+import { graph, urlOf, webPageNode } from '@/lib/seo';
 import { ogImage } from '@/lib/og';
 import { Breadcrumb } from '@/components/shop-shell';
 import { BrandGridMotion } from '@/components/brand-grid-motion';
 import { brandFamilyFacet } from '@/lib/facets';
 
 export const revalidate = 60;
-const TITLE = 'Marques de boxe et de MMA : Elion, Fairtex, Cleto Reyes, Venum';
+const TITLE = 'Marques de boxe et MMA : Elion, Fairtex, Cleto Reyes, Venum';
 const DESCRIPTION =
-  'Toutes les marques de la Boutique de Boxe : Elion, Fairtex, Cleto Reyes, Everlast, Adidas, Venum, Twins, Metal Boxe. Modèles, équipements et prix TTC par marque.';
+  'Toutes les marques de la Boutique de Boxe : Elion, Fairtex, Cleto Reyes, Everlast, Adidas, Venum, Twins, Metal Boxe. Modèles et prix TTC par marque.';
 
 export const metadata: Metadata = {
   title: { absolute: TITLE },
@@ -39,7 +39,6 @@ export default async function BrandsIndex() {
         dangerouslySetInnerHTML={{
           __html: graph([
             webPageNode({ path: '/marques/', name: TITLE, description: DESCRIPTION, type: 'CollectionPage', image: '/vignette/x/marques.png', mainEntity: urlOf('/marques/') + '#list' }),
-            breadcrumbNode('/marques/', [{ label: 'Marques' }]),
             list,
           ]),
         }}
