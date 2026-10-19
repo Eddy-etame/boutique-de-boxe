@@ -30,11 +30,15 @@ export const dynamic = 'force-dynamic';
 
 type Params = { params: Promise<{ action: string }> };
 
+// Les pages HTML de connexion n'ont ni script ni ressource externe : une CSP fermée, que next.config
+// n'applique pas sous /api. Le style en ligne reste permis, le formulaire ne vise que le site.
+const CSP_PAGE = "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'";
+
 function page(title: string, body: string, status = 200) {
   const html = `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>${title} | Boutique de Boxe</title><style>body{font-family:system-ui,sans-serif;max-width:32rem;margin:4rem auto;padding:0 1.5rem;color:#111;line-height:1.5}a{color:#111}</style></head><body><h1>${title}</h1><p>${body}</p><p><a href="/admin/">Retour à l’administration</a></p></body></html>`;
   return new NextResponse(html, {
     status,
-    headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' },
+    headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'Content-Security-Policy': CSP_PAGE },
   });
 }
 
@@ -95,7 +99,8 @@ export async function POST(request: Request, { params }: Params) {
       email,
       options: {
         emailRedirectTo: origin + '/api/auth/callback?next=/admin/',
-        shouldCreateUser: true,
+        // Jamais de compte créé ici : un membre sans compte Supabase entre par le lien copié de l'atelier.
+        shouldCreateUser: false,
       },
     });
     // Un refus du fournisseur (souvent sa limite d’une minute par adresse) est journalisé,
@@ -157,7 +162,8 @@ export async function POST(request: Request, { params }: Params) {
     if (!sameOrigin(request))
       return page('Requête refusée', 'Origine non autorisée.', 403);
     await fermerSession().catch(() => undefined);
-    (await cookies()).delete(COOKIE_SECURE);
+    // Un cookie __Host- ne s'efface qu'avec Secure et Path=/ : un simple delete() était ignoré du navigateur.
+    (await cookies()).set(COOKIE_SECURE, '', { httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge: 0 });
     (await cookies()).delete(COOKIE_LOCAL);
     if (supabaseConfigured()) await (await supabaseServer()).auth.signOut();
     if (process.env.NODE_ENV === 'development')
@@ -186,7 +192,7 @@ export async function GET(request: Request, { params }: Params) {
     const t = url.searchParams.get('t') || '';
     if (!/^[A-Za-z0-9_-]{43}$/.test(t)) return page('Lien invalide', 'Ce lien de connexion est incomplet.', 400);
     const html = `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><meta name="referrer" content="no-referrer"><title>Ouvrir l’administration | Boutique de Boxe</title><style>body{font-family:system-ui,sans-serif;max-width:32rem;margin:4rem auto;padding:0 1.5rem;color:#111;line-height:1.5}button{font:inherit;font-weight:700;padding:.9rem 1.4rem;background:#20241f;color:#fff;border:0;cursor:pointer}</style></head><body><h1>Ouvrir l’administration</h1><p>Ce lien ouvre l’administration de Boutique de Boxe sur cet appareil, pour 30 jours. Il ne sert qu’une fois.</p><form method="post" action="/api/auth/entrer"><input type="hidden" name="t" value="${t}"><button type="submit">Ouvrir sur cet appareil</button></form></body></html>`;
-    return new NextResponse(html, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer', 'X-Robots-Tag': 'noindex' } });
+    return new NextResponse(html, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer', 'X-Robots-Tag': 'noindex', 'Content-Security-Policy': CSP_PAGE } });
   }
   if (action === 'equipe') {
     const moi = await adminEmail();
