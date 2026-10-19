@@ -14,7 +14,6 @@ import { observatory, observatorySentences } from '@/lib/observatory';
 import { parseUsage, recommendGloveWeight } from '@/lib/glove-weight';
 import { allFacets } from '@/lib/facets';
 import { VILLES, REGIONS, FRANCE, SOURCE, CARREFOUR, villePath, regionTotal, siteDe } from '@/lib/villes';
-import { emailValid, insertAlert } from '@/lib/alerts';
 
 /**
  * Serveur MCP en lecture seule (JSON-RPC 2.0 sur HTTP). Un agent y lit les faits
@@ -254,7 +253,7 @@ export async function POST(request: Request) {
     const { week, range } = weekLabel();
     value = { page: urlOf('/' + page + '/'), week, period: range, note: 'Choix éditorial tournant, une marque par modèle. Ce n’est pas un classement des ventes.', products: weeklySelection(page, list).map(productView) };
   } else if (name === 'get_combat_venues') {
-    const plie = (s: unknown) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const plie = (s: unknown) => (typeof s === 'string' ? s : '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
     const source = { name: SOURCE.nom, publisher: SOURCE.editeur, license: SOURCE.licence, updated: SOURCE.maj, url: SOURCE.url };
     const ville = args.city ? VILLES.find((v) => v.slug === plie(args.city) || plie(v.nom) === plie(args.city)) : undefined;
     if (args.city && !ville) {
@@ -262,7 +261,7 @@ export async function POST(request: Request) {
       if (!region) return fail(id, -32602, 'Ville sans page : seules les communes de plus de 100 000 habitants assez recensées en ont une. Appeler sans ville pour la liste.', 404);
       value = { region: region.nom, url: urlOf(villePath(region.slug)), outsideParis: regionTotal(region), departments: region.groupes.map((g) => ({ code: g.code, name: g.nom, venues: g.lieux, communes: g.communes.slice(0, 10).map((c) => ({ name: c.nom, venues: c.lieux, boxing: c.frappe })) })), source };
     } else if (ville) {
-      const d = args.discipline ? String(args.discipline).toLowerCase() : '';
+      const d = typeof args.discipline === 'string' ? args.discipline.toLowerCase() : '';
       const lieux = ville.lieux.filter((l) => !d || l.disciplines.some((x) => x.toLowerCase().includes(d)));
       value = {
         city: ville.nom,
