@@ -1,4 +1,5 @@
 import { db } from './database';
+import { activerRls } from './rls';
 
 /**
  * Les inscriptions à l’ouverture : la même écriture pour le formulaire du site et pour un
@@ -35,9 +36,12 @@ export const CONSENT_VERSION = '2026-09-17';
 let choicesReady = false;
 export async function ensureChoices() {
   if (choicesReady) return;
-  await (await db())
+  const database = await db();
+  await database
     .prepare("CREATE TABLE IF NOT EXISTS choices (id text PRIMARY KEY, email text NOT NULL, first_name text NOT NULL, phone text NOT NULL DEFAULT '', sms_consent integer NOT NULL DEFAULT 0, postcode text NOT NULL DEFAULT '', items text NOT NULL, subtotal integer NOT NULL, created_at text NOT NULL, cart_id text NOT NULL, consent_version text NOT NULL)")
     .run();
+  // E-mails et téléphones : fermés à l'API publique de Supabase (lib/rls.ts).
+  await activerRls(database, ['choices']);
   choicesReady = true;
 }
 

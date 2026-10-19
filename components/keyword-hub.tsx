@@ -8,6 +8,7 @@ import { ozFacets, colourFacets, brandFamilyFacet } from '@/lib/facets';
 import { ProductCard } from './shop-interactions';
 import { dansLeRayon } from '@/lib/rayons';
 import { VILLES, REGIONS, CARREFOUR, FRAPPE, villePath } from '@/lib/villes';
+import { jsonLd } from '@/lib/json-ld';
 
 /* « Toucher toute la France » (13/10) : chaque page de catalogue nomme les grandes villes, avec le
    nombre de lieux où l'on pratique SA discipline (recensement du ministère des Sports), et les lie.
@@ -23,7 +24,11 @@ const pratiqueDe = (scope: string) => {
   for (const [re, set, label] of PRATIQUE) if (re.test(scope)) return { set, label };
   return { set: FRAPPE, label: 'une boxe' };
 };
-const hache = (s: string) => [...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
+const hache = (s: string) => {
+  let h = 7;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  return h;
+};
 function villesPour(scope: string) {
   const { set, label } = pratiqueDe(scope);
   const toutes = VILLES.map((v) => ({ v, n: v.lieux.filter((l) => l.disciplines.some((d) => set.includes(d))).length })).sort((x, y) => y.n - x.n);
@@ -138,7 +143,7 @@ export async function KeywordHub({
 
   return (
     <section className="keyword-hub" aria-labelledby={'hub-' + scope}>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(graph) }} />
       <header className="hub-heading">
         <div>
           <span className="eyebrow">CETTE SEMAINE / SEMAINE {week}</span>

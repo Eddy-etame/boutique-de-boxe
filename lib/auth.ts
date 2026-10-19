@@ -8,7 +8,16 @@ import { createServerClient } from '@supabase/ssr';
  * Développement : le cookie `__sites_local_auth=1` représente le propriétaire
  * local, comme dans l’ancien environnement Sites, pour les scripts de test.
  * Les en-têtes envoyés par le navigateur ne confèrent jamais d’identité.
+ *
+ * Durcissement du 19/10 :
+ *  - les cookies de session Supabase sont posés par le serveur en HttpOnly, Secure, SameSite=Lax :
+ *    aucun script de page ne peut les lire (rien, côté navigateur, ne s’en sert) ;
+ *  - une session ne compte que si l’adresse est confirmée ET si elle ne vient pas d’un mot de passe
+ *    ou d’une connexion anonyme : l’atelier ne connaît que le lien magique. Sans ce second contrôle,
+ *    un projet Supabase où la confirmation d’e-mail est coupée laisserait quiconque s’inscrire avec
+ *    l’adresse d’un membre (l’inscription confirme alors d’office) et entrer dans l’administration.
  */
+const REFUSEES = new Set(['password', 'anonymous']);
 
 export type SessionUser = {
   userId: string;
@@ -32,6 +41,12 @@ export async function supabaseServer() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!.trim(),
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!.trim(),
     {
+      cookieOptions: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV !== 'development',
+        sameSite: 'lax',
+        path: '/',
+      },
       cookies: {
         getAll() {
           return store.getAll();
@@ -62,9 +77,13 @@ export async function getSessionUser(): Promise<SessionUser | null> {
   }
   if (!supabaseConfigured()) return null;
   try {
-    const { data } = await (await supabaseServer()).auth.getUser();
+    const supabase = await supabaseServer();
+    const { data } = await supabase.auth.getUser();
     const user = data.user;
-    if (!user?.email) return null;
+    if (!user?.email || !user.email_confirmed_at) return null;
+    // Méthodes de connexion portées par le jeton que getUser() vient de valider (lecture locale).
+    const { data: niveau } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (niveau?.currentAuthenticationMethods.some((m) => REFUSEES.has(typeof m === 'string' ? m : m.method))) return null;
     const fullName = user.user_metadata?.full_name;
     return {
       userId: user.id,

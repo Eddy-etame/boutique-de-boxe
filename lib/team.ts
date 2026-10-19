@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import { d1Compat } from '@/db';
+import { activerRls } from './rls';
 
 /**
  * Accès de l'équipe à l'administration (29/09).
@@ -33,6 +34,8 @@ async function ensure() {
   await db.prepare('CREATE TABLE IF NOT EXISTS admin_members (email text PRIMARY KEY, added_by text NOT NULL, created_at text NOT NULL)').run();
   await db.prepare('CREATE TABLE IF NOT EXISTS admin_links (token_hash text PRIMARY KEY, email text NOT NULL, created_by text NOT NULL, created_at text NOT NULL, expires_at bigint NOT NULL, used_at text)').run();
   await db.prepare("CREATE TABLE IF NOT EXISTS admin_sessions (token_hash text PRIMARY KEY, email text NOT NULL, created_at bigint NOT NULL, last_seen bigint NOT NULL, expires_at bigint NOT NULL, agent text NOT NULL DEFAULT '')").run();
+  // Fermées à l'API publique de Supabase : avec la clé anon, on aurait pu s'écrire une session de propriétaire.
+  await activerRls(db, ['admin_members', 'admin_links', 'admin_sessions']);
   ready = true;
 }
 
