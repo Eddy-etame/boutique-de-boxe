@@ -25,468 +25,16 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { RelayPicker } from './relay-picker';
 import { relayLabel, type RelayPoint } from '@/lib/boxtal';
-import { estLourd, money, shop, type Product } from '@/lib/catalog';
-import type { Cart, CartLine, Order } from '@/lib/commerce';
+import { devisHref, estLourd, money, shop } from '@/lib/catalog';
+import type { CartLine, Order } from '@/lib/commerce';
+// Le panier partagé (file d’attente, lecture, compteur) vit dans un petit module à part :
+// le header l’utilise sur chaque page sans charger ce tunnel de commande.
+import { API, mutateCart, readCart, request, useCart, type ApiFailure } from './cart-store';
 
-const CART_EVENT = 'boutique:cart-changed';
-const CART_BUSY_EVENT = 'boutique:cart-busy';
-const API = '/api/commerce/';
 const CATALOGUE = '/materiel-sport-de-combat/';
 const receiptPath = (id: string) => `/recu/?id=${encodeURIComponent(id)}`;
 const downloadPath = (id: string) =>
   `${API}receipt?id=${encodeURIComponent(id)}&download=1`;
-
-type ApiFailure = Error & { status?: number; uncertain?: boolean };
-
-async function request<T>(
-  action: string,
-  body?: unknown,
-  signal?: AbortSignal,
-): Promise<T> {
-  let response: Response;
-  try {
-    response = await fetch(action.startsWith('/') ? action : `${API}${action}`, {
-      method: body === undefined ? 'GET' : 'POST',
-      credentials: 'same-origin',
-      cache: 'no-store',
-      headers:
-        body === undefined ? undefined : { 'Content-Type': 'application/json' },
-      body: body === undefined ? undefined : JSON.stringify(body),
-      signal: signal ?? AbortSignal.timeout(25_000),
-    });
-  } catch {
-    throw Object.assign(
-      new Error(
-        'La réponse n’a pas pu être confirmée. Vos informations sont conservées.',
-      ),
-      { uncertain: body !== undefined },
-    ) as ApiFailure;
-  }
-  const data = (await response.json().catch(() => null)) as
-    | (T & { error?: string })
-    | null;
-  if (!response.ok || data === null) {
-    throw Object.assign(
-      new Error(data?.error || 'Le service est momentanément indisponible.'),
-      {
-        status: response.status,
-        uncertain:
-          body !== undefined &&
-          (response.status >= 500 || response.status === 408 || response.ok),
-      },
-    ) as ApiFailure;
-  }
-  return data;
-}
-
-// One browser-tab queue avoids overlapping read/modify/write requests from several
-// product buttons. Every published count comes from the server response.
-let cachedCart: Cart | null = null;
-let pendingRead: Promise<Cart> | null = null;
-let mutationQueue: Promise<unknown> = Promise.resolve();
-let cartRevision = 0;
-let cartBusy = 0;
-
-function publishCart(cart: Cart) {
-  cachedCart = cart;
-  window.dispatchEvent(new CustomEvent<Cart>(CART_EVENT, { detail: cart }));
-}
-
-async function readCart(): Promise<Cart> {
-  if (pendingRead) return pendingRead;
-  const revision = cartRevision;
-  pendingRead = request<Cart>('cart')
-    .then((cart) => {
-      // A GET begun before a mutation may not overwrite its newer response.
-      if (revision === cartRevision) publishCart(cart);
-      return revision === cartRevision ? cart : (cachedCart ?? cart);
-    })
-    .finally(() => {
-      pendingRead = null;
-    });
-  return pendingRead;
-}
-
-function mutateCart(body: unknown): Promise<Cart> {
-  cartBusy++;
-  window.dispatchEvent(
-    new CustomEvent<number>(CART_BUSY_EVENT, { detail: cartBusy }),
-  );
-  const operation = mutationQueue
-    .catch(() => undefined)
-    .then(async () => {
-      cartRevision++;
-      const cart = await request<Cart>('cart', body);
-      publishCart(cart);
-      return cart;
-    });
-  mutationQueue = operation;
-  return operation.finally(() => {
-    cartBusy--;
-    window.dispatchEvent(
-      new CustomEvent<number>(CART_BUSY_EVENT, { detail: cartBusy }),
-    );
-  });
-}
-
-function useCart() {
-  const [cart, setCart] = useState<Cart | null>(null);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [busy, setBusy] = useState(false);
-  const mounted = useRef(false);
-  const refresh = useCallback(async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const value = await readCart();
-      if (mounted.current) setCart(value);
-    } catch (e) {
-      if (mounted.current)
-        setError(e instanceof Error ? e.message : 'Panier indisponible.');
-    } finally {
-      if (mounted.current) setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    mounted.current = true;
-    const changed = (event: Event) => {
-      setCart((event as CustomEvent<Cart>).detail);
-      setError('');
-      setLoading(false);
-    };
-    const busyChanged = (event: Event) =>
-      setBusy((event as CustomEvent<number>).detail > 0);
-    window.addEventListener(CART_EVENT, changed);
-    window.addEventListener(CART_BUSY_EVENT, busyChanged);
-    void readCart()
-      .then((value) => {
-        if (mounted.current) setCart(value);
-      })
-      .catch((e) => {
-        if (mounted.current)
-          setError(e instanceof Error ? e.message : 'Panier indisponible.');
-      })
-      .finally(() => {
-        if (mounted.current) setLoading(false);
-      });
-    return () => {
-      mounted.current = false;
-      window.removeEventListener(CART_EVENT, changed);
-      window.removeEventListener(CART_BUSY_EVENT, busyChanged);
-    };
-  }, [refresh]);
-  return { cart, error, loading, busy, refresh };
-}
-
-export function CartLink() {
-  const { cart, error } = useCart();
-  const count = cart?.items.reduce((total, item) => total + item.quantity, 0);
-  const badge = useRef<HTMLSpanElement>(null);
-  useEffect(() => {
-    const onAdded = () => {
-      const el = badge.current;
-      if (!el) return;
-      el.setAttribute('data-bump', 'true');
-      const t = setTimeout(() => el.setAttribute('data-bump', 'false'), 500);
-      return () => clearTimeout(t);
-    };
-    window.addEventListener('boutique:cart-added', onAdded);
-    return () => window.removeEventListener('boutique:cart-added', onAdded);
-  }, []);
-  return (
-    <a
-      className="cart-link"
-      href="/panier/"
-      aria-label={
-        count === undefined
-          ? 'Ouvrir le panier'
-          : `Panier : ${count} article${count > 1 ? 's' : ''}`
-      }
-    >
-      <ShoppingBag size={19} aria-hidden="true" />
-      <span>Panier</span>
-      <span ref={badge} className="cart-count" aria-hidden="true" data-bump="false">
-        {count ?? (error ? '—' : '…')}
-      </span>
-    </a>
-  );
-}
-
-export type AddToCartLabels = { add?: string; adding?: string; choose?: string; note?: string; check?: string };
-export function AddToCart({
-  product,
-  variant = '',
-  labels = {},
-}: {
-  product: Product;
-  variant?: string;
-  labels?: AddToCartLabels;
-}) {
-  const [busy, setBusy] = useState(false);
-  const [status, setStatus] = useState('');
-  const [error, setError] = useState('');
-  const helpId = useId();
-  const valid = product.sizes.length
-    ? product.sizes.includes(variant)
-    : variant === '';
-
-  async function add() {
-    if (!valid || busy) return;
-    setBusy(true);
-    setStatus('');
-    setError('');
-    try {
-      await mutateCart({
-        action: 'add',
-        productId: product.id,
-        variant,
-        quantity: 1,
-      });
-      setStatus(
-        `${product.name}${variant ? ` · ${variant}` : ''} ajouté au panier.`,
-      );
-      window.dispatchEvent(new Event('boutique:cart-added'));
-    } catch (e) {
-      const failure = e as ApiFailure;
-      setError(
-        failure.uncertain
-          ? 'L’ajout n’a pas pu être confirmé. Vérifiez votre panier avant d’ajouter à nouveau ce modèle.'
-          : failure.message || 'Ajout impossible.',
-      );
-      if (failure.uncertain || failure.status === 409)
-        void readCart().catch(() => undefined);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  return (
-    <div className="add-to-cart">
-      <button
-        type="button"
-        className="button button-dark cart-add"
-        disabled={busy || !valid}
-        onClick={add}
-        aria-describedby={helpId}
-      >
-        {busy ? (labels.adding ?? 'Ajout en cours…') : (labels.add ?? 'Ajouter au panier')}
-        <Plus size={19} aria-hidden="true" />
-      </button>
-      <p id={helpId} className="commerce-caption">
-        {!valid
-          ? (labels.choose ?? 'Choisissez une taille pour ajouter ce modèle.')
-          : (labels.note ?? (shop.ventesOuvertes ? 'Paiement par carte au moment de commander.' : 'Dans vos choix : rien n’est payé, on vous prévient à l’ouverture.'))}
-      </p>
-      {error && (
-        <p role="alert" className="commerce-error">
-          {error} <a href="/panier/">{labels.check ?? 'Vérifier le panier'}</a>
-        </p>
-      )}
-      <div className="cart-added" role="status" aria-live="polite">
-        {status && (
-          <>
-            <p>
-              <Check size={16} aria-hidden="true" /> {status}
-            </p>
-            <a href="/panier/">
-              Préparer mon panier <ArrowUpRight size={16} aria-hidden="true" />
-            </a>
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
-
-/**
- * Le sac de séance part au panier en un geste : une taille par modèle quand il y en a
- * plusieurs, puis un seul bouton pour tout ce qui manque encore.
- */
-export function PackAdd({
-  items,
-}: {
-  items: { product: Product; label: string }[];
-}) {
-  const [variants, setVariants] = useState<Record<string, string>>({});
-  const [busy, setBusy] = useState(false);
-  const [status, setStatus] = useState('');
-  const [error, setError] = useState('');
-  const groupId = useId();
-  const variantOf = (product: Product) =>
-    product.sizes.length > 1
-      ? variants[product.id] || ''
-      : (product.sizes[0] ?? '');
-  const missing = items.filter(
-    ({ product }) => product.sizes.length > 1 && !variants[product.id],
-  );
-  const total = items.reduce((sum, { product }) => sum + product.price, 0);
-  const count = (n: number) => `${n} modèle${n > 1 ? 's' : ''} ajouté${n > 1 ? 's' : ''}`;
-
-  async function addAll() {
-    if (busy || missing.length) return;
-    setBusy(true);
-    setStatus('');
-    setError('');
-    let added = 0;
-    try {
-      // L’un après l’autre : le panier garde une révision, deux ajouts simultanés se marcheraient dessus.
-      for (const { product } of items) {
-        await mutateCart({
-          action: 'add',
-          productId: product.id,
-          variant: variantOf(product),
-          quantity: 1,
-        });
-        added += 1;
-        window.dispatchEvent(new Event('boutique:cart-added'));
-      }
-      setStatus(count(added) + ' au panier.');
-    } catch (e) {
-      const failure = e as ApiFailure;
-      setError(
-        (added ? count(added) + ', puis un arrêt : ' : '') +
-          (failure.uncertain
-            ? 'l’ajout n’a pas pu être confirmé. Vérifiez votre panier avant de recommencer.'
-            : failure.message || 'ajout impossible.'),
-      );
-      if (failure.uncertain || failure.status === 409)
-        void readCart().catch(() => undefined);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  if (!items.length) return null;
-  return (
-    <div className="pack-add" role="group" aria-labelledby={groupId}>
-      <p id={groupId} className="pack-add-title">
-        Tout le sac, en une fois
-      </p>
-      <div className="pack-add-sizes">
-        {items.map(({ product, label }) =>
-          product.sizes.length > 1 ? (
-            <label key={product.id}>
-              <span>{label}</span>
-              <select
-                value={variants[product.id] || ''}
-                onChange={(e) =>
-                  setVariants((v) => ({ ...v, [product.id]: e.target.value }))
-                }
-              >
-                <option value="">Taille…</option>
-                {product.sizes.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
-              </select>
-            </label>
-          ) : (
-            <span key={product.id} className="pack-add-fixed">
-              <span>{label}</span>
-              <b>{product.sizes[0] || 'Taille unique'}</b>
-            </span>
-          ),
-        )}
-      </div>
-      <button
-        type="button"
-        className="button button-blue pack-add-button"
-        onClick={addAll}
-        disabled={busy || missing.length > 0}
-        aria-describedby={missing.length ? groupId + '-help' : undefined}
-      >
-        {busy
-          ? 'Ajout en cours…'
-          : 'Ajouter ' +
-            (items.length > 1 ? 'les ' + items.length + ' modèles' : 'ce modèle') +
-            ' au panier · ' +
-            money(total)}
-      </button>
-      {missing.length > 0 && (
-        <p id={groupId + '-help'} className="pack-add-help">
-          Choisissez une taille pour :{' '}
-          {missing.map(({ label }) => label.toLowerCase()).join(', ')}.
-        </p>
-      )}
-      <p role="status" className="form-status">
-        {status}
-        {status && (
-          <>
-            {' '}
-            <a href="/panier/">Voir le panier</a>
-          </>
-        )}
-      </p>
-      {error && (
-        <p role="alert" className="form-status">
-          {error}
-        </p>
-      )}
-    </div>
-  );
-}
-
-/**
- * Ajout rapide depuis une carte : un modèle sans taille part au panier en un
- * geste ; un modèle à tailles ouvre le choix sur place, puis part au panier.
- */
-export function QuickAdd({ product }: { product: Product }) {
-  const [open, setOpen] = useState(false);
-  const [busy, setBusy] = useState('');
-  const [done, setDone] = useState('');
-  const [error, setError] = useState('');
-  const sizes = product.sizes;
-  const oneSize = sizes.length <= 1;
-
-  async function add(variant: string) {
-    if (busy) return;
-    setBusy(variant || '·');
-    setError('');
-    try {
-      await mutateCart({ action: 'add', productId: product.id, variant, quantity: 1 });
-      setDone(variant || '·');
-      setOpen(false);
-      window.dispatchEvent(new Event('boutique:cart-added'));
-      setTimeout(() => setDone(''), 2200);
-    } catch (e) {
-      setError((e as ApiFailure).message || 'Ajout impossible.');
-    } finally {
-      setBusy('');
-    }
-  }
-
-  return (
-    <div className={'quick-add' + (open ? ' is-open' : '')} role="group" aria-label="Ajout rapide au panier">
-      <button
-        type="button"
-        className="quick-add-button"
-        onKeyDown={(e) => e.key === 'Escape' && setOpen(false)}
-        aria-label={oneSize ? `Ajouter ${product.name} au panier` : `Choisir une taille et ajouter ${product.name} au panier`}
-        aria-expanded={oneSize ? undefined : open}
-        disabled={Boolean(busy)}
-        onClick={() => (oneSize ? add(sizes[0] || '') : setOpen((o) => !o))}
-      >
-        {done ? <Check size={18} aria-hidden="true" /> : <Plus size={18} aria-hidden="true" />}
-      </button>
-      {!oneSize && open && (
-        <div className="quick-add-sizes" role="group" aria-label={`Tailles de ${product.name}`}>
-          <span>Taille</span>
-          {sizes.map((s) => (
-            <button key={s} type="button" disabled={Boolean(busy)} onClick={() => add(s)} onKeyDown={(e) => e.key === 'Escape' && setOpen(false)}>
-              {busy === s ? '…' : s.split(',')[0]}
-            </button>
-          ))}
-        </div>
-      )}
-      <span className="quick-add-status" role="status" aria-live="polite">
-        {done ? 'Ajouté au panier' : error}
-      </span>
-    </div>
-  );
-}
 
 function Steps({ current, labels = ['L’équipement', 'L’essai', 'Le reçu'] }: { current: 1 | 2 | 3; labels?: string[] }) {
   return (
@@ -633,6 +181,9 @@ export function CartPage({ paiementPret = true }: { paiementPret?: boolean }) {
   const [busy, setBusy] = useState(false);
   const [uncertain, setUncertain] = useState(false);
   const attempt = useRef<Attempt | null>(null);
+  // Réponses incertaines d’affilée : après deux reprises sans réponse, le formulaire se déverrouille
+  // (le serveur reprend un paiement déjà préparé, il n’en crée jamais un second).
+  const uncertainRuns = useRef(0);
   const heading = useRef<HTMLHeadingElement>(null);
   const form = useRef<HTMLFormElement>(null);
   const busyRef = useRef(false);
@@ -767,10 +318,34 @@ export function CartPage({ paiementPret = true }: { paiementPret?: boolean }) {
     setBusy(true);
     setError('');
     try {
-      const result = await request<CheckoutResponse>('/api/payplug/create', {
-        ...current.payload,
-        requestKey: current.key,
-      });
+      let result: CheckoutResponse;
+      try {
+        result = await request<CheckoutResponse>('/api/payplug/create', {
+          ...current.payload,
+          requestKey: current.key,
+        });
+      } catch (e) {
+        if (!(e as ApiFailure).restart) throw e;
+        // La tentative précédente est morte (refusée, ou jamais remise par PayPlug) : une nouvelle clé
+        // pour la même commande, sans recharger ni ressaisir. Le panier est relu : le serveur a pu en
+        // changer la révision ; si le montant a bougé, le client le vérifie avant de payer.
+        const fresh = await readCart();
+        const payload: CheckoutPayload = {
+          ...current.payload,
+          quotedRevision: fresh.revision,
+          quotedTotal: fresh.subtotal + shippingEstimate(fresh.subtotal, current.payload.delivery),
+        };
+        if (fresh.notices.length || payload.quotedTotal !== current.payload.quotedTotal)
+          throw Object.assign(new Error('Le panier a changé. Vérifiez le montant et les références avant de payer.'), {
+            status: 409,
+          }) as ApiFailure;
+        current = { key: crypto.randomUUID(), payload, fingerprint: JSON.stringify(payload), state: 'pending' };
+        attempt.current = current;
+        result = await request<CheckoutResponse>('/api/payplug/create', {
+          ...current.payload,
+          requestKey: current.key,
+        });
+      }
       const a = result.attempt;
       if (a?.status === 'paid') {
         window.location.assign(`/paiement-retour/?id=${encodeURIComponent(a.id)}`);
@@ -783,6 +358,7 @@ export function CartPage({ paiementPret = true }: { paiementPret?: boolean }) {
         ) as ApiFailure;
       }
       current.state = 'resolved';
+      uncertainRuns.current = 0;
       setUncertain(false);
       setAnnouncement('Ouverture de la page de paiement sécurisée…');
       // La page de paiement PayPlug (secure.payplug.com) : la carte n’est jamais saisie sur ce site.
@@ -790,7 +366,16 @@ export function CartPage({ paiementPret = true }: { paiementPret?: boolean }) {
       return;
     } catch (e) {
       const failure = e as ApiFailure;
-      if (failure.uncertain) {
+      if (failure.uncertain && ++uncertainRuns.current >= 3) {
+        // Deux reprises sans réponse : le client n’est plus enfermé. Même contenu = même clé (le
+        // serveur rend l’état réel) ; contenu modifié = nouvelle tentative, l’ancienne est relue d’abord.
+        current.state = 'resolved';
+        uncertainRuns.current = 0;
+        setUncertain(false);
+        setError(
+          'PayPlug ne confirme toujours pas. Réessayez dans un instant ou modifiez votre commande : un paiement déjà préparé est repris, jamais doublé.',
+        );
+      } else if (failure.uncertain) {
         current.state = 'uncertain';
         setUncertain(true);
         setError(
@@ -798,7 +383,9 @@ export function CartPage({ paiementPret = true }: { paiementPret?: boolean }) {
         );
       } else {
         current.state = 'resolved';
+        uncertainRuns.current = 0;
         setUncertain(false);
+        if (failure.status === 409) void readCart().catch(() => undefined);
         setError(
           failure.message ||
             'La commande n’a pas abouti. Vérifiez vos informations.',
@@ -1061,7 +648,7 @@ export function CartPage({ paiementPret = true }: { paiementPret?: boolean }) {
                       </p>
                       <p>
                         Le matériel lourd ou encombrant ne se paie pas en ligne : retirez-le pour payer le
-                        reste, et <a href="/contact/">écrivez-nous</a> pour recevoir le devis de livraison.
+                        reste, et <a href={devisHref}>écrivez-nous</a> pour recevoir le devis de livraison.
                       </p>
                     </div>
                   )}

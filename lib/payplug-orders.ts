@@ -1,5 +1,5 @@
 import { after } from 'next/server';
-import { db, runtime, isAdmin } from './database';
+import { db, runtime, isAdmin, readCatalog } from './database';
 import { cartToken, resolveCart, shippingFor, uuid, type CartLine } from './commerce';
 import {
   createPayplug,
@@ -8,7 +8,7 @@ import {
   type PayplugBinding,
   type ProviderMode,
 } from './payplug';
-import { shop, money, estLourd } from './catalog';
+import { shop, money, lourdDuCatalogue } from './catalog';
 import { suspicion } from './alerts';
 import { clientIp } from './request';
 import { validateRelayPoint, relayLabel, type RelayPoint } from './boxtal';
@@ -535,11 +535,35 @@ export async function payplugPost(request: Request, action: string) {
     .prepare('SELECT * FROM payment_attempts WHERE cart_id=? AND request_key=?')
     .bind(token, data.requestKey)
     .first<Attempt>();
-  if (previous)
-    return previous.fingerprint === fingerprint
-      ? reply({ attempt: admin ? safe(previous) : publicView(previous) })
-      : reply({ error: 'Cette tentative correspond à un autre contenu.' }, 409);
-  const cart = await resolveCart(token),
+  if (previous) {
+    if (previous.fingerprint !== fingerprint)
+      return reply({ error: 'Cette tentative correspond à un autre contenu.' }, 409);
+    // Même clé, même contenu : jamais un second paiement pour cette clé. Une création restée incertaine
+    // avec un identifiant PayPlug se relit (le client reprend le vrai paiement). Une tentative morte —
+    // refusée par PayPlug, ou incertaine sans aucun paiement PayPlug connu — ne peut plus être payée :
+    // son lien n'a jamais été remis au client. Le client tire alors une nouvelle clé (restart) et la
+    // nouvelle tentative passe par les contrôles ci-dessous (relecture, abandon, révision du panier).
+    let current = previous;
+    if (current.provider_id && (current.status === 'creating' || current.status === 'unconfirmed')) {
+      try {
+        current = await reconcile(current);
+      } catch {
+        /* PayPlug injoignable : l'état connu est rendu, le client pourra réessayer */
+      }
+    }
+    const preparing = current.status === 'creating' && Date.now() - Date.parse(current.updated_at) < 120000;
+    if (
+      current.status === 'failed' ||
+      (!current.provider_id && !preparing && (current.status === 'creating' || current.status === 'unconfirmed'))
+    )
+      return reply(
+        { restart: true, error: 'Le paiement précédent n’a pas abouti. Un nouveau paiement est préparé pour la même commande.' },
+        409,
+      );
+    return reply({ attempt: admin ? safe(current) : publicView(current) });
+  }
+  const catalog = await readCatalog();
+  const cart = await resolveCart(token, catalog),
     shipping = shippingFor(cart.subtotal, delivery),
     total = cart.subtotal + shipping;
   if (
@@ -552,8 +576,9 @@ export async function payplugPost(request: Request, action: string) {
       { error: 'Le panier a changé. Vérifiez le montant et les références.' },
       409,
     );
-  // Matériel lourd : sur devis (décision du 13/10/2026), jamais au tarif d'un colis ordinaire.
-  const lourds = cart.items.filter((line) => estLourd(line));
+  // Matériel lourd : sur devis (décision du 13/10/2026), jamais au tarif d'un colis ordinaire. La règle
+  // se juge sur la fiche du catalogue (rayon, type), pas sur le seul nom de la ligne.
+  const lourds = cart.items.filter((line) => lourdDuCatalogue(line, catalog));
   if (lourds.length)
     return reply(
       {
@@ -585,6 +610,39 @@ export async function payplugPost(request: Request, action: string) {
   // refusée (carte refusée, expirée, abandonnée), ou sans lien de paiement jamais remis au client.
   // Une tentative encore payable est relue chez PayPlug, puis abandonnée chez PayPlug (PATCH aborted)
   // avant toute nouvelle tentative : jamais deux paiements ouverts pour un panier.
+  // Un paiement encore ouvert sur une AUTRE révision du même panier (onglet PayPlug resté ouvert, puis
+  // panier modifié) est relu puis abandonné chez PayPlug avant d'en ouvrir un nouveau : jamais deux
+  // paiements payables pour un panier. S'il ne peut pas être abandonné, rien n'est créé.
+  const others = await database
+    .prepare(
+      "SELECT * FROM payment_attempts WHERE cart_id=? AND cart_revision<>? AND status IN ('pending','unconfirmed') AND provider_id IS NOT NULL ORDER BY created_at DESC LIMIT 5",
+    )
+    .bind(token, cart.revision)
+    .all<Attempt>();
+  for (const other of others.results) {
+    let fresh: Attempt | null;
+    try {
+      fresh = await reconcile(other);
+      if (fresh.status === 'pending' && fresh.payment_url)
+        fresh = await applyVerified(
+          fresh,
+          await adapter.abortAndVerifyPayment(fresh.provider_id!, binding(fresh)),
+        );
+    } catch {
+      fresh = null;
+    }
+    if (!fresh)
+      return reply({ error: 'Un paiement précédent de ce panier n’a pas pu être vérifié. Réessayez dans un instant.' }, 409);
+    if (fresh.status === 'paid')
+      return reply(
+        {
+          error: `Ce panier vient d’être payé : commande ${reference(fresh.id)}. Rechargez le panier avant de commander à nouveau, ou écrivez-nous.`,
+        },
+        409,
+      );
+    if (fresh.status === 'pending' && fresh.payment_url)
+      return reply({ error: 'Un paiement est encore ouvert pour ce panier dans une autre fenêtre : réessayez dans quelques minutes.' }, 409);
+  }
   let revision = cart.revision;
   const holder = await database
     .prepare('SELECT * FROM payment_attempts WHERE cart_id=? AND cart_revision=?')
@@ -703,7 +761,15 @@ export async function payplugPost(request: Request, action: string) {
       )
       .run();
     const failed = (await byId(id))!;
-    return reply({ attempt: admin ? safe(failed) : publicView(failed) }, uncertain ? 202 : 422);
+    if (!uncertain)
+      console.error('PayPlug create: refus', error instanceof PayplugError ? error.upstreamStatus : null);
+    return reply(
+      {
+        attempt: admin ? safe(failed) : publicView(failed),
+        ...(uncertain ? {} : { error: 'Le paiement n’a pas pu être préparé. Réessayez dans un instant, ou écrivez-nous.' }),
+      },
+      uncertain ? 202 : 422,
+    );
   }
 }
 

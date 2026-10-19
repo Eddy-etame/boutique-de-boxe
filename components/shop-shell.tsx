@@ -12,7 +12,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { categories, shop, jsonLd } from '@/lib/catalog';
-import { CartLink } from './commerce-ui';
+import { CartLink } from './cart-link';
 import { HeaderSearch } from './header-search';
 import { spaced } from '@/lib/spaced';
 export function Brand() {

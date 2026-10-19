@@ -10,7 +10,7 @@
  * une phrase ou une donnée que le visiteur voit. Le script `scripts/audit-seo.mjs`
  * le vérifie.
  */
-import { shop, categories, categoryFor, getCategoryProducts, money, jsonLd, type Product, type Category } from './catalog';
+import { shop, categories, categoryFor, getCategoryProducts, money, jsonLd, estLourd, type Product, type Category } from './catalog';
 import { guidePublished, guidesEnLettres, type Guide } from './editorial';
 import { SEO_COPY, type SeoFaq } from './seo-copy';
 import type { Subfamily } from './subfamilies';
@@ -271,7 +271,7 @@ export function webPageNode(o: { path: string; name: string; description: string
 
 /** L’offre d’une fiche, publiée seulement quand les ventes sont ouvertes. */
 function offerOf(p: Product) {
-  const lourd = /sac de frappe|base de frappe|mannequin|portique|potence|\bcage\b|\bring\b/i.test(p.name);
+  const lourd = estLourd(p);
   const zone = { '@type': 'DefinedRegion', addressCountry: 'FR' };
   return {
     '@type': 'Offer',

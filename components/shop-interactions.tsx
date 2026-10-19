@@ -40,10 +40,21 @@ import {
   categoryFor,
   shop,
   estLourd,
+  devisHref,
+  tailleUnique,
 } from '@/lib/catalog';
-import { AddToCart, QuickAdd, PackAdd } from './commerce-ui';
+import { AddToCart, QuickAdd, PackAdd } from './cart-add';
 import selection from '@/lib/data/selection.json';
 import { spaced } from '@/lib/spaced';
+
+/** Marque inconnue de l’import (« à préciser ») : la carte n’affiche rien plutôt qu’un libellé de chantier. */
+const badBrand = (b: string) => !b || /pr[ée]ciser|^Sélection /i.test(b);
+/** Les tailles d’une carte : rien quand le modèle n’en a pas ; « Taille unique » quand le catalogue le dit. */
+function cardSizes(p: Product) {
+  if (!p.sizes.length) return tailleUnique(p) ? 'Taille unique' : '';
+  if (p.sizes.length === 1 && (p.sizes[0] === p.name || /^taille unique$/i.test(p.sizes[0]))) return 'Taille unique';
+  return p.sizes.slice(0, 4).join(' / ');
+}
 
 /** La scène d’un modèle détouré : mode, bords touchés par le sujet, modèle sombre ou vif, teinte dominante. */
 function stageProps(p: Product, active = true) {
@@ -94,10 +105,8 @@ export function ProductCard({
         </span>
       </a>
       <div className="product-meta">
-        <span>{p.brand}</span>{' '}
-        <span>
-          {p.sizes.length ? p.sizes.slice(0, 4).join(' / ') : 'Tailles à venir'}
-        </span>
+        <span>{badBrand(p.brand) ? '' : p.brand}</span>{' '}
+        <span>{cardSizes(p)}</span>
       </div>
       <h3>
         <a href={`/produits/${p.slug}/`}>{cleanName(p)}</a>
@@ -107,7 +116,7 @@ export function ProductCard({
           {p.variants?.some((v) => v.price !== p.price) ? 'Dès ' : ''}
           {money(p.price)}
         </strong>{' '}
-        <span>prix</span>
+        <span className="price-tax">TTC</span>
         <QuickAdd product={p} />
       </div>
     </article>
@@ -762,7 +771,7 @@ export function SessionChooser({ items }: { items: Product[] }) {
                 <p>{r.condition}</p>
               </details>
               <strong>
-                {money(p.price)} <small>prix</small>
+                {money(p.price)} <small>TTC</small>
               </strong>
             </div>
           </article>
@@ -1056,7 +1065,7 @@ export function ProductDetails({ product: p }: { product: Product }) {
                 Matériel lourd : la livraison se fait sur devis. Écrivez-nous avec le modèle et votre code postal, la
                 réponse arrive par e-mail.
               </p>
-              <a className="button button-dark" href="/contact/">
+              <a className="button button-dark" href={devisHref}>
                 Demander le devis de livraison <ArrowUpRight size={17} aria-hidden="true" />
               </a>
             </>
@@ -1077,8 +1086,10 @@ export function ProductDetails({ product: p }: { product: Product }) {
             {shop.ventesOuvertes ? 'Rétractation sous 14 jours' : 'Vos choix gardés, sans paiement'}
           </span>
         </div>
-        <a href="/livraison/" className="inline-link">
-          {shop.ventesOuvertes
+        <a href={shop.ventesOuvertes && estLourd(p) ? devisHref : '/livraison/'} className="inline-link">
+          {shop.ventesOuvertes && estLourd(p)
+            ? 'Livraison sur devis : demander le devis'
+            : shop.ventesOuvertes
             ? 'Livraison en France : point relais 6,90 €, offert dès 69 €'
             : 'Livraison en France : tarifs prévus à l’ouverture'}{' '}
           <ArrowUpRight size={15} />
@@ -1091,7 +1102,9 @@ export function ProductDetails({ product: p }: { product: Product }) {
         <div className="sticky-buy-copy">
           <strong>{money(variantPrice(p, size))}</strong>
           <span>
-            {size || (p.sizes.length > 0 ? 'Taille à choisir' : cleanName(p))}
+            {shop.ventesOuvertes && estLourd(p)
+              ? 'Sur devis'
+              : size || (p.sizes.length > 0 ? 'Taille à choisir' : cleanName(p))}
           </span>
         </div>
         {!shop.ventesOuvertes && (
@@ -1112,6 +1125,12 @@ export function ProductDetails({ product: p }: { product: Product }) {
           Me prévenir <ArrowUpRight size={17} aria-hidden="true" />
         </button>
         )}
+        {shop.ventesOuvertes && estLourd(p) ? (
+        // Sur devis : la barre collante mène à la demande de devis, jamais au panier.
+        <a className="button button-dark sticky-add" href={devisHref} tabIndex={stuck ? 0 : -1}>
+          Demander le devis <ArrowUpRight size={17} aria-hidden="true" />
+        </a>
+        ) : (
         <button
           type="button"
           className="button button-dark sticky-add"
@@ -1132,6 +1151,7 @@ export function ProductDetails({ product: p }: { product: Product }) {
             </>
           )}
         </button>
+        )}
       </div>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="zoom-dialog" showCloseButton={false}>
