@@ -7,7 +7,7 @@ import { newsletterStatus, saveCampaign, sendBatch, sendTest } from '@/lib/newsl
 import { db, isAdmin, readCatalog, adminEmail } from '@/lib/database';
 
 export const maxDuration = 60;
-import { shop } from '@/lib/catalog';
+import { shop, lourdDuCatalogue, type Product } from '@/lib/catalog';
 import { emailValid, ensureAlertContact, ensureChoices, insertAlert, normalisePhone, suspicion, CONSENT_VERSION } from '@/lib/alerts';
 import {
   cartToken,
@@ -16,10 +16,16 @@ import {
   sendReceipt,
   recoverStaleEmailClaims,
   uuid,
+  type Cart,
   type CartItem,
   type Order,
 } from '@/lib/commerce';
 export const dynamic = 'force-dynamic';
+/** Chaque ligne lourde est marquée par le serveur : le panier l'affiche « sur devis » sans rejuger le nom. */
+const marquerLourds = (cart: Cart, products: Product[]): Cart => ({
+  ...cart,
+  items: cart.items.map((line) => (lourdDuCatalogue(line, products) ? { ...line, lourd: true } : line)),
+});
 const reply = (
   data: unknown,
   status = 200,
@@ -60,11 +66,9 @@ export async function GET(request: Request, context: Context) {
     const { action } = await context.params;
     if (action === 'cart') {
       const token = cartToken(request);
-      return reply(
-        token
-          ? await resolveCart(token)
-          : { items: [], subtotal: 0, notices: [], revision: 0 },
-      );
+      if (!token) return reply({ items: [], subtotal: 0, notices: [], revision: 0 });
+      const products = await readCatalog();
+      return reply(marquerLourds(await resolveCart(token, products), products));
     }
     if (action === 'relay-token') {
       // Le jeton d’une heure de la carte Boxtal ; sans clés, la réponse le dit et la carte ne s’affiche pas.
@@ -319,11 +323,20 @@ export async function POST(request: Request, context: Context) {
           data.action === 'add'
             ? (current?.quantity || 0) + data.quantity
             : data.quantity;
+        // Matériel lourd : sur devis, jamais dans le panier (un ancien panier peut seulement le retirer).
+        if (lourdDuCatalogue({ productId: product.id, name: product.name }, products) && quantity > (current?.quantity || 0))
+          return reply(
+            {
+              error: `${product.name} se livre sur devis : il ne s’ajoute pas au panier. Écrivez-nous avec le modèle et votre code postal.`,
+              devis: true,
+            },
+            409,
+          );
         if (quantity > 10)
           return reply(
             {
               error:
-                'Le panier d’essai est limité à 10 exemplaires par déclinaison.',
+                'Le panier est limité à 10 exemplaires par déclinaison.',
             },
             400,
           );
@@ -336,7 +349,7 @@ export async function POST(request: Request, context: Context) {
           });
         if (items.length > 30)
           return reply(
-            { error: 'Le panier d’essai est limité à 30 déclinaisons.' },
+            { error: 'Le panier est limité à 30 déclinaisons.' },
             400,
           );
       }
@@ -361,7 +374,7 @@ export async function POST(request: Request, context: Context) {
           409,
         );
       // Le panier vient d’être écrit : on le recompose en mémoire, sans relire la base.
-      return reply(buildCart(items, products, cart.revision + 1), 200, cookie);
+      return reply(marquerLourds(buildCart(items, products, cart.revision + 1), products), 200, cookie);
     }
     // « Enregistrer mes choix » (Eddy, 29/09) : le panier lu côté serveur devient un contact à prévenir.
     if (action === 'choices') {

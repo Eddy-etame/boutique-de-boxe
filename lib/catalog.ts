@@ -80,11 +80,52 @@ export const shop = {
 };
 /**
  * Matériel lourd ou encombrant (13/10/2026, décision du propriétaire : « sur devis pour l'instant ») :
- * sacs de frappe, bases et mannequins, portiques, potences, cages. Ces modèles ne passent pas au
- * paiement en ligne ; un accessoire « pour sac de frappe » (chaîne, attache, ressort) n'en est pas.
+ * il ne s'ajoute pas au panier, ne passe pas au paiement en ligne et se livre sur devis. SEULE
+ * définition du site : fiches, cartes, panier, paiement, JSON-LD, flux marchand passent par estLourd().
+ *
+ * Est lourd, dans cet ordre (19/10/2026, contrôlé sur tout le catalogue : 62 modèles) :
+ * 1. une ligne déjà jugée par le serveur (`lourd: true`, réponses de l'API panier) ;
+ * 2. un nom qui contient, n'importe où, un sac de frappe (sauf « pour sac de frappe » : chaîne,
+ *    attache, ressort), une base de frappe, un mannequin, un portique, une potence, une cage, un rail
+ *    de convoyage, une station, une presse, des tatamis, un gong ou des coins de ring ;
+ * 3. tout le rayon « sacs de frappe » hors accessoires de suspension et poires de vitesse (le rayon
+ *    résiste à un renommage dans l'atelier) ;
+ * 4. le type du fournisseur « Sac de Frappe » ou « Base de frappe et Dummies » ;
+ * 5. un poids annoncé dans le nom d'au moins 15 kg (hors élastiques et bandes, dont les kilos sont
+ *    une résistance). Le catalogue ne porte pas d'autre poids ; le prix n'en dit rien (un gant à 309 €
+ *    part en colis), il n'entre donc pas dans la règle.
  */
-export const estLourd = (p: { name: string }) =>
-  /^(?:demi-)?(?:sac de frappe|base de frappe|mannequin|portique|potence|cage)\b/i.test(p.name.trim());
+// Sans « lookbehind » : ces règles tournent aussi dans le navigateur (cartes), y compris les vieux Safari.
+const POUR_SAC = /\bpour (?:les? |un )?sacs? de frappe\b/gi;
+const LOURD_NOM =
+  /\b(?:sacs? de frappe|bases? de frappe|mannequins?|portiques?|potences?|cages?|rails? de convoyage|stations?|presses?|tatamis?|gongs?|coins? de ring|ring de boxe)\b/i;
+const ACCESSOIRE_DE_SAC = /\b(?:poires?|cha[iî]nes?|ressorts?|attaches?|rotules?|fixations?|crochets?|mousquetons?|[ée]merillons?)\b/i;
+const TYPES_LOURDS = new Set(['Sac de Frappe', 'Base de frappe et Dummies']);
+const SEUIL_LOURD_KG = 15;
+function poidsAnnonce(name: string) {
+  if (/[ée]lastique|bande|r[ée]sistance/i.test(name)) return 0;
+  let max = 0;
+  for (const m of name.matchAll(/(\d+(?:[.,]\d+)?)\s*(?:kg|kilos?)\b/gi)) {
+    // « 20-40 kg » : une plage de résistance, pas un poids.
+    if (/[\d.,]\s*[-–à]\s*$/.test(name.slice(0, m.index))) continue;
+    max = Math.max(max, parseFloat(m[1].replace(',', '.')));
+  }
+  return max;
+}
+export function estLourd(p: { name: string; category?: string; specs?: Record<string, string>; lourd?: boolean }) {
+  if (p.lourd === true) return true;
+  const name = (p.name || '').trim();
+  if (LOURD_NOM.test(name.replace(POUR_SAC, ''))) return true;
+  if (p.category === 'sacs-de-frappe' && !ACCESSOIRE_DE_SAC.test(name)) return true;
+  if (p.specs?.Type && TYPES_LOURDS.has(p.specs.Type)) return true;
+  return poidsAnnonce(name) >= SEUIL_LOURD_KG;
+}
+/** Une ligne de panier se juge sur la fiche du catalogue (rayon, type), pas sur son seul nom. */
+export function lourdDuCatalogue(line: { productId: string; name: string; lourd?: boolean }, products: Product[]) {
+  return estLourd(products.find((p) => p.id === line.productId) ?? line);
+}
+/** Le chemin pour demander un devis de livraison : la page contact (modèle et code postal). */
+export const devisHref = '/contact/';
 export const variantPrice = (p:Product, label:string) => p.variants?.find(v=>v.label===label)?.price ?? p.price;
 export const money = (cents: number) =>
   new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(
