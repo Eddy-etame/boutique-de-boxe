@@ -46,7 +46,7 @@ import {
 import { AddToCart, QuickAdd, PackAdd } from './cart-add';
 import selection from '@/lib/data/selection.json';
 import { spaced } from '@/lib/spaced';
-import { thumbSrc } from '@/lib/vignette';
+import { photoSrc, thumbSrc } from '@/lib/vignette';
 
 /** Marque inconnue de l’import (« à préciser ») : la carte n’affiche rien plutôt qu’un libellé de chantier. */
 const badBrand = (b: string) => !b || /pr[ée]ciser|^Sélection /i.test(b);
@@ -96,8 +96,8 @@ export function ProductCard({
             : (categoryFor(p.category)?.name ?? 'Catalogue')}
         </span>
         <img
-          src={p.cut?.small ?? p.images[0]?.small}
-          srcSet={`${p.cut?.small ?? p.images[0]?.small} 480w, ${p.cut?.large ?? p.images[0]?.src} 960w`}
+          src={p.cut?.small ?? photoSrc(p.slug, p.images[0], 480)}
+          srcSet={`${p.cut?.small ?? photoSrc(p.slug, p.images[0], 480)} 480w, ${p.cut?.large ?? photoSrc(p.slug, p.images[0], 960)} 960w`}
           sizes="(max-width: 600px) 46vw, (max-width: 1000px) 31vw, 24vw"
           width={480}
           height={480}
@@ -757,7 +757,7 @@ export function SessionChooser({ items }: { items: Product[] }) {
                 }
               >
                 <img
-                  src={p.cut?.small ?? p.images[0].small}
+                  src={p.cut?.small ?? photoSrc(p.slug, p.images[0], 480)}
                   alt={p.images[0].alt}
                   width={480}
                   height={480}
@@ -939,9 +939,10 @@ export function ProductDetails({ product: p }: { product: Product }) {
           </span>
           {(() => {
             // Une seule image prioritaire par fiche : la photo de tête, en 480 ou 960 px selon l’écran.
+            // Une photo du fournisseur passe par le domaine (/vignette/480|960/…), comme les autres vues.
             const shown = p.images[image];
-            const large = image === 0 && p.cut ? p.cut.large : shown?.src;
-            const small = image === 0 && p.cut ? p.cut.small : shown?.small;
+            const large = image === 0 && p.cut ? p.cut.large : photoSrc(p.slug, shown, 960);
+            const small = image === 0 && p.cut ? p.cut.small : photoSrc(p.slug, shown, 480);
             return (
               <img
                 key={shown?.src}
@@ -986,7 +987,7 @@ export function ProductDetails({ product: p }: { product: Product }) {
                   next?.focus();
                 }}
               >
-                <img src={thumbSrc(p.slug, i, img)} width={84} height={84} alt="" loading="lazy" decoding="async" />
+                <img src={thumbSrc(p.slug, img)} width={84} height={84} alt="" loading="lazy" decoding="async" />
               </button>
             ))}
           </div>
@@ -1210,7 +1211,7 @@ export function ProductDetails({ product: p }: { product: Product }) {
               onClick={() => setZoom(!zoom)}
             >
               <img
-                src={p.images[image]?.src}
+                src={photoSrc(p.slug, p.images[image], 1200)}
                 alt={p.images[image]?.alt}
                 width={960}
                 height={960}

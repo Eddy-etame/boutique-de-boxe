@@ -2,6 +2,7 @@ import { readCatalog, cacheCatalogue, catalogueDeSecours } from '@/lib/database'
 import { categoryFor, estLourd, shop, variantPrice, type Product } from '@/lib/catalog';
 import { SUBFAMILIES } from '@/lib/subfamilies';
 import { urlOf } from '@/lib/seo';
+import { photoSrc } from '@/lib/vignette';
 
 /**
  * Flux marchand (13/10/2026) : le catalogue au format RSS 2.0 de Google Merchant Center, que Bing
@@ -44,8 +45,9 @@ function item(p: Product, taille: string | null, type: string, disponible: strin
     `<g:title>${esc(texte(taille ? `${p.name} — ${taille}` : p.name).slice(0, 150))}</g:title>`,
     `<g:description>${esc(texte(p.description || p.short))}</g:description>`,
     `<g:link>${esc(urlOf('/produits/' + p.slug + '/'))}</g:link>`,
-    `<g:image_link>${esc(abs(p.images[0].src))}</g:image_link>`,
-    ...p.images.slice(1, 6).map((i) => `<g:additional_image_link>${esc(abs(i.src))}</g:additional_image_link>`),
+    // Photos sur le domaine : celles du fournisseur passent par /vignette/1200/… (WebP), jamais par son hôte.
+    `<g:image_link>${esc(abs(photoSrc(p.slug, p.images[0], 1200)))}</g:image_link>`,
+    ...p.images.slice(1, 6).map((i) => `<g:additional_image_link>${esc(abs(photoSrc(p.slug, i, 1200)))}</g:additional_image_link>`),
     `<g:availability>${shop.disponibiliteOffre === 'InStock' ? 'in_stock' : 'backorder'}</g:availability>`,
     ...(shop.disponibiliteOffre === 'InStock' ? [] : [`<g:availability_date>${disponible}</g:availability_date>`]),
     `<g:price>${prix(montant)}</g:price>`,
