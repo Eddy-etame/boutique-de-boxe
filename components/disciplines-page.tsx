@@ -106,7 +106,7 @@ const SPORTS: Config = {
 
 const ARTS: Config = {
   slug: 'les-arts-martiaux',
-  titre: 'Arts martiaux : la liste, leur origine et leurs dojos en France',
+  titre: 'Arts martiaux : la liste, leur origine, les dojos en France',
   description: 'Arts martiaux : judo, karaté, aïkido, taekwondo, kendo, tai-chi… leur origine, leur principe, et combien de lieux les déclarent en France.',
   eyebrow: 'ARTS MARTIAUX · LA LISTE ET LEURS DOJOS',
   h1: 'Les arts martiaux, leur origine et leurs dojos.',
