@@ -347,7 +347,7 @@ function ClubsBoxingCenter() {
       <h2>{fine('S’entraîner à Toulouse : les clubs Boxing Center.')}</h2>
       <p>
         {fine(
-          'Boutique de Boxe est la boutique de la SAS Boxing Center. Avant le premier achat, le premier cours : les trois clubs de Toulouse proposent une séance d’essai à 10 €, deux autres attendent au sud de l’agglomération, et le Noble Art Portésien enseigne la boxe anglaise à Portet.',
+          'Avant le premier achat, le premier cours : les trois clubs de Toulouse proposent une séance d’essai à 10 €, deux autres attendent au sud de l’agglomération, et le Noble Art Portésien enseigne la boxe anglaise à Portet.',
         )}
       </p>
       <ul>

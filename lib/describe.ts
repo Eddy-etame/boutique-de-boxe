@@ -17,6 +17,8 @@ const pick = <T>(id: string, list: T[], salt = 0): T => {
   return list[h % list.length];
 };
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+/** « PU / Nylon » → « PU / nylon » : les sigles restent en capitales, le reste passe en minuscules. */
+const matiere = (m: string) => m.split(/(\s+|\/|,)/).map((w) => (/^[A-Z0-9À-Ý]{2,}$/.test(w) ? w : w.toLowerCase())).join('');
 const badBrand = (b: string) => !b || /pr[ée]ciser|^Sélection /i.test(b);
 
 /** Niveau de pratique conseillé, déduit du modèle et de la famille. */
@@ -78,10 +80,10 @@ export function longDescription(p: Product): string {
   );
   parts.push(pick(p.id, USE_BY_FAMILY[p.category] || ['Un matériel de sports de combat, présenté avec ses faits.'], 1));
   parts.push(`Discipline${disciplines.length > 1 ? 's' : ''} : ${disciplines.join(', ')}. Niveau conseillé : ${level.toLowerCase()}.`);
-  if (sizes.length > 1) parts.push(pick(p.id, [`Tailles réellement proposées : ${sizes.join(', ')}.`, `Il existe en ${sizes.length} tailles : ${sizes.join(', ')}.`, `Les tailles disponibles sont ${sizes.join(', ')}.`], 2));
+  if (sizes.length > 1) parts.push(pick(p.id, [`Tailles proposées : ${sizes.join(', ')}.`, `Il existe en ${sizes.length} tailles : ${sizes.join(', ')}.`, `Les tailles disponibles sont ${sizes.join(', ')}.`], 2));
   else if (sizes.length === 1) parts.push(`Taille : ${sizes[0]}.`);
   if (colors.length) parts.push(pick(p.id, [`Couleur${colors.length > 1 ? 's' : ''} : ${colors.join(', ')}.`, `Proposé en ${colors.join(' et ')}.`], 3));
-  if (material) parts.push(pick(p.id, [`Matières : ${material.toLowerCase()}.`, `Construction : ${material.toLowerCase()}.`], 4));
+  if (material) parts.push(pick(p.id, [`Matières : ${matiere(material)}.`, `Construction : ${matiere(material)}.`], 4));
   if (p.reference && p.referenceLabel === 'Référence') parts.push(`Référence fabricant : ${p.reference}.`);
   parts.push(
     pick(p.id, [
@@ -141,7 +143,8 @@ export function placeDansLaFamille(p: Product, all: Product[]): string[] {
             : p.price <= median
               ? 'il se place dans la moitié la moins chère'
               : 'il se place dans la moitié la plus chère';
-  const out = [`Parmi les ${famille}, ${moins} sont moins chers et ${plus} plus chers : à ${money(p.price)}, ${rang}, pour un prix médian de ${money(median)}.`];
+  const compte = (k: number, un: string, plusieurs: string) => (k === 0 ? `aucun n’est ${un}` : k === 1 ? `un seul est ${un}` : `${k} sont ${plusieurs}`);
+  const out = [`Parmi les ${famille}, ${compte(moins, 'moins cher', 'moins chers')} et ${compte(plus, 'plus cher', 'plus chers')} : à ${money(p.price)}, ${rang}, pour un prix médian de ${money(median)}.`];
   if (!badBrand(p.brand)) {
     const marque = pairs.filter((x) => x.brand === p.brand).map((x) => x.price).sort((a, b) => a - b);
     if (marque.length >= 2 && marque[0] !== marque[marque.length - 1]) out.push(`${p.brand} en propose ${marque.length} dans cette famille, de ${money(marque[0])} à ${money(marque[marque.length - 1])}.`);
@@ -168,7 +171,11 @@ export function placeDansLaFamille(p: Product, all: Product[]): string[] {
 export function careAdvice(p: Product): string {
   if (p.care) return p.care;
   const t = p.name.toLowerCase();
-  if (['gants-de-boxe', 'gants-mma'].includes(p.category)) return 'Sortez les gants du sac après chaque séance et laissez-les sécher ouverts, loin d’un radiateur. Un désodorisant ou du papier journal absorbe l’humidité. Le cuir se nourrit deux ou trois fois par an.';
+  if (['gants-de-boxe', 'gants-mma'].includes(p.category)) {
+    const m = `${p.specs?.['Matières'] || ''} ${p.specs?.['Matière'] || ''} ${p.specs?.['Matière extérieure'] || ''} ${p.name}`.toLowerCase();
+    const cuir = /cuir/.test(m) && !/synth|simili|pu\b|polyur/.test(m);
+    return 'Sortez les gants du sac après chaque séance et laissez-les sécher ouverts, loin d’un radiateur. Un désodorisant ou du papier journal absorbe l’humidité.' + (cuir ? ' Le cuir se nourrit deux ou trois fois par an avec un baume adapté.' : ' Un chiffon humide suffit à nettoyer l’extérieur synthétique ; évitez les produits gras.');
+  }
   if (/protège-dents/.test(t)) return 'Rincez à l’eau froide après chaque séance, rangez dans une boîte aérée, remplacez dès qu’il se déforme.';
   if (['protections-boxe'].includes(p.category)) return 'Essuyez après chaque séance, lavez les parties en tissu à la main, séchez à l’air. Ne laissez pas une protection humide dans le sac.';
   if (['textile-boxe'].includes(p.category) || /kimono/.test(t)) return 'Lavage à 30 °C, à l’envers, sans adoucissant ni sèche-linge. Un kimono en coton se lave à froid pour garder sa taille.';
@@ -199,9 +206,9 @@ export function productFaq(p: Product): { question: string; answer: string }[] {
         ? `${p.name} existe en une seule taille : ${sizes[0]}. Le guide « ${guideTitle} » donne les repères de la famille.`
         : `Les tailles de ${p.name} ne sont pas encore renseignées dans le catalogue. Cela ne signifie pas que le modèle est en taille unique : vérifiez le guide « ${guideTitle} » ou écrivez-nous avant de commander.`;
   return [
-    { question: `Quelle taille choisir pour ${short} ?`, answer: size },
+    { question: `${cap(short)} : quelle taille choisir ?`, answer: size },
     { question: `${cap(short)} : pour quelle pratique et quel niveau ?`, answer: `${disciplines.join(', ')}, niveau ${level}. ${p.short}` },
-    { question: `Comment entretenir ${short} ?`, answer: careAdvice(p) },
+    { question: `${cap(short)} : comment en prendre soin ?`, answer: careAdvice(p) },
     { question: `${cap(short)} : quel prix, et quand est-il expédié ?`, answer: `Le prix est de ${(p.price / 100).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })} TTC, hors livraison. ${heavy ? 'Ce modèle lourd se livre sur devis : écrivez-nous avec votre code postal.' : `Payé par carte en ligne, il part sous ${shop.delais.expedition}.`}` },
     { question: `${cap(short)} : comment se passe la livraison ?`, answer: heavy ? 'À domicile, sur devis, dans toute la France continentale : écrivez-nous avec le modèle et votre code postal ; le point relais n’accepte pas les colis lourds.' : `Dans toute la France continentale, en point relais (6,90 €, offerts dès 69 € d’achats) ou à domicile (8,90 €).${p.price > 0 ? (p.price < 6900 ? ` À ${money(p.price)}, il reste ${money(6900 - p.price)} d’achats avant la livraison offerte en point relais.` : ` À ${money(p.price)}, ce modèle passe à lui seul le seuil de la livraison offerte en point relais.`) : ''}` },
     { question: `${cap(short)} : retour ou échange possibles ?`, answer: `Oui : quatorze jours de rétractation après réception, article non utilisé et dans son emballage, retour à vos frais.${sizes.length > 1 ? ` Pour passer d’une taille à l’autre (${sizes.slice(0, 5).join(', ')}${sizes.length > 5 ? '…' : ''}), écrivez-nous avec la référence de la commande.` : ' Pour un échange, écrivez-nous avec la référence de la commande.'}` },

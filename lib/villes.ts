@@ -20,6 +20,7 @@
  * de club (vendu) : on y oriente vers Saint-Cyprien, le plus proche mesuré.
  */
 import data from './data/villes.json';
+import liensMorts from './data/liens-morts.json';
 import { shop } from './catalog';
 import type { SeoFaq, SeoSection } from './seo-copy';
 
@@ -98,7 +99,7 @@ export const CLUBS_BOXING_CENTER = [
   { nom: 'Boxing Center Toulouse États-Unis', lieu: 'avenue des États-Unis', adresse: '388 avenue des États-Unis, 31200 Toulouse', site: 'https://clubmma.fr/', recensement: 'I315550717', disciplines: 'MMA en cage, grappling, jiu-jitsu et boxe.', cta: { texte: 'Le club des États-Unis', href: 'https://clubmma.fr/' } },
   { nom: 'Boxing Center Toulouse Saint-Cyprien', lieu: 'rive gauche, à 4 minutes du métro A', adresse: '11 rue Sainte-Lucie, 31300 Toulouse', site: 'https://club-boxe-toulouse.com/', recensement: 'I315550718', disciplines: 'Boxe anglaise, thaï et K1, grappling, Hyrox, Lady Punch, école dès 3 ans.', cta: { texte: 'Le club de Saint-Cyprien', href: 'https://club-boxe-toulouse.com/' } },
   { nom: 'Boxing Center Portet-sur-Garonne', lieu: 'route d’Espagne, au sud', adresse: "61 route d'Espagne, 31120 Portet-sur-Garonne", site: 'https://boxing-center-portet.fr/', recensement: null, disciplines: 'Boxe anglaise, kick-boxing, grappling, JJB, cours femmes et enfants.', cta: { texte: 'Le club de Portet', href: 'https://boxing-center-portet.fr/' } },
-  { nom: 'Boxing Center Ramonville', lieu: 'terminus du métro B, au sud-est', adresse: '33 rue des Ormes, 31520 Ramonville-Saint-Agne', site: 'https://mmatoulouse.com/', recensement: null, disciplines: 'Boxe anglaise, MMA, grappling, Lady Punch, enfants dès 3 ans.', cta: { texte: 'Le club de Ramonville', href: 'https://mmatoulouse.com/' } },
+  { nom: 'Boxing Center Ramonville', lieu: 'au sud-est, bus L6 depuis le métro B', adresse: '33 rue des Ormes, 31520 Ramonville-Saint-Agne', site: 'https://mmatoulouse.com/', recensement: null, disciplines: 'Boxe anglaise, MMA, grappling, Lady Punch, enfants dès 3 ans.', cta: { texte: 'Le club de Ramonville', href: 'https://mmatoulouse.com/' } },
 ];
 /* Le Noble Art Portésien (Eddy, 29/09 : juste après Boxing Center, avant tout le reste) : association de
    boxe anglaise qui partage le lieu de Boxing Center Portet — deux entités distinctes (son site le dit). */
@@ -118,7 +119,14 @@ export const estBoxingCenter = (l: { id: string }) => CLUBS_BOXING_CENTER.some((
 export const nomLieu = (l: { id: string; nom: string }) => CLUBS_BOXING_CENTER.find((c) => c.recensement === l.id)?.nom || l.nom;
 for (const v of VILLES) v.lieux.sort((x, y) => priorite(x) - priorite(y));
 /** Le site d'un lieu du recensement : celui du club quand c'est un club Boxing Center, sinon celui déclaré. */
-export const siteDe = (l: Lieu) => CLUBS_BOXING_CENTER.find((c) => c.recensement === l.id)?.site || l.site;
+/* Un site mort ou détourné (audit du 19/10/2026 : trois domaines rachetés menaient à de l'IPTV pirate, des
+   machines à sous et un casino) n'est plus lié : la page garde le nom du lieu, sans lien. Liste : data/liens-morts.json. */
+const cleLien = (u: string) => u.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/[?#].*$/, '').replace(/\/+$/, '');
+const LIENS_MORTS = new Set((liensMorts.urls as string[]).map(cleLien));
+export const siteDe = (l: Lieu) => {
+  const site = CLUBS_BOXING_CENTER.find((c) => c.recensement === l.id)?.site || l.site;
+  return site && !LIENS_MORTS.has(cleLien(site)) ? site : undefined;
+};
 
 /* « Êtes-vous à côté ? » — l'ACCUEIL de chaque site de proximité, jamais une page
    intérieure : c'est l'accueil qu'on veut faire monter. L'ancre reprend le titre
@@ -585,7 +593,7 @@ export function carrefourFaq(): SeoFaq[] {
   return [
     {
       question: fine('Existe-t-il une boutique sport de combat en ligne qui livre toute la France ?'),
-      answer: `Oui : Boutique de Boxe, boutique sport de combat France basée à Toulouse (SAS Boxing Center), ${livrer('toute la France métropolitaine')}, à domicile ou en point relais.`,
+      answer: `Oui : Boutique de Boxe, boutique sport de combat France basée à Toulouse, ${livrer('toute la France métropolitaine')}, à domicile ou en point relais.`,
     },
     {
       question: fine('Quelle grande ville a le plus de salles de sports de combat par habitant ?'),
