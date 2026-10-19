@@ -19,6 +19,14 @@ const compiled = ts.transpileModule(source, {
     target: ts.ScriptTarget.ES2022,
   },
 }).outputText;
+// La vraie règle du matériel lourd (lib/catalog.ts, sans import) : le test juge ce que juge la boutique.
+const catalogModule = {};
+vm.runInNewContext(
+  ts.transpileModule(readFileSync(resolve(root, 'lib/catalog.ts'), 'utf8'), {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+  }).outputText,
+  { exports: catalogModule, Intl },
+);
 const cartId = '10000000-0000-4000-8000-000000000001';
 const key = '20000000-0000-4000-8000-000000000001';
 const secondKey = '20000000-0000-4000-8000-000000000002';
@@ -412,8 +420,12 @@ test('a definite create failure never handed a payment link: a new key may try a
   const initial = await h.post('create', payload);
   assert.equal(initial.status, 422);
   assert.equal((await initial.json()).attempt.status, 'failed');
-  // La même clé rend la même tentative refusée ; une nouvelle clé libère le panier.
-  assert.equal((await h.post('create', payload)).status, 200);
+  // La même clé ne rejoue jamais la création : elle demande au client une nouvelle clé (restart),
+  // et la nouvelle clé libère le panier.
+  const replay = await h.post('create', payload);
+  assert.equal(replay.status, 409);
+  assert.equal((await replay.json()).restart, true);
+  assert.equal(h.calls('create').length, 1);
   reject = false;
   const retry = await h.post('create', { ...payload, requestKey: secondKey });
   assert.equal(retry.status, 201);
@@ -723,6 +735,7 @@ function harness({
   mailOn = true,
   mailFails = 0,
   onAbort,
+  catalog = [],
 } = {}) {
   const rows = new Map();
   const mails = [];
@@ -872,6 +885,8 @@ function harness({
             return { results: clone([...rows.values()]) };
           if (sql.startsWith("SELECT * FROM payment_attempts WHERE status IN ('pending','unconfirmed') AND provider_id IS NOT NULL"))
             return { results: clone([...rows.values()].filter((r) => ['pending', 'unconfirmed'].includes(r.status) && r.provider_id && r.created_at > values[0])) };
+          if (sql.startsWith("SELECT * FROM payment_attempts WHERE cart_id=? AND cart_revision<>? AND status IN ('pending','unconfirmed') AND provider_id IS NOT NULL"))
+            return { results: clone([...rows.values()].filter((r) => r.cart_id === values[0] && r.cart_revision !== values[1] && ['pending', 'unconfirmed'].includes(r.status) && r.provider_id)) };
           if (sql.startsWith("SELECT id FROM payment_attempts WHERE cart_id=? AND status='paid' AND id<>?"))
             return { results: [...rows.values()].filter((r) => r.cart_id === values[0] && r.status === 'paid' && r.id !== values[1]).map((r) => ({ id: r.id })) };
           throw new Error(`Unmocked SQL all: ${sql}`);
@@ -1065,7 +1080,8 @@ function harness({
             delais: { expedition: '7 jours ouvrés', livraisonMax: '30 jours' },
           },
           money: (cents) => (cents / 100).toFixed(2) + ' EUR',
-          estLourd: (p) => /^(?:demi-)?(?:sac de frappe|base de frappe|mannequin|portique|potence|cage)/i.test(p.name.trim()),
+          estLourd: catalogModule.estLourd,
+          lourdDuCatalogue: catalogModule.lourdDuCatalogue,
         };
       if (specifier === './alerts')
         return { suspicion: (email) => (/^r\.o\.b\.o\.t/.test(email) ? 'robot' : null) };
@@ -1092,6 +1108,7 @@ function harness({
           db: async () => database,
           runtime: async () => ({ COMMERCE_MODE: mode }),
           isAdmin: async () => admin,
+          readCatalog: async () => clone(catalog),
         };
       if (specifier === './commerce')
         return {
@@ -1396,4 +1413,143 @@ test('owner settings re-read open payments at PayPlug (lost notification) and se
   await owner.flush();
   assert.equal(owner.rows.get(first.attempt.id).status, 'paid');
   assert.equal(owner.mails.length, 2);
+});
+
+// 19/10/2026 — client bloqué après une création incertaine ou refusée (audit D3) : la même clé ne rejoue
+// jamais une création, mais une tentative morte libère le client au lieu de lui rendre la même impasse.
+test('uncertain create without PayPlug id: same key asks for a new key, the new key pays (no reload)', async () => {
+  let n = 0;
+  const h = relayHarness({
+    onCreate: async () => {
+      if (++n === 1) throw new PayplugError('create_unconfirmed', { ambiguous: true });
+      return payment('pending', { id: 'pay_second01' });
+    },
+  });
+  const first = await h.post('create', { ...publicPayload, quotedTotal: 4890 });
+  assert.equal(first.status, 202);
+  const dead = (await first.json()).attempt;
+  assert.equal(dead.status, 'unconfirmed');
+  const replay = await h.post('create', { ...publicPayload, quotedTotal: 4890 });
+  assert.equal(replay.status, 409);
+  assert.equal((await replay.json()).restart, true);
+  assert.equal(h.calls('create').length, 1, 'the same key never creates twice');
+  const retry = await h.post('create', { ...publicPayload, quotedTotal: 4890, requestKey: secondKey });
+  assert.equal(retry.status, 201);
+  const fresh = (await retry.json()).attempt;
+  assert.notEqual(fresh.id, dead.id);
+  assert.ok(fresh.paymentUrl);
+  assert.equal(h.rows.get(fresh.id).cart_revision, 2);
+  assert.equal(h.calls('create').length, 2);
+});
+
+test('uncertain create with a PayPlug id: the same key re-reads PayPlug and resumes the real payment', async () => {
+  const h = relayHarness({
+    onCreate: async () => {
+      throw new PayplugError('create_unconfirmed', { ambiguous: true, providerPaymentId: 'pay_12345678' });
+    },
+    onRetrieve: async () => payment('pending'),
+  });
+  const first = await (await h.post('create', { ...publicPayload, quotedTotal: 4890 })).json();
+  assert.equal(first.attempt.paymentUrl, null);
+  const replay = await h.post('create', { ...publicPayload, quotedTotal: 4890 });
+  assert.equal(replay.status, 200);
+  const resumed = (await replay.json()).attempt;
+  assert.equal(resumed.id, first.attempt.id);
+  assert.equal(resumed.status, 'pending');
+  assert.ok(resumed.paymentUrl);
+  assert.equal(h.calls('create').length, 1);
+});
+
+test('a preparation still running is never restarted; one cut off by the function limit is', async () => {
+  const h = relayHarness();
+  await h.post('create', { ...publicPayload, quotedTotal: 4890 });
+  const row = [...h.rows.values()][0];
+  Object.assign(row, { status: 'creating', provider_id: null, payment_url: null, updated_at: new Date().toISOString() });
+  const young = await h.post('create', { ...publicPayload, quotedTotal: 4890 });
+  assert.equal(young.status, 200);
+  assert.equal((await young.json()).attempt.status, 'creating');
+  row.updated_at = new Date(Date.now() - 180000).toISOString();
+  const cut = await h.post('create', { ...publicPayload, quotedTotal: 4890 });
+  assert.equal(cut.status, 409);
+  assert.equal((await cut.json()).restart, true);
+  assert.equal(h.calls('create').length, 1);
+});
+
+test('a refused preparation (422) says why instead of « service indisponible »', async () => {
+  const h = relayHarness({
+    onCreate: async () => {
+      throw new PayplugError('create_rejected', { upstreamStatus: 401 });
+    },
+  });
+  const r = await h.post('create', { ...publicPayload, quotedTotal: 4890 });
+  assert.equal(r.status, 422);
+  const body = await r.json();
+  assert.match(body.error, /n’a pas pu être préparé/);
+  assert.equal(body.attempt.status, 'failed');
+});
+
+// 19/10/2026 — double paiement (audit D13) : un onglet PayPlug resté ouvert sur une ancienne révision.
+const twoTabs = (onAbort) => {
+  let n = 0;
+  const states = new Map([['pay_oldtab01', 'pending']]);
+  const h = relayHarness({
+    onCreate: async () => payment('pending', { id: ++n === 1 ? 'pay_oldtab01' : 'pay_newtab02' }),
+    onRetrieve: async (id) => payment(states.get(id) ?? 'pending', { id }),
+    onAbort: async (id) => {
+      const next = onAbort ? onAbort(id) : 'failed';
+      states.set(id, next);
+      return payment(next, { id });
+    },
+  });
+  return { h, states };
+};
+const addGloves = (h) => {
+  h.cart.items.push({ productId: 'wraps', name: 'Test wraps', variant: '', quantity: 1, price: 1000 });
+  h.cart.subtotal += 1000;
+  h.cart.revision += 1;
+};
+
+test('a payment still open on an older cart revision is aborted at PayPlug before the new one exists', async () => {
+  const { h } = twoTabs();
+  const old = (await (await h.post('create', { ...publicPayload, quotedTotal: 4890 })).json()).attempt;
+  addGloves(h);
+  const r = await h.post('create', { ...publicPayload, quotedTotal: 5890, quotedRevision: 2, requestKey: secondKey });
+  assert.equal(r.status, 201);
+  assert.deepEqual(h.calls('abort').map((c) => c.id), ['pay_oldtab01']);
+  assert.equal(h.rows.get(old.id).status, 'failed');
+  assert.equal(h.calls('create').length, 2);
+});
+
+test('if the older open payment cannot be aborted, no second payment is created', async () => {
+  const { h } = twoTabs(() => 'pending');
+  await h.post('create', { ...publicPayload, quotedTotal: 4890 });
+  addGloves(h);
+  const r = await h.post('create', { ...publicPayload, quotedTotal: 5890, quotedRevision: 2, requestKey: secondKey });
+  assert.equal(r.status, 409);
+  assert.equal(h.calls('create').length, 1);
+});
+
+test('an older revision paid meanwhile is reported, never paid a second time silently', async () => {
+  const { h, states } = twoTabs();
+  const old = (await (await h.post('create', { ...publicPayload, quotedTotal: 4890 })).json()).attempt;
+  addGloves(h);
+  states.set('pay_oldtab01', 'paid');
+  const r = await h.post('create', { ...publicPayload, quotedTotal: 5890, quotedRevision: 2, requestKey: secondKey });
+  assert.equal(r.status, 409);
+  assert.match((await r.json()).error, new RegExp(old.reference));
+  assert.equal(h.rows.get(old.id).status, 'paid');
+  assert.equal(h.calls('create').length, 1);
+  assert.equal(h.calls('abort').length, 0);
+});
+
+test('heavy equipment is judged on the catalogue entry, not only on the line name', async () => {
+  const h = relayHarness({
+    catalog: [{ id: 'station', name: 'Station d’entraînement Focusmaster', category: 'sacs-de-frappe', specs: { Type: 'Base de frappe et Dummies' } }],
+  });
+  // Nom de ligne anodin (renommage dans l'atelier) : le rayon et le type suffisent.
+  h.cart.items.push({ productId: 'station', name: 'Focusmaster Century', variant: '', quantity: 1, price: 95200 });
+  const r = await h.post('create', { ...publicPayload, quotedTotal: 4890 });
+  assert.equal(r.status, 409);
+  assert.deepEqual((await r.json()).heavy, ['station']);
+  assert.equal(h.rows.size, 0);
 });

@@ -1,5 +1,8 @@
 import { payplugGet, payplugPost } from '@/lib/payplug-orders';
 export const dynamic = 'force-dynamic';
+// Une création peut enchaîner relecture, abandon, relecture puis création (4 × 12 s au plus) : la fonction
+// ne doit pas être coupée au milieu, ce qui laisserait la tentative « en préparation ».
+export const maxDuration = 60;
 type Context = { params: Promise<{ action: string }> };
 const unavailable = () =>
   Response.json(
