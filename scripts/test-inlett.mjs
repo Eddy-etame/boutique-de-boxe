@@ -670,6 +670,8 @@ function apiHarness({ forceKeyReadRace = false } = {}) {
     URL,
     URLSearchParams,
     crypto: webcrypto,
+    // Les journaux de la route (console.error) ne doivent pas lever d'erreur dans le bac à sable.
+    console: { error() {}, warn() {}, log() {} },
     require(specifier) {
       if (specifier === '@/lib/database')
         return {
@@ -697,11 +699,15 @@ function apiHarness({ forceKeyReadRace = false } = {}) {
       if (specifier === '@/lib/listing') return { listingFor: () => null };
       if (specifier === 'next/cache') return { revalidatePath: () => {} };
       if (specifier === '@/lib/newsletter') return { unsubscribeAll: async () => true };
+      // Session d'équipe : le renouvellement du cookie n'a rien à faire pour un visiteur anonyme.
+      if (specifier === '@/lib/team') return { renouvelerCookie: async () => null };
       if (specifier === '@/lib/suggest') return { suggest: () => ({ pages: [], products: [], total: 0 }), nearest: () => ({ pages: [], products: [] }) };
       if (specifier === '@/lib/alerts')
         return {
           emailValid: (value) => typeof value === 'string' && value.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
           normalisePhone: () => '',
+          // Le filtre des adresses de robot (lib/alerts.ts) : aucune adresse de ces tests n'en est une.
+          suspicion: () => null,
           ensureAlertContact: async () => {},
           insertAlert() {
             throw new Error('Not used by these tests');

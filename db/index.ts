@@ -43,12 +43,32 @@ const int8AsNumber = {
 declare global {
   var __boutiqueSql: postgres.Sql | undefined;
   var __boutiqueSqlFailedAt: number | undefined;
+  /** Le pooler a refusé le paramètre de démarrage statement_timeout : on s’en passe (le délai côté client reste). */
+  var __boutiqueSqlPlainStartup: boolean | undefined;
 }
+
+/** Délai d’une requête (19/10, D16) : une requête bloquée ne retient plus un rendu ou un paiement sans limite. */
+export const STATEMENT_TIMEOUT_MS = 8000;
 
 /** Après un échec de connexion, on n’essaie plus pendant 30 s : une base morte coûte une tentative, pas une par page. */
 export function rememberFailure() {
   globalThis.__boutiqueSqlFailedAt = Date.now();
 }
+
+/**
+ * Le disjoncteur ne se déclenche que sur une connexion impossible (D16) : hôte introuvable, refusé,
+ * délai de connexion, mot de passe refusé (28P01), base inconnue (3D000). Une requête annulée par
+ * statement_timeout (57014), une table absente (42P01) ou une contrainte violée ne coupent plus la
+ * base pour toute l’instance pendant 30 s.
+ */
+export const CONNECTION_FAILURE = /^(?:ECONNREFUSED|ENOTFOUND|EAI_AGAIN|ETIMEDOUT|CONNECT_TIMEOUT|28P01|3D000)$/;
+export const isConnectionFailure = (error: unknown) => {
+  const code = (error as { code?: unknown } | null)?.code;
+  return typeof code === 'string' && CONNECTION_FAILURE.test(code);
+};
+/** Un pooler (PgBouncer) qui refuse un paramètre de démarrage inconnu. */
+const startupRefused = (error: unknown) =>
+  /unsupported startup parameter|statement_timeout/i.test(String((error as Error | null)?.message ?? ''));
 
 export function sqlClient(): postgres.Sql {
   if (globalThis.__boutiqueSqlFailedAt && Date.now() - globalThis.__boutiqueSqlFailedAt < 30_000) {
@@ -69,6 +89,9 @@ export function sqlClient(): postgres.Sql {
       connect_timeout: 4,
       ssl: local ? undefined : 'require',
       types: { int8AsNumber },
+      // Côté serveur quand la connexion l’accepte (directe, locale) ; le pooler en mode transaction ne
+      // garde pas les réglages de session : le délai côté client (Statement.execute) vaut partout.
+      ...(globalThis.__boutiqueSqlPlainStartup ? {} : { connection: { statement_timeout: STATEMENT_TIMEOUT_MS } }),
     });
   }
   return globalThis.__boutiqueSql;
@@ -115,15 +138,37 @@ class Statement implements D1PreparedStatement {
   }
 
   private async execute(executor: Executor = this.executor) {
+    const query = executor.unsafe(this.text, this.params as never[]);
+    let timer: ReturnType<typeof setTimeout> | undefined;
     try {
-      const rows = await executor.unsafe(this.text, this.params as never[]);
+      // Filet côté client : au-delà du délai (+ une marge pour le délai du serveur), la requête est
+      // annulée et la promesse rejetée avec le code de Postgres (57014), qui ne coupe pas la base.
+      const rows = await Promise.race([
+        query,
+        new Promise<never>((_, reject) => {
+          timer = setTimeout(() => {
+            try {
+              query.cancel();
+            } catch {
+              /* déjà terminée */
+            }
+            reject(Object.assign(new Error('canceling statement due to statement timeout (client)'), { code: '57014' }));
+          }, STATEMENT_TIMEOUT_MS + 1000);
+        }),
+      ]);
       globalThis.__boutiqueSqlFailedAt = undefined;
       return rows;
     } catch (error) {
-      const code = (error as { code?: string }).code || '';
-      // Connexion impossible ou base sans tables : on mémorise l’échec.
-      if (/ECONN|ETIMEDOUT|ENOTFOUND|EAI_AGAIN|CONNECT_TIMEOUT|42P01|28P01|3D000/.test(code) || /timeout|connect/i.test(String((error as Error).message))) rememberFailure();
+      if (!globalThis.__boutiqueSqlPlainStartup && startupRefused(error) && !isConnectionFailure(error)) {
+        // Le pooler refuse statement_timeout au démarrage : client refait sans ce paramètre, sans disjoncter.
+        globalThis.__boutiqueSqlPlainStartup = true;
+        const old = globalThis.__boutiqueSql;
+        globalThis.__boutiqueSql = undefined;
+        void old?.end({ timeout: 1 }).catch(() => undefined);
+      } else if (isConnectionFailure(error)) rememberFailure();
       throw error;
+    } finally {
+      clearTimeout(timer);
     }
   }
 

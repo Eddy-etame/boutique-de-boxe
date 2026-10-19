@@ -13,7 +13,10 @@
     "format": "oxfmt",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:local": "node scripts/dev-postgres.mjs"
+    "db:local": "node scripts/dev-postgres.mjs",
+    "test": "node --test scripts/test-payplug-orders.mjs scripts/test-inlett.mjs && node --experimental-strip-types --no-warnings scripts/test-payplug.mjs",
+    "test:api": "node scripts/test-api.mjs",
+    "test:shell": "node scripts/test-public-shell.mjs"
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",

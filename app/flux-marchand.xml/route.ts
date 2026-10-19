@@ -1,4 +1,4 @@
-import { readCatalog } from '@/lib/database';
+import { readCatalog, cacheCatalogue, catalogueDeSecours } from '@/lib/database';
 import { categoryFor, estLourd, shop, variantPrice, type Product, fraisDeLivraison } from '@/lib/catalog';
 import { SUBFAMILIES } from '@/lib/subfamilies';
 import { urlOf } from '@/lib/seo';
@@ -66,7 +66,9 @@ function item(p: Product, taille: string | null, type: string, disponible: strin
 export async function GET() {
   if (memo && Date.now() - memo.at < 300000)
     return new Response(memo.body, { headers: { 'Content-Type': 'application/rss+xml; charset=utf-8', 'Cache-Control': 'public, max-age=3600, s-maxage=3600' } });
-  const products = (await readCatalog()).filter((p) => p.images[0] && p.price > 0 && !estLourd(p));
+  // Sans la base (catalogue de secours) : ni mémo, ni cache CDN d'une heure (D30).
+  const catalog = await readCatalog();
+  const products = catalog.filter((p) => p.images[0] && p.price > 0 && !estLourd(p));
   const items: string[] = [];
   const disponible = dateDisponibilite();
   for (const p of products) {
@@ -84,6 +86,6 @@ export async function GET() {
     `<title>${esc(shop.name)}</title><link>${esc(shop.origin)}/</link><description>${esc('Matériel de boxe, de MMA et de sports de combat : gants, protections, textile, sacs de frappe, chaussures. Prix TTC, livraison en France.')}</description>` +
     items.join('\n') +
     `</channel></rss>`;
-  memo = { at: Date.now(), body };
-  return new Response(body, { headers: { 'Content-Type': 'application/rss+xml; charset=utf-8', 'Cache-Control': 'public, max-age=3600, s-maxage=3600' } });
+  if (!catalogueDeSecours(catalog)) memo = { at: Date.now(), body };
+  return new Response(body, { headers: { 'Content-Type': 'application/rss+xml; charset=utf-8', 'Cache-Control': cacheCatalogue(catalog, 'public, max-age=3600, s-maxage=3600') } });
 }

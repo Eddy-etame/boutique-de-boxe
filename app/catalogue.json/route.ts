@@ -1,4 +1,4 @@
-import { readCatalog } from '@/lib/database';
+import { readCatalog, cacheCatalogue, catalogueDeSecours } from '@/lib/database';
 import { categoryFor, estLourd, money, shop } from '@/lib/catalog';
 import { ATTRIBUTION, EDITORIAL_DATE, familiesWithCounts, urlOf } from '@/lib/seo';
 
@@ -50,11 +50,12 @@ export async function GET() {
     })),
   };
   const serialized = JSON.stringify(body);
-  memo = { at: Date.now(), body: serialized };
+  // Sans la base (catalogue de secours) : ni mémo, ni cache CDN d'une heure (D30).
+  if (!catalogueDeSecours(products)) memo = { at: Date.now(), body: serialized };
   return new Response(serialized, {
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
-      'Cache-Control': 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400',
+      'Cache-Control': cacheCatalogue(products, 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400'),
       'Access-Control-Allow-Origin': '*',
     },
   });

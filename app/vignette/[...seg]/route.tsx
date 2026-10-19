@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 import fs from 'node:fs';
 import path from 'node:path';
-import { readCatalog } from '@/lib/database';
+import { readCatalog, cacheCatalogue } from '@/lib/database';
 import { shop } from '@/lib/catalog';
 import { cardFor, OG_HEIGHT, OG_WIDTH, type CardKind } from '@/lib/og';
 import { empreinte, THUMB_SIZE } from '@/lib/vignette';
@@ -14,7 +14,10 @@ import { empreinte, THUMB_SIZE } from '@/lib/vignette';
  * /vignette/t/<slug>/<rang>-<empreinte>.webp vignette 168 px d’une photo de galerie (lib/vignette.ts).
  *
  * Les vignettes sociales sont réencodées en PNG à palette (même dessin, nettement plus léger) ;
- * une photo est lue en 8 s et 15 Mo au plus.
+ * une photo est lue en 8 s et 15 Mo au plus (D31), sans cache de données de Next (qui la lirait en
+ * entier pour la garder) ; au-delà, la vignette sociale part sans photo et la vignette de galerie
+ * renvoie vers la photo d’origine, sans cache. Bâtie sur le catalogue de secours (base injoignable),
+ * une vignette sociale ne se garde qu’une minute (D30).
  */
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -54,23 +57,34 @@ async function loadSharp() {
 }
 
 const MAX_PHOTO = 15 * 1024 * 1024;
-/** Une photo, lue avec un délai et un plafond : un hôte lent ou un fichier démesuré ne bloque pas la fonction. */
-async function readPhoto(url: string, init: RequestInit = {}): Promise<Buffer | null> {
-  const res = await fetch(url, { ...init, signal: AbortSignal.timeout(8000) });
-  if (!res.ok || !res.body) return null;
-  if (Number(res.headers.get('content-length') || 0) > MAX_PHOTO) return null;
+const PHOTO_TIMEOUT = 8000;
+/**
+ * Une photo, lue avec un délai et un plafond : un hôte lent ou un fichier démesuré ne bloque pas la
+ * fonction. Le délai couvre la lecture du corps ; une réponse refusée ou trop lourde est abandonnée
+ * sans être lue (la connexion est rendue tout de suite).
+ */
+async function readPhoto(url: string): Promise<Buffer | null> {
+  const res = await fetch(url, { cache: 'no-store', signal: AbortSignal.timeout(PHOTO_TIMEOUT) });
+  if (!res.ok || !res.body || Number(res.headers.get('content-length') || 0) > MAX_PHOTO) {
+    await res.body?.cancel().catch(() => undefined);
+    return null;
+  }
   const chunks: Uint8Array[] = [];
   let size = 0;
   const reader = res.body.getReader();
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    size += value.byteLength;
-    if (size > MAX_PHOTO) {
-      await reader.cancel();
-      return null;
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      if (size > MAX_PHOTO) {
+        await reader.cancel().catch(() => undefined);
+        return null;
+      }
+      chunks.push(value);
     }
-    chunks.push(value);
+  } finally {
+    reader.releaseLock();
   }
   return Buffer.concat(chunks);
 }
@@ -78,7 +92,7 @@ async function readPhoto(url: string, init: RequestInit = {}): Promise<Buffer | 
 /** Photo du site (WebP) → PNG en data URL ; en cas d’échec, pas de photo plutôt qu’une erreur. */
 async function toPng(url: string): Promise<string | null> {
   try {
-    const input = await readPhoto(url, { cache: 'force-cache' });
+    const input = await readPhoto(url);
     if (!input) return null;
     const sharp = await loadSharp();
     const png = await sharp(input).resize({ width: 720, height: 600, fit: 'inside' }).png().toBuffer();
@@ -94,18 +108,21 @@ let lastPhotoError = '';
 /** Hôtes des photos de fournisseurs (les mêmes que la CSP `img-src`) : la vignette ne lit rien d’autre. */
 const PHOTO_HOSTS = new Set(['api.ecommercio.com', 'ypnjjowtudmpxoqopzta.supabase.co', 'media.cdnws.com']);
 const YEAR = 'public, max-age=31536000, s-maxage=31536000, immutable';
+const WEEK = 'public, max-age=86400, s-maxage=604800, stale-while-revalidate=2592000';
+/** Adresse inconnue : rien n’est gardé (le produit peut manquer au catalogue de secours, puis revenir). */
+const notFound = () => new Response('Not found', { status: 404, headers: { 'Cache-Control': 'no-store' } });
 
 /** /vignette/t/<slug>/<rang>-<empreinte>.webp : la photo n° rang de la fiche, réduite à 168 px. */
 async function thumbnail(seg: string[], origin: string) {
   const m = seg.length === 3 ? /^(\d{1,2})-([0-9a-z]{6,8})\.webp$/.exec(seg[2]) : null;
-  if (!m || !/^[a-z0-9-]{1,200}$/.test(seg[1])) return new Response('Not found', { status: 404 });
+  if (!m || !/^[a-z0-9-]{1,200}$/.test(seg[1])) return notFound();
   const p = (await readCatalog()).find((x) => x.slug === seg[1]);
   const image = p?.images[Number(m[1])];
   // Une photo remplacée change d’empreinte : l’ancienne adresse ne sert plus d’image.
-  if (!p || !image || empreinte(image.src) !== m[2]) return new Response('Not found', { status: 404 });
+  if (!p || !image || empreinte(image.src) !== m[2]) return notFound();
   const source = image.src.startsWith('/') ? origin + image.small : image.src;
   try {
-    if (!image.src.startsWith('/') && !PHOTO_HOSTS.has(new URL(source).hostname)) return new Response('Not found', { status: 404 });
+    if (!image.src.startsWith('/') && !PHOTO_HOSTS.has(new URL(source).hostname)) return notFound();
     const input = await readPhoto(source);
     if (!input) throw new Error('photo indisponible');
     const sharp = await loadSharp();
@@ -145,11 +162,13 @@ async function render(request: Request, { params }: { params: Promise<{ seg: str
   try {
     key = decodeURIComponent((seg.slice(1).join('/') || '').replace(/\.png$/, ''));
   } catch {
-    return new Response('Not found', { status: 404 });
+    return notFound();
   }
-  if (!['p', 'c', 's', 'g', 'x'].includes(kind) || !key) return new Response('Not found', { status: 404 });
-  const card = cardFor(kind, key, await readCatalog());
-  if (!card) return new Response('Not found', { status: 404 });
+  if (!['p', 'c', 's', 'g', 'x'].includes(kind) || !key) return notFound();
+  const catalog = await readCatalog();
+  const card = cardFor(kind, key, catalog);
+  if (!card) return notFound();
+  const cacheControl = cacheCatalogue(catalog, WEEK);
   const origin = new URL(request.url).origin;
   // Les photos sont en WebP, que le moteur de rendu ne lit pas : conversion en PNG à la volée.
   const photos = (await Promise.all(card.photos.map((src) => toPng(src.startsWith('http') ? src : origin + src)))).filter((x): x is string => Boolean(x));
@@ -214,7 +233,7 @@ async function render(request: Request, { params }: { params: Promise<{ seg: str
         width: OG_WIDTH,
         height: OG_HEIGHT,
         fonts: fonts().map((f) => ({ name: f.name, data: f.data, weight: f.weight, style: 'normal' as const })),
-        headers: { 'Cache-Control': 'public, max-age=86400, s-maxage=604800, stale-while-revalidate=2592000' },
+        headers: { 'Cache-Control': cacheControl },
       },
     );
   }
@@ -268,7 +287,7 @@ async function render(request: Request, { params }: { params: Promise<{ seg: str
       height: OG_HEIGHT,
       fonts: fonts().map((f) => ({ name: f.name, data: f.data, weight: f.weight, style: 'normal' as const })),
       headers: {
-        'Cache-Control': 'public, max-age=86400, s-maxage=604800, stale-while-revalidate=2592000',
+        'Cache-Control': cacheControl,
         ...(process.env.NODE_ENV !== 'production' && lastPhotoError ? { 'X-Vignette-Photo-Error': lastPhotoError.slice(0, 200) } : {}),
       },
     },
