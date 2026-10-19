@@ -48,7 +48,7 @@ function productCard(p: Product): Card {
   if (material) facts.push({ label: 'MATIÈRES', value: material });
   if (p.sizes.length) facts.push({ label: 'TAILLES', value: p.sizes.map((s) => s.split(',')[0]).slice(0, 6).join(' · ') + (p.sizes.length > 6 ? ' …' : '') });
   if (p.colors?.length) facts.push({ label: 'COULEURS', value: p.colors.map((c) => c.charAt(0).toUpperCase() + c.slice(1)).slice(0, 4).join(' · ') });
-  if (facts.length < 3) facts.push({ label: 'PRIX PRÉVU', value: money(p.price) });
+  if (facts.length < 3) facts.push({ label: 'PRIX TTC', value: money(p.price) });
   if (facts.length < 3 && family) facts.push({ label: 'FAMILLE', value: family.name });
   const brand = badBrand(p.brand) ? '' : p.brand.toUpperCase();
   return {

@@ -123,7 +123,7 @@ function sections(): SeoSection[] {
     {
       h2: 'Livraison : point relais ou domicile',
       paragraphs: [
-        'La boutique expédie en France métropolitaine. En point relais, 6,90 €, et rien à partir de 69 € d’achats. À domicile, 8,90 €. Un sac de frappe ou une base lestée part à domicile seulement, à un tarif indiqué avant la validation du panier.',
+        'La boutique expédie en France métropolitaine. En point relais, 6,90 €, et rien à partir de 69 € d’achats. À domicile, 8,90 €. Un sac de frappe, une base lestée ou tout autre matériel lourd se livre à domicile, sur devis : écrivez-nous avec le modèle et votre code postal.',
       ],
     },
     {

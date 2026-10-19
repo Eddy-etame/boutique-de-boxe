@@ -20,7 +20,7 @@ function status() {
     `## État du service (${EDITORIAL_DATE})`,
     `- Les ventes sont ouvertes depuis le ${shop.ouverture.long}. Chaque modèle affiche son prix de vente TTC, hors livraison.`,
     `- Le panier se paie par carte sur la page sécurisée de PayPlug. Expédition sous ${shop.delais.expedition}, livraison au plus tard sous ${shop.delais.livraisonMax}. Quatorze jours après réception pour se rétracter.`,
-    '- Le matériel lourd (sacs de frappe, bases et mannequins, portiques, potences, cages) se livre sur devis, hors paiement en ligne.',
+    '- Le matériel lourd (sacs de frappe, bases et mannequins, portiques, potences, cages, rings et coins de ring, tatamis, stations et appareils de musculation) se livre sur devis, hors paiement en ligne.',
     `- Éditeur : ${shop.entity}, Toulouse. Contact : ${shop.email}, ${shop.phone}.`,
     '- Boutique de Boxe est une boutique en ligne indépendante. Ce n’est pas un club, ni une salle de sport.',
   ].join('\n');

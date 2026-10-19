@@ -196,7 +196,7 @@ async function render(request: Request, { params }: { params: Promise<{ seg: str
           {/* Le prix, les tailles */}
           <div style={{ position: 'absolute', left: 56, top: 468, width: 496, display: 'flex', alignItems: 'flex-end', gap: 28 }}>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.4, color: MUTED }}>PRIX PRÉVU</span>
+              <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.4, color: MUTED }}>PRIX TTC</span>
               <span style={{ display: 'flex', marginTop: 4, fontFamily: 'Barlow', fontSize: 58, lineHeight: 1, background: TAPE, padding: '4px 12px 2px' }}>{card.price}</span>
             </div>
             {sizes ? (
