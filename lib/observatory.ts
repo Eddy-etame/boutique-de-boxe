@@ -1,4 +1,4 @@
-import { categories, categoryFor, money, type Product } from './catalog';
+import { categoryFor, money, type Product } from './catalog';
 import { brandsOf } from './brands';
 import { GLOVE_WEIGHTS, ouncesOf } from './facets';
 import { isoWeek } from './hub';
@@ -127,4 +127,3 @@ export function observatorySentences(o: Observatory) {
   return out;
 }
 
-export const familyLabel = (slug: string) => categories.find((c) => c.slug === slug)?.name || slug;
