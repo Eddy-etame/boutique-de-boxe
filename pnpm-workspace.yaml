@@ -1,3 +1,6 @@
 allowBuilds:
   esbuild: true
   sharp: true
+# next déclare sharp ^0.35.4 en dépendance optionnelle : sans cette règle, il garde 0.35.4 (faille librsvg).
+overrides:
+  sharp: ^0.35.5
