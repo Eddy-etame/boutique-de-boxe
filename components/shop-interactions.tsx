@@ -44,6 +44,7 @@ import {
 import { AddToCart, QuickAdd, PackAdd } from './commerce-ui';
 import selection from '@/lib/data/selection.json';
 import { spaced } from '@/lib/spaced';
+import { thumbSrc } from '@/lib/vignette';
 
 /** La scène d’un modèle détouré : mode, bords touchés par le sujet, modèle sombre ou vif, teinte dominante. */
 function stageProps(p: Product, active = true) {
@@ -60,9 +61,13 @@ function stageProps(p: Product, active = true) {
 export function ProductCard({
   product: p,
   index = 0,
+  eager = false,
 }: {
   product: Product;
   index?: number;
+  /** Carte de la grille d’une liste : les quatre premières se chargent tout de suite, la première en priorité.
+   *  Partout ailleurs (modèles proches, accueil, villes), la carte attend d’approcher de l’écran. */
+  eager?: boolean;
 }) {
   return (
     <article className="product-card">
@@ -86,8 +91,9 @@ export function ProductCard({
           width={480}
           height={480}
           alt={p.images[0]?.alt || p.name}
-          loading={index < 4 ? 'eager' : 'lazy'}
-          fetchPriority={index === 0 ? 'high' : 'auto'}
+          loading={eager && index < 4 ? 'eager' : 'lazy'}
+          fetchPriority={eager && index === 0 ? 'high' : undefined}
+          decoding="async"
         />
         <span className="product-arrow">
           <ArrowUpRight size={20} />
@@ -290,6 +296,26 @@ export function Catalog({
   const [filters, setFilters] = useState(false);
   const [more, setMore] = useState(false);
   const [page, setPage] = useState(initialPage);
+  // La page reçue par l’adresse (?page=N) quand le HTML statique est celui de la page 1 : la liste
+  // entière est demandée, puis la grille passe à la page N, comme au clic sur la pagination.
+  useEffect(() => {
+    if (!scope || typeof window === 'undefined') return;
+    const n = Number(new URLSearchParams(window.location.search).get('page'));
+    if (!Number.isSafeInteger(n) || n < 2 || n === initialPage) return;
+    let alive = true;
+    fetch('/api/catalog-list?scope=' + encodeURIComponent(scope))
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error('liste'))))
+      .then((d: { items: Product[] }) => {
+        if (!alive) return;
+        setAll(d.items);
+        setRequested(true);
+        setPage(n);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [scope, initialPage]);
 
   const brands = [...new Set(items.map((p) => p.brand))];
   // Les couleurs présentes, dans l'ordre de la palette ; une teinte seule ne trie rien.
@@ -512,7 +538,7 @@ export function Catalog({
                 )
               : pageItems
             ).map((p, i) => (
-              <ProductCard key={p.id} product={p} index={i} />
+              <ProductCard key={p.id} product={p} index={i} eager />
             ))}
           </div>
           {count > 36 && (
@@ -902,14 +928,24 @@ export function ProductDetails({ product: p }: { product: Product }) {
           <span className="tiny-label">
             {p.brand} / {p.reference || p.sourceRef}
           </span>
-          <img
-            key={p.images[image]?.src}
-            src={image === 0 && p.cut ? p.cut.large : p.images[image]?.src}
-            width={960}
-            height={960}
-            alt={p.images[image]?.alt}
-            fetchPriority="high"
-          />
+          {(() => {
+            // Une seule image prioritaire par fiche : la photo de tête, en 480 ou 960 px selon l’écran.
+            const shown = p.images[image];
+            const large = image === 0 && p.cut ? p.cut.large : shown?.src;
+            const small = image === 0 && p.cut ? p.cut.small : shown?.small;
+            return (
+              <img
+                key={shown?.src}
+                src={large}
+                srcSet={small && small !== large ? `${small} 480w, ${large} 960w` : undefined}
+                sizes={small && small !== large ? '(max-width: 900px) 94vw, 46vw' : undefined}
+                width={960}
+                height={960}
+                alt={shown?.alt}
+                fetchPriority={image === 0 ? 'high' : undefined}
+              />
+            );
+          })()}
           <button
             className="image-expand"
             aria-label="Agrandir la photo du produit"
@@ -941,7 +977,7 @@ export function ProductDetails({ product: p }: { product: Product }) {
                   next?.focus();
                 }}
               >
-                <img src={img.small} width={84} height={84} alt="" />
+                <img src={thumbSrc(p.slug, i, img)} width={84} height={84} alt="" loading="lazy" decoding="async" />
               </button>
             ))}
           </div>

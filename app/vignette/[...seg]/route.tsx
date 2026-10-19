@@ -4,12 +4,17 @@ import path from 'node:path';
 import { readCatalog } from '@/lib/database';
 import { shop } from '@/lib/catalog';
 import { cardFor, OG_HEIGHT, OG_WIDTH, type CardKind } from '@/lib/og';
+import { empreinte, THUMB_SIZE } from '@/lib/vignette';
 
 /**
  * Vignette sociale d’une page, rendue à la demande avec les polices du site.
  * /vignette/p/<slug>.png fiche · /vignette/c/<slug>.png famille ·
  * /vignette/s/<slug>.png sous-famille · /vignette/g/<slug>.png guide ·
  * /vignette/x/<page>.png accueil, guides, nouveautés, contact, services.
+ * /vignette/t/<slug>/<rang>-<empreinte>.webp vignette 168 px d’une photo de galerie (lib/vignette.ts).
+ *
+ * Les vignettes sociales sont réencodées en PNG à palette (même dessin, nettement plus léger) ;
+ * une photo est lue en 8 s et 15 Mo au plus.
  */
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -36,15 +41,47 @@ function fonts() {
 const heroTitleSize = (t: string) => (t.length > 60 ? 44 : t.length > 42 ? 52 : t.length > 26 ? 62 : 74);
 const titleSize = (t: string) => (t.length > 64 ? 46 : t.length > 44 ? 54 : t.length > 28 ? 62 : 72);
 
+type Sharp = {
+  resize: (o: object) => Sharp;
+  png: (o?: object) => Sharp;
+  webp: (o?: object) => Sharp;
+  toBuffer: () => Promise<Buffer>;
+};
+/** module natif chargé à l’exécution depuis node_modules, laissé hors du bundle par le bundler */
+async function loadSharp() {
+  const mod = (await import(/* webpackIgnore: true */ /* turbopackIgnore: true */ 'sharp')) as { default: (input: Buffer) => Sharp };
+  return mod.default;
+}
+
+const MAX_PHOTO = 15 * 1024 * 1024;
+/** Une photo, lue avec un délai et un plafond : un hôte lent ou un fichier démesuré ne bloque pas la fonction. */
+async function readPhoto(url: string, init: RequestInit = {}): Promise<Buffer | null> {
+  const res = await fetch(url, { ...init, signal: AbortSignal.timeout(8000) });
+  if (!res.ok || !res.body) return null;
+  if (Number(res.headers.get('content-length') || 0) > MAX_PHOTO) return null;
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  const reader = res.body.getReader();
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    size += value.byteLength;
+    if (size > MAX_PHOTO) {
+      await reader.cancel();
+      return null;
+    }
+    chunks.push(value);
+  }
+  return Buffer.concat(chunks);
+}
+
 /** Photo du site (WebP) → PNG en data URL ; en cas d’échec, pas de photo plutôt qu’une erreur. */
 async function toPng(url: string): Promise<string | null> {
   try {
-    const res = await fetch(url, { cache: 'force-cache' });
-    if (!res.ok) return null;
-    // module natif chargé à l’exécution depuis node_modules, laissé hors du bundle par le bundler
-    const mod = (await import(/* webpackIgnore: true */ /* turbopackIgnore: true */ 'sharp')) as { default: (input: Buffer) => { resize: (o: object) => { png: () => { toBuffer: () => Promise<Buffer> } } } };
-    const sharp = mod.default;
-    const png = await sharp(Buffer.from(await res.arrayBuffer())).resize({ width: 720, height: 600, fit: 'inside' }).png().toBuffer();
+    const input = await readPhoto(url, { cache: 'force-cache' });
+    if (!input) return null;
+    const sharp = await loadSharp();
+    const png = await sharp(input).resize({ width: 720, height: 600, fit: 'inside' }).png().toBuffer();
     return `data:image/png;base64,${png.toString('base64')}`;
   } catch (error) {
     lastPhotoError = (error as Error).message;
@@ -54,10 +91,62 @@ async function toPng(url: string): Promise<string | null> {
 }
 let lastPhotoError = '';
 
-export async function GET(request: Request, { params }: { params: Promise<{ seg: string[] }> }) {
+/** Hôtes des photos de fournisseurs (les mêmes que la CSP `img-src`) : la vignette ne lit rien d’autre. */
+const PHOTO_HOSTS = new Set(['api.ecommercio.com', 'ypnjjowtudmpxoqopzta.supabase.co', 'media.cdnws.com']);
+const YEAR = 'public, max-age=31536000, s-maxage=31536000, immutable';
+
+/** /vignette/t/<slug>/<rang>-<empreinte>.webp : la photo n° rang de la fiche, réduite à 168 px. */
+async function thumbnail(seg: string[], origin: string) {
+  const m = seg.length === 3 ? /^(\d{1,2})-([0-9a-z]{6,8})\.webp$/.exec(seg[2]) : null;
+  if (!m || !/^[a-z0-9-]{1,200}$/.test(seg[1])) return new Response('Not found', { status: 404 });
+  const p = (await readCatalog()).find((x) => x.slug === seg[1]);
+  const image = p?.images[Number(m[1])];
+  // Une photo remplacée change d’empreinte : l’ancienne adresse ne sert plus d’image.
+  if (!p || !image || empreinte(image.src) !== m[2]) return new Response('Not found', { status: 404 });
+  const source = image.src.startsWith('/') ? origin + image.small : image.src;
+  try {
+    if (!image.src.startsWith('/') && !PHOTO_HOSTS.has(new URL(source).hostname)) return new Response('Not found', { status: 404 });
+    const input = await readPhoto(source);
+    if (!input) throw new Error('photo indisponible');
+    const sharp = await loadSharp();
+    const webp = await sharp(input).resize({ width: THUMB_SIZE, height: THUMB_SIZE, fit: 'inside', withoutEnlargement: true }).webp({ quality: 74 }).toBuffer();
+    return new Response(new Uint8Array(webp), { headers: { 'Content-Type': 'image/webp', 'Cache-Control': YEAR } });
+  } catch (error) {
+    console.error('vignette galerie', p.slug, (error as Error).message);
+    // Hôte du fournisseur indisponible : la photo d’origine plutôt qu’un trou dans la galerie, sans cache.
+    return new Response(null, { status: 307, headers: { Location: source, 'Cache-Control': 'no-store' } });
+  }
+}
+
+/** Même dessin, PNG à palette : la vignette sociale pèse plusieurs fois moins lourd. */
+async function compact(response: Response): Promise<Response> {
+  if (!response.ok || response.headers.get('Content-Type') !== 'image/png') return response;
+  try {
+    const sharp = await loadSharp();
+    const png = await sharp(Buffer.from(await response.arrayBuffer())).png({ palette: true, quality: 90, effort: 8, compressionLevel: 9 }).toBuffer();
+    const headers = new Headers(response.headers);
+    headers.delete('Content-Length');
+    return new Response(new Uint8Array(png), { status: 200, headers });
+  } catch (error) {
+    console.error('vignette compression', (error as Error).message);
+    return new Response('Vignette indisponible', { status: 503, headers: { 'Cache-Control': 'no-store' } });
+  }
+}
+
+export async function GET(request: Request, ctx: { params: Promise<{ seg: string[] }> }) {
+  return compact(await render(request, ctx));
+}
+
+async function render(request: Request, { params }: { params: Promise<{ seg: string[] }> }): Promise<Response> {
   const { seg } = await params;
+  if (seg[0] === 't') return thumbnail(seg, new URL(request.url).origin);
   const kind = seg[0] as CardKind;
-  const key = decodeURIComponent((seg.slice(1).join('/') || '').replace(/\.png$/, ''));
+  let key = '';
+  try {
+    key = decodeURIComponent((seg.slice(1).join('/') || '').replace(/\.png$/, ''));
+  } catch {
+    return new Response('Not found', { status: 404 });
+  }
   if (!['p', 'c', 's', 'g', 'x'].includes(kind) || !key) return new Response('Not found', { status: 404 });
   const card = cardFor(kind, key, await readCatalog());
   if (!card) return new Response('Not found', { status: 404 });
