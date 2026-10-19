@@ -1098,7 +1098,7 @@ function harness({
           lourdDuCatalogue: catalogModule.lourdDuCatalogue,
         };
       if (specifier === './alerts')
-        return { suspicion: (email) => (/^r\.o\.b\.o\.t/.test(email) ? 'robot' : null) };
+        return { suspicion: (email) => (email.startsWith('r.o.b.o.t') ? 'robot' : null) };
       if (specifier === './request') return { clientIp: () => '203.0.113.7' };
       if (specifier === './boxtal') return boxtalModule;
       if (specifier === './mailer')
@@ -1330,7 +1330,7 @@ test('unpaid or refunded orders never send order e-mails', async () => {
 });
 
 test('a declined card releases the cart: the customer can pay again with a new attempt', async () => {
-  let state = 'failed';
+  const state = 'failed';
   const h = relayHarness({ onRetrieve: async () => payment(state), onVerify: async () => payment(state) });
   const first = await (await h.post('create', { ...publicPayload, quotedTotal: 4890 })).json();
   await h.post('ipn', { id: 'pay_12345678' });

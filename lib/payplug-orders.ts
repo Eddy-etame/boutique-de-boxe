@@ -827,7 +827,7 @@ export async function payplugPost(request: Request, action: string) {
   }
 }
 
-const esc = (v: unknown) =>
+const esc = (v: string | number | null | undefined) =>
   String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 function deliveryText(a: Attempt) {
   const b = stored(a);

@@ -62,8 +62,10 @@ export function rememberFailure() {
  * base pour toute l’instance pendant 30 s.
  */
 export const CONNECTION_FAILURE = /^(?:ECONNREFUSED|ENOTFOUND|EAI_AGAIN|ETIMEDOUT|CONNECT_TIMEOUT|28P01|3D000)$/;
-export const isConnectionFailure = (error: unknown) =>
-  CONNECTION_FAILURE.test(String((error as { code?: unknown } | null)?.code ?? ''));
+export const isConnectionFailure = (error: unknown) => {
+  const code = (error as { code?: unknown } | null)?.code;
+  return typeof code === 'string' && CONNECTION_FAILURE.test(code);
+};
 /** Un pooler (PgBouncer) qui refuse un paramètre de démarrage inconnu. */
 const startupRefused = (error: unknown) =>
   /unsupported startup parameter|statement_timeout/i.test(String((error as Error | null)?.message ?? ''));
