@@ -3473,6 +3473,23 @@ html[data-consent-open] .sticky-buy { transform: translateY(110%); }
 @media (prefers-reduced-motion: reduce) { .sticky-buy { transition: none; } .quick-add-sizes { animation: none; } .site-header { transition: none; } }
 
 /* Atelier : clients et ventes. */
+.audience-empty { margin: 0; padding: 10px 0 12px; font-size: 13px; color: #6b7263; border-bottom: 1px dashed #d4d6cf; }
+.audience-block .audience-empty + h3, .audience-block ul + h3 { margin-top: 22px; }
+.recent-orders li { display: grid; grid-template-columns: 112px minmax(0, 1fr) 96px 136px; align-items: baseline; gap: 6px 16px; padding: 10px 0; }
+.recent-orders time { font-size: 12px; color: #58614f; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.recent-what { display: flex; flex-direction: column; gap: 2px; font-size: 13px; line-height: 1.45; color: #3a3d36; min-width: 0; }
+.recent-what strong { font-size: 13px; color: var(--ink); }
+.recent-orders b { font-variant-numeric: tabular-nums; text-align: right; }
+.order-status { font-style: normal; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; padding: 3px 8px; border: 1px solid currentColor; white-space: nowrap; justify-self: end; }
+.order-status--vente { color: #2f5d1f; background: #eef5df; }
+.order-status--essai { color: #6b7263; background: #f3f3ef; }
+.order-status--refus { color: #8a2c1d; background: #fbecea; }
+@media (max-width: 720px) {
+  .recent-orders li { grid-template-columns: minmax(0, 1fr) auto; }
+  .recent-orders b { grid-column: 2; grid-row: 2; }
+  .recent-orders time { grid-column: 1 / -1; }
+  .order-status { grid-column: 2; }
+}
 .clients-tools { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .clients-tools .button { min-height: 40px; padding: 0 14px; font-size: 13px; }
 .clients-funnel { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }

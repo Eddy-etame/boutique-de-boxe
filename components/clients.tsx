@@ -18,7 +18,10 @@ type Report = {
 const euros = (cents: number) => (cents / 100).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' });
 const fr = (n: number) => n.toLocaleString('fr-FR');
 const when = (iso: string) => new Date(iso).toLocaleString('fr-FR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
-const STATUS: Record<string, string> = { simulated_paid: 'Essai approuvé', simulated_declined: 'Essai refusé', paid: 'Payé (PayPlug test)' };
+const STATUS: Record<string, string> = { simulated_paid: 'Essai approuvé', simulated_declined: 'Essai refusé', paid: 'Payé' };
+/** Une ligne de commande : vente réelle (payée par carte) ou essai d'avant l'ouverture. */
+const genre = (status: string) => (status === 'paid' ? 'vente' : status === 'simulated_declined' ? 'refus' : 'essai');
+const vide = (texte: string) => <p className="audience-empty">{texte}</p>;
 const DELIVERY: Record<string, string> = { relay: 'Point relais', home: 'À domicile' };
 
 export function Clients() {
@@ -66,7 +69,7 @@ export function Clients() {
       <div className="audience-head">
         <div>
           <h2>Qui achète, quoi, et combien.</h2>
-          <p className="commerce-caption">Commandes d’essai approuvées et paiements PayPlug de test. Aucun chiffre n’est un encaissement tant que la boutique reste en simulation.</p>
+          <p className="commerce-caption">Ventes payées par carte (PayPlug). Les commandes d’essai d’avant l’ouverture restent listées, marquées « essai », hors chiffre d’affaires.</p>
         </div>
         <div className="clients-tools">
           <div className="segmented" role="group" aria-label="Période">
@@ -81,7 +84,7 @@ export function Clients() {
       <div className="admin-stats">
         <div><strong>{fr(t.clients)}</strong><span>clients</span></div>
         <div><strong>{fr(t.approved)}</strong><span>commandes approuvées</span></div>
-        <div><strong>{euros(t.revenue)}</strong><span>chiffre d’essai</span></div>
+        <div><strong>{euros(t.revenue)}</strong><span>chiffre d’affaires</span></div>
         <div><strong>{euros(t.averageBasket)}</strong><span>panier moyen</span></div>
         <div><strong>{fr(t.optin)}</strong><span>accords e-mail</span></div>
       </div>
@@ -97,7 +100,7 @@ export function Clients() {
       <div className="audience-grid">
         <section className="audience-block">
           <h3>Modèles vendus</h3>
-          <ul className="audience-bars">
+          {report.products.length ? <ul className="audience-bars">
             {report.products.map((p) => (
               <li key={p.id}>
                 <a href={`/produits/${p.id}/`} target="_blank" rel="noreferrer">{p.name}</a>
@@ -105,23 +108,21 @@ export function Clients() {
                 <b>{fr(p.quantity)}</b>
               </li>
             ))}
-            {!report.products.length && <li><span>Aucune vente sur la période.</span></li>}
-          </ul>
+          </ul> : vide('Aucune vente sur la période.')}
         </section>
         <section className="audience-block">
           <h3>Par famille</h3>
-          <ul className="audience-list">{report.families.map((f) => <li key={f.name}><span>{f.name}</span><b>{euros(f.revenue)} · {fr(f.quantity)} pièce{f.quantity > 1 ? 's' : ''}</b></li>)}</ul>
+          {report.families.length ? <ul className="audience-list">{report.families.map((f) => <li key={f.name}><span>{f.name}</span><b>{euros(f.revenue)} · {fr(f.quantity)} pièce{f.quantity > 1 ? 's' : ''}</b></li>)}</ul> : vide('Rien à répartir pour l’instant.')}
           <h3>Par marque</h3>
-          <ul className="audience-list">{report.brands.map((b) => <li key={b.name}><span>{b.name}</span><b>{euros(b.revenue)}</b></li>)}</ul>
+          {report.brands.length ? <ul className="audience-list">{report.brands.map((b) => <li key={b.name}><span>{b.name}</span><b>{euros(b.revenue)}</b></li>)}</ul> : vide('Aucune marque vendue sur la période.')}
           <h3>Livraison choisie</h3>
-          <ul className="audience-list">{report.deliveries.map((d) => <li key={d.mode}><span>{DELIVERY[d.mode] || d.mode}</span><b>{fr(d.n)}</b></li>)}</ul>
+          {report.deliveries.length ? <ul className="audience-list">{report.deliveries.map((d) => <li key={d.mode}><span>{DELIVERY[d.mode] || d.mode}</span><b>{fr(d.n)}</b></li>)}</ul> : vide('Aucune livraison choisie sur la période.')}
         </section>
         <section className="audience-block">
           <h3>Par jour</h3>
-          <ul className="audience-list">
+          {report.byDay.length ? <ul className="audience-list">
             {report.byDay.slice(-14).map((d) => <li key={d.day}><span>{d.day}</span><b>{fr(d.orders)} commande{d.orders > 1 ? 's' : ''} · {euros(d.revenue)}</b></li>)}
-            {!report.byDay.length && <li><span>Aucune commande approuvée.</span></li>}
-          </ul>
+          </ul> : vide('Aucune commande payée sur la période.')}
           <h3>Clients fidèles</h3>
           <p className="commerce-caption">{fr(t.repeatClients)} client{t.repeatClients > 1 ? 's ont' : ' a'} commandé plus d’une fois. {fr(t.declined)} essai{t.declined > 1 ? 's' : ''} refusé{t.declined > 1 ? 's' : ''} sur {fr(t.orders)}.</p>
         </section>
@@ -141,14 +142,14 @@ export function Clients() {
             <tbody>
               {clients.map((c) => (
                 <tr key={c.email}>
-                  <td><strong>{c.name}</strong><br /><small>{c.sources.map((s) => (s === 'payplug' ? 'PayPlug test' : 'essai')).join(', ')}</small></td>
+                  <td><strong>{c.name}</strong><br /><small>{c.sources.map((s) => (s === 'payplug' ? 'vente' : 'essai')).join(', ')}</small></td>
                   <td><a href={`mailto:${c.email}`}>{c.email}</a>{c.phone && <><br /><a href={`tel:${c.phone}`}>{c.phone}</a></>}{c.address && <><br /><small>{c.address}</small></>}</td>
                   <td>{c.optin ? 'oui' : 'non'}</td>
                   <td>{fr(c.approved)}{c.declined ? ` (+${c.declined} refusée${c.declined > 1 ? 's' : ''})` : ''}</td>
                   <td>{euros(c.total)}</td>
                   <td>{when(c.last)}</td>
                   <td className="clients-items">{c.items.slice(0, 4).join(' · ')}{c.items.length > 4 ? ` · +${c.items.length - 4}` : ''}</td>
-                  <td><button type="button" className="text-button clients-erase" onClick={() => void anonymise(c.email)}>Effacer</button></td>
+                  <td>{c.email.endsWith('@anonymise.invalid') ? <small>effacé</small> : <button type="button" className="text-button clients-erase" onClick={() => void anonymise(c.email)}>Effacer</button>}</td>
                 </tr>
               ))}
               {!clients.length && <tr><td colSpan={8}>Aucun client sur la période.</td></tr>}
@@ -158,12 +159,16 @@ export function Clients() {
       </section>
       <section className="audience-block">
         <h3>Dernières commandes</h3>
-        <ul className="audience-list">
+        {report.recent.length ? <ul className="audience-list recent-orders">
           {report.recent.filter((o) => !q || `${o.name} ${o.email} ${o.items.join(' ')}`.toLocaleLowerCase('fr').includes(q)).slice(0, 20).map((o) => (
-            <li key={o.id}><span>{when(o.createdAt)} · {o.name} · {o.items.join(', ')}</span><b>{euros(o.total)} · {STATUS[o.status] || o.status}</b></li>
+            <li key={o.id}>
+              <time dateTime={o.createdAt}>{when(o.createdAt)}</time>
+              <span className="recent-what"><strong>{o.name}</strong>{o.items.join(' · ')}</span>
+              <b>{euros(o.total)}</b>
+              <em className={'order-status order-status--' + genre(o.status)}>{STATUS[o.status] || o.status}</em>
+            </li>
           ))}
-          {!report.recent.length && <li><span>Aucune commande sur la période.</span></li>}
-        </ul>
+        </ul> : vide('Aucune commande sur la période.')}
       </section>
     </div>
   );
