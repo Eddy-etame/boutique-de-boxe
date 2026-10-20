@@ -7,6 +7,7 @@ import { readFileSync, statSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
+import vm from 'node:vm';
 
 globalThis.fetch = async () => {
   throw new Error('AUCUN APPEL RÉSEAU DANS CES TESTS');
@@ -28,11 +29,11 @@ function charger(chemin) {
   });
   if (!fichier) throw new Error('module introuvable : ' + chemin);
   if (modules.has(fichier)) return modules.get(fichier).exports;
-  const module = { exports: {} };
-  modules.set(fichier, module);
+  const mod = { exports: {} };
+  modules.set(fichier, mod);
   if (fichier.endsWith('.json')) {
-    module.exports = JSON.parse(readFileSync(fichier, 'utf8'));
-    return module.exports;
+    mod.exports = JSON.parse(readFileSync(fichier, 'utf8'));
+    return mod.exports;
   }
   const code = ts.transpileModule(readFileSync(fichier, 'utf8'), {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true, resolveJsonModule: true },
@@ -42,8 +43,8 @@ function charger(chemin) {
     if (id.startsWith('.')) return charger(resolve(dirname(fichier), id));
     return requireNode(id);
   };
-  new Function('exports', 'require', 'module', code)(module.exports, requireLocal, module);
-  return module.exports;
+  vm.compileFunction(code, ['exports', 'require', 'module'], { filename: fichier })(mod.exports, requireLocal, mod);
+  return mod.exports;
 }
 
 const notes = charger(resolve(root, 'lib/notes'));
@@ -155,7 +156,7 @@ test('validation : un modèle du catalogue et un entier de 1 à 5, rien d’autr
   assert.deepEqual(notes.lireDemandeNote({ produit: 'mat-blade-gold', etoiles: 4 }, existe), { produit: 'mat-blade-gold', etoiles: 4 });
   for (const etoiles of [1, 5]) assert.equal(notes.lireDemandeNote({ produit: 'bs-9068', etoiles }, existe).etoiles, etoiles);
   for (const etoiles of [0, 6, -1, 2.5, '4', null, undefined, NaN, Infinity, true, [4], { n: 4 }])
-    assert.equal(notes.lireDemandeNote({ produit: 'mat-blade-gold', etoiles }, existe).statut, 400, 'refusé : ' + String(etoiles));
+    assert.equal(notes.lireDemandeNote({ produit: 'mat-blade-gold', etoiles }, existe).statut, 400, 'refusé : ' + typeof etoiles + ' ' + JSON.stringify(etoiles));
   for (const produit of ['inconnu', '', '../admin', 'a'.repeat(121), 42, null, undefined, '<script>'])
     assert.equal(notes.lireDemandeNote({ produit, etoiles: 3 }, existe).statut, 404, 'modèle refusé : ' + String(produit));
   for (const corps of [null, undefined, 'texte', 4, [1, 2], []]) assert.equal(notes.lireDemandeNote(corps, existe).statut, 400);
