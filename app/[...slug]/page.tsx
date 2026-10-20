@@ -146,8 +146,8 @@ export default async function Page({ params }: Props) {
         <div className="contact-layout">
           <aside>
             <span className="eyebrow">NOUS ÉCRIRE</span>
-            <a className="contact-email" href={'mailto:' + shop.email}>
-              {shop.email} ↗
+            <a className="contact-email" href="#formulaire">
+              {shop.email}
             </a>
             <p>
               {shop.ventesOuvertes ? 'Une question sur une commande : rappelez son numéro (BDB-…).' : `Les ventes ouvrent le ${shop.ouverture.long}.`}

@@ -596,7 +596,7 @@ export async function POST(
     return response(
       {
         error:
-          'L’enregistrement est temporairement indisponible. Vous pouvez nous écrire à boxingcenter31@gmail.com.',
+          'L’enregistrement est temporairement indisponible. Vous pouvez nous écrire à contact@boutique-de-boxe.com.',
       },
       503,
     );

@@ -128,6 +128,7 @@ export function ContactForm() {
 
   return (
     <form
+      id="formulaire"
       className="contact-form"
       method="post"
       action="/api/contact"
@@ -214,7 +215,7 @@ export function Unsubscribe({ token, all = false }: { token: string; all?: boole
           setStatus(
             r.ok
               ? 'Cette inscription a été supprimée.'
-              : 'Le lien est invalide ou le service est indisponible. Contactez boxingcenter31@gmail.com.',
+              : 'Le lien est invalide ou le service est indisponible. Contactez contact@boutique-de-boxe.com.',
           );
         }}
       >

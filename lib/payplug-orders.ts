@@ -925,7 +925,7 @@ export async function notifyPaid(id: string) {
     try {
       if (!mailerConfigured()) throw new Error('Aucun service d’envoi configuré (RESEND_API_KEY).');
       if (!a.shop_sent_at) {
-        const shopTo = (process.env.ADMIN_EMAIL || '').trim() || shop.email;
+        const shopTo = (process.env.ADMIN_EMAIL || '').trim() || shop.emailInterne;
         // Deux commandes payées pour un même panier : signalées à la boutique (remboursement à étudier).
         const twins = await database
           .prepare("SELECT id FROM payment_attempts WHERE cart_id=? AND status='paid' AND id<>?")

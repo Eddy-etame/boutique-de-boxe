@@ -38,7 +38,7 @@ export function mailAccounts(env: NodeJS.ProcessEnv = process.env): MailAccount[
       quota: Number(env.RESEND_DAILY_QUOTA || 80),
       key,
       from: nu(env.MAIL_FROM) || RESEND_SENDER,
-      replyTo: nu(env.MAIL_REPLY_TO) || shop.email,
+      replyTo: nu(env.MAIL_REPLY_TO) || shop.emailInterne,
       api: nu(env.RESEND_API_URL) || 'https://api.resend.com/emails',
     });
   const host = env.SMTP_HOST || 'smtp-relay.brevo.com';

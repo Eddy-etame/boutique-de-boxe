@@ -246,8 +246,8 @@ export function Footer() {
           <a href="/contact/">Nous contacter</a>{' '}
           <a href="/a-propos/">À propos</a>{' '}
           <a href="/offres-de-lancement/">Ouverture de la boutique</a>{' '}
-          <a href="mailto:boxingcenter31@gmail.com" className="footer-contact">
-            Nous écrire <ArrowUpRight size={14} aria-hidden="true" />
+          <a href="/contact/#formulaire" className="footer-contact">
+            {shop.email} <ArrowUpRight size={14} aria-hidden="true" />
           </a>
         </nav>
       </div>

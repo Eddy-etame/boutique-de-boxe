@@ -42,7 +42,7 @@ export const services: Record<string, Service> = {
       { question: 'Y a-t-il du matériel pour les enfants ?', answer: 'Oui : gants du 4 au 8 oz, protège-dents et casques enfant, packs de démarrage, kimonos M0 à M4. Chaque fiche indique si le modèle est prévu pour un enfant.' },
       { question: 'Équipez-vous les clubs, les coachs et les salles ?', answer: 'Oui. Pour un équipement de club ou une commande groupée, écrivez-nous via la page contact avec les quantités et les tailles : nous répondons par e-mail avec une proposition.' },
       { question: 'Que faites-vous de mes données ?', answer: 'Vos coordonnées servent à traiter et livrer votre commande, et, si vous l’acceptez, à vous écrire. La mesure d’audience n’est activée qu’avec votre accord, sans outil tiers. La politique de confidentialité détaille durées et droits, dont l’effacement.' },
-      { question: 'Comment vous joindre ?', answer: 'Par la page contact, ou par e-mail à boxingcenter31@gmail.com, en rappelant le numéro de commande (BDB-…) s’il y en a un. Nous répondons par e-mail, en général sous un jour ouvré.' },
+      { question: 'Comment vous joindre ?', answer: 'Par la page contact, ou par e-mail à contact@boutique-de-boxe.com, en rappelant le numéro de commande (BDB-…) s’il y en a un. Nous répondons par e-mail, en général sous un jour ouvré.' },
     ],
   },
   livraison: {
@@ -98,7 +98,7 @@ export const services: Record<string, Service> = {
       {
         title: 'Quatorze jours pour changer d’avis.',
         paragraphs: [
-          'Vous disposez de quatorze jours à compter de la réception de la commande pour vous rétracter, sans donner de motif. Prévenez-nous par e-mail à boxingcenter31@gmail.com, avec le numéro de commande, ou en renvoyant le formulaire de rétractation joint à l’e-mail de confirmation et reproduit dans les conditions générales de vente.',
+          'Vous disposez de quatorze jours à compter de la réception de la commande pour vous rétracter, sans donner de motif. Prévenez-nous par e-mail à contact@boutique-de-boxe.com, avec le numéro de commande, ou en renvoyant le formulaire de rétractation joint à l’e-mail de confirmation et reproduit dans les conditions générales de vente.',
         ],
       },
       {
@@ -155,7 +155,7 @@ export const services: Record<string, Service> = {
       {
         title: 'Nous joindre',
         paragraphs: [
-          'Par la page contact, par e-mail à boxingcenter31@gmail.com ou par téléphone au 09 54 14 74 72. La réponse arrive par e-mail, en général sous un jour ouvré.',
+          'Par la page contact, par e-mail à contact@boutique-de-boxe.com ou par téléphone au 09 54 14 74 72. La réponse arrive par e-mail, en général sous un jour ouvré.',
         ],
       },
     ],
@@ -175,7 +175,7 @@ export const services: Record<string, Service> = {
       {
         title: 'Publication et contact',
         paragraphs: [
-          'Directeur de la publication : Sébastien DUTILH. Courriel : boxingcenter31@gmail.com. Téléphone : 09 54 14 74 72. Boutique de Boxe est une boutique en ligne nationale de matériel de sports de combat, éditée par la SAS BOXING CENTER.',
+          'Directeur de la publication : Sébastien DUTILH. Courriel : contact@boutique-de-boxe.com. Téléphone : 09 54 14 74 72. Boutique de Boxe est une boutique en ligne nationale de matériel de sports de combat, éditée par la SAS BOXING CENTER.',
         ],
       },
       {
@@ -213,7 +213,7 @@ export const services: Record<string, Service> = {
       {
         title: '2. Le vendeur',
         paragraphs: [
-          'SAS BOXING CENTER, au capital de 1 500 €, siège social 12 rue de Fenouillet, 31200 Toulouse, immatriculée au RCS de Toulouse sous le numéro 821 817 889 (SIRET 821 817 889 00016). Boutique de Boxe est sa boutique en ligne. Contact : boxingcenter31@gmail.com, 09 54 14 74 72.',
+          'SAS BOXING CENTER, au capital de 1 500 €, siège social 12 rue de Fenouillet, 31200 Toulouse, immatriculée au RCS de Toulouse sous le numéro 821 817 889 (SIRET 821 817 889 00016). Boutique de Boxe est sa boutique en ligne. Contact : contact@boutique-de-boxe.com, 09 54 14 74 72.',
         ],
       },
       {
@@ -258,11 +258,11 @@ export const services: Record<string, Service> = {
       {
         title: '9. Le droit de rétractation',
         paragraphs: [
-          'Le client dispose de quatorze jours à compter de la réception des produits pour se rétracter, sans avoir à motiver sa décision. Il notifie sa décision par une déclaration dénuée d’ambiguïté, par e-mail à boxingcenter31@gmail.com ou au moyen du formulaire ci-dessous.',
+          'Le client dispose de quatorze jours à compter de la réception des produits pour se rétracter, sans avoir à motiver sa décision. Il notifie sa décision par une déclaration dénuée d’ambiguïté, par e-mail à contact@boutique-de-boxe.com ou au moyen du formulaire ci-dessous.',
           'Le client renvoie les produits sans retard excessif et au plus tard quatorze jours après sa notification, à ses frais, à l’adresse indiquée par le vendeur. Il peut les essayer comme en magasin ; sa responsabilité n’est engagée qu’en cas de dépréciation résultant de manipulations autres que celles nécessaires pour établir la nature, les caractéristiques et le bon fonctionnement des produits.',
           'Le vendeur rembourse la totalité des sommes versées, frais de livraison initiaux compris (à hauteur du tarif standard), au plus tard quatorze jours après la notification, par le même moyen de paiement. Il peut différer le remboursement jusqu’à la récupération des produits ou la preuve de leur expédition.',
           'Conformément à l’article L. 221-28 du Code de la consommation, le droit de rétractation ne peut être exercé pour les biens descellés par le client après la livraison et qui ne peuvent être renvoyés pour des raisons d’hygiène ou de protection de la santé, tels qu’un protège-dents ou une coquille dont l’emballage scellé a été ouvert.',
-          'Formulaire de rétractation (à compléter et renvoyer uniquement si vous souhaitez vous rétracter) — À l’attention de SAS BOXING CENTER, Boutique de Boxe, 12 rue de Fenouillet, 31200 Toulouse, boxingcenter31@gmail.com : Je vous notifie par la présente ma rétractation du contrat portant sur la vente du bien ci-dessous. Commandé le / reçu le. Numéro de commande. Nom du consommateur. Adresse du consommateur. Signature du consommateur (uniquement en cas de notification sur papier). Date.',
+          'Formulaire de rétractation (à compléter et renvoyer uniquement si vous souhaitez vous rétracter) — À l’attention de SAS BOXING CENTER, Boutique de Boxe, 12 rue de Fenouillet, 31200 Toulouse, contact@boutique-de-boxe.com : Je vous notifie par la présente ma rétractation du contrat portant sur la vente du bien ci-dessous. Commandé le / reçu le. Numéro de commande. Nom du consommateur. Adresse du consommateur. Signature du consommateur (uniquement en cas de notification sur papier). Date.',
         ],
       },
       {
@@ -275,7 +275,7 @@ export const services: Record<string, Service> = {
       {
         title: '11. Réclamations et médiation',
         paragraphs: [
-          'Toute réclamation s’adresse au service client : boxingcenter31@gmail.com ou 09 54 14 74 72, en rappelant le numéro de commande. Une réponse est apportée par e-mail sous quinze jours au plus.',
+          'Toute réclamation s’adresse au service client : contact@boutique-de-boxe.com ou 09 54 14 74 72, en rappelant le numéro de commande. Une réponse est apportée par e-mail sous quinze jours au plus.',
           'Conformément aux articles L. 611-1 et suivants du Code de la consommation, le client peut recourir gratuitement à un médiateur de la consommation après une réclamation écrite restée sans solution. Le nom et les coordonnées du médiateur dont relève Boutique de Boxe sont en cours de désignation et seront indiqués dans cet article ; le client peut dans l’intervalle les demander au service client.',
         ],
       },
@@ -304,7 +304,7 @@ export const services: Record<string, Service> = {
       {
         title: 'Qui traite vos données ?',
         paragraphs: [
-          'SAS BOXING CENTER, 12 rue de Fenouillet, 31200 Toulouse, est responsable des traitements du site. Pour toute demande concernant vos données : boxingcenter31@gmail.com, à l’attention de Sébastien DUTILH.',
+          'SAS BOXING CENTER, 12 rue de Fenouillet, 31200 Toulouse, est responsable des traitements du site. Pour toute demande concernant vos données : contact@boutique-de-boxe.com, à l’attention de Sébastien DUTILH.',
         ],
       },
       {
@@ -343,7 +343,7 @@ export const services: Record<string, Service> = {
       {
         title: 'Exercer vos droits',
         paragraphs: [
-          'Vous pouvez demander l’accès, la rectification ou la suppression de vos données, ainsi que le retrait de votre consentement aux alertes, en écrivant à boxingcenter31@gmail.com. Selon la situation, vous disposez aussi de droits à la limitation, à l’opposition et à la portabilité. Chaque message d’alerte devra comporter un lien de désinscription. Vous pouvez adresser une réclamation à la CNIL : cnil.fr.',
+          'Vous pouvez demander l’accès, la rectification ou la suppression de vos données, ainsi que le retrait de votre consentement aux alertes, en écrivant à contact@boutique-de-boxe.com. Selon la situation, vous disposez aussi de droits à la limitation, à l’opposition et à la portabilité. Chaque message d’alerte devra comporter un lien de désinscription. Vous pouvez adresser une réclamation à la CNIL : cnil.fr.',
         ],
       },
     ],

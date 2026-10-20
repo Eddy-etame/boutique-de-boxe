@@ -55,7 +55,10 @@ export const shop = {
   // Ni un aperçu ni une variable d’environnement périmée ne changent les canonicals (le .fr du 16 était une erreur).
   origin: 'https://www.boutique-de-boxe.com',
   intendedDomain: 'https://www.boutique-de-boxe.com',
-  email: 'boxingcenter31@gmail.com',
+  /** Adresse affichée partout : elle mène au formulaire (relayé par Inlett), jamais à un mailto. */
+  email: 'contact@boutique-de-boxe.com',
+  /** Boîte qui reçoit vraiment (notifications, réponses) : jamais affichée. */
+  emailInterne: 'boxingcenter31@gmail.com',
   phone: '09 54 14 74 72',
   entity: 'SAS BOXING CENTER',
   siren: '821 817 889',

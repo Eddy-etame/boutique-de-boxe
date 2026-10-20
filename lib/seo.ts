@@ -21,8 +21,9 @@ import { photoSrc } from './vignette';
 export const EDITORIAL_DATE = '2026-10-13';
 /** Dernière révision du gabarit des fiches et des pages de catalogue (texte visible changé partout) :
  *  3 octobre 2026 (place dans la famille, questions), 4 octobre (date d’ouverture des ventes),
- *  13 octobre (ventes ouvertes : offre, prix de vente, disponibilité, livraison au présent). */
-export const CATALOGUE_REVISION = '2026-10-13';
+ *  13 octobre (ventes ouvertes : offre, prix de vente, disponibilité, livraison au présent),
+ *  20 octobre (fiches réécrites une à une, rayons corrigés, livraison à une seule source, adresse de contact). */
+export const CATALOGUE_REVISION = '2026-10-20';
 
 /* ------------------------------------------------------------- titres courts */
 

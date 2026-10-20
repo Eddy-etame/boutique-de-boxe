@@ -169,7 +169,7 @@ export async function sendReceipt(order: Order) {
         to: [order.email],
         subject: `[Simulation] Votre reçu Boutique de Boxe · ${order.id.slice(0, 8)}`,
         html: receiptHtml(order),
-        reply_to: shop.email,
+        reply_to: shop.emailInterne,
       }),
     });
     if (result.ok) {
