@@ -101,6 +101,27 @@
   outline: 3px solid var(--blue);
   outline-offset: -3px;
 }
+/* Navigateur sans :has() : l'anneau de focus se pose sur l'étoile elle-même. */
+@supports not selector(:has(*)) {
+  .note-etoile input:focus-visible ~ .note-impact {
+    outline: 3px solid var(--blue);
+    outline-offset: 5px;
+  }
+}
+/* Contraste élevé de Windows : les étoiles prennent les couleurs du système, vides ou pleines. */
+@media (forced-colors: active) {
+  .note-etoile svg {
+    stroke: CanvasText;
+  }
+  .note-etoile[data-pleine] svg,
+  .note-etoile[data-apercu] svg {
+    fill: Highlight;
+    stroke: Highlight;
+  }
+  .note-resume-etoile {
+    fill: CanvasText;
+  }
+}
 .note-impact {
   position: relative;
   isolation: isolate;
