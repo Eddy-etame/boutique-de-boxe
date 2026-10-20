@@ -102,9 +102,22 @@
   outline-offset: -3px;
 }
 .note-impact {
+  position: relative;
+  isolation: isolate;
   display: grid;
   place-items: center;
   pointer-events: none;
+}
+/* Derrière chaque étoile qui encaisse, un éclat de « tape », le surligneur du site. */
+.note-impact::before {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  background: var(--tape, #dded76);
+  opacity: 0;
+  transform: scale(0.3);
+  z-index: -1;
 }
 .note-etoile svg {
   width: 28px;
@@ -124,7 +137,7 @@
 .note-etoile[data-pleine] svg {
   fill: var(--ink);
 }
-/* L'aperçu sous la souris : les étoiles jusqu'à celle visée, en bleu, avant le clic. */
+/* L'aperçu sous la souris : les étoiles jusqu'à celle visée, dans l'accent du site, avant le clic. */
 .note-etoile[data-apercu] {
   color: var(--blue);
 }
@@ -139,6 +152,23 @@
 .note-widget[data-etat='merci'] .note-etoile[data-pleine] .note-impact {
   animation: note-coup 0.48s cubic-bezier(0.2, 0.9, 0.3, 1.4) both;
   animation-delay: calc((var(--i) - 1) * 45ms);
+}
+.note-widget[data-etat='merci'] .note-etoile[data-pleine] .note-impact::before {
+  animation: note-eclat 0.6s ease-out both;
+  animation-delay: calc((var(--i) - 1) * 45ms);
+}
+@keyframes note-eclat {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  30% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.15);
+  }
 }
 @keyframes note-coup {
   0% {
@@ -204,6 +234,25 @@
 .note-legal a:hover span {
   color: var(--blue);
   text-decoration-color: currentColor;
+}
+
+/* Sur un écran large, le retour se lit à droite des étoiles, dans la hauteur de la rangée : rien ne pousse
+   la mention qui suit. */
+@media (min-width: 541px) {
+  .note-widget {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: end;
+    column-gap: 16px;
+  }
+  .note-retour {
+    min-height: 44px;
+    margin: 0;
+    align-content: center;
+  }
+  .note-legal {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (max-width: 540px) {
