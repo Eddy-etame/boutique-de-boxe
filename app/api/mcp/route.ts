@@ -1,6 +1,6 @@
 import { db, readCatalog } from '@/lib/database';
 import { clientIp } from '@/lib/request';
-import { categoryFor, estLourd, money, shop, type Product } from '@/lib/catalog';
+import { categoryFor, estLourd, livraison, money, shop, type Product } from '@/lib/catalog';
 import { matchesSearch } from '@/lib/catalog-tools';
 import { guides, services } from '@/lib/editorial';
 import { ATTRIBUTION, EDITORIAL_DATE, familiesWithCounts, urlOf } from '@/lib/seo';
@@ -35,7 +35,7 @@ const shopInfo = () => ({
   deliveryArea: 'France',
   editorialDate: EDITORIAL_DATE,
   status: 'Ventes ouvertes depuis le 13 octobre 2026. Prix de vente TTC, hors livraison. Paiement par carte sur la page sécurisée de PayPlug. Disponibilité sur commande, expédition sous 7 jours ouvrés. Matériel lourd sur devis.',
-  delivery: 'Point relais 6,90 € (offert dès 69 €), domicile 8,90 €, matériel lourd sur devis. France continentale ; Corse et outre-mer sur demande.',
+  delivery: `Point relais ${livraison.relais} (offert dès ${livraison.franco}), domicile ${livraison.domicile}, matériel lourd sur devis. ${livraison.zone} ; Corse et outre-mer sur demande.`,
   notPublished: ['stocks en temps réel', 'remises', 'avis clients', 'profils sociaux'],
   representationNotice: 'Boutique de Boxe est une boutique en ligne indépendante. Ce n’est ni un club ni une salle de sport.',
 });

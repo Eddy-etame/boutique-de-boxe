@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState, type SyntheticEvent } from 'react';
-import { money } from '@/lib/catalog';
+import { fraisDeLivraison, money } from '@/lib/catalog';
 
 type Line = { name: string; variant: string; quantity: number; price: number };
 type Customer = {
@@ -101,7 +101,7 @@ export function PayplugSettings() {
     const body = retryBody || {
       requestKey: crypto.randomUUID(),
       testConsent: f.get('consent') === 'on',
-      quotedTotal: cart.subtotal + 890,
+      quotedTotal: cart.subtotal + fraisDeLivraison('home', cart.subtotal),
       quotedRevision: cart.revision,
       billing: {
         first_name: f.get('first_name'),
@@ -319,7 +319,7 @@ export function PayplugSettings() {
               <form onSubmit={create}>
                 <p>
                   <strong>
-                    {cart.items.length} ligne(s) · {money(cart.subtotal + 890)}{' '}
+                    {cart.items.length} ligne(s) · {money(cart.subtotal + fraisDeLivraison('home', cart.subtotal))}{' '}
                     de test
                   </strong>
                   <br />
@@ -363,7 +363,7 @@ export function PayplugSettings() {
                     busy ||
                     Boolean(attempt) ||
                     !cart.items.length ||
-                    cart.subtotal + 890 > 2000000
+                    cart.subtotal + fraisDeLivraison('home', cart.subtotal) > 2000000
                   }
                 >
                   {busy

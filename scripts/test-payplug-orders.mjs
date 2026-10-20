@@ -651,7 +651,10 @@ function settingsHarness(
       if (specifier === 'react/jsx-runtime')
         return { jsx, jsxs: jsx, Fragment: 'fragment' };
       if (specifier === '@/lib/catalog')
-        return { money: (cents) => `${cents / 100} EUR` };
+        return {
+          money: (cents) => `${cents / 100} EUR`,
+          fraisDeLivraison: (delivery, subtotal) => (delivery === 'home' ? 890 : subtotal >= 6900 ? 0 : 690),
+        };
       throw new Error(`Unmocked UI dependency: ${specifier}`);
     },
     async fetch(url, options = {}) {
