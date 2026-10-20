@@ -287,8 +287,20 @@
   margin: 0;
   font-size: 14px;
 }
+/* Le sélecteur segmenté du site est dessiné pour un fond sombre : ici, sur le fond clair de l'atelier. */
 .notes-atelier-tete .segmented {
   margin: 0;
+  border-color: var(--line);
+}
+.notes-atelier-tete .segmented button {
+  color: var(--muted);
+}
+.notes-atelier-tete .segmented button:hover {
+  color: var(--ink);
+}
+.notes-atelier-tete .segmented button[aria-pressed='true'] {
+  background: var(--ink);
+  color: var(--paper);
 }
 .notes-atelier-statut {
   margin-top: 14px;
