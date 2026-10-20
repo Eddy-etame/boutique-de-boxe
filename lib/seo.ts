@@ -16,6 +16,7 @@ import { SEO_COPY, type SeoFaq } from './seo-copy';
 import type { Subfamily } from './subfamilies';
 import { PAGE_SIZE } from './pagination';
 import { photoSrc } from './vignette';
+import { noteStructuree, type Moyenne } from './notes';
 
 /** Date de la dernière révision éditoriale, publiée dans les fichiers agents et les pages. */
 export const EDITORIAL_DATE = '2026-10-13';
@@ -419,7 +420,7 @@ export function variantesPubliables(p: Product) {
 }
 
 /** Fiche produit : WebPage (ItemPage), Product (ou ProductGroup des tailles), modèles proches, fil d’Ariane. */
-export function productGraph(p: Product, related: Product[], opts: { description?: string; faq?: SeoFaq[] } = {}) {
+export function productGraph(p: Product, related: Product[], opts: { description?: string; faq?: SeoFaq[]; note?: Moyenne | null } = {}) {
   const path = '/produits/' + p.slug + '/';
   const family = categoryFor(p.category);
   const core = productCore(p);
@@ -457,6 +458,10 @@ export function productGraph(p: Product, related: Product[], opts: { description
       })),
     };
   }
+  // Les notes des visiteurs : sur le nœud de la fiche (Product, ou ProductGroup avec les tailles), dès
+  // qu'une note visible existe ; jamais de note par défaut ni importée (lib/notes.ts).
+  const aggregateRating = noteStructuree(opts.note);
+  if (aggregateRating) product = { ...product, aggregateRating };
   return graph([
     webPageNode({ path, name: p.name, description: p.short, type: 'ItemPage', image: photoSrc(p.slug, p.images[0], 1200), dateModified: [EDITORIAL_DATE, CATALOGUE_REVISION, p.updatedAt || p.dateAdded || EDITORIAL_DATE].sort().at(-1)!.slice(0, 10), about: family ? (CATEGORY_ENTITY[family.slug] || []).map(thing) : [], keywords: productKeywords(p), mainEntity: product['@id'] }),
     product,

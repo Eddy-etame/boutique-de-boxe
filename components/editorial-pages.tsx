@@ -275,7 +275,7 @@ export function ServicePage({
         </aside>
         <div>
           {s.sections.map((section) => (
-            <section key={section.title}>
+            <section key={section.title} id={section.id}>
               <h2>{section.title}</h2>
               {section.paragraphs.map((p) => (
                 <p key={p}>{p}</p>

@@ -13,7 +13,8 @@ export type Service = {
   title: string;
   description: string;
   eyebrow: string;
-  sections: { title: string; paragraphs: string[] }[];
+  /** `id` : l'ancre d'une section vers laquelle d'autres pages renvoient (la modération des notes). */
+  sections: { id?: string; title: string; paragraphs: string[] }[];
   /** Questions visibles en bas de page, publiées en FAQPage pour les moteurs et les assistants. */
   faq?: { question: string; answer: string }[];
 };
@@ -29,6 +30,19 @@ export const services: Record<string, Service> = {
           'Les ventes de Boutique de Boxe sont ouvertes depuis le 13 octobre 2026 : le catalogue est complet, avec les tailles réelles et les prix TTC, et le panier se paie par carte. Voici les réponses aux questions que vous nous posez le plus, par e-mail comme en salle.',
         ],
       },
+      {
+        // Information sur les avis en ligne (Code de la consommation, art. L111-7-2 et D111-16 et suivants) :
+        // chaque affichage des notes sur une fiche renvoie ici. À tenir conforme à lib/notes*.ts.
+        id: 'notes-des-produits',
+        title: 'Les notes des produits : qui note, comment elles sont modérées.',
+        paragraphs: [
+          'Sur chaque fiche, tout visiteur peut noter le modèle de une à cinq étoiles, sans compte et sans écrire de texte. Ces notes ne font l’objet d’aucune vérification d’achat : ce sont des notes de visiteurs, qui n’ont pas forcément acheté ni utilisé le produit.',
+          'Une note par appareil et par modèle : noter de nouveau le même modèle depuis le même appareil remplace la note précédente, sans en ajouter une. Aucune contrepartie n’est offerte en échange d’une note, ni remise, ni cadeau, ni participation à un jeu.',
+          'La note affichée est la moyenne simple de toutes les notes visibles du modèle, arrondie au dixième, avec leur nombre. Une note est publiée dès qu’elle est donnée, et la moyenne de la fiche se met à jour en quelques minutes. La boutique n’ajoute, n’importe ni ne pondère aucune note.',
+          'Une note n’est retirée que si elle est frauduleuse : envoyée par un robot, en double (plusieurs notes d’une même personne sur un même modèle) ou manifestement abusive. Jamais parce qu’elle est basse. Chaque retrait est enregistré avec son motif et sa date, et une note retirée par erreur est rétablie.',
+          'Pour appliquer la règle d’une note par appareil, la boutique pose au moment où vous notez un cookie technique de treize mois, et ne conserve de votre adresse réseau qu’une empreinte chiffrée, jamais l’adresse elle-même. Une question sur une note : écrivez-nous depuis la page contact.',
+        ],
+      },
     ],
     faq: [
       { question: 'Peut-on commander en ligne ?', answer: 'Oui, depuis le 13 octobre 2026. Choisissez vos modèles et vos tailles, indiquez la livraison, acceptez les conditions générales de vente, puis payez par carte sur la page sécurisée de PayPlug. Un e-mail confirme la commande.' },
@@ -41,6 +55,7 @@ export const services: Record<string, Service> = {
       { question: 'Quelles marques trouve-t-on ?', answer: 'Metal Boxe, Elion, Fairtex, Twins, Cleto Reyes, Adidas, Everlast, Venum, Manto, Athena Fightwear, Century, Shock Doctor, Under Armour, entre autres, chacune avec ses références fabricant.' },
       { question: 'Y a-t-il du matériel pour les enfants ?', answer: 'Oui : gants du 4 au 8 oz, protège-dents et casques enfant, packs de démarrage, kimonos M0 à M4. Chaque fiche indique si le modèle est prévu pour un enfant.' },
       { question: 'Équipez-vous les clubs, les coachs et les salles ?', answer: 'Oui. Pour un équipement de club ou une commande groupée, écrivez-nous via la page contact avec les quantités et les tailles : nous répondons par e-mail avec une proposition.' },
+      { question: 'Qui note les produits, et comment ces notes sont-elles modérées ?', answer: 'Tout visiteur peut noter un modèle de une à cinq étoiles, sans compte, sans texte et sans vérification d’achat, une fois par appareil ; noter de nouveau remplace sa note. La moyenne affichée est la moyenne simple des notes visibles. Aucune contrepartie n’est offerte, et une note n’est retirée que si elle est frauduleuse (robot, doublon, abus manifeste), jamais parce qu’elle est basse.' },
       { question: 'Que faites-vous de mes données ?', answer: 'Vos coordonnées servent à traiter et livrer votre commande, et, si vous l’acceptez, à vous écrire. La mesure d’audience n’est activée qu’avec votre accord, sans outil tiers. La politique de confidentialité détaille durées et droits, dont l’effacement.' },
       { question: 'Comment vous joindre ?', answer: 'Par la page contact, ou par e-mail à contact@boutique-de-boxe.com, en rappelant le numéro de commande (BDB-…) s’il y en a un. Nous répondons par e-mail, en général sous un jour ouvré.' },
     ],
@@ -332,6 +347,12 @@ export const services: Record<string, Service> = {
           'Le panier utilise un cookie technique de 30 jours. Il contient un identifiant aléatoire ; les produits et quantités sont conservés côté serveur. La préparation de séance mémorise uniquement vos choix dans l’onglet en cours.',
           'Avant le 13 octobre 2026, date d’ouverture des ventes, la boutique a enregistré des choix de panier (prénom, e-mail, modèles, montant, et parfois mobile et code postal) pour prévenir de cette ouverture. Cette finalité est échue : ces données ne servent à aucun autre envoi et sont supprimées sur simple demande ou par le lien de désinscription de chaque message. Aucun numéro de carte n’a été collecté.',
           'Le formulaire de contact peut transmettre votre demande à Inlett après son enregistrement dans la boutique. Une demande enregistrée ou acceptée par un prestataire d’envoi ne garantit pas la livraison de l’e-mail.',
+        ],
+      },
+      {
+        title: 'Notes des produits',
+        paragraphs: [
+          'Quand vous notez un modèle, la boutique enregistre la note, sa date, une empreinte chiffrée de votre adresse réseau et celle d’un identifiant d’appareil, conservé dans un cookie technique de treize mois posé à ce moment-là. Ni l’adresse ni l’identifiant ne sont gardés en clair. Ces empreintes servent uniquement à n’accepter qu’une note par appareil et à écarter les robots et les doublons, sur la base de l’intérêt légitime de la boutique à publier des notes fiables. Les notes sont conservées tant qu’elles servent à la moyenne du modèle.',
         ],
       },
       {

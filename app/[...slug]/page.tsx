@@ -22,6 +22,7 @@ import {
   estLourd,
 } from '@/lib/catalog';
 import { readCatalog } from '@/lib/database';
+import { moyenneDuModele } from '@/lib/notes-stockage';
 import { guides, services } from '@/lib/editorial';
 import { Breadcrumb, ArrowLink } from '@/components/shop-shell';
 import {
@@ -208,6 +209,8 @@ export default async function Page({ params }: Props) {
     });
     // Trois niveaux quand la sous-famille existe : famille → sous-famille → modèle.
     const sub = subfamiliesOf(p.category).find((x) => x.match(p));
+    // Les notes des visiteurs (20/10/2026) : la moyenne visible, lue au rendu (ISR), jamais inventée.
+    const note = await moyenneDuModele(p.id);
     return (
       <main id="contenu" className="page-wrap">
         <Breadcrumb
@@ -218,7 +221,7 @@ export default async function Page({ params }: Props) {
           ]}
         />
         {seances.length > 0 && <SeanceContext seances={seances} />}
-        <ProductDetails product={p} />
+        <ProductDetails product={p} note={note} />
         <section className="spec-section">
           <div>
             <span className="eyebrow">LE MODÈLE</span>
@@ -326,7 +329,7 @@ export default async function Page({ params }: Props) {
             </div>
           </section>
         )}
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: productGraph(p, related, { description: longDescription(p), faq: productFaq(p, products) }) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: productGraph(p, related, { description: longDescription(p), faq: productFaq(p, products), note }) }} />
       </main>
     );
   }

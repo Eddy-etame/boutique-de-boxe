@@ -46,6 +46,8 @@ import { AddToCart, QuickAdd, PackAdd } from './cart-add';
 import selection from '@/lib/data/selection.json';
 import { spaced } from '@/lib/spaced';
 import { photoSrc, thumbSrc } from '@/lib/vignette';
+import type { Moyenne } from '@/lib/notes';
+import { NoteResume, NotezCeModele } from './note-produit';
 
 /** Marque inconnue de l’import (« à préciser ») : la carte n’affiche rien plutôt qu’un libellé de chantier. */
 const badBrand = (b: string) => !b || /pr[ée]ciser|^Sélection /i.test(b);
@@ -830,7 +832,8 @@ export function SessionChooser({ items }: { items: Product[] }) {
   );
 }
 
-export function ProductDetails({ product: p }: { product: Product }) {
+/** La fiche : galerie, achat et, depuis le 20/10/2026, les notes des visiteurs (`note` : la moyenne visible, rendue au serveur). */
+export function ProductDetails({ product: p, note = null }: { product: Product; note?: Moyenne | null }) {
   const [image, setImage] = useState(0);
   const [size, setSize] = useState(p.sizes.length === 1 ? p.sizes[0] : '');
   const [open, setOpen] = useState(false);
@@ -1008,6 +1011,7 @@ export function ProductDetails({ product: p }: { product: Product }) {
           </strong>
           <span>Prix TTC</span>
         </div>
+        <NoteResume produit={p.id} note={note} />
         <div className="availability">
           <span className="status-dot" />
           {shop.ventesOuvertes
@@ -1130,6 +1134,7 @@ export function ProductDetails({ product: p }: { product: Product }) {
             : 'Livraison en France : tarifs prévus à l’ouverture'}{' '}
           <ArrowUpRight size={15} />
         </a>
+        <NotezCeModele produit={p.id} note={note} />
       </div>
       <div
         className={stuck ? 'sticky-buy is-shown' : 'sticky-buy'}
