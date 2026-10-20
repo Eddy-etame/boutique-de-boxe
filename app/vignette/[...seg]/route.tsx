@@ -4,18 +4,19 @@ import path from 'node:path';
 import { readCatalog, cacheCatalogue } from '@/lib/database';
 import { shop } from '@/lib/catalog';
 import { cardFor, OG_HEIGHT, OG_WIDTH, type CardKind } from '@/lib/og';
-import { empreinte, THUMB_SIZE } from '@/lib/vignette';
+import { empreinte, photoDuFournisseur, photoSrc, PHOTO_WIDTHS, THUMB_SIZE, type PhotoWidth } from '@/lib/vignette';
 
 /**
  * Vignette sociale d’une page, rendue à la demande avec les polices du site.
  * /vignette/p/<slug>.png fiche · /vignette/c/<slug>.png famille ·
  * /vignette/s/<slug>.png sous-famille · /vignette/g/<slug>.png guide ·
  * /vignette/x/<page>.png accueil, guides, nouveautés, contact, services.
- * /vignette/t/<slug>/<rang>-<empreinte>.webp vignette 168 px d’une photo de galerie (lib/vignette.ts).
+ * /vignette/<largeur>/<slug>/<empreinte>.webp photo d’un fournisseur servie par le domaine, en WebP
+ * de 168, 480, 960 ou 1200 px (lib/vignette.ts) ; ancienne forme /vignette/t/<slug>/<rang>-<empreinte>.webp (168 px).
  *
  * Les vignettes sociales sont réencodées en PNG à palette (même dessin, nettement plus léger) ;
  * une photo est lue en 8 s et 15 Mo au plus (D31), sans cache de données de Next (qui la lirait en
- * entier pour la garder) ; au-delà, la vignette sociale part sans photo et la vignette de galerie
+ * entier pour la garder) ; au-delà, la vignette sociale part sans photo et la photo de galerie
  * renvoie vers la photo d’origine, sans cache. Bâtie sur le catalogue de secours (base injoignable),
  * une vignette sociale ne se garde qu’une minute (D30).
  */
@@ -45,6 +46,8 @@ const heroTitleSize = (t: string) => (t.length > 60 ? 44 : t.length > 42 ? 52 : 
 const titleSize = (t: string) => (t.length > 64 ? 46 : t.length > 44 ? 54 : t.length > 28 ? 62 : 72);
 
 type Sharp = {
+  /** sans argument : redresse la photo d’après son orientation EXIF (perdue au réencodage) */
+  rotate: () => Sharp;
   resize: (o: object) => Sharp;
   png: (o?: object) => Sharp;
   webp: (o?: object) => Sharp;
@@ -105,33 +108,56 @@ async function toPng(url: string): Promise<string | null> {
 }
 let lastPhotoError = '';
 
-/** Hôtes des photos de fournisseurs (les mêmes que la CSP `img-src`) : la vignette ne lit rien d’autre. */
-const PHOTO_HOSTS = new Set(['api.ecommercio.com', 'ypnjjowtudmpxoqopzta.supabase.co', 'media.cdnws.com']);
 const YEAR = 'public, max-age=31536000, s-maxage=31536000, immutable';
 const WEEK = 'public, max-age=86400, s-maxage=604800, stale-while-revalidate=2592000';
 /** Adresse inconnue : rien n’est gardé (le produit peut manquer au catalogue de secours, puis revenir). */
 const notFound = () => new Response('Not found', { status: 404, headers: { 'Cache-Control': 'no-store' } });
 
-/** /vignette/t/<slug>/<rang>-<empreinte>.webp : la photo n° rang de la fiche, réduite à 168 px. */
-async function thumbnail(seg: string[], origin: string) {
-  const m = seg.length === 3 ? /^(\d{1,2})-([0-9a-z]{6,8})\.webp$/.exec(seg[2]) : null;
-  if (!m || !/^[a-z0-9-]{1,200}$/.test(seg[1])) return notFound();
+/**
+ * Une photo de fiche servie par le domaine (lib/vignette.ts) :
+ * - /vignette/<largeur>/<slug>/<empreinte>.webp : la photo de la fiche dont l’adresse d’origine a
+ *   cette empreinte, quel que soit son rang, réduite à <largeur> (168, 480, 960 ou 1200 px) ;
+ * - /vignette/t/<slug>/<rang>-<empreinte>.webp : ancienne forme, la photo n° rang en 168 px.
+ * Lue chez le fournisseur en 8 s et 15 Mo au plus, réduite en WebP et gardée un an. Une photo déjà
+ * sur le domaine renvoie vers son fichier ; une photo remplacée (autre empreinte) n’a plus d’adresse.
+ */
+async function photo(seg: string[]) {
+  if (seg.length !== 3 || !/^[a-z0-9-]{1,200}$/.test(seg[1])) return notFound();
+  let width: PhotoWidth = THUMB_SIZE;
+  let hash = '';
+  let rank = -1;
+  if (seg[0] === 't') {
+    const m = /^(\d{1,2})-([0-9a-z]{6,8})\.webp$/.exec(seg[2]);
+    if (!m) return notFound();
+    rank = Number(m[1]);
+    hash = m[2];
+  } else {
+    const m = /^([0-9a-z]{6,8})\.webp$/.exec(seg[2]);
+    width = Number(seg[0]) as PhotoWidth;
+    if (!m || !PHOTO_WIDTHS.includes(width)) return notFound();
+    hash = m[1];
+  }
   const p = (await readCatalog()).find((x) => x.slug === seg[1]);
-  const image = p?.images[Number(m[1])];
+  const image = rank >= 0 ? p?.images[rank] : p?.images.find((i) => empreinte(i.src) === hash);
   // Une photo remplacée change d’empreinte : l’ancienne adresse ne sert plus d’image.
-  if (!p || !image || empreinte(image.src) !== m[2]) return notFound();
-  const source = image.src.startsWith('/') ? origin + image.small : image.src;
+  if (!p || !image || empreinte(image.src) !== hash) return notFound();
+  // Déjà sur le domaine : son propre fichier WebP, qui ne bouge pas.
+  if (image.src.startsWith('/')) return new Response(null, { status: 308, headers: { Location: photoSrc(p.slug, image, width), 'Cache-Control': YEAR } });
+  if (!photoDuFournisseur(image.src)) return notFound();
   try {
-    if (!image.src.startsWith('/') && !PHOTO_HOSTS.has(new URL(source).hostname)) return notFound();
-    const input = await readPhoto(source);
+    const input = await readPhoto(image.src);
     if (!input) throw new Error('photo indisponible');
     const sharp = await loadSharp();
-    const webp = await sharp(input).resize({ width: THUMB_SIZE, height: THUMB_SIZE, fit: 'inside', withoutEnlargement: true }).webp({ quality: 74 }).toBuffer();
+    const webp = await sharp(input)
+      .rotate()
+      .resize({ width, height: width, fit: 'inside', withoutEnlargement: true })
+      .webp({ quality: width === THUMB_SIZE ? 74 : 78 })
+      .toBuffer();
     return new Response(new Uint8Array(webp), { headers: { 'Content-Type': 'image/webp', 'Cache-Control': YEAR } });
   } catch (error) {
-    console.error('vignette galerie', p.slug, (error as Error).message);
+    console.error('photo de galerie', p.slug, width, (error as Error).message);
     // Hôte du fournisseur indisponible : la photo d’origine plutôt qu’un trou dans la galerie, sans cache.
-    return new Response(null, { status: 307, headers: { Location: source, 'Cache-Control': 'no-store' } });
+    return new Response(null, { status: 307, headers: { Location: image.src, 'Cache-Control': 'no-store' } });
   }
 }
 
@@ -156,7 +182,7 @@ export async function GET(request: Request, ctx: { params: Promise<{ seg: string
 
 async function render(request: Request, { params }: { params: Promise<{ seg: string[] }> }): Promise<Response> {
   const { seg } = await params;
-  if (seg[0] === 't') return thumbnail(seg, new URL(request.url).origin);
+  if (seg[0] === 't' || /^\d+$/.test(seg[0])) return photo(seg);
   const kind = seg[0] as CardKind;
   let key = '';
   try {

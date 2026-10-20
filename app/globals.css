@@ -2,6 +2,19 @@
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 
+/* Tailwind lit tout le dépôt pour trouver les classes à générer, et la CSS globale part sur chaque
+   page. Ces fichiers ne rendent rien (20/10/2026) : les composants shadcn qu'aucune page n'importe
+   (seuls button, dialog, pagination, radio-group et select servent ; à retirer d'ici si l'un d'eux
+   entre dans une page), les données du catalogue, les scripts, la documentation, les migrations et
+   public/. Leurs classes, que personne ne rend, ne sont plus générées. */
+@source not "../components/ui/{accordion,alert,alert-dialog,aspect-ratio,attachment,avatar,badge,breadcrumb,bubble,button-group,calendar,card,carousel,chart,checkbox,collapsible,combobox,command,context-menu,direction,drawer,dropdown-menu,empty,field,hover-card,input,input-group,input-otp,item,kbd,label,marker,menubar,message,message-scroller,native-select,navigation-menu,popover,progress,resizable,scroll-area,separator,sheet,sidebar,skeleton,slider,spinner,switch,table,tabs,textarea,toast,toggle,toggle-group,tooltip}.tsx";
+@source not "../lib/data";
+@source not "../scripts";
+@source not "../docs";
+@source not "../drizzle";
+@source not "../drizzle-d1-archive";
+@source not "../public";
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

@@ -14,7 +14,7 @@ import type { Product } from './catalog';
  * gardent le même dernier relevé. Sans base (panne), le dernier relevé lu par l’instance sert.
  *
  * Une référence désactivée au club est retirée de la vente ici aussi. Un prix aberrant (moins de la
- * moitié ou plus du double du nôtre) n’est pas appliqué : il est signalé (clubDifferences).
+ * moitié ou plus du double du nôtre) n’est pas appliqué : le prix de la boutique reste.
  */
 const CLUB_URL = 'https://boutique.boxingcenter.fr/api/materiel';
 export const CLUB_TTL = 15 * 60 * 1000;
@@ -77,18 +77,6 @@ export async function fetchClub(): Promise<{ syncedAt: string; products: ClubPro
   return { syncedAt: typeof data.synced_at === 'string' ? data.synced_at.slice(0, 40) : '', products };
 }
 
-/** Pour les scripts et l’atelier : relit le club tout de suite (sans passer par la base). */
-export async function clubSnapshotNow(): Promise<Snapshot | null> {
-  try {
-    const data = await fetchClub();
-    return { at: Date.now(), syncedAt: data.syncedAt, products: new Map(data.products.map((p) => [p.id, p])) };
-  } catch {
-    return clubState().snapshot;
-  }
-}
-
-export type ClubDifference = { id: string; field: 'prix' | 'absent du club' | 'inactif au club' | 'prix aberrant'; ours: string; club: string };
-
 /**
  * Le relevé appliqué au catalogue : prix du club, et retrait de la vente de ce que le club a
  * désactivé (fiche, listes, panier et paiement ne le proposent plus). Sans relevé : inchangé.
@@ -102,21 +90,6 @@ export function applyClub(products: Product[], snap: Snapshot | null): Product[]
     else if (c.active === false) continue;
     else if (c.price_cents === p.price || c.price_cents < p.price * 0.5 || c.price_cents > p.price * 2) out.push(p);
     else out.push({ ...p, price: c.price_cents, variants: p.variants?.map((v) => (v.price === p.price ? { ...v, price: c.price_cents } : v)) });
-  }
-  return out;
-}
-
-export function clubDifferences(fileProducts: Product[], snap: Snapshot): ClubDifference[] {
-  const out: ClubDifference[] = [];
-  const euro = (c: number) => (c / 100).toFixed(2).replace('.', ',') + ' €';
-  for (const p of fileProducts.filter((x) => x.id.startsWith('mat-'))) {
-    const c = snap.products.get(p.id);
-    if (!c) out.push({ id: p.id, field: 'absent du club', ours: euro(p.price), club: '—' });
-    else {
-      if (c.active === false) out.push({ id: p.id, field: 'inactif au club', ours: 'publié', club: 'inactif' });
-      if (c.price_cents !== p.price)
-        out.push({ id: p.id, field: c.price_cents < p.price * 0.5 || c.price_cents > p.price * 2 ? 'prix aberrant' : 'prix', ours: euro(p.price), club: euro(c.price_cents) });
-    }
   }
   return out;
 }

@@ -15,6 +15,7 @@ import { guidePublished, guidesEnLettres, type Guide } from './editorial';
 import { SEO_COPY, type SeoFaq } from './seo-copy';
 import type { Subfamily } from './subfamilies';
 import { PAGE_SIZE } from './pagination';
+import { photoSrc } from './vignette';
 
 /** Date de la dernière révision éditoriale, publiée dans les fichiers agents et les pages. */
 export const EDITORIAL_DATE = '2026-10-13';
@@ -384,7 +385,8 @@ function productCore(p: Product) {
     '@id': urlOf('/produits/' + p.slug + '/') + '#product',
     name: p.name,
     description: p.description || p.short,
-    image: p.images.map((i) => abs(i.src)),
+    // Photos sur le domaine de la boutique : celles du fournisseur passent par /vignette/1200/… (WebP).
+    image: p.images.map((i) => abs(photoSrc(p.slug, i, 1200))),
     url: urlOf('/produits/' + p.slug + '/'),
     // Identifiant marchand unique. La référence fabricant reste visible sur la fiche, mais elle
     // n'est pas un MPN fiable : certains imports la partagent entre de nombreux coloris/modèles.
@@ -455,7 +457,7 @@ export function productGraph(p: Product, related: Product[], opts: { description
     };
   }
   return graph([
-    webPageNode({ path, name: p.name, description: p.short, type: 'ItemPage', image: p.images[0]?.src, dateModified: [EDITORIAL_DATE, CATALOGUE_REVISION, p.updatedAt || p.dateAdded || EDITORIAL_DATE].sort().at(-1)!.slice(0, 10), about: family ? (CATEGORY_ENTITY[family.slug] || []).map(thing) : [], keywords: productKeywords(p), mainEntity: product['@id'] }),
+    webPageNode({ path, name: p.name, description: p.short, type: 'ItemPage', image: photoSrc(p.slug, p.images[0], 1200), dateModified: [EDITORIAL_DATE, CATALOGUE_REVISION, p.updatedAt || p.dateAdded || EDITORIAL_DATE].sort().at(-1)!.slice(0, 10), about: family ? (CATEGORY_ENTITY[family.slug] || []).map(thing) : [], keywords: productKeywords(p), mainEntity: product['@id'] }),
     product,
     ...(opts.faq?.length ? [faqNode(path, opts.faq)] : []),
   ]);
@@ -475,7 +477,7 @@ export function collectionGraph(o: { path: string; name: string; description: st
       position: (o.page - 1) * o.perPage + i + 1,
       name: x.name,
       url: urlOf('/produits/' + x.slug + '/'),
-      image: abs(x.images[0]?.small || x.images[0]?.src),
+      image: abs(photoSrc(x.slug, x.images[0], 480) as string),
     })),
   };
   const about = o.about || (o.category ? (CATEGORY_ENTITY[o.category.slug] || []).map(thing) : []);

@@ -36,7 +36,8 @@ import {
 } from '@/components/editorial-pages';
 import { ContactForm } from '@/components/contact-form';
 import { payplugSettings } from '@/lib/payplug';
-import { CartPage } from '@/components/commerce-ui';
+// Le panier, chargé à part : son code ne part plus avec les fiches, catégories, villes et guides.
+import { CartPage } from './panier-client';
 import selection from '@/lib/data/selection.json';
 import { spaced } from '@/lib/spaced';
 import { villeFor, regionFor, CARREFOUR, VILLES, REGIONS, villePath } from '@/lib/villes';

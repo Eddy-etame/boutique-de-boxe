@@ -95,13 +95,6 @@ export async function getSessionUser(): Promise<SessionUser | null> {
   }
 }
 
-export function isOwnerEmail(email: string): boolean {
-  const admin = process.env.ADMIN_EMAIL?.trim().toLowerCase();
-  const candidate = email.trim().toLowerCase();
-  if (admin && candidate === admin) return true;
-  return process.env.NODE_ENV === 'development' && candidate === DEV_OWNER_EMAIL;
-}
-
 export function safeRelativePath(value: string | null | undefined): string {
   if (!value || !value.startsWith('/') || value.startsWith('//')) return '/admin/';
   try {
