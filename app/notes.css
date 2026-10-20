@@ -220,3 +220,75 @@
     height: 30px;
   }
 }
+
+/* Atelier : « Notes des produits ». */
+.notes-atelier-rappel {
+  font-size: 14px;
+  line-height: 1.55;
+}
+.notes-atelier-tete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  margin-top: 18px;
+}
+.notes-atelier-totaux {
+  margin: 0;
+  font-size: 14px;
+}
+.notes-atelier-tete .segmented {
+  margin: 0;
+}
+.notes-atelier-statut {
+  margin-top: 14px;
+  font-weight: 700;
+}
+.notes-atelier-etoiles {
+  white-space: nowrap;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+}
+.notes-atelier-vides {
+  color: #c4c5c2;
+}
+.notes-atelier tr[data-statut='retiree'] td:not(.atelier-actions) {
+  color: var(--muted);
+}
+.notes-atelier-modifiee,
+.notes-atelier-motif {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+}
+.notes-atelier-retrait {
+  display: grid;
+  gap: 8px;
+  min-width: 230px;
+}
+.notes-atelier-retrait label {
+  display: grid;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.notes-atelier-retrait select,
+.notes-atelier-retrait input {
+  min-height: 38px;
+  padding: 0 10px;
+  border: 1px solid var(--ink);
+  background: #fff;
+  font: inherit;
+  font-weight: 400;
+}
+.notes-atelier-retrait > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.notes-atelier-retrait .button {
+  min-height: 40px;
+  padding: 0 14px;
+}

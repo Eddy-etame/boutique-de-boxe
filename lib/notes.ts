@@ -48,7 +48,7 @@ export function lireDemandeNote(data: unknown, existe: (id: string) => boolean):
   if (!etoilesValides(d.etoiles)) return { erreur: 'Choisissez une note de 1 à 5 étoiles.', statut: 400 };
   return { produit: d.produit, etoiles: d.etoiles };
 }
-export const estRefus = (v: DemandeNote | RefusNote): v is RefusNote => 'erreur' in v;
+export const estRefus = <T extends object>(v: T | RefusNote): v is RefusNote => 'erreur' in v;
 
 /** Le champ piège (« website », invisible pour un humain, comme sur les autres formulaires) : rempli = robot. */
 export const champPiegeRempli = (data: unknown) => {

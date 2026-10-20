@@ -16,12 +16,13 @@ const Clients = dynamic(() => import('./clients').then((m) => m.Clients), { ssr:
 const PayplugSettings = dynamic(() => import('./payplug-settings').then((m) => m.PayplugSettings), { ssr: false, loading });
 const CatalogueImports = dynamic(() => import('./catalogue-imports').then((m) => m.CatalogueImports), { ssr: false, loading });
 const TeamAdmin = dynamic(() => import('./team-admin').then((m) => m.TeamAdmin), { ssr: false, loading });
+const NotesAdmin = dynamic(() => import('./notes-admin').then((m) => m.NotesAdmin), { ssr: false, loading });
 type RecordRow = Record<string, string | number>;
 // La navigation de l’atelier, par métier : ce qu’on vend, ce qu’on encaisse, qui nous écrit, ce qu’on mesure.
 const SECTIONS: { title: string; items: [string, string][] }[] = [
   { title: 'Catalogue', items: [['products', 'Produits'], ['imports', 'Imports du catalogue']] },
   { title: 'Commerce', items: [['orders', 'Commandes d’essai'], ['payments', 'Réglages PayPlug'], ['clients', 'Clients & ventes']] },
-  { title: 'Public', items: [['choices', 'Paniers enregistrés'], ['alerts', 'Inscrits à l’ouverture'], ['newsletter', 'Lettre d’ouverture'], ['contacts', 'Contacts']] },
+  { title: 'Public', items: [['notes', 'Notes des produits'], ['choices', 'Paniers enregistrés'], ['alerts', 'Inscrits à l’ouverture'], ['newsletter', 'Lettre d’ouverture'], ['contacts', 'Contacts']] },
   { title: 'Pilotage', items: [['audience', 'Audience'], ['seo', 'Suivi SEO'], ['equipe', 'Équipe et accès']] },
 ];
 type AdminData = {
@@ -143,6 +144,7 @@ export function Admin() {
           <h2 className="atelier-title">{SECTIONS.flatMap((g) => g.items).find(([id]) => id === tab)?.[1]}</h2>
           {tab === 'products' && <CatalogEditor onSaved={refresh} />}
       {tab === 'orders' && <OrdersAdmin />}
+      {tab === 'notes' && <NotesAdmin />}
       {tab === 'clients' && <Clients />}
       {tab === 'payments' && <PayplugSettings />}
       {tab === 'imports' && (
