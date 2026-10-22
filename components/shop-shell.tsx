@@ -2,8 +2,8 @@
 import { usePathname } from 'next/navigation';
 import { QUERY_MAP } from '@/lib/seo-copy';
 import { CookiesButton } from './consent-tracker';
-import { useEffect, useState, useSyncExternalStore } from 'react';
-import { ArrowUpRight, Menu, ArrowRight, X } from 'lucide-react';
+import { useEffect, useId, useRef, useState, useSyncExternalStore } from 'react';
+import { ArrowUpRight, Menu, ArrowRight, X, ChevronDown } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -11,10 +11,109 @@ import {
   DialogDescription,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { categories, shop, jsonLd, livraison } from '@/lib/catalog';
+import { shop, jsonLd, livraison } from '@/lib/catalog';
 import { CartLink } from './cart-link';
 import { HeaderSearch } from './header-search';
 import { spaced } from '@/lib/spaced';
+import { GUIDES, PAR_DISCIPLINE, RAYONS_PRATIQUE, RAYONS_TYPE, type Lien } from './liens-du-site';
+
+/** Les deux pages de tête que l’entête lie en clair ; le panneau « Rayons » porte tout le reste, sans doublon. */
+const EN_CLAIR = ['/materiel-boxe/', '/materiel-mma/'];
+const enClair = RAYONS_PRATIQUE.filter((r) => EN_CLAIR.includes(r.href));
+const panneauPratique = [...RAYONS_PRATIQUE.filter((r) => !EN_CLAIR.includes(r.href)), ...PAR_DISCIPLINE];
+/** Le bloc « Rayons » du pied de page : les pages de tête, les rayons par type, puis les marques et les nouveautés. */
+const RAYONS_PIED: Lien[] = [
+  ...RAYONS_PRATIQUE,
+  ...RAYONS_TYPE,
+  { href: '/marques/', label: 'Toutes les marques' },
+  { href: '/nouveautes/', label: 'Nouveautés' },
+];
+const pli = (s: string) => s.toLowerCase().replace(/[’']/g, '’').trim();
+/** Un lien du répertoire des recherches qui répète mot pour mot un lien des blocs du pied de page n’y est pas repris. */
+const dejaAuPied = new Set([...RAYONS_PIED, ...GUIDES].map((l) => l.href + '|' + pli(l.label)));
+
+/**
+ * « Rayons » : un bouton dans l’entête, un panneau sous l’entête. Les liens sont écrits dans le HTML de chaque
+ * page (le panneau fermé porte l’attribut hidden) : un robot les suit sans rien ouvrir, un visiteur les ouvre
+ * d’un clic. Échap, un clic au dehors ou le focus qui sort referment le panneau.
+ */
+function RayonsMenu() {
+  const [open, setOpen] = useState(false);
+  const box = useRef<HTMLDivElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const id = useId();
+  useEffect(() => {
+    if (!open) return;
+    const away = (e: PointerEvent) => {
+      if (box.current && !box.current.contains(e.target as Node)) setOpen(false);
+    };
+    const key = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      setOpen(false);
+      trigger.current?.focus();
+    };
+    document.addEventListener('pointerdown', away);
+    document.addEventListener('keydown', key);
+    return () => {
+      document.removeEventListener('pointerdown', away);
+      document.removeEventListener('keydown', key);
+    };
+  }, [open]);
+  const close = () => setOpen(false);
+  return (
+    <div
+      className="rayons-menu"
+      ref={box}
+      onBlur={(e) => {
+        const next = e.relatedTarget as Node | null;
+        if (next && !e.currentTarget.contains(next)) setOpen(false);
+      }}
+    >
+      <button
+        ref={trigger}
+        type="button"
+        className="rayons-trigger"
+        aria-expanded={open}
+        aria-controls={id}
+        onClick={() => setOpen((o) => !o)}
+      >
+        Rayons <ChevronDown size={15} aria-hidden="true" />
+      </button>
+      <div id={id} className="rayons-panel" hidden={!open}>
+        <div className="rayons-panel-inner">
+          <div className="rayons-group">
+            <p className="eyebrow rayons-head">
+              <i className="tape-mark" aria-hidden="true" /> Par type
+            </p>
+            <div className="rayons-types">
+              {spaced(RAYONS_TYPE.map((r) => (
+                <a key={r.href} href={r.href} onClick={close}>
+                  {r.label}
+                </a>
+              )))}
+            </div>
+          </div>
+          <div className="rayons-group">
+            <p className="eyebrow rayons-head">Par pratique</p>
+            <div className="rayons-pratiques">
+              {spaced(panneauPratique.map((r) => (
+                <a key={r.href} href={r.href} onClick={close}>
+                  {r.label}
+                </a>
+              )))}
+            </div>
+          </div>
+          <a className="rayons-all" href="/boutique-boxe/" onClick={close}>
+            <span className="eyebrow">Tout le catalogue</span>{' '}
+            <strong>Parcourir la boutique boxe</strong>{' '}
+            <small>Chaque modèle avec ses tailles réelles et son prix TTC.</small>
+            <ArrowUpRight size={22} aria-hidden="true" />
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
 export function Brand() {
   return (
     <a href="/" className="brand" aria-label="Boutique de Boxe, accueil">
@@ -55,9 +154,12 @@ export function Header() {
       <header className="site-header">
         <Brand />
         <nav aria-label="Navigation principale" className="desktop-nav">
-          <a href="/materiel-boxe/">Matériel de boxe</a>{' '}
-          <a href="/materiel-mma/">MMA</a>{' '}
-          <a href="/boutique-arts-martiaux/">Arts martiaux</a>{' '}
+          <RayonsMenu />{' '}
+          {spaced(enClair.map((r) => (
+            <a key={r.href} href={r.href}>
+              {r.label}
+            </a>
+          )))}{' '}
           <a href="/guides/" onClick={() => setMenu(false)}>
             Les guides <ArrowUpRight size={13} />
           </a>
@@ -84,27 +186,34 @@ export function Header() {
               >
                 <X />
               </button>
+              {/* Les mêmes rayons que le panneau de l’entête : les pages de tête en grand, les rayons par type
+                  et par discipline en deux colonnes, puis les guides et le contact. */}
               <nav aria-label="Menu mobile">
-                {categories.slice(6, 9).map((c) => (
-                  <a
-                    key={c.slug}
-                    href={`/${c.slug}/`}
-                    onClick={() => setMenu(false)}
-                  >
-                    {c.name}
+                {RAYONS_PRATIQUE.map((r) => (
+                  <a key={r.href} href={r.href} onClick={() => setMenu(false)}>
+                    {r.label}
                     <ArrowUpRight />
                   </a>
                 ))}
-                {categories.slice(0, 6).map((c) => (
-                  <a
-                    key={c.slug}
-                    href={`/${c.slug}/`}
-                    onClick={() => setMenu(false)}
-                  >
-                    {c.name}
-                    <ArrowUpRight />
-                  </a>
-                ))}
+                <p className="mobile-menu-head">Par type</p>
+                <div className="mobile-menu-grid">
+                  {RAYONS_TYPE.map((r) => (
+                    <a key={r.href} href={r.href} onClick={() => setMenu(false)}>
+                      {r.label}
+                    </a>
+                  ))}
+                </div>
+                <p className="mobile-menu-head">Par discipline</p>
+                <div className="mobile-menu-grid">
+                  {PAR_DISCIPLINE.map((r) => (
+                    <a key={r.href} href={r.href} onClick={() => setMenu(false)}>
+                      {r.label}
+                    </a>
+                  ))}
+                </div>
+                <a href="/boutique-boxe/" onClick={() => setMenu(false)}>
+                  Toute la boutique <ArrowUpRight />
+                </a>
                 <a href="/guides/" onClick={() => setMenu(false)}>
                   Les guides <ArrowUpRight />
                 </a>
@@ -147,7 +256,7 @@ export function Footer() {
             </span>{' '}
             <span>
               <strong>Trouver mon équipement</strong>{' '}
-              <small>Gants, protections, textile et sacs.</small>
+              <small>Dans la boutique boxe&nbsp;: gants, protections, textile et sacs.</small>
             </span>
             <ArrowUpRight aria-hidden="true" />
           </a>{' '}
@@ -187,10 +296,12 @@ export function Footer() {
           )}
         </span>
         <a href={shop.ventesOuvertes ? '/vente-materiel-de-boxe/' : '/#ouverture'}>
-          {shop.ventesOuvertes ? 'Comment se passe la vente' : 'Être prévenu à l’ouverture'}{' '}
+          {shop.ventesOuvertes ? 'Vente de matériel de boxe : comment ça marche' : 'Être prévenu à l’ouverture'}{' '}
           <ArrowRight size={18} aria-hidden="true" />
         </a>
       </div>
+      {/* Les blocs « Rayons » et « Guides » : les mêmes listes que l’entête (components/liens-du-site.ts),
+          des ancres qui décrivent la page d’arrivée, écrites dans le HTML de chaque page. */}
       <div className="footer-grid">
         <div className="footer-identity">
           <Brand />
@@ -198,51 +309,36 @@ export function Footer() {
             Matériel de boxe, MMA et arts martiaux. Des modèles à examiner, des
             guides pour choisir. {shop.ventesOuvertes ? 'Livraison dans toute la France.' : 'Livraison en France à l’ouverture des ventes.'}
           </p>
+          <a href="/boutique-sport-de-combat/" className="footer-france">
+            La boutique sport de combat en France, ville par ville{' '}
+            <ArrowUpRight size={15} aria-hidden="true" />
+          </a>{' '}
           <a href="/contact/" className="email-link">
             Une question sur le matériel ?{' '}
             <ArrowUpRight size={16} aria-hidden="true" />
           </a>
         </div>
-        <nav aria-labelledby="footer-equipment">
-          <h3 id="footer-equipment">Votre équipement</h3>
-          {spaced(categories
-            .filter((c) =>
-              [
-                'gants-de-boxe',
-                'gants-mma',
-                'protections-boxe',
-                'textile-boxe',
-                'accessoires-boxe',
-                'sacs-de-frappe',
-                'chaussures-boxe',
-                'equipement-entrainement',
-                'sacs-de-sport',
-              ].includes(c.slug),
-            )
-            .map((c) => (
-              <a key={c.slug} href={`/${c.slug}/`}>
-                {c.name}
-              </a>
-            )))}
+        <nav aria-labelledby="footer-rayons" className="footer-rayons">
+          <h3 id="footer-rayons">Rayons</h3>
+          {spaced(RAYONS_PIED.map((r) => (
+            <a key={r.href} href={r.href}>
+              {r.label}
+            </a>
+          )))}
         </nav>
-        <nav aria-labelledby="footer-practice">
-          <h3 id="footer-practice">Votre pratique</h3>
-          <a href="/materiel-boxe/">Matériel de boxe</a>{' '}
-          <a href="/materiel-mma/">Matériel MMA</a>{' '}
-          <a href="/boutique-arts-martiaux/">Arts martiaux</a>{' '}
-          <a href="/materiel-sport-de-combat/">Sports de combat</a>
-          <h3 className="footer-subheading">Pour bien choisir</h3>
-          <a href="/guides/">Guides d’achat</a>{' '}
-          <a href="/guide-des-tailles/">Guide des tailles</a>{' '}
-          <a href="/marques/">Les marques</a>{' '}
-          <a href="/nouveautes/">Nouveautés</a>
+        <nav aria-labelledby="footer-guides" className="footer-guides">
+          <h3 id="footer-guides">Guides</h3>
+          {spaced(GUIDES.map((g) => (
+            <a key={g.href} href={g.href}>
+              {g.label}
+            </a>
+          )))}
         </nav>
         <nav aria-labelledby="footer-service">
           <h3 id="footer-service">Vos questions</h3>
           <a href="/faq/">Questions fréquentes</a>{' '}
           <a href="/livraison/">{shop.ventesOuvertes ? 'Livraison et frais' : 'Livraison et frais prévus'}</a>{' '}
           <a href="/retours/">Retours</a>{' '}
-          <a href="/vente-materiel-de-boxe/">Comment se passe la vente</a>{' '}
           <a href="/contact/">Nous contacter</a>{' '}
           <a href="/a-propos/">À propos</a>{' '}
           <a href="/offres-de-lancement/">Ouverture de la boutique</a>{' '}
@@ -257,7 +353,7 @@ export function Footer() {
           <span aria-hidden="true">+</span>
         </summary>
         <nav className="footer-queries" aria-label="Recherches par équipement">
-          {spaced(QUERY_MAP.map((q) => (
+          {spaced(QUERY_MAP.filter((q) => !dejaAuPied.has(q.path + '|' + pli(q.query))).map((q) => (
             <a key={q.query} href={q.path}>
               {q.query}
             </a>
