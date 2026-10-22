@@ -349,9 +349,21 @@ export function webPageNode(o: { path: string; name: string; description: string
  * L’offre d’une fiche (ou d’une de ses tailles), publiée seulement quand les ventes sont ouvertes.
  * « Lourd » se lit dans `estLourd()` (lib/catalog.ts), la règle du panier et du flux : une seule définition.
  */
+/** Le délai d’expédition publié (lib/catalog.ts, « 7 jours ouvrés »), lu en nombre pour les données structurées : une seule source. */
+const EXPEDITION_JOURS_OUVRES = Number.parseInt(shop.delais.expedition, 10);
+
 function offerOf(p: Product, cents = p.price) {
   const lourd = estLourd(p);
   const zone = { '@type': 'DefinedRegion', addressCountry: 'FR' };
+  // Google lit le délai de préparation en jours ouvrés (handlingTime). Le transit n’est pas publié : il n’est pas déclaré.
+  const envoi = (centimes: number) => ({
+    '@type': 'OfferShippingDetails',
+    shippingDestination: zone,
+    shippingRate: { '@type': 'MonetaryAmount', value: (centimes / 100).toFixed(2), currency: 'EUR' },
+    ...(Number.isFinite(EXPEDITION_JOURS_OUVRES)
+      ? { deliveryTime: { '@type': 'ShippingDeliveryTime', handlingTime: { '@type': 'QuantitativeValue', minValue: 0, maxValue: EXPEDITION_JOURS_OUVRES, unitCode: 'DAY' } } }
+      : {}),
+  });
   return {
     '@type': 'Offer',
     url: urlOf('/produits/' + p.slug + '/'),
@@ -361,20 +373,17 @@ function offerOf(p: Product, cents = p.price) {
     itemCondition: 'https://schema.org/NewCondition',
     seller: { '@id': ID('organisation') },
     // Le matériel lourd se livre sur devis : aucun tarif ni délai n’est publié pour lui.
-    ...(lourd
-      ? {}
-      : {
-          shippingDetails: [
-            { '@type': 'OfferShippingDetails', shippingDestination: zone, shippingRate: { '@type': 'MonetaryAmount', value: (fraisDeLivraison('relay', cents) / 100).toFixed(2), currency: 'EUR' } },
-            { '@type': 'OfferShippingDetails', shippingDestination: zone, shippingRate: { '@type': 'MonetaryAmount', value: (shop.livraison.domicile / 100).toFixed(2), currency: 'EUR' } },
-          ],
-        }),
+    ...(lourd ? {} : { shippingDetails: [envoi(fraisDeLivraison('relay', cents)), envoi(shop.livraison.domicile)] }),
+    // Ce que dit la page Retours : quatorze jours, renvoi par la poste aux frais du client, remboursement intégral sur la carte.
     hasMerchantReturnPolicy: {
       '@type': 'MerchantReturnPolicy',
       applicableCountry: 'FR',
+      returnPolicyCountry: 'FR',
       returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
       merchantReturnDays: 14,
       returnMethod: 'https://schema.org/ReturnByMail',
+      returnFees: 'https://schema.org/ReturnFeesCustomerResponsibility',
+      refundType: 'https://schema.org/FullRefund',
     },
   };
 }
