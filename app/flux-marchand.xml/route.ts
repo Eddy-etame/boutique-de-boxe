@@ -1,6 +1,7 @@
 import { readCatalog, cacheCatalogue, catalogueDeSecours } from '@/lib/database';
 import { categoryFor, estLourd, shop, variantPrice, type Product, fraisDeLivraison } from '@/lib/catalog';
 import { SUBFAMILIES } from '@/lib/subfamilies';
+import { categorieGoogle } from '@/lib/categorie-google';
 import { urlOf } from '@/lib/seo';
 import { photoSrc } from '@/lib/vignette';
 
@@ -55,6 +56,8 @@ function item(p: Product, taille: string | null, type: string, disponible: strin
     ...(badBrand(p.brand) ? [] : [`<g:brand>${esc(p.brand)}</g:brand>`]),
     `<g:identifier_exists>no</g:identifier_exists>`,
     `<g:product_type>${esc(type)}</g:product_type>`,
+    // La catégorie de la taxonomie Google (lib/categorie-google.ts) : Merchant Center classe mieux et refuse moins.
+    `<g:google_product_category>${categorieGoogle(p)}</g:google_product_category>`,
     ...(taille ? [`<g:item_group_id>${esc(p.id)}</g:item_group_id>`, `<g:size>${esc(taille)}</g:size>`] : []),
     ...(p.colors?.length ? [`<g:color>${esc(p.colors.slice(0, 3).join('/'))}</g:color>`] : []),
     ...(p.audience === 'enfant' ? [`<g:age_group>kids</g:age_group>`] : []),
