@@ -191,3 +191,24 @@
 html[data-motion='reduce'] .hero-ring, html[data-motion='reduce'] .hero-ring-product img { animation: none; }
 html[data-motion='reduce'] .hero-ring[data-auto] .hero-ticks button[aria-current] i { animation: none; }
 html[data-motion='reduce'] .hero-ring-product { animation: none; }
+
+/* La première ligne du H1 (components/home.tsx) : la requête de l’accueil, posée comme le nom de l’organisateur
+   au-dessus de l’affiche. Même police que l’affiche, au tiers de sa taille, le ruban devant ; l’affiche garde sa
+   place et sa taille. Le H1 est écrit en casse normale dans le HTML, les capitales viennent d’ici. */
+.workbench-copy h1 { text-transform: uppercase; margin-top: 6px; }
+.hero-billing {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: 0.32em;
+  line-height: 1;
+  letter-spacing: 0.035em;
+  margin: 0 0 0.62em;
+  white-space: nowrap;
+}
+.hero-billing .tape-mark { flex: none; width: 1.15em; height: 0.42em; }
+/* Sous 360 px la ligne ne tient plus d’un trait : elle passe à la ligne, le ruban reste devant. */
+@media (max-width: 360px) {
+  .hero-billing { white-space: normal; line-height: 1.15; align-items: flex-start; }
+  .hero-billing .tape-mark { margin-top: 0.3em; }
+}

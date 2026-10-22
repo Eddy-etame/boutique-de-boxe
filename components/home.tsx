@@ -1,5 +1,5 @@
 import { ArrowUpRight, ArrowDown } from 'lucide-react';
-import { categories, listItem, shop, type Product } from '@/lib/catalog';
+import { categories, categoryFor, getCategoryProducts, listItem, shop, type Product } from '@/lib/catalog';
 import { HOME_FAQ } from '@/lib/seo-copy';
 import { SeoBody } from './seo-body';
 import { HeroRing } from './hero-ring';
@@ -11,6 +11,10 @@ import {
 import { EquipmentCompare } from './equipment-compare';
 import selection from '@/lib/data/selection.json';
 import { spaced } from '@/lib/spaced';
+import { EQUIPEMENT_BOXE_ANGLAISE_PRET, RAYONS_PRATIQUE, nomDeRayon } from './liens-du-site';
+
+/** « 1 042 » : un compte tel que les textes l’écrivent (insécable U+00A0, la police d’affichage n’a pas l’espace fine). */
+const nombre = (n: number) => n.toLocaleString('fr-FR').replace(/ /g, ' ');
 export default function Home({ items }: { items: Product[] }) {
   // Quatre rounds à la une : le rouge qui arrête l’œil, le noir et or, le prix d’entrée du club, une protection.
   // Le nom court est écrit à la main : une fiche de pesée ne porte pas un intitulé de catalogue.
@@ -39,16 +43,20 @@ export default function Home({ items }: { items: Product[] }) {
     <main id="contenu" className="store-home">
       <section className="workbench-hero">
         <div className="workbench-copy">
-          <span className="eyebrow">
-            <i className="tape-mark" />
-            MATÉRIEL DE BOXE & SPORTS DE COMBAT
-          </span>
+          {/* L’affiche porte la requête en tête, comme le nom de l’organisateur au-dessus d’un combat : la
+              première ligne du H1, visible, dans la police du héros ; le slogan reste l’affiche. Le texte est
+              écrit en casse normale (lu tel quel par les moteurs et les lecteurs d’écran), les capitales
+              viennent du style. Les blancs avant chaque saut de ligne gardent les mots séparés dans le texte lu. */}
           <h1>
-            TOUT
+            <span className="hero-billing">
+              <i className="tape-mark" aria-hidden="true" />
+              Boutique de boxe, MMA et sports de combat.
+            </span>{' '}
+            Tout{' '}
             <br />
-            POUR LA BOXE
+            pour la boxe{' '}
             <br />
-            <em>ET LE MMA.</em>
+            <em>et le MMA.</em>
           </h1>
           <div className="workbench-intro">
             <span className="workbench-rule" />
@@ -61,7 +69,7 @@ export default function Home({ items }: { items: Product[] }) {
               {shop.ventesOuvertes ? (
                 <>
                   Les ventes sont ouvertes : paiement par carte sur la page sécurisée de PayPlug.{' '}
-                  <a href="/vente-materiel-de-boxe/">Comment se passe la vente</a>.
+                  <a href="/vente-materiel-de-boxe/">Comment se passe la vente de matériel de boxe</a>.
                 </>
               ) : (
                 <>
@@ -74,7 +82,7 @@ export default function Home({ items }: { items: Product[] }) {
           <div className="hero-actions">
             {shop.ventesOuvertes ? (
               <a href="/materiel-boxe/" className="button button-tape">
-                Matériel de boxe <ArrowDown size={20} />
+                Matériel de boxe <ArrowUpRight size={20} />
               </a>
             ) : (
               <a href="#ouverture" className="button button-tape">
@@ -82,7 +90,7 @@ export default function Home({ items }: { items: Product[] }) {
               </a>
             )}
             <a href="/boutique-boxe/" className="button button-dark">
-              Voir tout le matériel <ArrowUpRight size={20} />
+              Toute la boutique boxe <ArrowUpRight size={20} />
             </a>
           </div>
           <a className="bench-jump" href="#preparer">
@@ -92,12 +100,12 @@ export default function Home({ items }: { items: Product[] }) {
         <HeroRing items={heroes.map((h) => h.product)} labels={heroes.map((h) => h.label)} />
         <div className="bench-signature">
           <span>BOUTIQUE DE BOXE / GANTS, PROTECTIONS, TEXTILE, SACS.</span>
-          <span>{items.length} MODÈLES</span>
+          <span>{nombre(items.length)} MODÈLES</span>
         </div>
       </section>
       <nav className="practice-index" aria-label="Entrer par la pratique">
         <span>PAR DISCIPLINE</span>{' '}
-        <a href="/materiel-boxe/">
+        <a href={EQUIPEMENT_BOXE_ANGLAISE_PRET ? '/equipement-boxe-anglaise/' : '/materiel-boxe/'}>
           Boxe anglaise <ArrowUpRight />
         </a>{' '}
         <a href="/materiel-boxe-thai/">
@@ -153,6 +161,9 @@ export default function Home({ items }: { items: Product[] }) {
           )
           .slice(0, 16)}
       />
+      {/* Chaque rayon du concours a ici un lien, une seule fois, avec une ancre qui décrit sa page : les dix
+          rayons par type, puis les pages de tête par pratique ; le rayon de toutes les disciplines est le
+          lien de l’en-tête. */}
       <section className="equipment-index section-pad" data-reveal>
         <header className="editorial-heading">
           <div>
@@ -160,7 +171,7 @@ export default function Home({ items }: { items: Product[] }) {
             <h2>Tout le catalogue, par type.</h2>
           </div>
           <a href="/materiel-sport-de-combat/" className="inline-link">
-            Tout voir <ArrowUpRight size={18} />
+            Tout le matériel sport de combat <ArrowUpRight size={18} />
           </a>
         </header>
         <div className="equipment-rows">
@@ -183,7 +194,7 @@ export default function Home({ items }: { items: Product[] }) {
                       loading="lazy"
                     />
                   )}
-                  <h3>{c.name}</h3>
+                  <h3>{nomDeRayon(c.slug, c.name)}</h3>
                   <span className="equipment-row-count">
                     <b data-count={count}>{count}</b> modèle
                     {count > 1 ? 's' : ''}
@@ -192,6 +203,29 @@ export default function Home({ items }: { items: Product[] }) {
                 </a>
               );
             }))}
+        </div>
+        <div className="practice-band">
+          <p className="eyebrow practice-band-label">
+            <i className="tape-mark" aria-hidden="true" /> Ou par pratique
+          </p>
+          <div className="practice-band-grid">
+            {spaced(RAYONS_PRATIQUE.filter((r) => r.href !== '/materiel-sport-de-combat/').map((r) => {
+              const c = categoryFor(r.href.slice(1, -1));
+              const count = c ? getCategoryProducts(c, items).length : 0;
+              return (
+                <a key={r.href} href={r.href}>
+                  <h3>{r.label}</h3>{' '}
+                  {c && count > 0 && (
+                    <span className="practice-band-count">
+                      {c.families.length > 1 && <>{c.families.length} rayons · </>}
+                      <b>{nombre(count)}</b> modèles
+                    </span>
+                  )}
+                  <ArrowUpRight size={24} aria-hidden="true" />
+                </a>
+              );
+            }))}
+          </div>
         </div>
       </section>
       <section className="ounce-editorial" data-reveal>
