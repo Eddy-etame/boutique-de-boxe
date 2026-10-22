@@ -23,7 +23,9 @@ export const EDITORIAL_DATE = '2026-10-13';
 /** Dernière révision du gabarit des fiches et des pages de catalogue (texte visible changé partout) :
  *  3 octobre 2026 (place dans la famille, questions), 4 octobre (date d’ouverture des ventes),
  *  13 octobre (ventes ouvertes : offre, prix de vente, disponibilité, livraison au présent),
- *  20 octobre (fiches réécrites une à une, rayons corrigés, livraison à une seule source, adresse de contact). */
+ *  20 octobre (fiches réécrites une à une, rayons corrigés, livraison à une seule source, adresse de contact).
+ *  Les pages de tête (lib/guides-rayons.ts) portent en plus leur propre date, `revision`, quand leur texte change
+ *  sans que le gabarit des autres pages bouge : le plan du site et le graphe prennent la plus récente des deux. */
 export const CATALOGUE_REVISION = '2026-10-20';
 
 /* ------------------------------------------------------------- titres courts */
@@ -470,7 +472,7 @@ export function productGraph(p: Product, related: Product[], opts: { description
 }
 
 /** Page famille : CollectionPage, ItemList paginée, fil d’Ariane. */
-export function collectionGraph(o: { path: string; name: string; description: string; items: Product[]; total: number; page: number; perPage: number; category?: Category; faq?: SeoFaq[]; keywords?: string[]; about?: unknown[] }) {
+export function collectionGraph(o: { path: string; name: string; description: string; items: Product[]; total: number; page: number; perPage: number; category?: Category; faq?: SeoFaq[]; keywords?: string[]; about?: unknown[]; requete?: string; revision?: string }) {
   const pagePath = o.path + (o.page > 1 ? '?page=' + o.page : '');
   const list = {
     '@type': 'ItemList',
@@ -487,9 +489,10 @@ export function collectionGraph(o: { path: string; name: string; description: st
     })),
   };
   const about = o.about || (o.category ? (CATEGORY_ENTITY[o.category.slug] || []).map(thing) : []);
-  const keywords = o.keywords || (o.category ? categoryKeywords(o.category) : []);
+  // La requête exacte d’une page de tête (lib/guides-rayons.ts) passe en premier mot-clé.
+  const keywords = [...new Set([...(o.requete ? [o.requete] : []), ...(o.keywords || (o.category ? categoryKeywords(o.category) : []))])];
   return graph([
-    webPageNode({ path: pagePath, name: o.name, description: o.description, type: 'CollectionPage', about, keywords, mainEntity: list['@id'], dateModified: CATALOGUE_REVISION }),
+    webPageNode({ path: pagePath, name: o.name, description: o.description, type: 'CollectionPage', about, keywords, mainEntity: list['@id'], dateModified: [CATALOGUE_REVISION, o.revision || ''].sort().at(-1) }),
     list,
     ...(o.page === 1 && o.faq?.length ? [faqNode(o.path, o.faq)] : []),
   ]);
@@ -499,10 +502,11 @@ export function collectionGraph(o: { path: string; name: string; description: st
 const DISCIPLINE_ENTITY: Record<string, Entity> = { 'Muay-thaï': ENTITY.muayThai, 'Kick-boxing': ENTITY.kickBoxing, 'Savate boxe française': ENTITY.savate, 'Jiu-jitsu brésilien': ENTITY.jjb };
 
 /** Sous-famille : CollectionPage, liste, questions ; renvoie à la famille parente par `about`. */
-export function subfamilyGraph(sub: Subfamily, items: Product[], page = 1) {
+export function subfamilyGraph(sub: Subfamily, items: Product[], page = 1, tete?: { faq: SeoFaq[]; description: string; name: string; requete: string; revision: string }) {
   const parent = categoryFor(sub.parent);
   const own = sub.discipline ? DISCIPLINE_ENTITY[sub.discipline] : undefined;
-  return collectionGraph({ path: '/' + sub.slug + '/', name: sub.name, description: sub.description, items: items.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE), total: items.length, page, perPage: PAGE_SIZE, category: parent, faq: sub.faq, keywords: subfamilyKeywords(sub), about: own ? [thing(own)] : parent ? (CATEGORY_ENTITY[parent.slug] || []).map(thing) : [] });
+  // Une page de tête publie les questions et la description de son guide, celles que la page affiche.
+  return collectionGraph({ path: '/' + sub.slug + '/', name: tete?.name || sub.name, description: tete?.description || sub.description, items: items.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE), total: items.length, page, perPage: PAGE_SIZE, category: parent, faq: tete?.faq || sub.faq, keywords: subfamilyKeywords(sub), requete: tete?.requete, revision: tete?.revision, about: own ? [thing(own)] : parent ? (CATEGORY_ENTITY[parent.slug] || []).map(thing) : [] });
 }
 
 /** Guide : Article + FAQPage, auteur et éditeur = la boutique. */

@@ -1,11 +1,12 @@
 import { db, readCatalog } from '@/lib/database';
 import { clientIp } from '@/lib/request';
-import { categoryFor, estLourd, livraison, money, shop, type Product } from '@/lib/catalog';
+import { categoryFor, estLourd, getCategoryProducts, livraison, money, shop, type Product } from '@/lib/catalog';
 import { matchesSearch } from '@/lib/catalog-tools';
 import { guides, services } from '@/lib/editorial';
 import { ATTRIBUTION, EDITORIAL_DATE, familiesWithCounts, urlOf } from '@/lib/seo';
 import { QUERY_MAP } from '@/lib/seo-copy';
-import { SUBFAMILIES, subfamilyProducts } from '@/lib/subfamilies';
+import { SUBFAMILIES, subfamilyProducts, subfamilyFor } from '@/lib/subfamilies';
+import { guideRayon, guideEnTexte, faits, prixAffiche } from '@/lib/guides-rayons';
 import { brandsOf } from '@/lib/brands';
 import { weekLabel, weeklySelection } from '@/lib/hub';
 import { listingFor } from '@/lib/listing';
@@ -76,7 +77,7 @@ const tools = [
   },
   { name: 'get_product', description: 'La fiche complète d’un modèle à partir de son identifiant d’URL (slug) ou de son id.', inputSchema: { type: 'object', properties: { slug: { type: 'string' } }, required: ['slug'], additionalProperties: false } },
   { name: 'get_guides', description: 'Les guides d’achat publiés : titre, résumé, URL, questions traitées.', inputSchema: { type: 'object', properties: {}, additionalProperties: false } },
-  { name: 'get_guide', description: 'Le texte complet d’un guide d’achat.', inputSchema: { type: 'object', properties: { slug: { type: 'string' } }, required: ['slug'], additionalProperties: false } },
+  { name: 'get_guide', description: 'Le texte complet d’un guide d’achat, ou celui d’une page de rayon (gants-de-boxe, sacs-de-frappe, protege-dents…) avec un modèle par usage.', inputSchema: { type: 'object', properties: { slug: { type: 'string' } }, required: ['slug'], additionalProperties: false } },
   { name: 'get_content_index', description: 'Les pages publiques du site et ce que chacune répond.', inputSchema: { type: 'object', properties: {}, additionalProperties: false } },
   { name: 'get_query_map', description: 'Les recherches visées par la boutique et la page canonique qui répond à chacune.', inputSchema: { type: 'object', properties: {}, additionalProperties: false } },
   {
@@ -180,9 +181,20 @@ export async function POST(request: Request) {
     value = { ...productView(p), description: p.description, specs: p.specs, notes: p.notes, allImages: p.images.map((i) => urlOf(i.src)) };
   } else if (name === 'get_guides') value = guides.map((g) => ({ slug: g.slug, title: g.title, summary: g.description, url: urlOf('/guides/' + g.slug + '/'), readMinutes: g.readMinutes, questions: g.faq.map((f) => f.question) }));
   else if (name === 'get_guide') {
-    const g = guides.find((x) => x.slug === (typeof args.slug === 'string' ? args.slug : ''));
-    if (!g) return fail(id, -32602, 'Guide introuvable', 404);
-    value = { title: g.title, url: urlOf('/guides/' + g.slug + '/'), intro: g.intro, sections: g.sections, faq: g.faq, sources: g.sources };
+    const slug = typeof args.slug === 'string' ? args.slug : '';
+    const g = guides.find((x) => x.slug === slug);
+    // 20/10 : le slug d’une page de tête (« gants-de-boxe », « sacs-de-frappe »…) rend le guide de ce rayon.
+    const r = g ? undefined : guideRayon(slug);
+    if (!g && !r) return fail(id, -32602, 'Guide introuvable', 404);
+    if (g) value = { title: g.title, url: urlOf('/guides/' + g.slug + '/'), intro: g.intro, sections: g.sections, faq: g.faq, sources: g.sources };
+    else if (r) {
+      const sub = subfamilyFor(r.slug);
+      const cat = categoryFor(r.slug);
+      const items = sub ? subfamilyProducts(sub, products) : cat ? getCategoryProducts(cat, products) : [];
+      const c = { f: faits(r.slug, items), items, all: products };
+      const t = guideEnTexte(r, c);
+      value = { title: r.guide.titre, url: urlOf('/' + r.slug + '/'), intro: t.chapitres[0], sections: t.chapitres.slice(1), choices: t.choix.map((x) => ({ usage: x.usage, product: x.produit.name, price: prixAffiche(x.produit), reason: x.critere, url: urlOf('/produits/' + x.produit.slug + '/') })), faq: t.faq };
+    }
   } else if (name === 'get_content_index')
     value = {
       pages: [

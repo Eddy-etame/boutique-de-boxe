@@ -154,18 +154,21 @@ for (let i = 0; i < locations.length; i += 4) {
         'vignette à la demande ' + path,
       );
       if (path.startsWith('/produits/')) {
+        // Depuis l’ouverture des ventes (13/10), une fiche à plusieurs tailles publie un ProductGroup dont
+        // chaque taille (hasVariant) porte son offre ; une fiche sans déclinaison reste un Product.
         const product = structured.find(
-          (x) => x['@type'] === 'Product' && x.mainEntityOfPage,
+          (x) => (x['@type'] === 'Product' || x['@type'] === 'ProductGroup') && x.mainEntityOfPage,
         );
         assert.ok(product, 'Product ' + path);
         assert.ok(
-          product.sku && product.image?.length && product.url,
+          (product.sku || product.productGroupID) && product.image?.length && product.url,
           'Product facts ' + path,
         );
+        const noeudsProduit = [...structured, ...structured.flatMap((x) => (Array.isArray(x.hasVariant) ? x.hasVariant : []))];
         // L’offre suit l’interrupteur des ventes : absente tant que rien ne se vend, complète le jour J.
         const enVente = !structured.some((x) => (x.additionalProperty || []).some((a) => a.name === 'Disponibilité' && /^En vente le /.test(a.value)));
-        if (!enVente) assert.ok(!structured.some((x) => x.offers), 'fake offers ' + path);
-        else assert.ok(structured.some((x) => x.offers && x.offers.price && x.offers.priceCurrency === 'EUR' && x.offers.availability), 'offre absente ' + path);
+        if (!enVente) assert.ok(!noeudsProduit.some((x) => x.offers), 'fake offers ' + path);
+        else assert.ok(noeudsProduit.some((x) => x.offers && x.offers.price && x.offers.priceCurrency === 'EUR' && x.offers.availability), 'offre absente ' + path);
         assert.ok(
           structured.some((x) => x['@type'] === 'ItemPage'),
           'ItemPage ' + path,
@@ -391,20 +394,20 @@ assert.ok(
 );
 assert.ok(robots.includes('Host: ' + expectedOrigin), 'robots host');
 assert.ok(!robots.includes('Disallow: /\n'));
-const paginationSamples = [
-  '/gants-de-boxe/',
-  '/bandes-de-boxe/',
-  '/marques/elion/',
-  '/marques/elion/textile-boxe/',
-  '/gants-de-boxe-noirs/',
-];
+// Listes paginées par le proxy (un seul segment) : ?page=N (2 à 9999) est servi par la page statique
+// /<liste>/page-N/, sous sa canonique ?page=N. Depuis le 19/10 (proxy.ts), une valeur mal formée sert la
+// page 1 sous sa seule adresse canonique ; un numéro bien formé au-delà de la dernière page n’existe pas.
+const paginationSamples = ['/gants-de-boxe/', '/bandes-de-boxe/', '/gants-de-boxe-noirs/'];
 for (const path of paginationSamples) {
-  for (const page of ['0', '-1', '1.5', 'Infinity', '99999'])
-    assert.equal(
-      (await fetch(base + path + '?page=' + page)).status,
-      404,
-      'invalid catalogue page ' + path + '?page=' + page,
-    );
+  for (const page of ['0', '-1', '1.5', 'Infinity', '99999']) {
+    const r = await fetch(base + path + '?page=' + page);
+    if (r.status !== 404) {
+      assert.equal(r.status, 200, 'invalid catalogue page ' + path + '?page=' + page);
+      const canonical = (await r.text()).match(/<link rel="canonical" href="([^"]+)"/)?.[1];
+      assert.equal(canonical, expectedOrigin + path, 'invalid catalogue page canonical ' + path + '?page=' + page);
+    }
+  }
+  assert.equal((await fetch(base + path + '?page=9999')).status, 404, 'catalogue page beyond the last ' + path);
   const response = await fetch(base + path + '?page=2');
   assert.equal(response.status, 200, 'pagination status ' + path);
   const html = await response.text();
@@ -413,6 +416,17 @@ for (const path of paginationSamples) {
   assert.match(html, /<title>[^<]*Page 2[^<]*<\/title>/, 'pagination title ' + path);
   assert.match(html, /"position":37/, 'pagination first item position ' + path);
   assert.doesNotMatch(html, /href="\?page=1"/, 'duplicate page-one link ' + path);
+}
+// Pages de marque : HTML statique, ?page=N lu dans le navigateur (app/marques/[brand]/page.tsx) — une seule
+// adresse canonique quelle que soit la valeur, jamais de « Page N » dans le titre.
+for (const path of ['/marques/elion/', '/marques/elion/textile-boxe/']) {
+  for (const page of ['2', '9999']) {
+    const r = await fetch(base + path + '?page=' + page);
+    assert.equal(r.status, 200, 'brand page status ' + path + '?page=' + page);
+    const html = await r.text();
+    assert.equal(html.match(/<link rel="canonical" href="([^"]+)"/)?.[1], expectedOrigin + path, 'brand page canonical ' + path + '?page=' + page);
+    assert.doesNotMatch(html, /<title>[^<]*Page \d+[^<]*<\/title>/, 'brand page title ' + path + '?page=' + page);
+  }
 }
 const slashRedirect = await fetch(base + '/gants-de-boxe', {
   redirect: 'manual',

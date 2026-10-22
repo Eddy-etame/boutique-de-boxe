@@ -15,6 +15,7 @@ import { villeMetadata, regionMetadata, carrefourMetadata } from '@/components/v
 import { venteMetadata, VENTE } from '@/components/vente-page';
 import { PLAN, PLAN_TITRE, PLAN_DESCRIPTION } from '@/components/plan-du-site';
 import { disciplinesMetadata, DISCIPLINES_PAGES } from '@/components/disciplines-page';
+import { guideRayon, faits } from '@/lib/guides-rayons';
 
 /**
  * Page d’une liste au-delà de la première. L’adresse publique reste `/gants-de-boxe/?page=2` ; le
@@ -65,6 +66,10 @@ export async function slugMetadata(rawSlug: string[], rawPage?: string): Promise
   const page = paginated ? catalogPage(requested, paginationCount) : requested === undefined ? 1 : null;
   if (page === null) notFound();
   if (facet) return facetMetadata(facet, page);
+  // Les douze pages de tête (20/10) : titre et description tirés de leur guide, chiffres du jour.
+  const tete = cat || sub ? guideRayon(path) : undefined;
+  const teteItems = tete ? (sub ? subfamilyProducts(sub, products) : getCategoryProducts(cat!, products)) : [];
+  const teteCtx = tete ? { f: faits(path, teteItems), items: teteItems, all: products } : null;
   const guide =
     slug[0] === 'guides' ? guides.find((g) => g.slug === slug[1]) : undefined;
   const service = services[path];
@@ -110,6 +115,7 @@ export async function slugMetadata(rawSlug: string[], rawPage?: string): Promise
   };
   const title =
     (product && titreCourt(product, products)) ||
+    (tete && teteCtx && tete.titre(teteCtx)) ||
     (cat && (SEO_COPY[cat.slug]?.title || cat.name)) ||
     sub?.title ||
     (guide && titreCourt(guide.title)) ||
@@ -148,6 +154,7 @@ export async function slugMetadata(rawSlug: string[], rawPage?: string): Promise
         ? product.seoDescription
         : describe(product)
       : undefined) ||
+    (tete && teteCtx && tete.description(teteCtx)) ||
     (cat && (SEO_COPY[cat.slug]?.description || cat.description)) ||
     sub?.description ||
     guide?.description ||
@@ -165,7 +172,7 @@ export async function slugMetadata(rawSlug: string[], rawPage?: string): Promise
     title: seoTitle,
     description,
     // le premier mot-clé est toujours une phrase visible de la page (son titre) ; l’audit le vérifie
-    keywords: product ? productKeywords(product) : cat ? categoryKeywords(cat) : sub ? subfamilyKeywords(sub) : guide ? guideKeywords(guide) : [(service?.title || special[path]?.[0] || '').toLowerCase(), ...(pageKeywords(path) || [])].filter(Boolean),
+    keywords: product ? productKeywords(product) : tete ? [...new Set([tete.h1.toLowerCase(), tete.requete, ...(cat ? categoryKeywords(cat) : sub ? subfamilyKeywords(sub) : [])])] : cat ? categoryKeywords(cat) : sub ? subfamilyKeywords(sub) : guide ? guideKeywords(guide) : [(service?.title || special[path]?.[0] || '').toLowerCase(), ...(pageKeywords(path) || [])].filter(Boolean),
     alternates: { canonical, languages: { 'fr-FR': canonical, 'x-default': canonical } },
     openGraph: {
       title: pageTitle,

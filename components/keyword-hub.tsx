@@ -82,6 +82,7 @@ export async function KeywordHub({
   items,
   all,
   path: givenPath,
+  prix = true,
 }: {
   scope: string;
   name: string;
@@ -89,6 +90,8 @@ export async function KeywordHub({
   all: Product[];
   /** le chemin de la page quand il ne se déduit pas du scope (pages de marque) */
   path?: string;
+  /** false sur une page de tête : son guide (components/guide-rayon.tsx) donne déjà les prix et les marques */
+  prix?: boolean;
 }) {
   if (items.length < 4) return null;
   const path = givenPath || '/' + scope + '/';
@@ -183,7 +186,7 @@ export async function KeywordHub({
         </>
       )}
 
-      {rows.length >= 2 && (
+      {prix && rows.length >= 2 && (
         <div className="hub-prices">
           <table>
             <caption>

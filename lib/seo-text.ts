@@ -3,12 +3,13 @@
  * catalogue). Générés depuis les données, jamais écrits à la main, donc jamais
  * en retard sur le site.
  */
-import { shop, money, type Product, livraison } from './catalog';
+import { shop, money, type Product, livraison, categoryFor, getCategoryProducts } from './catalog';
+import { GUIDES_RAYONS, guideEnTexte, faits, prixAffiche } from './guides-rayons';
 import { guides, services } from './editorial';
 import { ATTRIBUTION, EDITORIAL_DATE, familiesWithCounts, urlOf } from './seo';
 import { QUERY_MAP } from './seo-copy';
 import { VILLES, REGIONS, CARREFOUR, SOURCE, villePath, regionTotal, franceEnChiffres, rang } from './villes';
-import { SUBFAMILIES, subfamilyProducts } from './subfamilies';
+import { SUBFAMILIES, subfamilyProducts, subfamilyFor } from './subfamilies';
 import { brandsOf } from './brands';
 import { ozFacets, brandFamilyFacets } from './facets';
 import { observatory, observatorySentences } from './observatory';
@@ -84,6 +85,30 @@ function villes() {
 
 function subfamilies(products: Product[]) {
   return ['## Sous-familles (pages dédiées)', ...SUBFAMILIES.map((s) => `- [${s.name}](${urlOf('/' + s.slug + '/')}) : ${subfamilyProducts(s, products).length} modèles. ${s.intro.split('. ')[0]}.`)].join('\n');
+}
+
+/* Les douze pages de tête (20/10) : le guide de chaque rayon, tiré du même module que la page. */
+function rayonsDeTete(products: Product[]) {
+  return [
+    '## Pages de tête : le guide de chaque rayon',
+    'Chaque rayon ci-dessous publie, sous sa liste de modèles, ce guide et ses questions ; les chiffres sont ceux du catalogue du jour.',
+    ...GUIDES_RAYONS.flatMap((g) => {
+      const sub = subfamilyFor(g.slug);
+      const cat = categoryFor(g.slug);
+      const items = sub ? subfamilyProducts(sub, products) : cat ? getCategoryProducts(cat, products) : [];
+      if (!items.length) return [];
+      const c = { f: faits(g.slug, items), items, all: products };
+      const t = guideEnTexte(g, c);
+      return [
+        `### ${g.h1} — ${urlOf('/' + g.slug + '/')}`,
+        g.description(c),
+        ...t.chapitres.map((x) => '- ' + x),
+        ...t.choix.map((x) => `- ${x.usage} : ${x.produit.name}, ${prixAffiche(x.produit)} — ${x.critere} (${urlOf('/produits/' + x.produit.slug + '/')})`),
+        ...t.faq.map((q) => `- Q : ${q.question} R : ${q.answer}`),
+        '',
+      ];
+    }),
+  ].join('\n');
 }
 
 function agents() {
@@ -177,6 +202,8 @@ export function llmsFullTxt(products: Product[]) {
       ...g.faq.map((f) => `- Q : ${f.question} R : ${f.answer}`),
       '',
     ]),
+    rayonsDeTete(products),
+    '',
     villes(),
     '',
     delivery(),

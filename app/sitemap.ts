@@ -8,6 +8,7 @@ import { brandsOf } from '@/lib/brands';
 import { allFacets } from '@/lib/facets';
 import { VILLES, REGIONS, CARREFOUR, SOURCE, villePath } from '@/lib/villes';
 import { VILLES_DATE } from '@/components/ville-page';
+import { GUIDES_RAYONS } from '@/lib/guides-rayons';
 const SUBFAMILY_PATHS = new Set(SUBFAMILIES.map((s) => '/' + s.slug + '/'));
 const TOOL_PATHS = new Set(['/observatoire-des-prix/', '/outils/poids-de-gants/']);
 // « Vente matériel de boxe » (03/10) : une page de catalogue qui n'est pas une famille ; ses chiffres suivent le catalogue.
@@ -68,6 +69,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     dates.set('/marques/' + brand.slug + '/', collectionDate(brand.products));
   for (const facet of facets)
     dates.set(facet.path, collectionDate(facet.products));
+  // Une page de tête (lib/guides-rayons.ts) date aussi la dernière révision de son texte : la plus récente l’emporte.
+  for (const g of GUIDES_RAYONS) {
+    const path = '/' + g.slug + '/';
+    dates.set(path, [dates.get(path) || '', g.revision].sort().at(-1)!);
+  }
   // Le jour où les ventes ouvrent, le texte des pages-villes passe au présent : leur date le dit.
   for (const path of VILLE_PATHS) dates.set(path, VILLES_DATE);
   for (const path of INFO_PATHS) dates.set(path, SOURCE.maj);
