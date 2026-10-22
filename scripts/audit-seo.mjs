@@ -154,18 +154,23 @@ for (let i = 0; i < locations.length; i += 4) {
         'vignette à la demande ' + path,
       );
       if (path.startsWith('/produits/')) {
+        // Un modèle décliné en tailles est un ProductGroup (depuis le 19/10) : sa référence est
+        // productGroupID, et ce sont ses variantes qui portent le sku et l’offre.
         const product = structured.find(
-          (x) => x['@type'] === 'Product' && x.mainEntityOfPage,
+          (x) => (x['@type'] === 'Product' || x['@type'] === 'ProductGroup') && x.mainEntityOfPage,
         );
         assert.ok(product, 'Product ' + path);
+        const variantes = product.hasVariant || [];
+        const reference = product['@type'] === 'ProductGroup' ? product.productGroupID && variantes.length > 0 && variantes.every((v) => v.sku) : product.sku;
         assert.ok(
-          product.sku && product.image?.length && product.url,
+          reference && product.image?.length && product.url,
           'Product facts ' + path,
         );
         // L’offre suit l’interrupteur des ventes : absente tant que rien ne se vend, complète le jour J.
         const enVente = !structured.some((x) => (x.additionalProperty || []).some((a) => a.name === 'Disponibilité' && /^En vente le /.test(a.value)));
-        if (!enVente) assert.ok(!structured.some((x) => x.offers), 'fake offers ' + path);
-        else assert.ok(structured.some((x) => x.offers && x.offers.price && x.offers.priceCurrency === 'EUR' && x.offers.availability), 'offre absente ' + path);
+        const porteurs = structured.flatMap((x) => [x, ...(x.hasVariant || [])]);
+        if (!enVente) assert.ok(!porteurs.some((x) => x.offers), 'fake offers ' + path);
+        else assert.ok(porteurs.some((x) => x.offers && x.offers.price && x.offers.priceCurrency === 'EUR' && x.offers.availability), 'offre absente ' + path);
         assert.ok(
           structured.some((x) => x['@type'] === 'ItemPage'),
           'ItemPage ' + path,
