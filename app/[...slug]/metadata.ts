@@ -41,7 +41,7 @@ export async function slugMetadata(rawSlug: string[], rawPage?: string): Promise
     if (ville) return villeMetadata(ville);
     const region = regionFor(path);
     if (region) return regionMetadata(region);
-    if (path === CARREFOUR) return carrefourMetadata();
+    if (path === CARREFOUR) return carrefourMetadata(await readCatalog());
     if (path === VENTE) return venteMetadata();
     if (DISCIPLINES_PAGES[path]) return disciplinesMetadata(DISCIPLINES_PAGES[path]);
   }

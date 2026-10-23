@@ -21,7 +21,7 @@
  */
 import data from './data/villes.json';
 import liensMorts from './data/liens-morts.json';
-import { shop } from './catalog';
+import { shop, livraison as frais } from './catalog';
 import type { SeoFaq, SeoSection } from './seo-copy';
 
 export type Salle = { nom: string; boxe: boolean };
@@ -167,7 +167,8 @@ export const RAYON: Record<string, string> = {
   'Kung-fu, wushu': '/materiel-sport-de-combat/',
 };
 
-const fr = (n: number) => n.toLocaleString('fr-FR');
+/** « 1 042 » : l’espace fine de fr-FR (U+202F) manque à la police du corps ; l’insécable (U+00A0) s’affiche. */
+const fr = (n: number) => n.toLocaleString('fr-FR').replace(/ /g, ' ');
 const nb = (n: number, un: string, plusieurs: string) => `${fr(n)} ${n > 1 ? plusieurs : un}`;
 const liste = (xs: string[]) => (xs.length > 1 ? xs.slice(0, -1).join(', ') + ' et ' + xs.at(-1) : xs[0] || '');
 const min1 = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
@@ -573,12 +574,36 @@ export function regionFaq(r: Region): SeoFaq[] {
 
 /* ── Carrefour « Boutique sport de combat France » ─────────────────────── */
 
-export const CARREFOUR_TITRE = 'Boutique sport de combat France : par ville';
-export const CARREFOUR_DESCRIPTION =
-  'Boutique sport de combat France : la boutique en ligne livre toute la France. Les lieux de boxe et d’arts martiaux des grandes villes, ville par ville.';
-export function carrefourChapeau(lieux: number) {
-  return `Boutique de Boxe est une boutique sport de combat en ligne, basée à Toulouse, qui ${livrer('toute la France continentale')}. Ville par ville, ${fr(lieux)} lieux de boxe et d’arts martiaux sont recensés ici d’après le ministère des Sports, avec le matériel que chacun demande.`;
+/**
+ * Refonte du 23/10/2026 : la requête « boutique sport de combat France » cherche une boutique, pas un
+ * annuaire. La page vend d'abord — un tableau par sport, un par type de matériel, la livraison, les
+ * marques — et garde ensuite les lieux recensés, ville par ville : elle reste le carrefour des pages-villes.
+ */
+export const CARREFOUR_REVISION = '2026-10-23';
+/** Les sept sports de la boutique, chacun avec sa page de tête ; la boxe d'abord, comme le catalogue. */
+export const SPORTS_BOUTIQUE: { nom: string; slug: string }[] = [
+  { nom: 'Boxe anglaise', slug: 'equipement-boxe-anglaise' },
+  { nom: 'Muay-thaï', slug: 'materiel-boxe-thai' },
+  { nom: 'Kick-boxing', slug: 'materiel-kick-boxing' },
+  { nom: 'MMA', slug: 'materiel-mma' },
+  { nom: 'Jiu-jitsu brésilien et grappling', slug: 'equipement-jjb' },
+  { nom: 'Savate boxe française', slug: 'materiel-boxe-francaise' },
+  { nom: 'Arts martiaux', slug: 'boutique-arts-martiaux' },
+];
+/** Une ligne des tableaux du carrefour : un sport ou un rayon, avec les chiffres du jour. */
+export type SportBoutique = { nom: string; slug: string; n: number; min: number; marques: number; familles: string[] };
+/** « MMA » reste en capitales au milieu d'une phrase ; « Boxe anglaise » devient « boxe anglaise ». */
+const nomBas = (s: string) => (/^[A-Z]{2,}/.test(s) ? s : min1(s));
+
+export const carrefourTitre = (modeles: number) => `Boutique sport de combat France : ${fr(modeles)} modèles en ligne`;
+export const carrefourDescription = (modeles: number) =>
+  `Boutique sport de combat France : ${fr(modeles)} modèles de boxe, MMA, muay-thaï, JJB, savate et arts martiaux, livrés partout en France, relais offert dès ${frais.franco}.`;
+export function carrefourChapeau(modeles: number, marques: number, sports: number) {
+  return `Boutique de Boxe est une boutique de sport de combat en ligne, basée à Toulouse, qui ${livrer('toute la France continentale')} en point relais ou à domicile : ${fr(modeles)} modèles de ${fr(marques)} marques pour ${sports} sports, de la boxe anglaise aux arts martiaux. Chaque fiche donne les tailles réelles du fabricant et le prix TTC ; plus bas, les lieux où l’on pratique, ville par ville.`;
 }
+/** « 62 marques au catalogue : Elion (157 modèles), Fairtex (63) et Venum (40) en tête ; … » */
+export const carrefourMarques = (total: number, tete: { nom: string; n: number }[], seuil: number) =>
+  `${fr(total)} marques au catalogue : ${liste(tete.map((m, i) => (i === 0 ? `${m.nom} (${fr(m.n)} modèles)` : `${m.nom} (${fr(m.n)})`)))} en tête ; celles qui comptent au moins ${seuil} modèles ont leur page, avec leurs familles et leurs tailles.`;
 /** Les chiffres de la France entière, en deux phrases citables. */
 export function franceEnChiffres() {
   const top = Object.entries(FRANCE.parDiscipline).slice(0, 3);
@@ -588,12 +613,24 @@ export function franceEnChiffres() {
     `${fr(FRANCE.frappe)} lieux déclarent une boxe : ${liste(boxes.map(([d, n]) => `${fr(n)} en ${min1(d)}`))}. ${fr(FRANCE.boxe)} salles y sont classées « salle de boxe ».`,
   ];
 }
-export function carrefourFaq(): SeoFaq[] {
+export function carrefourFaq(c: { modeles: number; marques: number; sports: { nom: string; n: number }[] }): SeoFaq[] {
   const dense = [...VILLES].sort((x, y) => x.habitantsParLieu - y.habitantsParLieu);
   return [
     {
       question: fine('Existe-t-il une boutique sport de combat en ligne qui livre toute la France ?'),
-      answer: `Oui : Boutique de Boxe, boutique sport de combat France basée à Toulouse, ${livrer('toute la France continentale')}, à domicile ou en point relais.`,
+      answer: fine(`Oui : Boutique de Boxe, boutique sport de combat France basée à Toulouse, ${livrer('toute la France continentale')} en point relais (${frais.relais}, offert dès ${frais.franco} d’achats) ou à domicile (${frais.domicile}).`),
+    },
+    {
+      question: fine('Quels sports de combat la boutique équipe-t-elle ?'),
+      answer: fine(`${liste(c.sports.map((s) => `${nomBas(s.nom)} (${fr(s.n)} modèles)`))} : ${fr(c.modeles)} modèles de ${fr(c.marques)} marques en tout, et une page par sport.`),
+    },
+    {
+      question: fine('En combien de temps la commande arrive-t-elle ?'),
+      answer: fine(`Elle part sous ${shop.delais.expedition}, puis le transporteur la remet en point relais ou à domicile ; le suivi arrive par e-mail. Les sacs de frappe, bases et portiques, trop lourds pour un colis, se livrent sur devis.`),
+    },
+    {
+      question: fine('Peut-on renvoyer un article qui ne va pas ?'),
+      answer: fine('Oui, pendant quatorze jours après la réception, sans motif à donner : l’article revient non utilisé, dans son emballage, et il est remboursé. Pour une autre taille, la page contact suffit, avec le numéro de commande.'),
     },
     {
       question: fine('Quelle grande ville a le plus de salles de sports de combat par habitant ?'),

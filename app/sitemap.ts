@@ -7,7 +7,7 @@ import { SUBFAMILIES, subfamilyProducts } from '@/lib/subfamilies';
 import { brandsOf } from '@/lib/brands';
 import { allFacets } from '@/lib/facets';
 import { VILLES, REGIONS, CARREFOUR, SOURCE, villePath } from '@/lib/villes';
-import { VILLES_DATE } from '@/components/ville-page';
+import { VILLES_DATE, CARREFOUR_DATE } from '@/components/ville-page';
 import { GUIDES_RAYONS } from '@/lib/guides-rayons';
 const SUBFAMILY_PATHS = new Set(SUBFAMILIES.map((s) => '/' + s.slug + '/'));
 const TOOL_PATHS = new Set(['/observatoire-des-prix/', '/outils/poids-de-gants/']);
@@ -76,6 +76,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
   // Le jour où les ventes ouvrent, le texte des pages-villes passe au présent : leur date le dit.
   for (const path of VILLE_PATHS) dates.set(path, VILLES_DATE);
+  dates.set('/' + CARREFOUR + '/', CARREFOUR_DATE);
   for (const path of INFO_PATHS) dates.set(path, SOURCE.maj);
   // Un guide écrit après le lancement porte sa propre date, jamais celle de la révision générale.
   for (const g of guides) if (guidePublished(g) > EDITORIAL_DATE) dates.set('/guides/' + g.slug + '/', guidePublished(g));
