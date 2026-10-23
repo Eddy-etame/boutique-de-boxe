@@ -12,7 +12,7 @@ import { listingFor } from '@/lib/listing';
 import selection from '@/lib/data/selection.json';
 import { observatory, observatorySentences } from '@/lib/observatory';
 import { parseUsage, recommendGloveWeight } from '@/lib/glove-weight';
-import { allFacets } from '@/lib/facets';
+import { allFacets, brandFamilyFacet, brandSubfamilyFacetsOf, type Facet } from '@/lib/facets';
 import { VILLES, REGIONS, FRANCE, SOURCE, CARREFOUR, villePath, regionTotal, siteDe } from '@/lib/villes';
 
 /**
@@ -94,7 +94,7 @@ const tools = [
     description: 'Le poids de gants de boxe (en onces) selon l’usage, le poids du pratiquant et l’âge, d’après le guide publié par la boutique.',
     inputSchema: { type: 'object', properties: { usage: { type: 'string', enum: ['sac', 'technique', 'partenaire'] }, bodyWeightKg: { type: 'number', minimum: 15, maximum: 200 }, ageYears: { type: 'number', minimum: 4, maximum: 99 } }, required: ['usage'], additionalProperties: false },
   },
-  { name: 'get_brands', description: 'Les marques qui ont leur page (au moins six modèles) : nombre de modèles, familles, fourchette de prix, URL.', inputSchema: { type: 'object', properties: {}, additionalProperties: false } },
+  { name: 'get_brands', description: 'Les marques qui ont leur page (au moins six modèles) : nombre de modèles, familles, fourchette de prix, URL, et leurs pages par équipement (« gants de boxe Fairtex », « protège-tibias Elion »).', inputSchema: { type: 'object', properties: {}, additionalProperties: false } },
   {
     name: 'get_weekly_selection',
     description: 'La sélection de la semaine d’une page de catalogue (elle change chaque lundi). Un choix éditorial, pas un classement de ventes.',
@@ -191,6 +191,8 @@ export async function POST(request: Request) {
         ...SUBFAMILIES.map((sf) => ({ path: '/' + sf.slug + '/', purpose: `${sf.name} : ${subfamilyProducts(sf, products).length} modèles` })),
         { path: '/marques/', purpose: 'toutes les marques du catalogue' },
         ...brandsOf(products).map((b) => ({ path: '/marques/' + b.slug + '/', purpose: `${b.name} : ${b.products.length} modèles` })),
+        // Les pages de longue traîne, adossées à du stock réel : poids et couleur de gants, marque × famille, marque × équipement précis.
+        ...allFacets(products).map((f) => ({ path: f.path, purpose: `${f.name} : ${f.products.length} modèles` })),
         { path: '/guides/', purpose: `les ${guides.length} guides d’achat` },
         ...guides.map((g) => ({ path: '/guides/' + g.slug + '/', purpose: g.title })),
         ...Object.keys(services).map((s) => ({ path: '/' + s + '/', purpose: services[s].title })),
@@ -245,7 +247,15 @@ export async function POST(request: Request) {
       models: page ? { url: urlOf(page.path), count: page.products.length } : { url: urlOf('/gants-de-boxe/'), count: null },
     };
   } else if (name === 'get_brands')
-    value = brandsOf(products).map((b) => ({ name: b.name, url: urlOf('/marques/' + b.slug + '/'), models: b.products.length, families: b.families.map((f) => `${f.name} (${f.count})`), priceRange: `${money(b.min)} – ${money(b.max)}` }));
+    value = brandsOf(products).map((b) => ({
+      name: b.name,
+      url: urlOf('/marques/' + b.slug + '/'),
+      models: b.products.length,
+      families: b.families.map((f) => `${f.name} (${f.count})`),
+      priceRange: `${money(b.min)} – ${money(b.max)}`,
+      // Les pages de la marque par équipement : sa famille (« Gants de boxe Fairtex ») puis ses rayons précis (« Protège-tibias Elion »).
+      pages: [...b.families.map((f) => brandFamilyFacet(b, f.slug)).filter((f): f is Facet => Boolean(f)), ...brandSubfamilyFacetsOf(b, products)].map((f) => ({ name: f.name, url: urlOf(f.path), models: f.products.length })),
+    }));
   else if (name === 'get_weekly_selection') {
     const page = typeof args.page === 'string' && /^[a-z0-9-]{1,80}$/.test(args.page) ? args.page : '';
     const list = page ? listingFor(page, products) : null;

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { listItem, money, type Product } from '@/lib/catalog';
-import { facetSiblings, type Facet } from '@/lib/facets';
+import { brandSubfamilyFacets, brandSubfamilyFacetsIn, facetSiblings, type Facet } from '@/lib/facets';
+import type { Subfamily } from '@/lib/subfamilies';
 import { collectionGraph } from '@/lib/seo';
 import { ogImage } from '@/lib/og';
 import { Breadcrumb, ArrowLink } from './shop-shell';
@@ -37,10 +38,12 @@ export function FacetPage({ facet: f, all, page = 1 }: { facet: Facet; all: Prod
   const siblings = facetSiblings(f, all);
   const prices = f.products.map((p) => p.price).filter((n) => n > 0).sort((a, b) => a - b);
   const pageItems = f.products.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  // Une marque dans une famille coiffe ses pages par équipement précis (« Protège-tibias Elion ») : elle les lie.
+  const rayons = f.kind === 'marque-famille' ? brandSubfamilyFacets(all).filter((x) => x.family?.path === f.path) : [];
   const crumbs =
     f.kind === 'oz' || f.kind === 'couleur'
       ? [{ label: f.parent.name, href: f.parent.path }, { label: f.name }]
-      : [{ label: 'Marques', href: '/marques/' }, { label: f.parent.name, href: f.parent.path }, { label: f.name }];
+      : [{ label: 'Marques', href: '/marques/' }, { label: f.parent.name, href: f.parent.path }, ...(f.family ? [{ label: f.family.name, href: f.family.path }] : []), { label: f.name }];
   return (
     <main id="contenu" className="page-wrap">
       <Breadcrumb items={crumbs} />
@@ -57,17 +60,26 @@ export function FacetPage({ facet: f, all, page = 1 }: { facet: Facet; all: Prod
         </div>
         <div>
           <div className="label">
-            {f.products.length} modèles, de {money(prices[0])} à {money(prices.at(-1)!)}.
+            {f.products.length} modèles, {prices[0] === prices.at(-1) ? `à ${money(prices[0])}` : `de ${money(prices[0])} à ${money(prices.at(-1)!)}`}.
           </div>
           <p>{f.intro}</p>
         </div>
       </section>
       <nav className="subfamily-links" aria-label="Pages voisines">
         <a href={f.parent.path}>{f.kind === 'oz' ? 'Tous les poids : ' : f.kind === 'couleur' ? 'Toutes les couleurs : ' : 'Toute la marque : '}{f.parent.name}</a>{' '}
+        {f.family && <><a href={f.family.path}>{f.family.name}</a>{' '}</>}
+        {f.subfamily && <><a href={f.subfamily.path}>Toutes les marques : {f.subfamily.name}</a>{' '}</>}
         {spaced(siblings.slice(0, 12).map((x) => (
           <a key={x.path} href={x.path}>{x.name}</a>
         )))}
       </nav>
+      {rayons.length > 0 && (
+        <nav className="subfamily-links" aria-label={'Par équipement : ' + f.name}>
+          {spaced(rayons.map((x) => (
+            <a key={x.path} href={x.path}>{x.name} · {x.products.length}</a>
+          )))}
+        </nav>
+      )}
       <Catalog items={pageItems.map(listItem)} total={f.products.length} scope={f.scope} initialPage={page} showFamilies={false} />
       {page === 1 && <KeywordHub scope={f.scope} name={f.name} items={f.products} all={all} path={f.path} />}
       {page === 1 && <SeoBody sections={[]} faq={f.faq} />}
@@ -81,5 +93,18 @@ export function FacetPage({ facet: f, all, page = 1 }: { facet: Facet; all: Prod
         </section>
       )}
     </main>
+  );
+}
+
+/** Sur la page d’un équipement précis : les marques qui y ont leur propre page (« Protège-tibias Elion · 15 »), liens cuits dans le HTML. */
+export function BrandPagesOfSubfamily({ sub, all }: { sub: Subfamily; all: Product[] }) {
+  const pages = brandSubfamilyFacetsIn(sub, all);
+  if (!pages.length) return null;
+  return (
+    <nav className="subfamily-links" aria-label={'Par marque : ' + sub.name}>
+      {spaced(pages.map((f) => (
+        <a key={f.path} href={f.path}>{f.name} · {f.products.length}</a>
+      )))}
+    </nav>
   );
 }

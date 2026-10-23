@@ -1,6 +1,8 @@
-import { categoryFor, money, type Product } from './catalog';
+import { categoryFor, money, shop, livraison, type Product } from './catalog';
 import type { SeoFaq } from './seo-copy';
 import { brandsOf, brandSlug, type Brand } from './brands';
+import { SUBFAMILIES, type Subfamily } from './subfamilies';
+import { dansLeRayon, ENFANT } from './rayons';
 
 /**
  * Les pages de longue traîne adossées à du stock réel.
@@ -11,14 +13,16 @@ import { brandsOf, brandSlug, type Brand } from './brands';
  *   Tout le texte vient des faits du catalogue et du guide publié : rien n’y est promis qu’on ne
  *   puisse montrer.
  *
- *   Deux familles de pages :
+ *   Quatre familles de pages :
  *     – le poids des gants de boxe, en onces : /gants-de-boxe-12-oz/
+ *     – la couleur des gants de boxe : /gants-de-boxe-noirs/
  *     – une marque dans une famille : /marques/fairtex/gants-de-boxe/
+ *     – une marque dans un rayon précis (sous-famille) : /marques/fairtex/shorts-de-boxe-thai/
  */
 export const MIN_FACET_PRODUCTS = 6;
 
 export type Facet = {
-  kind: 'oz' | 'marque-famille' | 'couleur';
+  kind: 'oz' | 'marque-famille' | 'couleur' | 'marque-sous-famille';
   /** identifiant de liste (scope du catalogue en fenêtre) */
   scope: string;
   path: string;
@@ -31,6 +35,10 @@ export type Facet = {
   faq: SeoFaq[];
   guide: string;
   parent: { path: string; name: string };
+  /** Marque × sous-famille : la page marque × famille qui la coiffe, quand elle existe. */
+  family?: { path: string; name: string };
+  /** Marque × sous-famille : le rayon toutes marques (« Protège-tibias », 40 modèles). */
+  subfamily?: { path: string; name: string };
   products: Product[];
 };
 
@@ -228,8 +236,237 @@ export function brandFamilyFacets(products: Product[]): Facet[] {
   return brandsOf(products).flatMap((b) => b.families.map((f) => brandFamilyFacet(b, f.slug)).filter((x): x is Facet => Boolean(x)));
 }
 
+/* ------------------------------------------------------------------ une marque dans un rayon (sous-famille) */
+
+/**
+ * « Protège-tibias Elion », « short de boxe thaï Wicked One », « protège-dents Shock Doctor » : les
+ * recherches « produit + marque », celles où une boutique spécialisée passe devant les grands sites
+ * (relevé des suggestions Google du 20 octobre 2026). Une page par marque et par rayon précis, à partir
+ * de six modèles, sous /marques/<marque>/<rayon>/, au gabarit des pages marque × famille.
+ *
+ *   – jamais un doublon : si tous les modèles de la marque dans la famille sont dans ce rayon, la page
+ *     marque × famille suffit ; si deux rayons donnent la même liste pour une marque (« shorts de
+ *     boxe » et « shorts de boxe thaï » chez Wicked One), seul le plus précis a sa page ;
+ *   – les rayons qui traversent les familles (par boxe, par niveau, par public) n’entrent pas, ni
+ *     « gants de boxe pas cher » : la page « gants de boxe <marque> » porte déjà « … pas cher » ;
+ *   – tout le texte se calcule sur la liste du jour : prix, tailles, matières, fermetures, couleurs,
+ *     modèles le moins et le plus cher, place dans la marque. Les chiffres font la page ; aucune phrase
+ *     n’est écrite pour une marque en particulier, et aucune suite de sept mots sans chiffre ne se
+ *     retrouve sur plus de la moitié de ces pages (mesuré avant chaque livraison).
+ */
+const PAS_PAR_MARQUE = new Set(['gants-de-boxe-pas-cher']);
+/** Les rayons qu’une marque peut découper : un équipement précis, dans une seule famille. */
+export const SOUS_FAMILLES_PAR_MARQUE: Subfamily[] = SUBFAMILIES.filter((s) => !s.kind && !PAS_PAR_MARQUE.has(s.slug) && categoryFor(s.parent)?.families.length === 1);
+
+/** Les modèles de la marque dans le rayon, au sens du rayon (une boîte n’est pas un protège-dents). */
+const subfamilyItems = (b: Brand, s: Subfamily) => b.products.filter((p) => s.match(p) && dansLeRayon(s.slug, p));
+
+/** Taille d’un rayon dans tout le catalogue, mémorisée par catalogue : le rayon le plus petit est le plus précis. */
+const SUBFAMILY_TOTALS = new WeakMap<Product[], Map<string, number>>();
+function subfamilyTotal(s: Subfamily, all: Product[]) {
+  let totals = SUBFAMILY_TOTALS.get(all);
+  if (!totals) SUBFAMILY_TOTALS.set(all, (totals = new Map()));
+  if (!totals.has(s.slug)) totals.set(s.slug, all.filter(s.match).length);
+  return totals.get(s.slug)!;
+}
+
+/** La requête telle qu’on la tape, pour le titre : « short de boxe thaï », « casque de boxe », « kimono de JJB ». */
+const requeteDe = (s: Subfamily) => {
+  const q = s.prioritaires[0];
+  return (q.charAt(0).toUpperCase() + q.slice(1)).replace(/\bjjb\b/gi, 'JJB').replace(/\bmma\b/gi, 'MMA');
+};
+
+/* Typographie française : espace insécable avant « : ; ? », à l’intérieur des guillemets. */
+const DP = ' : ';
+const PV = ' ; ';
+const QM = ' ?';
+const guill = (s: string) => '« ' + s + ' »';
+
+/** Ordre de lecture des tailles : XS avant S/M, 10 oz avant 12 oz, A1 avant A1L avant A2. */
+const SIZE_ORDER = ['xxs', 'xs', 's', 's/m', 'm', 'm/l', 'l', 'l/xl', 'xl', 'xxl', '2xl', 'xxxl', '3xl', '4xl'];
+function sizeRank(size: string) {
+  const k = size.toLowerCase();
+  const i = SIZE_ORDER.indexOf(k);
+  if (i >= 0) return i;
+  const a = /^a(\d)(l?)$/.exec(k);
+  if (a) return 500 + Number(a[1]) + (a[2] ? 0.5 : 0);
+  const n = parseFloat(k.replace(',', '.'));
+  return Number.isFinite(n) ? 100 + n : 1000;
+}
+
+/** Les tailles réellement proposées (« S/M », « 12 oz », « A2 »), avec le nombre de modèles qui les proposent. */
+function sizesOf(items: Product[]) {
+  const counts = new Map<string, number>();
+  for (const p of items) for (const s of new Set(p.sizes.map((x) => x.split(/[,(]/)[0].trim()))) if (s && s.length <= 8 && !/unique/i.test(s)) counts.set(s, (counts.get(s) || 0) + 1);
+  const list = [...counts.keys()].sort((a, b) => sizeRank(a) - sizeRank(b)).map(sizeLabel);
+  const top = [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([s, c]) => [sizeLabel(s), c] as const);
+  return { list, counts, top };
+}
+
+/** Compte les valeurs d’une caractéristique sur la liste, la plus fréquente d’abord. */
+function tally(items: Product[], of: (p: Product) => (string | null)[]) {
+  const counts = new Map<string, number>();
+  for (const p of items) for (const v of new Set(of(p))) if (v) counts.set(v, (counts.get(v) || 0) + 1);
+  return [...counts.entries()].sort((a, b) => b[1] - a[1]);
+}
+
+/** « S, M, L, XL et XXL » quand les tailles sont peu nombreuses, « du S au XXL » quand elles se suivent. */
+function sizesPhrase(list: string[], withCount = true) {
+  const letters = list.filter((s) => SIZE_ORDER.includes(s.toLowerCase()));
+  if (letters.length >= 4 && letters.length === list.length) return `du ${list[0]} au ${list.at(-1)}${withCount ? ` (${list.length} tailles)` : ''}`;
+  return list.slice(0, 6).join(', ') + autres(list.length - 6);
+}
+
+const CLOSURE_WORD: Record<string, string> = { 'Auto-agrippant': 'à fermeture auto-agrippante', Lacets: 'à lacets', Zip: 'zippés' };
+const colourLabel = (key: string) => (COLOURS.find((c) => c.key === key)?.label || key).toLowerCase();
+const enfant = (p: Product) => p.audience === 'enfant' || ENFANT.test(p.name);
+/** « et 3 autres », « et 1 autre » */
+const autres = (k: number) => (k > 0 ? ` et ${k} autre${k > 1 ? 's' : ''}` : '');
+/** « des 29 fiches » quand toutes le disent, « de 27 fiches sur 29 » sinon ; « les 29 fiches » / « 27 fiches sur 29 » après « d’après » */
+const deFiches = (k: number, n: number) => (k === n ? `des ${n} fiches` : `de ${k} fiches sur ${n}`);
+const lesFiches = (k: number, n: number) => (k === n ? `les ${n} fiches` : `${k} fiches sur ${n}`);
+/** « de 45,00 € à 66,90 € », ou « à 91,90 € » quand il n’y a qu’un prix */
+const fourchette = (xs: number[]) => {
+  const s = xs.filter((x) => x > 0).sort((a, b) => a - b);
+  return s[0] === s.at(-1) ? `à ${money(s[0])}` : `de ${money(s[0])} à ${money(s.at(-1)!)}`;
+};
+/** L’étiquette d’une taille telle qu’on l’écrit en français : « 4,5 m », pas « 4.5 m ». */
+const sizeLabel = (s: string) => s.replace(/(\d)\.(\d)/g, '$1,$2');
+
+/**
+ * La page d’une marque dans un rayon, ou null : moins de six modèles, doublon de la page marque ×
+ * famille, ou un rayon plus précis qui donne la même liste pour cette marque.
+ */
+export function brandSubfamilyFacet(b: Brand, s: Subfamily, all: Product[]): Facet | null {
+  if (!SOUS_FAMILLES_PAR_MARQUE.includes(s)) return null;
+  const items = subfamilyItems(b, s);
+  if (items.length < MIN_FACET_PRODUCTS) return null;
+  const ids = new Set(items.map((p) => p.id));
+  const famille = b.products.filter((p) => p.category === s.parent);
+  if (famille.length >= MIN_FACET_PRODUCTS && famille.every((p) => ids.has(p.id))) return null;
+  for (const other of SOUS_FAMILLES_PAR_MARQUE) {
+    if (other === s) continue;
+    const theirs = subfamilyItems(b, other);
+    if (theirs.length !== items.length || !theirs.every((p) => ids.has(p.id))) continue;
+    const [mine, his] = [subfamilyTotal(s, all), subfamilyTotal(other, all)];
+    if (his < mine || (his === mine && other.slug.length > s.slug.length)) return null;
+  }
+
+  const n = items.length;
+  const priced = items.filter((p) => p.price > 0).sort((a, c) => a.price - c.price);
+  const prices = priced.map((p) => p.price);
+  const [min, max, med] = [prices[0], prices.at(-1)!, prices[Math.floor(prices.length / 2)]];
+  const cheapest = priced[0];
+  const dearest = priced.at(-1)!;
+  const name = `${s.name} ${b.name}`;
+  const lowerName = `${lower(s.name)} ${b.name}`;
+  const lowerRayon = lower(s.name);
+  const requete = requeteDe(s);
+  const sizes = sizesOf(items);
+  const materials = tally(items, (p) => [materialOf(p)]);
+  const closures = tally(items, (p) => [closureOf(p)]);
+  const colours = tally(items, coloursOf);
+  const kids = items.filter(enfant);
+  const famName = categoryFor(s.parent)?.name || s.parent;
+  const familyPage = brandFamilyFacet(b, s.parent);
+  // Les autres marques du rayon, d’après le catalogue (deux modèles au moins) : les pages voisines, elles, sont dans la navigation.
+  const others = brandsOf(all)
+    .filter((x) => x.slug !== b.slug)
+    .map((x) => ({ brand: x.name, n: subfamilyItems(x, s).length }))
+    .filter((x) => x.n >= 2)
+    .sort((x, y) => y.n - x.n)
+    .slice(0, 6);
+  const totalRayon = subfamilyTotal(s, all);
+  const matieres = list(materials.map(([m, c]) => `${c} en ${m.toLowerCase()}`));
+  const nbMatieres = materials.reduce((sum, [, c]) => sum + c, 0);
+  const fermetures = list(closures.map(([k, c], i) => `${c}${i ? '' : ' modèles'} ${CLOSURE_WORD[k]}`));
+  const nbFermetures = closures.reduce((sum, [, c]) => sum + c, 0);
+  const teintes = colours.map(([k, c]) => `${colourLabel(k)} (${c})`);
+  const bicolores = items.filter((p) => coloursOf(p).length >= 2).length;
+  const seuil = [20, 30, 50, 100, 200].find((x) => prices.filter((p) => p <= x * 100).length >= 2 && prices.filter((p) => p <= x * 100).length < prices.length);
+  const sousSeuil = seuil ? prices.filter((p) => p <= seuil * 100).length : 0;
+
+  const scope = `marque-${b.slug}--${s.slug}`;
+  const path = `/marques/${b.slug}/${s.slug}/`;
+
+  // Titre : la requête d’abord, le nombre de modèles, le prix d’appel ; 60 caractères au plus, sans couper un mot.
+  const title = [`${requete} ${b.name}${DP}${n} modèles, dès ${money(min)}`, `${requete} ${b.name}${DP}${n} modèles`, `${requete} ${b.name}`].find((t) => t.length <= 60)!;
+
+  // Description : 120 à 158 caractères, et seulement des faits de la liste ; chaque segment n’entre que s’il tient.
+  const head = `${name}${DP}${n} modèles, de ${money(min)} à ${money(max)}`;
+  const tail = '. Prix TTC, livraison en France.';
+  let description = head;
+  for (const segment of [
+    sizes.list.length ? `, tailles ${sizes.list.slice(0, 5).join(', ')}` : null,
+    materials.length ? `, ${list(materials.slice(0, 3).map(([m]) => m.toLowerCase()))}` : null,
+    closures.length ? `, ${list(closures.map(([k]) => k.toLowerCase()))}` : null,
+    colours.length >= 2 ? `, ${colours.length} teintes` : null,
+    kids.length ? `, ${kids.length} en taille enfant` : null,
+  ]) {
+    if (segment && (description + segment + tail).length <= 158) description += segment;
+  }
+  description += tail;
+  if (description.length < 120) description = description.replace(/\.$/, `, prix médian ${money(med)}, photos et tailles réelles sur chaque fiche.`);
+
+  // Entrée de page : les faits de la liste, dans l’ordre où l’on choisit (prix, matière, taille, fermeture, couleur), puis la place dans la marque.
+  const prixDe = (m: string) => fourchette(items.filter((p) => materialOf(p) === m).map((p) => p.price));
+  const famillesDeLaMarque = b.families.length > 4 ? `${b.families.slice(0, 4).map((f) => `${f.count} en ${lower(f.name)}`).join(', ')}${autres(b.families.length - 4)} familles` : list(b.families.map((f) => `${f.count} en ${lower(f.name)}`));
+  const intro = [
+    `Les ${n} ${lowerName} du catalogue ${min === max ? `sont tous à ${money(min)}` : `vont de ${money(min)} à ${money(max)}, prix médian ${money(med)}`}${kids.length && kids.length < n ? `, dont ${kids.length} en taille enfant` : ''}.`,
+    materials.length ? `Matières données par ${lesFiches(nbMatieres, n)}${DP}${matieres}.` : '',
+    sizes.list.length >= 2 ? `Tailles proposées${DP}${sizesPhrase(sizes.list)}${PV}${sizes.top[0][0]} revient sur ${sizes.top[0][1]} modèles${sizes.top[1] ? `, ${sizes.top[1][0]} sur ${sizes.top[1][1]}` : ''}.` : '',
+    closures.length ? `${fermetures.charAt(0).toUpperCase() + fermetures.slice(1)}.` : '',
+    colours.length >= 2 ? `${colours.length} teintes${DP}${teintes.slice(0, 4).join(', ')}${autres(colours.length - 4)}.` : '',
+    `${b.name} compte ${b.products.length} modèles au catalogue, ${famille.length} en ${lower(famName)}${PV}ces ${n} ${lowerRayon} sont ici.`,
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  const faq: SeoFaq[] = [
+    { question: `Combien coûtent les ${lowerName}${QM}`, answer: `${min === max ? `${money(min)} (prix de vente TTC) pour les ${n} modèles.` : `De ${money(min)} à ${money(max)} (prix de vente TTC), médian ${money(med)}. Le moins cher${DP}${guill(cheapest.name)} à ${money(min)}${PV}le plus cher${DP}${guill(dearest.name)} à ${money(max)}.`}${seuil ? ` ${sousSeuil} modèles sur ${n} sont à ${seuil} € et moins.` : ''}` },
+    ...(sizes.list.length >= 2
+      ? [{ question: `Quelles tailles pour les ${lowerName}${QM}`, answer: `${sizes.list.length} tailles${DP}${sizesPhrase(sizes.list, false)}, selon le modèle${PV}${sizes.top[0][0]} sur ${sizes.top[0][1]} modèles (grille ${b.name} sur chaque fiche)${sizes.top[1] ? `, ${sizes.top[1][0]} sur ${sizes.top[1][1]}` : ''}.` }]
+      : []),
+    ...(materials.length
+      ? [{ question: `En quelle matière sont les ${lowerName}${QM}`, answer: `${matieres.charAt(0).toUpperCase() + matieres.slice(1)}, d’après la ligne ${guill('Matières')} ${deFiches(nbMatieres, n)}.${materials.length >= 2 ? ` ${materials[0][0]}${DP}${prixDe(materials[0][0])}${PV}${materials[1][0].toLowerCase()}${DP}${prixDe(materials[1][0])}.` : ''}` }]
+      : []),
+    ...(closures.length ? [{ question: `Comment se ferment les ${lowerName}${QM}`, answer: `${fermetures.charAt(0).toUpperCase() + fermetures.slice(1)}, d’après ${lesFiches(nbFermetures, n)}${nbFermetures < n ? `${PV}fermeture non indiquée sur ${n - nbFermetures} fiche${n - nbFermetures > 1 ? 's' : ''}` : ''}.` }] : []),
+    ...(others.length ? [{ question: `Quelles autres marques proposent des ${lowerRayon}${QM}`, answer: `${list(others.map((o) => `${o.brand} (${o.n} modèle${o.n > 1 ? 's' : ''})`))}${PV}toutes marques confondues, le rayon ${s.name} compte ${totalRayon} modèles.` }] : []),
+    ...(colours.length >= 2 ? [{ question: `Quelles couleurs pour les ${lowerName}${QM}`, answer: `${colours.length} teintes au catalogue${DP}${teintes.join(', ')}${bicolores ? `${PV}${bicolores} modèles comptés dans 2 teintes` : ''}.` }] : []),
+    ...(kids.length && kids.length < n ? [{ question: `Y a-t-il des ${lowerName} pour enfant${QM}`, answer: `${kids.length} modèle${kids.length > 1 ? 's' : ''} sur ${n}${DP}${list(kids.slice(0, 3).map((p) => guill(p.name)))}${autres(kids.length - 3)}.` }] : []),
+    { question: `Que propose ${b.name} en dehors des ${lowerRayon}${QM}`, answer: `${b.products.length} modèles ${b.name} au catalogue, dans ${b.families.length} famille${b.families.length > 1 ? 's' : ''}${DP}${famillesDeLaMarque}.` },
+  ].slice(0, 5);
+  if (faq.length < 3) faq.push({ question: `Peut-on commander les ${lowerName} en ligne${QM}`, answer: `Oui, depuis le ${shop.ouverture.long}${DP}chaque modèle se paie par carte sur sa fiche, expédition sous ${shop.delais.expedition}, livraison ${livraison.tarifs}.` });
+
+  return {
+    kind: 'marque-sous-famille',
+    scope,
+    path,
+    name,
+    eyebrow: `${b.name.toUpperCase()} · ${s.name.toUpperCase()} · ${n} MODÈLES`,
+    title,
+    description,
+    intro,
+    keywords: [...new Set([`${lower(requete)} ${b.name}`, `${b.name} ${lower(requete)}`, `${lowerName}`, `${lower(requete)} ${b.name} prix`, ...s.secondaires.filter((k) => k.toLowerCase().includes(b.name.toLowerCase()))])],
+    faq,
+    guide: s.guide,
+    parent: { path: '/marques/' + b.slug + '/', name: b.name },
+    ...(familyPage ? { family: { path: familyPage.path, name: familyPage.name } } : {}),
+    subfamily: { path: '/' + s.slug + '/', name: s.name },
+    products: items,
+  };
+}
+
+/** Les pages marque × rayon d’une marque, dans l’ordre des rayons. */
+export const brandSubfamilyFacetsOf = (b: Brand, all: Product[]) => SOUS_FAMILLES_PAR_MARQUE.map((s) => brandSubfamilyFacet(b, s, all)).filter((f): f is Facet => Boolean(f));
+
+/** Les pages marque × rayon d’un rayon, la marque la plus fournie d’abord. */
+export const brandSubfamilyFacetsIn = (s: Subfamily, all: Product[]) => brandsOf(all).map((b) => brandSubfamilyFacet(b, s, all)).filter((f): f is Facet => Boolean(f));
+
+export const brandSubfamilyFacets = (all: Product[]) => brandsOf(all).flatMap((b) => brandSubfamilyFacetsOf(b, all));
+
 /** Toutes les pages de longue traîne qui existent aujourd’hui, pour le plan du site et les index. */
-export const allFacets = (products: Product[]) => [...ozFacets(products), ...colourFacets(products), ...brandFamilyFacets(products)];
+export const allFacets = (products: Product[]) => [...ozFacets(products), ...colourFacets(products), ...brandFamilyFacets(products), ...brandSubfamilyFacets(products)];
 
 /** Résolution d’un chemin de page ou d’un scope de liste vers sa page, s’il y en a une. */
 export function facetFor(key: string, products: Product[]): Facet | null {
@@ -240,16 +477,28 @@ export function facetFor(key: string, products: Product[]): Facet | null {
   const bf = /^marque-([a-z0-9-]+?)--([a-z0-9-]+)$/.exec(key) || /^marques\/([a-z0-9-]+)\/([a-z0-9-]+)$/.exec(key);
   if (bf) {
     const b = brandsOf(products).find((x) => x.slug === bf[1]);
-    return b ? brandFamilyFacet(b, bf[2]) : null;
+    if (!b) return null;
+    const rayon = SOUS_FAMILLES_PAR_MARQUE.find((s) => s.slug === bf[2]);
+    return brandFamilyFacet(b, bf[2]) || (rayon ? brandSubfamilyFacet(b, rayon, products) : null);
   }
   return null;
 }
 
-/** Les pages voisines d’une page : les autres poids, ou les autres familles de la marque et les autres marques de la famille. */
+/**
+ * Les pages voisines d’une page : les autres poids, les autres couleurs, ou — pour une marque — les autres
+ * familles de la marque et les autres marques de la famille ; pour une marque dans un rayon, les autres
+ * marques du rayon puis les autres rayons de la marque.
+ */
 export function facetSiblings(f: Facet, products: Product[]): { path: string; name: string }[] {
   if (f.kind === 'oz') return ozFacets(products).filter((x) => x.scope !== f.scope).map((x) => ({ path: x.path, name: x.name }));
   if (f.kind === 'couleur') return colourFacets(products).filter((x) => x.scope !== f.scope).map((x) => ({ path: x.path, name: x.name }));
   const [, brand, family] = /^marque-([a-z0-9-]+?)--([a-z0-9-]+)$/.exec(f.scope) || [];
+  if (f.kind === 'marque-sous-famille') {
+    const pages = brandSubfamilyFacets(products).filter((x) => x.scope !== f.scope);
+    const sameRayon = pages.filter((x) => x.scope.endsWith('--' + family));
+    const sameBrand = pages.filter((x) => x.scope.startsWith(`marque-${brand}--`));
+    return [...sameRayon, ...sameBrand].map((x) => ({ path: x.path, name: x.name }));
+  }
   const b = brandsOf(products).find((x) => x.slug === brand);
   const sameBrand = b ? b.families.map((x) => brandFamilyFacet(b, x.slug)).filter((x): x is Facet => x !== null && x.scope !== f.scope) : [];
   const sameFamily = brandsOf(products)
