@@ -472,7 +472,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
     },
     liens: [
       { titre: 'Les sous-rayons', liens: [{ href: '/gants-de-boxe-enfant/', texte: 'gants de boxe enfant' }, { href: '/gants-de-boxe-a-lacets/', texte: 'gants à lacets' }, { href: '/gants-de-boxe-sparring/', texte: 'gants de sparring' }, { href: '/gants-de-boxe-cuir/', texte: 'gants en cuir' }, { href: '/gants-de-boxe-pas-cher/', texte: 'paires à 50 € et moins' }] },
-      { titre: 'Les guides', liens: [{ href: '/guides/choisir-gants-boxe/', texte: 'choisir sa première paire' }, { href: '/guides/quelle-taille-gants-de-boxe/', texte: 'les poids selon l’âge et le gabarit' }, { href: '/guides/difference-gants-boxe-mma/', texte: 'boxe ou MMA : deux gants différents' }] },
+      { titre: 'Les guides', liens: [{ href: '/guides/choisir-gants-boxe/', texte: 'choisir sa première paire' }, { href: '/guides/quelle-taille-gants-de-boxe/', texte: 'les poids selon l’âge et le gabarit' }, { href: '/guides/difference-gants-boxe-mma/', texte: 'boxe ou MMA : deux gants différents' }, { href: '/guides/comment-laver-ses-gants-de-boxe/', texte: 'laver ses gants et enlever l’odeur' }] },
       { titre: 'Les rayons voisins', liens: [{ href: '/bandes-de-boxe/', texte: 'bandes de boxe' }, { href: '/protege-dents/', texte: 'protège-dents boxe' }, { href: '/casques-de-boxe/', texte: 'casque de boxe' }, { href: '/gants-mma/', texte: 'gants MMA' }] },
     ],
   },
@@ -771,7 +771,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
     },
     liens: [
       { titre: 'Les sous-rayons', liens: [{ href: '/sacs-de-frappe-sur-pied/', texte: 'sac de frappe sur pied' }, { href: '/poires-de-vitesse/', texte: 'poire de vitesse et punching-ball' }] },
-      { titre: 'Les guides', liens: [{ href: '/guides/sac-de-frappe-suspendu-ou-sur-pied/', texte: 'suspendu ou sur pied : lequel choisir' }, { href: '/outils/poids-de-gants/', texte: 'le bon poids de gants pour le sac' }] },
+      { titre: 'Les guides', liens: [{ href: '/guides/sac-de-frappe-suspendu-ou-sur-pied/', texte: 'suspendu ou sur pied : lequel choisir' }, { href: '/outils/poids-de-gants/', texte: 'le bon poids de gants pour le sac' }, { href: '/guides/comment-fixer-un-sac-de-frappe/', texte: 'fixer son sac : plafond, mur, potence' }] },
       { titre: 'Les rayons voisins', liens: [{ href: '/gants-de-boxe/', texte: 'gants de boxe' }, { href: '/bandes-de-boxe/', texte: 'bandes de boxe' }, { href: '/pattes-d-ours/', texte: 'pattes d’ours et paos' }, { href: '/equipement-entrainement/', texte: 'équipement d’entraînement' }] },
     ],
   },
@@ -965,7 +965,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
       { question: 'Peut-on retourner un protège-dents ?', answer: 'Pas une fois descellé : pour des raisons d’hygiène, un protège-dents ouvert après la livraison ne peut pas être repris. Vérifiez la taille, adulte ou junior, avant d’ouvrir l’emballage.' },
     ],
     liens: [
-      { titre: 'Les guides', liens: [{ href: '/guides/choisir-protections/', texte: 'quelles protections pour les sports de combat' }, { href: '/guides/equipement-enfant/', texte: 'équiper un enfant pour ses premiers cours' }] },
+      { titre: 'Les guides', liens: [{ href: '/guides/choisir-protections/', texte: 'quelles protections pour les sports de combat' }, { href: '/guides/equipement-enfant/', texte: 'équiper un enfant pour ses premiers cours' }, { href: '/guides/comment-mouler-un-protege-dents/', texte: 'mouler son protège-dents, étape par étape' }] },
       { titre: 'Les rayons voisins', liens: [{ href: '/protections-boxe/', texte: 'protections de boxe' }, { href: '/casques-de-boxe/', texte: 'casques' }, { href: '/coquilles/', texte: 'coquilles' }, { href: '/protege-tibias/', texte: 'protège-tibias' }, { href: '/gants-de-boxe/', texte: 'gants de boxe' }] },
     ],
   },
@@ -1604,7 +1604,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
       ];
     },
     liens: [
-      { titre: 'Les guides', liens: [{ href: '/guides/bandes-de-boxe-ou-sous-gants/', texte: 'bandes ou sous-gants : que mettre sous ses gants' }, { href: '/guides/boxe-anglaise-materiel-indispensable/', texte: 'le premier achat de la boxe anglaise' }] },
+      { titre: 'Les guides', liens: [{ href: '/guides/bandes-de-boxe-ou-sous-gants/', texte: 'bandes ou sous-gants : que mettre sous ses gants' }, { href: '/guides/boxe-anglaise-materiel-indispensable/', texte: 'le premier achat de la boxe anglaise' }, { href: '/guides/comment-mettre-des-bandes-de-boxe/', texte: 'mettre ses bandes, étape par étape' }] },
       { titre: 'Les rayons voisins', liens: [{ href: '/sous-gants/', texte: 'sous-gants et mitaines' }, { href: '/gants-de-boxe/', texte: 'gants de boxe' }, { href: '/accessoires-boxe/', texte: 'accessoires de boxe' }, { href: '/materiel-boxe-debutant/', texte: 'matériel de boxe débutant' }] },
     ],
   },
