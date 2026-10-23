@@ -312,6 +312,79 @@ const tibias = (p: Product) => nom(p).startsWith('protège-tibias');
 const tibiaPied = (p: Product) => tibias(p) && /pied/.test(nom(p)) && !enCoton(p);
 const surPied = (p: Product) => p.category === 'sacs-de-frappe' && genreSac(p) === 'pied';
 
+/* ------------------------------------------------------------------ repères des six rayons de l’étape 2 (22/10) */
+
+const typeSpec = (p: Product) => (p.specs?.['Type'] || '').toLowerCase();
+const commence = (re: RegExp) => (p: Product) => re.test(nom(p));
+/* accessoires */
+const bandes = commence(/^bandes? de boxe/);
+const sousGants = commence(/^(sous-gants|mitaines)/);
+const tapes = commence(/^(finger tape|tape )/);
+const hygiene = (p: Product) => /hygi/.test(typeSpec(p)) || /^(savon|spray|séchoir|boîte à savon|trousse|ciseaux)/.test(nom(p));
+const gourde = (p: Product) => /gourde|bouteille/.test(typeSpec(p) + ' ' + nom(p));
+const cordeASauter = commence(/^corde à sauter/);
+/* protections */
+const casque = (p: Product) => nom(p).startsWith('casque') && !nom(p).startsWith('casquette');
+const coquille = commence(/^(coquille|protection pelvienne|support et coquille|support et pelvienne|short et coquille|short shock doctor)/);
+const pourFemme = (p: Product) => /femme/.test(typeSpec(p) + ' ' + nom(p)) || nom(p).startsWith('brassière');
+const articulation = commence(/^(coudières|chevillères|genouillères|strap |bracelet |ceinture mcdavid)/);
+const coudieres = commence(/^coudières/);
+const chevilleres = commence(/^chevillères/);
+const pourEntraineur = commence(/^(ceinture de frappe|protège-cuisses|veste fairtex)/);
+const plastron = commence(/^plastron/);
+const protegePieds = commence(/^protège-pieds/);
+const avantBras = commence(/^protège-avant-bras/);
+const tibiaSeul = (p: Product) => tibias(p) && !/pied/.test(nom(p));
+/* textile */
+const shortAnglais = (p: Product) => nom(p).startsWith('short') && /boxe anglaise/.test(nom(p));
+const shortThai = (p: Product) => nom(p).startsWith('short') && !nom(p).startsWith('short mma') && /tha[iï]|muay/.test(nom(p));
+const shortMMA = commence(/^short mma/);
+const tshirt = commence(/^(t-shirt|polo)/);
+const debardeur = commence(/^débardeur/);
+const rashguard = commence(/^rashguard/);
+const sweat = commence(/^(sweat|veste)/);
+const peignoir = commence(/^peignoir/);
+const spats = commence(/^(spats|legging)/);
+const pantalon = commence(/^pantalon/);
+const brassiere = commence(/^brassière/);
+const tenueSavate = (p: Product) => /^(combinaison|pantalon|débardeur)/.test(nom(p)) && /boxe française|savate/.test(nom(p));
+const femmeTextile = (p: Product) => /femme|fille|brassière/.test(nom(p));
+/* arts martiaux */
+const kimono = commence(/^kimono/);
+const kimonoJudo = (p: Product) => kimono(p) && /judo/.test(nom(p));
+const kimonoKarate = (p: Product) => kimono(p) && /karat/.test(nom(p));
+const dobok = commence(/^dobok/);
+const hakama = commence(/^hakama/);
+const ceintureGrade = (p: Product) => nom(p).startsWith('ceinture') && !/frappe|mcdavid/.test(nom(p));
+const armeEntrainement = commence(/^(tanto|couteau|planche de rupture|étui pour armes)/);
+const bebe = commence(/bébé/);
+/** Les tailles en centimètres d’une tenue (« 150 cm ») : la plus petite et la plus grande. */
+function centimetres(ps: Product[]): [number, number] | null {
+  const cm = ps.flatMap((p) => tailles(p).map((s) => /^(\d{2,3})\s*cm$/i.exec(s)).filter((m): m is RegExpExecArray => Boolean(m)).map((m) => Number(m[1])));
+  return cm.length ? [Math.min(...cm), Math.max(...cm)] : null;
+}
+/** Un tableau « type → modèles, premier prix » à partir de règles nommées ; chaque ligne peut lier sa page. */
+function tableauTypes(items: Product[], types: [string, (p: Product) => boolean, string?][], titre: string, note?: string): Tableau | null {
+  const lignes: Cellule[][] = [];
+  for (const [libelle, test, href] of types) {
+    const ps = items.filter((p) => p.price > 0 && test(p));
+    if (!ps.length) continue;
+    lignes.push([href ? { texte: libelle, href } : libelle, fr(ps.length), money(Math.min(...ps.map((p) => p.price)))]);
+  }
+  return lignes.length >= 2 ? { titre, colonnes: ['Type', 'Modèles', 'Dès'], lignes, note } : null;
+}
+/** « dès 5,90 € » d’un groupe, ou rien s’il est vide. */
+const desDe = (ps: Product[]) => {
+  const s = ps.filter((p) => p.price > 0).map((p) => p.price);
+  return s.length ? money(Math.min(...s)) : null;
+};
+const compte = (ps: Product[], t: (p: Product) => boolean) => ps.filter((p) => p.price > 0 && t(p)).length;
+/** « 3 kimonos de judo dès 16,90 € » ; au singulier quand il n’y en a qu’un. */
+const combien = (ps: Product[], t: (p: Product) => boolean, un: string, plusieurs: string) => {
+  const g = ps.filter((p) => p.price > 0 && t(p));
+  return g.length ? `${pluriel(g.length, un, plusieurs)} dès ${desDe(g)}` : null;
+};
+
 /* ------------------------------------------------------------------ les douze rayons */
 
 export const GUIDES_RAYONS: GuideRayon[] = [
@@ -1882,6 +1955,867 @@ export const GUIDES_RAYONS: GuideRayon[] = [
       { titre: 'Par discipline', liens: [{ href: '/materiel-boxe/', texte: 'matériel de boxe' }, { href: '/materiel-mma/', texte: 'matériel MMA' }, { href: '/materiel-boxe-thai/', texte: 'boxe thaï' }, { href: '/materiel-kick-boxing/', texte: 'kick-boxing' }, { href: '/materiel-boxe-francaise/', texte: 'savate boxe française' }, { href: '/equipement-jjb/', texte: 'jiu-jitsu brésilien' }, { href: '/arts-martiaux/', texte: 'matériel d’arts martiaux' }] },
       { titre: 'Les guides', liens: [{ href: '/guides/', texte: 'tous les guides d’achat' }, { href: '/guides/choisir-protections/', texte: 'les protections de chaque sport' }, { href: '/sports-de-combat/', texte: 'les sports de combat en France' }] },
       { titre: 'La boutique', liens: [{ href: '/livraison/', texte: 'livraison et délais' }, { href: '/retours/', texte: 'retours et échanges' }, { href: '/boutique-sport-de-combat/', texte: 'boutique sport de combat en France' }] },
+    ],
+  },
+  /* ---------------------------------------------------------------- accessoires de boxe (22/10) */
+  {
+    slug: 'accessoires-boxe',
+    requete: 'accessoires boxe',
+    revision: '2026-10-22',
+    h1: 'Accessoires de boxe',
+    eyebrow: 'ACCESSOIRES BOXE · BANDES, SOUS-GANTS, TAPE, HYGIÈNE',
+    titre: ({ f }) => `Accessoires boxe : bandes, sous-gants, tape, ${fr(f.n)} modèles`,
+    description: ({ f }) => `Accessoires boxe : ${fr(f.n)} modèles dès ${money(f.min)} : bandes, sous-gants gel, mitaines, tape, hygiène. Ce qui sert à chaque séance, et dans quel ordre l’acheter.`,
+    label: ({ f }) => `${fr(f.n)} modèles, dès ${money(f.min)} : bandes, sous-gants, tape, hygiène.`,
+    intro: 'Tout ce qui entoure les gants dans le sac : les bandes et les sous-gants d’abord, puis le tape, de quoi boire et de quoi garder le matériel propre. Le guide suit la liste.',
+    guide: {
+      titre: 'Choisir ses accessoires de boxe',
+      chapeau: ({ f }) => `${fr(f.n)} modèles de ${f.marques.length} marques, de ${money(f.min)} à ${money(f.max)} : ce qui est indispensable, ce qui rend service, et un modèle réel pour chaque besoin.`,
+      chapitres: [
+        {
+          titre: 'Les bandes, avant tout le reste',
+          texte: [
+            'Elles passent avant les gants : personnelles, lavées après chaque cours, elles tiennent le poignet et retiennent la sueur avant la mousse du gant. Une main d’adulte se bande avec 4 ou 4,50 m, celle d’un enfant avec 2,50 m.',
+            ({ items }) => {
+              const b = items.filter((p) => bandes(p) && p.price > 0);
+              const l = b.map(longueur).filter((x): x is number => x !== null);
+              return `${fr(b.length)} paires au rayon, longues de ${metres(Math.min(...l))} jusqu’à ${metres(Math.max(...l))}, dont ${fr(l.filter((x) => x === 4.5).length)} en 4,50 m ; les fiches annoncent un mélange de coton et de lycra sur ${fr(b.filter((p) => /coton/.test(matiere(p)) && /lycra/.test(matiere(p))).length)} d’entre elles. Leur page, [bandes de boxe](/bandes-de-boxe/), détaille la longueur et la pose.`;
+            },
+          ],
+        },
+        {
+          titre: 'Sous-gants et mitaines : s’équiper en dix secondes',
+          texte: [
+            'Un sous-gant se passe d’un geste, gel ou mousse déjà en place sur les jointures, une sangle autour du poignet. Il va vite et protège bien au sac ; pour le sparring, la bande se règle mieux. Les mitaines de maintien, plus fines, servent sous les gants de sac et aux pattes d’ours.',
+            ({ items }) => {
+              const sg = items.filter((p) => sousGants(p) && p.price > 0);
+              const gel = sg.filter((p) => /gel/.test(nom(p) + ' ' + spec(p, 'Rembourrage', 'Matières'))).length;
+              return `Le rayon en compte ${fr(sg.length)}, dès ${desDe(sg)}, dont ${fr(gel)} à gel ; une paire de mitaines existe en junior. Le guide [bandes ou sous-gants](/guides/bandes-de-boxe-ou-sous-gants/) tranche selon la séance.`;
+            },
+          ],
+        },
+        {
+          titre: 'Le tape : les doigts et les bandes',
+          texte: [
+            'Le finger tape, 1 cm de large, s’enroule entre deux phalanges pour tenir les doigts que les saisies fatiguent, au jiu-jitsu brésilien et au grappling. Le tape de 2,5 cm ferme un bandage ou protège une jointure sous le gant.',
+            ({ items }) => {
+              const t = items.filter((p) => tapes(p) && p.price > 0);
+              return t.length ? `${pluriel(t.length, 'référence', 'références')} au rayon, dès ${desDe(t)} ; les rouleaux de finger tape se vendent par trois.` : 'Chaque fiche donne la largeur et la longueur du rouleau.';
+            },
+          ],
+        },
+        {
+          titre: 'Boire, sauter, ranger',
+          texte: [
+            ({ items, all }) => {
+              const g = items.filter((p) => gourde(p) && p.price > 0);
+              const c = all.filter((p) => cordeASauter(p) && p.price > 0);
+              const parts = [
+                g.length ? `${fr(g.length)} gourdes et bouteilles, de ${money(Math.min(...g.map((p) => p.price)))} à ${money(Math.max(...g.map((p) => p.price)))}, pour la bouteille que chaque salle demande.` : '',
+                c.length ? `La corde à sauter, elle, a son propre rayon : ${fr(c.length)} modèles dès ${desDe(c)}, dans l’[équipement d’entraînement](/cordes-a-sauter/) ; presque tous les cours s’échauffent avec.` : '',
+              ].filter(Boolean);
+              return parts.join(' ');
+            },
+            'Le sac qui transporte le tout a aussi sa page : les [sacs de sport](/sacs-de-sport/) avec compartiment pour les gants.',
+          ],
+        },
+        {
+          titre: 'Garder le matériel propre',
+          texte: [
+            'Ce sont la sueur et l’humidité qui abîment un gant, bien plus que les coups. Un séchoir absorbant glissé dans chaque gant après la séance, un spray désinfectant de temps en temps, et des bandes propres à chaque fois : voilà ce qui fait durer une paire.',
+            ({ items }) => {
+              const h = items.filter((p) => hygiene(p) && p.price > 0);
+              return h.length ? `Le rayon réunit ${fr(h.length)} articles d’hygiène et de soins, dès ${desDe(h)} : séchoir, spray, savon, boîte à savon, trousse de soins, ciseaux.` : 'Chaque fiche dit à quoi sert l’article.';
+            },
+          ],
+        },
+        {
+          titre: 'Dans quel ordre acheter',
+          texte: [
+            'Les bandes dès le premier cours, avec un protège-dents pris au rayon des protections. Les sous-gants quand on veut gagner du temps au vestiaire ; le tape, la corde et le séchoir quand les séances deviennent régulières. Rien de cela ne presse, et rien de cela ne se prête.',
+            'La page [matériel de boxe débutant](/materiel-boxe-debutant/) chiffre le premier sac en entier.',
+          ],
+        },
+        {
+          titre: 'Les marques du rayon',
+          texte: [
+            ({ f, items }) =>
+              `Ce que chacune apporte : ${parMarque('accessoires-boxe', items, f, 5, (ps) => {
+                const n = (t: (p: Product) => boolean) => ps.filter(t).length;
+                return [n(bandes) ? pluriel(n(bandes), 'paire de bandes', 'paires de bandes') : '', n(sousGants) ? pluriel(n(sousGants), 'sous-gant ou mitaine', 'sous-gants et mitaines') : '', n(tapes) ? 'du tape' : '', n(gourde) ? pluriel(n(gourde), 'bouteille', 'bouteilles') : '', n(hygiene) ? 'des articles de soins' : ''].filter(Boolean).join(', ');
+              }, true)}.`,
+          ],
+        },
+      ],
+    },
+    usages: {
+      titre: 'Quel accessoire pour quel besoin',
+      note: 'Chaque besoin reçoit le premier prix du rayon qui y répond ; une référence déjà citée cède sa ligne à la suivante.',
+      regles: [
+        { usage: 'Bander une main d’adulte', filtre: (p) => bandes(p) && longueur(p) === 4.5, critere: ({ i, n }) => `${rang(i, 'f')} parmi ${fr(n)} paires longues de 4,50 m` },
+        { usage: 'Bander une main d’enfant', filtre: (p) => bandes(p) && (longueur(p) || 9) <= 2.5, critere: ({ p, i, n }) => (n === 1 ? `la seule paire en ${metres(longueur(p) || 0)}` : `${rang(i, 'f')} des ${fr(n)} paires en ${metres(longueur(p) || 0)}`) },
+        { usage: 'Poignet tenu, coton seul', filtre: (p) => bandes(p) && /coton/.test(matiere(p)) && !/lycra|polyester|nylon/.test(matiere(p)), critere: ({ i, n }) => `${rang(i, 'f')} parmi ${fr(n)} paires tout coton, les plus rigides` },
+        { usage: 'S’équiper en dix secondes', filtre: (p) => nom(p).startsWith('sous-gants'), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} sous-gants` },
+        { usage: 'Aux pattes d’ours, au sac', filtre: (p) => nom(p).startsWith('mitaines'), critere: ({ i, n }) => `${rang(i, 'f')} des ${fr(n)} mitaines de maintien` },
+        { usage: 'Tenir ses doigts au JJB', filtre: (p) => nom(p).startsWith('finger tape'), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} finger tapes, 1 cm de large` },
+        { usage: 'Fermer un bandage', filtre: (p) => nom(p).startsWith('tape '), critere: () => 'le tape de 2,5 cm du rayon' },
+        { usage: 'Sécher ses gants', filtre: (p) => nom(p).startsWith('séchoir'), critere: () => 'le séchoir absorbant du rayon' },
+        { usage: 'Désinfecter', filtre: (p) => nom(p).startsWith('spray'), critere: () => 'le spray désinfectant du rayon' },
+        { usage: 'Boire à la salle', filtre: (p) => gourde(p), critere: ({ i, n }) => `${rang(i, 'f')} des ${fr(n)} gourdes et bouteilles` },
+      ],
+    },
+    tableau: ({ items }) =>
+      tableauTypes(
+        items,
+        [
+          ['Bandes', bandes, '/bandes-de-boxe/'],
+          ['Sous-gants et mitaines', sousGants, '/sous-gants/'],
+          ['Tape et finger tape', tapes],
+          ['Hygiène et soins', hygiene],
+          ['Gourdes et bouteilles', gourde],
+          ['Le reste : corde, convertisseur de lacets, porte-clés', (p) => !bandes(p) && !sousGants(p) && !tapes(p) && !hygiene(p) && !gourde(p)],
+        ],
+        'Les accessoires, type par type',
+        'Nombre de modèles et premier prix du catalogue du jour, prix de vente TTC.',
+      ),
+    faq: ({ f, items, all }) => {
+      const c = all.filter((p) => cordeASauter(p) && p.price > 0);
+      const mitJunior = items.find((p) => nom(p).startsWith('mitaines') && propose(p, /junior/i));
+      return [
+        { question: 'Quels accessoires de boxe faut-il pour commencer ?', answer: 'Des bandes à la longueur de votre main et, au rayon des protections, un protège-dents : ces deux-là sont personnels. Les sous-gants, le tape et la corde viennent avec la régularité des séances.' },
+        { question: 'Sous-gants gel ou bandes : lequel prendre ?', answer: 'Le sous-gant va vite et protège bien les jointures au sac ; la bande se règle à la main et tient le poignet, ce qui compte avec un partenaire. Beaucoup finissent par avoir les deux.' },
+        { question: 'Quelle longueur de bandes pour un adulte ?', answer: '4 ou 4,50 m ; la seconde laisse un tour de plus sur le poignet ou les jointures. Les enfants et les petites mains prennent 2,50 m.' },
+        { question: 'À quoi sert le finger tape ?', answer: 'À maintenir les articulations des doigts, que les prises de manches fatiguent au jiu-jitsu brésilien ; 1 cm de large, il s’enroule entre deux phalanges, jamais sur l’articulation elle-même.' },
+        { question: 'Comment entretenir ses gants et ses bandes ?', answer: 'Les bandes se lavent après chaque cours, à 30 °C dans un filet, et sèchent à plat. Les gants s’ouvrent et sèchent à l’air ; un séchoir absorbant accélère les choses, un spray désinfecte l’intérieur.' },
+        { question: 'Un enfant a-t-il besoin d’accessoires particuliers ?', answer: `Des bandes de 2,50 m, à sa main${mitJunior ? `, et des mitaines en taille junior si le club accepte les sous-gants (${cite(mitJunior)}, à ${money(mitJunior.price)})` : ''}. Le protège-dents junior est au rayon des protections.` },
+        ...(c.length ? [{ question: 'Faut-il une corde à sauter ?', answer: `Presque tous les cours s’échauffent avec. Elle a son rayon, dans l’équipement d’entraînement : ${fr(c.length)} modèles, dès ${desDe(c)}.` }] : []),
+        { question: 'Quelles marques trouve-t-on au rayon ?', answer: `${marquesTexte(f, 5)}. Chaque fiche donne la longueur, la matière et la fermeture.` },
+        { question: 'Combien coûtent les accessoires ?', answer: `De ${money(f.min)} à ${money(f.max)} au rayon, avec un prix médian de ${money(f.mediane)}. Les bandes et le tape sont les moins chers ; les gourdes et les sous-gants à gel, les plus chers.` },
+      ];
+    },
+    liens: [
+      { titre: 'Les sous-rayons', liens: [{ href: '/bandes-de-boxe/', texte: 'bandes de boxe' }, { href: '/sous-gants/', texte: 'sous-gants et mitaines' }, { href: '/cordes-a-sauter/', texte: 'cordes à sauter' }] },
+      { titre: 'Les guides', liens: [{ href: '/guides/bandes-de-boxe-ou-sous-gants/', texte: 'bandes ou sous-gants, selon la séance' }, { href: '/guides/debuter-boxe/', texte: 'l’équipement du premier cours' }] },
+      { titre: 'Les rayons voisins', liens: [{ href: '/protections-boxe/', texte: 'protections de boxe' }, { href: '/gants-de-boxe/', texte: 'gants de boxe' }, { href: '/sacs-de-sport/', texte: 'sacs de sport' }, { href: '/materiel-boxe-debutant/', texte: 'le premier sac, chiffré' }] },
+    ],
+  },
+
+  /* ---------------------------------------------------------------- protections de boxe (22/10) */
+  {
+    slug: 'protections-boxe',
+    requete: 'protections boxe',
+    revision: '2026-10-22',
+    h1: 'Protections de boxe',
+    eyebrow: 'PROTECTIONS BOXE · DENTS, TÊTE, TIBIAS, BAS-VENTRE',
+    titre: ({ f }) => `Protections boxe : ${fr(f.n)} modèles, du protège-dents au casque`,
+    description: ({ f }) => `Protections boxe : ${fr(f.n)} modèles dès ${money(f.min)}. Protège-dents, casques, tibias, coquilles, coudières : dans quel ordre les acheter, à quelle taille.`,
+    label: ({ f }) => `${fr(f.n)} modèles, dès ${money(f.min)} : de la bouche aux tibias.`,
+    intro: 'Le protège-dents dès le premier exercice à deux, le casque et la coquille avec le sparring, les protège-tibias quand les jambes se mettent à frapper. Chaque pièce se prend dans la grille de son fabricant.',
+    guide: {
+      titre: 'Choisir ses protections de boxe',
+      chapeau: ({ f }) => `${fr(f.n)} protections de ${f.marques.length} marques, de ${money(f.min)} à ${money(f.max)} : ce que chaque pièce protège, quand elle devient nécessaire, et un modèle réel par besoin.`,
+      chapitres: [
+        {
+          titre: 'Dans l’ordre où le club les demande',
+          texte: [
+            'Le protège-dents vient en premier, parce que le contact commence tôt, même léger. Le casque et la coquille arrivent quand le sparring s’installe ; le protège-poitrine, pour les femmes, suit la règle de la salle. Les protège-tibias ne servent qu’aux boxes où les jambes frappent.',
+            'En muay-thaï, les coudières s’ajoutent pour le travail des coudes à deux, et les chevillères tiennent la cheville sur les pivots. Avant d’acheter, demandez la liste de votre cours : elle change d’un club à l’autre.',
+          ],
+        },
+        {
+          titre: 'Le protège-dents',
+          texte: [
+            'Simple pour l’arcade du haut, double quand le contact est appuyé ; à mouler chez soi dans l’eau chaude, sauf les modèles pour bagues, qui ne se moulent pas. Il se choisit adulte ou junior, et il ne se prête jamais.',
+            ({ items }) => `${fr(compte(items, protegeDents))} modèles au rayon, dont ${fr(compte(items, pdJunior))} en taille junior, ${fr(compte(items, (p) => protegeDents(p) && bagues(p)))} pour les bagues et ${fr(compte(items, (p) => protegeDents(p) && double(p)))} à double arcade. Leur page, [protège-dents](/protege-dents/), explique le moulage.`,
+          ],
+        },
+        {
+          titre: 'Le casque',
+          texte: [
+            'Il se prend au tour de tête, dans la grille du fabricant, et se juge en bougeant : s’il tourne ou descend sur les yeux, changez de taille. Ouvert, il laisse voir ; à barre ou intégral, il couvre le nez et le menton pour le sparring appuyé.',
+            ({ items }) => {
+              const c = items.filter((p) => casque(p) && p.price > 0);
+              return `${fr(c.length)} casques, dès ${desDe(c)} : ${fr(c.filter(enCuir).length)} en cuir d’après leur fiche, ${fr(c.filter((p) => ['barre', 'integral'].includes(couverture(p))).length)} à barre ou intégraux, ${fr(c.filter((p) => /ffb|aiba/.test(nom(p))).length)} marqués FFB ou AIBA dans leur nom. La page [casque de boxe](/casques-de-boxe/) les compare couverture par couverture.`;
+            },
+          ],
+        },
+        {
+          titre: 'Coquille, protège-poitrine, plastron',
+          texte: [
+            'La coquille protège le bas-ventre, debout comme au sol : coquille seule, ou short de compression qui la tient. Les femmes ont une protection pelvienne à leur morphologie et, pour la poitrine, une brassière à coques. Le plastron, lui, est la cuirasse du taekwondo.',
+            ({ items }) => {
+              const parts = [combien(items, (p) => coquille(p) && !pourFemme(p), 'coquille ou support', 'coquilles et supports'), combien(items, pourFemme, 'protection pour femme', 'protections pour femmes'), combien(items, plastron, 'plastron', 'plastrons')].filter(Boolean);
+              return `Au rayon : ${liste(parts as string[])}.`;
+            },
+          ],
+        },
+        {
+          titre: 'Protège-tibias et protège-pieds',
+          texte: [
+            'Le pied est couvert en pieds-poings et en MMA ; le tibia seul suffit au karaté comme à la savate, d’après leur fédération ; le full contact protège le pied à part, avec un protège-pieds. La taille se prend sur la jambe, de la base du genou à la malléole.',
+            ({ items }) => `${fr(compte(items, tibias))} protège-tibias, dont ${fr(compte(items, tibiaPied))} avec le pied couvert hors coton et ${fr(compte(items, (p) => tibias(p) && enCoton(p)))} en coton ; ${fr(compte(items, protegePieds))} protège-pieds. Leur page, [protège-tibia boxe](/protege-tibias/), détaille mousse, sangles et tailles.`,
+          ],
+        },
+        {
+          titre: 'Coudes, chevilles, genoux, avant-bras',
+          texte: [
+            ({ items }) => {
+              const parts = [combien(items, coudieres, 'paire de coudières', 'paires de coudières'), combien(items, chevilleres, 'paire de chevillères', 'paires de chevillères'), combien(items, (p) => nom(p).startsWith('genouillères'), 'paire de genouillères', 'paires de genouillères'), combien(items, avantBras, 'protège-avant-bras', 'protège-avant-bras'), combien(items, (p) => nom(p).startsWith('protège-oreilles'), 'protège-oreilles', 'protège-oreilles')].filter(Boolean);
+              return `Les coudières servent au muay-thaï, quand les coudes travaillent à deux ; les chevillères tiennent l’articulation sur le pivot ; les genouillères et les protège-avant-bras viennent du taekwondo et de la préparation physique ; le protège-oreilles, du grappling. Au rayon : ${liste(parts as string[])}.`;
+            },
+          ],
+        },
+        {
+          titre: 'Pour l’entraîneur',
+          texte: [
+            ({ items }) => {
+              const e = items.filter((p) => pourEntraineur(p) && p.price > 0);
+              return e.length ? `Celui qui tient les paos encaisse les coups de pied : ceinture de frappe pour le ventre, protège-cuisses, veste de protection. ${pluriel(e.length, 'modèle', 'modèles')} au rayon, de ${money(Math.min(...e.map((p) => p.price)))} à ${money(Math.max(...e.map((p) => p.price)))}.` : 'Les paos et les pattes d’ours sont dans l’équipement d’entraînement.';
+            },
+          ],
+        },
+        {
+          titre: 'La taille, pièce par pièce',
+          texte: [
+            'Le casque au tour de tête, les protège-tibias à la longueur du tibia, la coquille au tour de taille ou de hanches selon la marque, le protège-dents en adulte ou junior : chaque fiche reprend la grille du fabricant, sans équivalence entre marques. Une protection qui tourne ou glisse à l’essai appelle une autre taille, pas un serrage de plus.',
+          ],
+        },
+        {
+          titre: 'En compétition',
+          texte: ['Ce qui est admis en compétition, du casque au protège-dents, dépend de la fédération, de l’âge et de la catégorie ; le club connaît la liste. Quand un modèle porte une mention fédérale dans son nom, sa fiche la reprend telle quelle, sans rien y ajouter. La page [matériel de boxe de compétition](/materiel-boxe-competition/) rassemble gants, casques et coquilles de combat.'],
+        },
+        {
+          titre: 'Entretien',
+          texte: ['Après le cours, tout sort du sac et sèche à l’air ; chaque notice dit comment laver sa matière, mousse, coque ou textile. Le protège-dents se rince et se range dans une boîte aérée. Contrôlez sangles et coutures avant un sparring.'],
+        },
+        {
+          titre: 'Les marques du rayon',
+          texte: [
+            ({ f, items }) =>
+              `Marque par marque : ${parMarque('protections-boxe', items, f, 6, (ps) => {
+                const n = (t: (p: Product) => boolean) => ps.filter(t).length;
+                return [n(casque) ? pluriel(n(casque), 'casque', 'casques') : '', n(protegeDents) ? pluriel(n(protegeDents), 'protège-dents', 'protège-dents') : '', n(tibias) ? pluriel(n(tibias), 'protège-tibias', 'protège-tibias') : '', n(coquille) ? pluriel(n(coquille), 'coquille', 'coquilles') : '', n(articulation) ? pluriel(n(articulation), 'maintien articulaire', 'maintiens articulaires') : ''].filter(Boolean).join(', ');
+              }, true)}.`,
+          ],
+        },
+      ],
+    },
+    usages: {
+      titre: 'Quelle protection pour quel moment',
+      note: 'Le premier prix du rayon pour chaque besoin, en taille adulte sauf mention ; une pièce déjà citée laisse sa ligne à la suivante.',
+      regles: [
+        { usage: 'Dès le premier cours', filtre: (p) => protegeDents(p) && adulte(p) && !propose(p, /junior|enfant/i), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} protège-dents adultes` },
+        { usage: 'Enfant : les dents', filtre: (p) => pdJunior(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} protège-dents enfant ou junior` },
+        { usage: 'Premier casque', filtre: (p) => casque(p) && adulte(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} casques` },
+        { usage: 'Nez et menton couverts', filtre: (p) => casque(p) && ['barre', 'integral'].includes(couverture(p)), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} casques à barre ou intégraux` },
+        { usage: 'Le bas-ventre, homme', filtre: (p) => nom(p).startsWith('coquille'), critere: ({ i, n }) => `${rang(i, 'f')} des ${fr(n)} coquilles` },
+        { usage: 'Le bas-ventre, femme', filtre: (p) => pourFemme(p) && !brassiere(p), critere: ({ i, n }) => (n === 1 ? 'la seule protection pelvienne pour femme' : `${rang(i, 'f')} des ${fr(n)} protections pelviennes pour femme`) },
+        { usage: 'La poitrine', filtre: (p) => brassiere(p), critere: ({ i, n }) => (n === 1 ? 'la seule brassière à coques du rayon' : `${rang(i, 'f')} des ${fr(n)} brassières à coques`) },
+        { usage: 'Boxe thaï, kick : les tibias', filtre: (p) => tibiaPied(p) && adulte(p), critere: ({ i, n }) => `${rang(i)} parmi ${fr(n)} protège-tibias à pied couvert, hors coton` },
+        { usage: 'Karaté, savate : le tibia seul', filtre: (p) => tibiaSeul(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} protège-tibias sans le pied` },
+        { usage: 'Full contact : le pied', filtre: (p) => protegePieds(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} protège-pieds` },
+        { usage: 'Muay-thaï : les coudes', filtre: (p) => coudieres(p), critere: ({ i, n }) => `${rang(i, 'f')} parmi ${fr(n)} paires de coudières` },
+        { usage: 'La cheville sur le pivot', filtre: (p) => chevilleres(p), critere: ({ i, n }) => `${rang(i, 'f')} parmi ${fr(n)} paires de chevillères` },
+        { usage: 'Tenir les paos', filtre: (p) => pourEntraineur(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} protections d’entraîneur` },
+      ],
+    },
+    tableau: ({ items }) =>
+      tableauTypes(
+        items,
+        [
+          ['Protège-dents', protegeDents, '/protege-dents/'],
+          ['Casques', casque, '/casques-de-boxe/'],
+          ['Protège-tibias', tibias, '/protege-tibias/'],
+          ['Protège-pieds et avant-bras', (p) => protegePieds(p) || avantBras(p)],
+          ['Coquilles et protections pelviennes', (p) => coquille(p) || (pourFemme(p) && !brassiere(p)), '/coquilles/'],
+          ['Brassières à coques', brassiere],
+          ['Coudières, chevillères, genouillères', articulation],
+          ['Ceintures de frappe, protège-cuisses, plastrons', (p) => pourEntraineur(p) || plastron(p)],
+        ],
+        'Les protections, type par type',
+        'Comptes et premiers prix du catalogue du jour ; les boîtes de protège-dents ne sont pas comptées.',
+      ),
+    faq: ({ f, items }) => {
+      const prix = (t: (p: Product) => boolean) => premier(items.filter((p) => p.price > 0 && t(p)));
+      const jeu = [prix((p) => protegeDents(p) && adulte(p) && !propose(p, /junior|enfant/i)), prix((p) => casque(p) && adulte(p)), prix((p) => nom(p).startsWith('coquille')), prix((p) => tibiaPied(p) && adulte(p))];
+      const total = jeu.every(Boolean) ? (jeu as Product[]).reduce((s, p) => s + p.price, 0) : null;
+      const kid = items.find((p) => casque(p) && p.sizes.some((s) => /enfant/i.test(s)));
+      const bras = items.find((p) => brassiere(p) && p.price > 0);
+      return [
+        { question: 'Quelles protections de boxe pour débuter ?', answer: 'Un protège-dents, et c’est tout tant qu’il n’y a pas de sparring. Le casque, la coquille et, selon la boxe, les protège-tibias s’ajoutent quand le club les demande.' },
+        { question: 'Le casque est-il obligatoire en boxe ?', answer: 'À l’entraînement, la salle décide, en général dès le sparring. Pour la compétition amateur, c’est le règlement fédéral qui tranche, selon l’âge et la catégorie : renseignez-vous auprès du club avant d’acheter.' },
+        { question: 'Quelle protection pour une femme ?', answer: `Une protection pelvienne coupée pour la morphologie féminine, et pour la poitrine une brassière à coques${bras ? `, comme ${cite(bras)} à ${money(bras.price)}, de ${tailles(bras)[0]} à ${tailles(bras)[tailles(bras).length - 1]}` : ''}. Le guide de l’équipement pour femme détaille les coupes.` },
+        { question: 'Coquille : comment choisir la taille ?', answer: 'Dans la grille de la marque, au tour de taille ou de hanches selon le modèle. Bien réglée, elle ne remonte pas et ne gêne pas la hanche quand le genou monte.' },
+        { question: 'Quelles protections changent d’une boxe à l’autre ?', answer: 'L’anglaise se contente du protège-dents, du casque et de la coquille. Pieds-poings et MMA ajoutent les protège-tibias ; le muay-thaï, les coudières et souvent les chevillères ; le full contact, les protège-pieds.' },
+        { question: 'Y a-t-il des protections pour les enfants ?', answer: `Oui : ${fr(compte(items, pdJunior))} protège-dents junior, ${fr(compte(items, (p) => tibias(p) && propose(p, /junior/i)))} protège-tibias en junior${kid ? `, et ${cite(kid)} existe en taille enfant` : ''}. Chaque pièce se prend à la taille du jour, essayée avant le cours.` },
+        { question: 'Comment laver ses protections ?', answer: 'Selon la notice de chaque modèle : une mousse, une coque et un textile ne se lavent pas pareil. Tout sèche à l’air, hors du sac ; le protège-dents se rince après chaque séance.' },
+        { question: 'Quelles marques au rayon ?', answer: `${marquesTexte(f, 6)}. La grille du fabricant est reprise sur chaque fiche.` },
+        ...(total !== null ? [{ question: 'Combien coûte un jeu de protections complet ?', answer: `Au premier prix du rayon, protège-dents, casque, coquille et protège-tibias à pied couvert reviennent à ${money(total)}. Le prix médian du rayon est de ${money(f.mediane)}.` }] : []),
+      ];
+    },
+    liens: [
+      { titre: 'Les sous-rayons', liens: [{ href: '/protege-dents/', texte: 'protège-dents' }, { href: '/casques-de-boxe/', texte: 'casques de boxe' }, { href: '/protege-tibias/', texte: 'protège-tibias' }, { href: '/coquilles/', texte: 'coquilles et protections pelviennes' }] },
+      { titre: 'Les guides', liens: [{ href: '/guides/choisir-protections/', texte: 'quelle protection pour quel sport' }, { href: '/guides/equipement-enfant/', texte: 'protéger un enfant' }, { href: '/guides/equipement-femme/', texte: 'l’équipement pour femme' }] },
+      { titre: 'Les rayons voisins', liens: [{ href: '/gants-de-boxe/', texte: 'gants de boxe' }, { href: '/materiel-boxe-thai/', texte: 'matériel de boxe thaï' }, { href: '/materiel-mma/', texte: 'matériel MMA' }, { href: '/materiel-boxe-competition/', texte: 'matériel de compétition' }] },
+    ],
+  },
+
+  /* ---------------------------------------------------------------- textile de boxe (22/10) */
+  {
+    slug: 'textile-boxe',
+    requete: 'textile boxe',
+    revision: '2026-10-22',
+    h1: 'Textile de boxe',
+    eyebrow: 'TEXTILE BOXE · SHORTS, T-SHIRTS, RASHGUARDS, SWEATS',
+    titre: ({ f }) => `Textile boxe : shorts, t-shirts, rashguards, ${fr(f.n)} modèles`,
+    description: ({ f }) => `Textile boxe : ${fr(f.n)} modèles dès ${money(f.min)} : shorts anglais, thaï et MMA, t-shirts, rashguards, spats, sweats. La coupe par discipline, la taille par marque.`,
+    label: ({ f, items }) => `${fr(f.n)} modèles, ${etendue(items, TAILLES_LETTRES.filter(([t]) => !['Junior', 'S/M', 'M/L', 'L/XL', 'Taille unique'].includes(t)))}, dès ${money(f.min)}.`,
+    intro: 'Un short par discipline, long pour l’anglaise, court pour le muay-thaï, sans poche pour le MMA ; un haut qui sèche vite ; un sweat pour l’échauffement. La taille se lit dans la grille de chaque marque.',
+    guide: {
+      titre: 'Choisir sa tenue de boxe',
+      chapeau: ({ f }) => `${fr(f.n)} pièces de ${f.marques.length} marques, de ${money(f.min)} à ${money(f.max)} : la coupe qui convient à votre discipline, la matière qui sèche, et la taille qui tient en mouvement.`,
+      chapitres: [
+        {
+          titre: 'Le short dit la discipline',
+          texte: [
+            'Le short d’anglaise descend vers le genou et marque la ceinture, celle que l’adversaire n’a pas le droit de franchir ; le thaï s’arrête à mi-cuisse et s’ouvre sur les côtés pour le genou et le coup de pied ; le short MMA colle à la jambe, sans rien qui accroche au sol.',
+            ({ items }) => `Au rayon : ${fr(compte(items, shortAnglais))} [shorts de boxe anglaise](/shorts-de-boxe-anglaise/), ${fr(compte(items, shortThai))} [shorts de boxe thaï](/shorts-de-boxe-thai/) et ${fr(compte(items, shortMMA))} [shorts MMA](/shorts-mma/), chacun avec sa page et ses conseils de taille.`,
+          ],
+        },
+        {
+          titre: 'Le haut : t-shirt, débardeur, rashguard',
+          texte: [
+            'Le t-shirt et le débardeur suffisent au sac et à la technique ; le débardeur est aussi la tenue de l’anglaise sur le ring. Le rashguard, près du corps, protège la peau des frottements du tapis et sèche vite : c’est le haut du grappling, du no-gi et du MMA, porté seul ou sous le kimono.',
+            ({ items }) => {
+              const r = items.filter((p) => rashguard(p) && p.price > 0);
+              const courtes = r.filter((p) => /courtes/.test(spec(p, 'Manches'))).length;
+              const longues = r.filter((p) => /longues/.test(spec(p, 'Manches'))).length;
+              return `${fr(compte(items, tshirt))} t-shirts, ${fr(compte(items, debardeur))} débardeurs et ${fr(r.length)} rashguards, dont ${fr(courtes)} à manches courtes et ${fr(longues)} à manches longues d’après leur fiche.`;
+            },
+          ],
+        },
+        {
+          titre: 'Les jambes : spats, pantalons, combinaison',
+          texte: [
+            'Les spats couvrent les jambes au sol, seuls ou sous le short. Le pantalon de jogging sert à l’échauffement ; le pantalon ajusté et la combinaison sont la tenue de la savate, où l’arbitre doit lire les touches.',
+            ({ items }) => {
+              const parts = [combien(items, spats, 'paire de spats ou legging', 'spats et leggings'), combien(items, pantalon, 'pantalon', 'pantalons'), combien(items, tenueSavate, 'tenue de savate', 'tenues de savate')].filter(Boolean);
+              return `Au rayon : ${liste(parts as string[])}. La page [matériel de boxe française](/materiel-boxe-francaise/) dit ce que la savate demande en plus.`;
+            },
+          ],
+        },
+        {
+          titre: 'Sweats, vestes, peignoirs',
+          texte: [
+            ({ items }) => {
+              const s = items.filter((p) => sweat(p) && p.price > 0);
+              const pe = items.filter((p) => peignoir(p) && p.price > 0);
+              return `Le sweat se porte pour s’échauffer et pour rentrer ; le peignoir à capuche, pour monter sur le ring. ${fr(s.length)} sweats et vestes dès ${desDe(s)}${pe.length ? `, ${fr(pe.length)} peignoirs dès ${desDe(pe)}` : ''}.`;
+            },
+          ],
+        },
+        {
+          titre: 'Femmes, enfants',
+          texte: [
+            ({ items }) => {
+              const fe = items.filter((p) => femmeTextile(p) && p.price > 0);
+              const en = items.filter((p) => enfant(p) && p.price > 0);
+              return `${fr(fe.length)} pièces sont coupées pour les femmes, brassières comprises, dès ${desDe(fe)} ; les autres coupes sont mixtes et se prennent à la mesure. Pour les enfants, ${fr(en.length)} modèles, dès ${desDe(en)}, en tailles d’âge ou de stature.`;
+            },
+            'Les pages [matériel de boxe femme](/materiel-boxe-femme/) et [matériel de boxe enfant](/materiel-boxe-enfant/) réunissent ces coupes avec le reste de l’équipement.',
+          ],
+        },
+        {
+          titre: 'La taille, dans la grille de la marque',
+          texte: [
+            'Un short se prend au tour de taille, un pantalon à la stature, un haut au tour de poitrine : la grille de la fiche fait foi, et une coupe thaïlandaise taille souvent une lettre en dessous d’une coupe européenne. Entre deux tailles, la plus grande pour un short, la plus ajustée pour un rashguard.',
+            'Essayez en levant les bras et en fléchissant les jambes : la tenue doit rester en place sans qu’on y pense.',
+          ],
+        },
+        {
+          titre: 'Matières et séchage',
+          texte: [
+            ({ items }) => {
+              const m = (re: RegExp) => items.filter((p) => re.test(matiere(p))).length;
+              return `Le polyester sèche vite et tient les lavages ; le coton est plus doux mais garde l’humidité ; l’élasthanne donne l’aisance des rashguards et des spats. D’après les fiches, ${fr(m(/polyester/))} pièces contiennent du polyester, ${fr(m(/coton/))} du coton et ${fr(m(/lasthanne|lycra|spandex/))} une fibre élastique.`;
+            },
+          ],
+        },
+        {
+          titre: 'Les marques du rayon',
+          texte: [
+            ({ f, items }) =>
+              `Marque par marque : ${parMarque('textile-boxe', items, f, 6, (ps) => {
+                const n = (t: (p: Product) => boolean) => ps.filter(t).length;
+                return [n((p) => nom(p).startsWith('short')) ? pluriel(n((p) => nom(p).startsWith('short')), 'short', 'shorts') : '', n(tshirt) ? pluriel(n(tshirt), 't-shirt', 't-shirts') : '', n(rashguard) ? pluriel(n(rashguard), 'rashguard', 'rashguards') : '', n(sweat) ? pluriel(n(sweat), 'sweat ou veste', 'sweats et vestes') : '', n(debardeur) ? pluriel(n(debardeur), 'débardeur', 'débardeurs') : ''].filter(Boolean).join(', ');
+              }, true)}.`,
+          ],
+        },
+        {
+          titre: 'Entretien',
+          texte: ['Tout se lave à 30 °C, sur l’envers ; le rashguard et les spats n’aiment pas le sèche-linge, qui détend la fibre élastique. Arriver propre à chaque cours fait partie du matériel : une tenue lavée, sur le tapis plus qu’ailleurs.'],
+        },
+      ],
+    },
+    usages: {
+      titre: 'Quelle pièce pour quelle discipline',
+      note: 'Par besoin, la pièce la moins chère du rayon en taille adulte ; une pièce déjà citée passe la main à la suivante.',
+      regles: [
+        { usage: 'Boxe anglaise : le short', filtre: (p) => shortAnglais(p) && adulte(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} shorts d’anglaise, longs et amples` },
+        { usage: 'Boxe anglaise : le débardeur', filtre: (p) => debardeur(p) && adulte(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} débardeurs` },
+        { usage: 'Muay-thaï, kick : le short', filtre: (p) => shortThai(p) && adulte(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} shorts thaï adultes, courts et fendus` },
+        { usage: 'MMA, grappling : le short', filtre: (p) => shortMMA(p) && adulte(p), critere: ({ i, n }) => `${rang(i)} parmi ${fr(n)} shorts MMA, ajustés et sans poche` },
+        { usage: 'Sur le tapis : le haut', filtre: (p) => rashguard(p) && adulte(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} rashguards adultes` },
+        { usage: 'Sur le tapis : les jambes', filtre: (p) => spats(p) && adulte(p), critere: ({ i, n }) => `${rang(i)} parmi ${fr(n)} spats et leggings du rayon` },
+        { usage: 'Savate : la tenue', filtre: (p) => tenueSavate(p), critere: ({ i, n }) => `${rang(i, 'f')} des ${fr(n)} tenues de boxe française` },
+        { usage: 'S’échauffer', filtre: (p) => sweat(p) && adulte(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} sweats et vestes` },
+        { usage: 'Monter sur le ring', filtre: (p) => peignoir(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} peignoirs à capuche` },
+        { usage: 'Femme : le haut', filtre: (p) => brassiere(p), critere: ({ i, n }) => `${rang(i, 'f')} des ${fr(n)} brassières` },
+        { usage: 'Enfant', filtre: (p) => enfant(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} modèles taillés pour l’enfant` },
+      ],
+    },
+    tableau: ({ items }) =>
+      tableauTypes(
+        items,
+        [
+          ['Shorts de boxe anglaise', shortAnglais, '/shorts-de-boxe-anglaise/'],
+          ['Shorts de boxe thaï', shortThai, '/shorts-de-boxe-thai/'],
+          ['Shorts MMA', shortMMA, '/shorts-mma/'],
+          ['T-shirts', tshirt, '/t-shirts-boxe/'],
+          ['Débardeurs', debardeur, '/debardeurs-boxe/'],
+          ['Rashguards', rashguard, '/rashguards/'],
+          ['Spats, leggings, pantalons', (p) => spats(p) || pantalon(p), '/leggings/'],
+          ['Sweats, vestes, peignoirs', (p) => sweat(p) || peignoir(p), '/sweats-boxe/'],
+          ['Brassières', brassiere],
+        ],
+        'Le textile, type par type',
+        'Comptes du catalogue du jour et premier prix TTC de chaque type.',
+      ),
+    faq: ({ f, items }) => {
+      const prix = (t: (p: Product) => boolean) => premier(items.filter((p) => p.price > 0 && t(p)));
+      const ang = prix((p) => shortAnglais(p) && adulte(p));
+      const haut = prix((p) => tshirt(p) && adulte(p));
+      const fe = items.filter((p) => femmeTextile(p) && p.price > 0);
+      const en = items.filter((p) => enfant(p) && p.price > 0);
+      return [
+        { question: 'Quel short pour quelle boxe ?', answer: 'Long et ample pour la boxe anglaise, court et fendu pour le muay-thaï comme pour le kick-boxing ou le K-1, ajusté et sans poche pour le MMA et le grappling. Le short thaï sert aussi au sac, quelle que soit la boxe.' },
+        { question: 'Comment choisir la taille d’un short de boxe ?', answer: 'Avec votre tour de taille reporté dans la grille de sa marque, jamais d’après votre taille habituelle : les coupes thaïlandaises taillent plus petit. Le short se porte à la taille, pas sur les hanches.' },
+        { question: 'Le rashguard est-il obligatoire ?', answer: 'Pas partout, mais la plupart des salles de grappling et de JJB no-gi le demandent : il protège la peau et ne donne aucune prise. Sous le kimono, il tient lieu de sous-vêtement.' },
+        { question: 'Un t-shirt en coton suffit-il à l’entraînement ?', answer: 'Au sac et en technique, oui. Dès que la séance fait transpirer longtemps, un polyester technique sèche sur vous ; le coton, lui, reste mouillé.' },
+        { question: 'Que porter pour la savate ?', answer: 'Une tenue près du corps, pour que l’arbitre lise les touches : combinaison intégrale, ou pantalon ajusté et débardeur. Les gants sont ceux de la boxe anglaise ; les chaussures, propres à la savate.' },
+        { question: 'Y a-t-il du textile pour les femmes ?', answer: `Oui : ${fr(fe.length)} pièces coupées pour elles, brassières, shorts, rashguards, sweats, dès ${desDe(fe)}. Le reste du rayon est mixte et se prend à la mesure, pas à l’étiquette.` },
+        { question: 'Et pour les enfants ?', answer: `${fr(en.length)} modèles, dès ${desDe(en)} : ensembles short et débardeur, t-shirts, rashguards, shorts, en tailles d’âge ou de stature. La taille d’aujourd’hui, pas celle de l’an prochain.` },
+        { question: 'Comment laver un rashguard ?', answer: 'À 30 °C, sur l’envers, sans adoucissant, puis à plat ou sur un cintre : le sèche-linge détend la fibre élastique et le rashguard perd son maintien.' },
+        { question: 'Quelles marques au rayon ?', answer: `${marquesTexte(f, 6)}. Chaque marque a sa grille ; la fiche la reprend.` },
+        ...(ang && haut ? [{ question: 'Combien coûte une tenue de boxe complète ?', answer: `Au premier prix du rayon, un short d’anglaise et un t-shirt reviennent à ${money(ang.price + haut.price)} ; le prix médian d’une pièce est de ${money(f.mediane)}.` }] : []),
+      ];
+    },
+    liens: [
+      { titre: 'Les sous-rayons', liens: [{ href: '/shorts-de-boxe-anglaise/', texte: 'shorts de boxe anglaise' }, { href: '/shorts-de-boxe-thai/', texte: 'short de boxe thaï' }, { href: '/shorts-mma/', texte: 'shorts MMA' }, { href: '/rashguards/', texte: 'rashguards' }, { href: '/t-shirts-boxe/', texte: 't-shirts' }, { href: '/sweats-boxe/', texte: 'sweats et vestes' }, { href: '/leggings/', texte: 'spats et pantalons' }] },
+      { titre: 'Les guides', liens: [{ href: '/guide-des-tailles/', texte: 'lire une grille de tailles' }, { href: '/guides/equipement-femme/', texte: 'la coupe quand on est une femme' }, { href: '/guides/equipement-enfant/', texte: 'habiller un enfant pour le cours' }] },
+      { titre: 'Les rayons voisins', liens: [{ href: '/materiel-boxe/', texte: 'matériel de boxe' }, { href: '/materiel-mma/', texte: 'matériel MMA' }, { href: '/chaussures-boxe/', texte: 'chaussures de boxe' }, { href: '/materiel-boxe-femme/', texte: 'matériel de boxe femme' }] },
+    ],
+  },
+
+  /* ---------------------------------------------------------------- boutique boxe (22/10) : tout le catalogue */
+  {
+    slug: 'boutique-boxe',
+    requete: 'boutique boxe',
+    revision: '2026-10-22',
+    h1: 'Boutique boxe',
+    // « matos boxe », seconde requête du concours pour cette page : dans le titre, le surtitre et un H2 (le titre du guide).
+    eyebrow: 'BOUTIQUE BOXE · MATOS BOXE',
+    titre: ({ f }) => `Boutique boxe : matos boxe, gants, sacs, MMA, ${fr(f.n)} modèles`,
+    description: ({ f }) => `Boutique boxe en ligne, matos boxe : ${fr(f.n)} modèles dès ${money(f.min)}, gants, bandes, protections, sacs de frappe, textile, chaussures. Prix TTC, livraison en France.`,
+    label: ({ f }) => `Toute la boutique : ${fr(f.n)} modèles de ${f.marques.length} marques, dès ${money(f.min)}.`,
+    intro: 'Tout le matériel de boxe et de sports de combat, avec ses tailles réelles et ses prix TTC. Cherchez un modèle, une marque ou une famille ; le guide, sous la liste, dit ce que vend chaque rayon.',
+    guide: {
+      titre: 'Le matos boxe, rayon par rayon',
+      chapeau: ({ f }) => `Une boutique de boxe en ligne, rien d’autre : ${fr(f.n)} modèles en dix rayons, ${f.marques.length} marques, de ${money(f.min)} à ${money(f.max)}. Ce que vend chaque rayon, par où commencer, comment commander.`,
+      chapitres: [
+        {
+          titre: 'Une boutique en ligne, pas un club',
+          texte: [
+            'Boutique de Boxe vend du matériel, et seulement cela : ni cours, ni salle, ni planning. Chaque modèle a sa fiche, avec les tailles telles que la marque les publie, sa référence fabricant, ses couleurs et son prix de vente TTC.',
+            'Rien n’y est inventé : pas de stock affiché, pas de remise barrée, pas d’avis fabriqué. Les notes sous les fiches viennent des visiteurs, sans vérification d’achat, et la [page des questions](/faq/#notes-des-produits) dit comment elles sont modérées.',
+          ],
+        },
+        {
+          titre: 'Ce que vend chaque rayon',
+          texte: [
+            ({ all }) => {
+              const fam: [string, string, string][] = [['gants-de-boxe', 'les gants de boxe', '/gants-de-boxe/'], ['gants-mma', 'les gants MMA', '/gants-mma/'], ['protections-boxe', 'les protections', '/protections-boxe/'], ['textile-boxe', 'le textile', '/textile-boxe/'], ['accessoires-boxe', 'les accessoires', '/accessoires-boxe/'], ['chaussures-boxe', 'les chaussures', '/chaussures-boxe/'], ['equipement-entrainement', 'l’équipement d’entraînement', '/equipement-entrainement/'], ['arts-martiaux', 'les arts martiaux', '/arts-martiaux/'], ['sacs-de-sport', 'les sacs de sport', '/sacs-de-sport/']];
+              const parts = fam.map(([s, l, href]) => {
+                const ps = famille(all, s);
+                return ps.length ? `[${l}](${href}), ${fr(ps.length)} modèles dès ${desDe(ps)}` : '';
+              }).filter(Boolean);
+              const sa = sacs(famille(all, 'sacs-de-frappe'));
+              return `${liste(parts)} ; [les sacs de frappe](/sacs-de-frappe/), ${fr(sa.length)} sacs dès ${desDe(sa)}, se livrent sur devis avec leurs supports.`;
+            },
+          ],
+        },
+        {
+          titre: 'Par où commencer',
+          texte: [
+            'En premier, ce qui vous appartient : des bandes et un protège-dents. Puis les gants, au poids que votre salle demande, et le short de votre boxe. Le casque, la coquille, les chaussures et le sac de frappe viennent quand la pratique s’installe.',
+            'La page [matériel de boxe](/materiel-boxe/) chiffre le sac de chaque niveau, du premier cours au ring ; celle du [matériel de boxe débutant](/materiel-boxe-debutant/) ne garde que les trois pièces du départ.',
+          ],
+        },
+        {
+          titre: 'Les boxes et les sports de combat couverts',
+          texte: [
+            ({ all }) => {
+              const d = (k: string) => all.filter((p) => (p.disciplines || []).includes(k)).length;
+              return `Boxe anglaise, muay-thaï, kick-boxing, savate, MMA, jiu-jitsu brésilien, karaté, judo, taekwondo, krav maga : chaque discipline a sa page d’entrée, avec ce qu’elle demande d’abord. D’après les fiches, ${fr(d('boxe-thai'))} modèles sont classés boxe thaï, ${fr(d('boxe-anglaise'))} boxe anglaise, ${fr(d('mma'))} MMA et ${fr(d('jjb'))} jiu-jitsu brésilien.`;
+            },
+            'Voir la [boxe thaï](/materiel-boxe-thai/), puis le [kick-boxing](/materiel-kick-boxing/), la [savate](/materiel-boxe-francaise/), le [MMA](/materiel-mma/), le [JJB](/equipement-jjb/) et les [arts martiaux](/boutique-arts-martiaux/).',
+          ],
+        },
+        {
+          titre: 'Les marques',
+          texte: [({ f }) => `${marquesTexte(f, 8)} sont les plus présentes, parmi ${fr(f.marques.length)} marques. Chacune garde sa grille de tailles, reprise telle quelle sur la fiche : rien n’est converti d’une marque à l’autre, et chaque [marque a sa page](/marques/).`],
+        },
+        {
+          titre: 'Commander, payer, être livré',
+          texte: [
+            () => `Le panier se paie par carte sur la page sécurisée de PayPlug ; la commande part sous ${shop.delais.expedition}. Livraison en ${livraison.zone}, ${livraison.tarifs}. Le matériel lourd se livre à domicile sur devis ; ${livraison.horsZone}.`,
+            'Quatorze jours après la réception pour changer d’avis : la page [retours et échanges](/retours/) dit comment faire.',
+          ],
+        },
+        {
+          titre: 'Les prix',
+          texte: [
+            ({ f }) => `Les prix sont des prix de vente, toutes taxes comprises, hors livraison. Quand une marque fait varier le prix selon la taille, la carte dit « dès » et la fiche donne chaque prix. Au catalogue, la moitié des modèles coûte moins de ${money(f.mediane)} ; l’[observatoire des prix](/observatoire-des-prix/) suit ces chiffres chaque semaine.`,
+          ],
+        },
+      ],
+    },
+    usages: {
+      titre: 'Un premier achat par rayon',
+      note: 'Pour chaque rayon, le modèle adulte le moins cher qui remplit son rôle, tout le catalogue confondu.',
+      regles: [
+        { usage: 'Gants de boxe', filtre: (p) => gantBoxe(p) && adulte(p) && ouncesOf(p).includes(12) && velcro(p), critere: ({ i, n }) => `${rang(i)} au catalogue parmi ${fr(n)} gants adultes de 12 oz à velcro` },
+        { usage: 'Bandes', filtre: (p) => bandes(p) && longueur(p) === 4.5, critere: ({ i, n }) => `${rang(i, 'f')} au catalogue parmi ${fr(n)} paires de 4,50 m` },
+        { usage: 'Protège-dents', filtre: (p) => protegeDents(p) && adulte(p) && !propose(p, /junior|enfant/i), critere: ({ i, n }) => `${rang(i)} au catalogue parmi ${fr(n)} protège-dents adultes` },
+        { usage: 'Short', filtre: (p) => shortAnglais(p) && adulte(p), critere: ({ i, n }) => `${rang(i)} au catalogue parmi ${fr(n)} shorts d’anglaise` },
+        { usage: 'Chaussures', filtre: (p) => p.category === 'chaussures-boxe' && nom(p).startsWith('chaussures de boxe') && adulte(p), critere: ({ i, n }) => `${rang(i, 'f')} au catalogue parmi ${fr(n)} paires de chaussures de boxe` },
+        { usage: 'Sac de frappe', filtre: (p) => surPied(p) && adulte(p), critere: ({ i, n }) => `${rang(i)} au catalogue parmi ${fr(n)} sacs sur pied, sans rien à percer` },
+        { usage: 'Gants MMA', filtre: (p) => gantMMA(p) && adulte(p), critere: ({ i, n }) => `${rang(i)} au catalogue parmi ${fr(n)} gants à doigts libres` },
+        { usage: 'Rashguard', filtre: (p) => rashguard(p) && adulte(p), critere: ({ i, n }) => `${rang(i)} au catalogue parmi ${fr(n)} rashguards adultes` },
+        { usage: 'Kimono', filtre: (p) => kimonoJJB(p), critere: ({ i, n }) => `${rang(i)} au catalogue parmi ${fr(n)} kimonos de jiu-jitsu brésilien` },
+        { usage: 'Corde à sauter', filtre: (p) => cordeASauter(p), critere: ({ i, n }) => `${rang(i, 'f')} au catalogue parmi ${fr(n)} cordes à sauter` },
+      ],
+    },
+    tableau: ({ all }) => {
+      const fam: [string, string][] = [['gants-de-boxe', 'Gants de boxe'], ['gants-mma', 'Gants MMA'], ['protections-boxe', 'Protections'], ['textile-boxe', 'Textile'], ['accessoires-boxe', 'Accessoires'], ['sacs-de-frappe', 'Sacs de frappe'], ['chaussures-boxe', 'Chaussures'], ['equipement-entrainement', 'Équipement d’entraînement'], ['arts-martiaux', 'Arts martiaux'], ['sacs-de-sport', 'Sacs de sport']];
+      const lignes: Cellule[][] = fam
+        .map(([slug, libelle]) => {
+          const ps = slug === 'sacs-de-frappe' ? sacs(famille(all, slug)) : famille(all, slug);
+          const s = ps.map((p) => p.price).sort((a, b) => a - b);
+          const marques = new Set(ps.map((p) => p.brand.trim().toLowerCase()).filter((b) => b && !NI_MARQUE.test(b))).size;
+          return s.length ? [{ texte: libelle, href: '/' + slug + '/' }, fr(s.length), fr(marques), money(s[0]), money(s[Math.floor(s.length / 2)])] : null;
+        })
+        .filter(nonNul);
+      return { titre: 'Les dix rayons de la boutique', colonnes: ['Rayon', 'Modèles', 'Marques', 'Dès', 'Prix médian'], lignes, note: 'Prix de vente du jour. Seuls les sacs comptent sur la ligne des sacs de frappe ; les semelles ne sont pas des chaussures.' };
+    },
+    faq: ({ f }) => [
+      { question: 'Matos boxe : que trouve-t-on dans cette boutique ?', answer: `Tout ce qu’une séance demande : bandes, gants du 4 au 20 oz, protège-dents, casque, protège-tibias, short, chaussures, sac de frappe et corde, soit ${fr(f.n)} modèles de ${fr(f.marques.length)} marques, livrés dans toute la ${livraison.zone}.` },
+      { question: 'Boutique de Boxe est-elle liée à un club ?', answer: 'Non. C’est une boutique en ligne indépendante de matériel de boxe et de sports de combat, ouverte à tous les pratiquants, sans cours ni salle. L’éditeur est nommé dans les mentions légales.' },
+      { question: 'Peut-on commander en ligne et payer par carte ?', answer: `Oui, depuis le ${shop.ouverture.long} : les prix affichés sont les prix de vente TTC, et le paiement se fait par carte sur la page sécurisée de PayPlug, jamais sur la boutique elle-même.` },
+      { question: 'Livrez-vous partout en France ?', answer: `Dans toute la ${livraison.zone}, à domicile ou en point relais : ${livraison.tarifs}. Le matériel lourd se livre sur devis ; ${livraison.horsZone}.` },
+      { question: 'Combien de temps pour recevoir sa commande ?', answer: `La commande part sous ${shop.delais.expedition} après le paiement ; la livraison arrive au plus tard sous ${shop.delais.livraisonMax}. Si un modèle manque, vous êtes prévenu avant tout envoi.` },
+      { question: 'Peut-on renvoyer un article ?', answer: 'Oui, pendant quatorze jours après la réception, non utilisé et dans son emballage ; un protège-dents descellé fait exception, pour l’hygiène. Pour changer de taille, écrivez-nous avec votre numéro de commande.' },
+      { question: 'Les prix affichés sont-ils définitifs ?', answer: 'Ce sont les prix de vente TTC, hors livraison ; le prix payé est celui affiché au moment de la commande, les frais de livraison s’ajoutent dans le panier avant le paiement.' },
+      { question: 'Quelles marques vend la boutique ?', answer: `${marquesTexte(f, 8)}, parmi ${fr(f.marques.length)} marques ; chacune a sa page et sa grille de tailles.` },
+      { question: 'Comment trouver un modèle précis ?', answer: 'Par la recherche en haut de page, par le rayon, par la marque ou par la discipline. Chaque fiche donne la référence fabricant : elle sert à comparer avec une autre boutique.' },
+    ],
+    liens: [
+      { titre: 'Les rayons', liens: [{ href: '/gants-de-boxe/', texte: 'gants de boxe' }, { href: '/protections-boxe/', texte: 'protections' }, { href: '/textile-boxe/', texte: 'textile' }, { href: '/sacs-de-frappe/', texte: 'sacs de frappe' }, { href: '/accessoires-boxe/', texte: 'accessoires' }] },
+      { titre: 'Par discipline', liens: [{ href: '/materiel-boxe/', texte: 'matériel de boxe' }, { href: '/materiel-mma/', texte: 'matériel MMA' }, { href: '/boutique-arts-martiaux/', texte: 'boutique arts martiaux' }, { href: '/materiel-sport-de-combat/', texte: 'matériel sport de combat' }] },
+      { titre: 'La boutique', liens: [{ href: '/vente-materiel-de-boxe/', texte: 'comment se passe la vente' }, { href: '/livraison/', texte: 'livraison et délais' }, { href: '/retours/', texte: 'retours et échanges' }, { href: '/boutique-sport-de-combat/', texte: 'boutique sport de combat en France' }] },
+    ],
+  },
+
+  /* ---------------------------------------------------------------- boutique arts martiaux (22/10) : tenues et protections */
+  {
+    slug: 'boutique-arts-martiaux',
+    requete: 'boutique arts martiaux',
+    revision: '2026-10-22',
+    h1: 'Boutique arts martiaux',
+    eyebrow: 'BOUTIQUE ARTS MARTIAUX · KIMONOS, CEINTURES, PROTECTIONS',
+    titre: ({ f }) => `Boutique arts martiaux : kimonos, ceintures, ${fr(f.n)} modèles`,
+    description: ({ f }) => `Boutique arts martiaux en ligne : ${fr(f.n)} modèles dès ${money(f.min)}, kimonos de JJB, judo et karaté, doboks, ceintures, protections. Tailles par marque, prix TTC.`,
+    label: ({ f }) => `${fr(f.n)} modèles, dès ${money(f.min)} : le kimono, la ceinture et les protections.`,
+    intro: 'Le kimono à sa taille et la ceinture blanche pour commencer ; les protections, protège-tibias, protège-pieds, casque, quand le combat arrive. Chaque art martial a sa tenue : le guide les distingue.',
+    guide: {
+      titre: 'S’équiper pour son art martial',
+      chapeau: ({ f }) => `${fr(f.n)} modèles et ${f.marques.length} marques, entre ${money(f.min)} et ${money(f.max)} : le kimono selon la discipline, la ceinture selon le grade, les protections selon le contact.`,
+      chapitres: [
+        {
+          titre: 'Un kimono par discipline',
+          texte: [
+            'Le gi de jiu-jitsu brésilien est coupé près du corps et tissé serré, pour ne rien laisser saisir ; le kimono de judo, plus ample et plus lourd, encaisse les prises ; celui de karaté est léger, pour la vitesse. Le dobok de taekwondo se reconnaît à son col en V, le hakama à sa jupe-pantalon plissée.',
+            ({ items }) => {
+              const parts = [combien(items, kimonoJJB, 'kimono de JJB', 'kimonos de JJB'), combien(items, kimonoJudo, 'kimono de judo', 'kimonos de judo'), combien(items, kimonoKarate, 'kimono de karaté', 'kimonos de karaté'), combien(items, dobok, 'dobok', 'doboks'), combien(items, hakama, 'hakama', 'hakamas')].filter(Boolean);
+              return `Au rayon : ${liste(parts as string[])}. Les [kimonos de JJB](/kimonos-jjb/) ont leur page, grammage par grammage.`;
+            },
+          ],
+        },
+        {
+          titre: 'La taille : A pour le JJB, centimètres ailleurs',
+          texte: [
+            ({ items }) => {
+              const cm = centimetres(items.filter((p) => kimono(p) || dobok(p) || hakama(p)));
+              const a = ['A0', 'A1', 'A2', 'A3', 'A4'].filter((x) => items.some((p) => kimonoJJB(p) && tailles(p).some((s) => s.toUpperCase().startsWith(x))));
+              return `Le gi de JJB se taille de ${a[0]} à ${a[a.length - 1]}, d’après la stature et le poids ; judo, karaté et taekwondo se taillent à la stature, en centimètres${cm ? `, entre ${cm[0]} et ${cm[1]} cm dans ce rayon` : ''}. Dans tous les cas, la grille de la marque fait foi, et un enfant prend sa taille du jour.`;
+            },
+          ],
+        },
+        {
+          titre: 'La ceinture',
+          texte: [
+            ({ items }) => {
+              const c = items.filter((p) => ceintureGrade(p) && p.price > 0);
+              const couleurs = [...new Set(c.flatMap((p) => p.colors || []))];
+              return `On commence en blanche ; les suivantes se gagnent, et c’est le professeur qui les remet. ${c.length ? `${fr(c.length)} ceintures de JJB au rayon, à ${desDe(c)}${couleurs.length ? `, en ${liste(couleurs)}` : ''}, taillées comme le kimono, de A0 à A4.` : 'Chaque fiche donne la longueur de la ceinture.'}`;
+            },
+          ],
+        },
+        {
+          titre: 'Les protections des arts martiaux',
+          texte: [
+            'Au karaté, un protège-tibia fin ou en coton et des protège-pieds suffisent souvent ; le taekwondo ajoute le plastron et les protège-avant-bras ; le jiu-jitsu brésilien demande peu, un protège-dents et parfois un protège-oreilles. Ce que le club impose décide, pas le catalogue.',
+            ({ items }) => {
+              const parts = [combien(items, (p) => tibias(p) && (enCoton(p) || tibiaSeul(p)), 'protège-tibia fin ou en coton', 'protège-tibias fins ou en coton'), combien(items, protegePieds, 'protège-pieds', 'protège-pieds'), combien(items, plastron, 'plastron', 'plastrons'), combien(items, avantBras, 'protège-avant-bras de taekwondo', 'protège-avant-bras de taekwondo'), combien(items, casque, 'casque', 'casques'), combien(items, protegeDents, 'protège-dents', 'protège-dents')].filter(Boolean);
+              return `Au rayon des protections : ${liste(parts as string[])}.`;
+            },
+          ],
+        },
+        {
+          titre: 'Armes d’entraînement et casse',
+          texte: [
+            ({ items }) => {
+              const a = items.filter((p) => armeEntrainement(p) && p.price > 0);
+              return a.length ? `Pour la self-défense et le travail des formes : ${liste(a.map((p) => `${citeModele(p)} à ${money(p.price)}`))}. Des répliques inoffensives, plastique ou mousse, réservées au cours encadré.` : 'Les armes d’entraînement sont au rayon des arts martiaux.';
+            },
+          ],
+        },
+        {
+          titre: 'Sans kimono : rashguard et spats',
+          texte: [
+            ({ all }) => `En no-gi et en grappling, la tenue change : un rashguard et un short sans poche ou des spats. Le catalogue compte ${fr(all.filter((p) => rashguard(p) && p.price > 0).length)} rashguards et ${fr(all.filter((p) => spats(p) && p.price > 0).length)} spats et leggings ; la page [équipement JJB](/equipement-jjb/) réunit les deux tenues.`,
+          ],
+        },
+        {
+          titre: 'Laver un kimono',
+          texte: ['Un kimono en coton se lave à l’eau froide et sèche sur un cintre ; au sèche-linge, il perd une taille. Le ripstop bouge moins. La ceinture s’aère entre deux cours et se lave rarement.'],
+        },
+        {
+          titre: 'Les marques du rayon',
+          texte: [
+            ({ f, items }) =>
+              `Marque par marque : ${parMarque('boutique-arts-martiaux', items, f, 6, (ps) => {
+                const n = (t: (p: Product) => boolean) => ps.filter(t).length;
+                return [n(kimono) ? pluriel(n(kimono), 'kimono', 'kimonos') : '', n(ceintureGrade) ? pluriel(n(ceintureGrade), 'ceinture', 'ceintures') : '', n(dobok) ? pluriel(n(dobok), 'dobok', 'doboks') : '', n((p) => p.category === 'protections-boxe') ? pluriel(n((p) => p.category === 'protections-boxe'), 'protection', 'protections') : ''].filter(Boolean).join(', ');
+              }, true)}.`,
+          ],
+        },
+      ],
+    },
+    usages: {
+      titre: 'Quelle pièce pour quel art martial',
+      note: 'Par ligne, le prix le plus bas du rayon qui convient, en taille adulte sauf mention.',
+      regles: [
+        { usage: 'JJB : le gi', filtre: (p) => kimonoJJB(p), critere: ({ i, n }) => `${rang(i)} parmi ${fr(n)} gis de jiu-jitsu brésilien` },
+        { usage: 'JJB : la ceinture', filtre: (p) => ceintureGrade(p), critere: ({ i, n }) => `${rang(i, 'f')} des ${fr(n)} ceintures` },
+        { usage: 'Judo', filtre: (p) => kimonoJudo(p) && !bebe(p), critere: ({ i, n }) => (n === 1 ? 'le seul kimono de judo adulte' : `${rang(i)} des ${fr(n)} kimonos de judo, celui pour bébé à part`) },
+        { usage: 'Karaté', filtre: (p) => kimonoKarate(p) && !bebe(p), critere: ({ i, n }) => (n === 1 ? 'le seul kimono de karaté adulte' : `${rang(i)} des ${fr(n)} kimonos de karaté`) },
+        { usage: 'Taekwondo : le dobok', filtre: (p) => dobok(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} doboks` },
+        { usage: 'Taekwondo : le plastron', filtre: (p) => plastron(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} plastrons` },
+        { usage: 'Aïkido : le hakama', filtre: (p) => hakama(p), critere: ({ i, n }) => (n === 1 ? 'le seul hakama du rayon' : `${rang(i)} des ${fr(n)} hakamas`) },
+        { usage: 'Tout-petits', filtre: (p) => bebe(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} kimonos pour bébé` },
+        { usage: 'Karaté : les tibias', filtre: (p) => tibias(p) && enCoton(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} protège-tibias en coton` },
+        { usage: 'Self-défense', filtre: (p) => /^(tanto|couteau)/.test(nom(p)), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} armes d’entraînement` },
+      ],
+    },
+    tableau: ({ items }) =>
+      tableauTypes(
+        items,
+        [
+          ['Kimonos de JJB', kimonoJJB, '/kimonos-jjb/'],
+          ['Kimonos de judo et de karaté', (p) => kimonoJudo(p) || kimonoKarate(p), '/kimonos/'],
+          ['Doboks et hakama', (p) => dobok(p) || hakama(p)],
+          ['Ceintures', ceintureGrade, '/ceintures/'],
+          ['Armes d’entraînement', armeEntrainement],
+          ['Protège-tibias et protège-pieds', (p) => tibias(p) || protegePieds(p), '/protege-tibias/'],
+          ['Casques', casque, '/casques-de-boxe/'],
+          ['Protège-dents', protegeDents, '/protege-dents/'],
+          ['Plastrons, coquilles, maintiens', (p) => plastron(p) || coquille(p) || articulation(p)],
+        ],
+        'La boutique, type par type',
+        'Nombre de modèles du jour et premier prix TTC par type.',
+      ),
+    faq: ({ f, items }) => {
+      const prix = (t: (p: Product) => boolean) => premier(items.filter((p) => p.price > 0 && t(p)));
+      const kk = prix((p) => kimonoKarate(p) && !bebe(p));
+      const pd = prix((p) => protegeDents(p) && adulte(p) && !propose(p, /junior|enfant/i));
+      const kids = items.filter((p) => p.price > 0 && (bebe(p) || enfant(p) || dobok(p)));
+      return [
+        { question: 'Quel kimono pour débuter ?', answer: 'Celui de votre discipline, à votre taille, en blanc : un gi de JJB pour le jiu-jitsu brésilien, un kimono de judo ou de karaté pour ces deux-là, un dobok pour le taekwondo. Beaucoup de clubs en prêtent un à l’essai.' },
+        { question: 'Quelle taille de kimono prendre ?', answer: 'Dans la grille de la marque : par stature et poids pour les tailles A du JJB, par stature en centimètres pour le judo, le karaté et le taekwondo. Un kimono en coton rétrécit un peu au premier lavage.' },
+        { question: 'Judo, karaté, JJB : les kimonos sont-ils interchangeables ?', answer: 'Pour essayer un cours, oui. Pour pratiquer, non : le judo veut une veste lourde qui résiste aux prises, le karaté une toile légère, le JJB une coupe ajustée que l’adversaire ne saisit pas.' },
+        { question: 'Faut-il acheter sa ceinture ?', answer: 'La blanche, oui, si elle n’est pas vendue avec le kimono ; la fiche le précise. Les couleurs suivantes se gagnent et sont remises par le professeur.' },
+        { question: 'Quelles protections pour le karaté ?', answer: 'Un protège-dents, des protège-tibias fins et des protège-pieds, une coquille pour les hommes ; le casque et le plastron selon la fédération et l’âge. Le club donne la liste.' },
+        { question: 'Y a-t-il des kimonos pour les enfants ?', answer: `Oui : ${fr(kids.length)} modèles, dès ${desDe(kids)}, du kimono pour bébé aux doboks en centimètres. On achète à la taille d’aujourd’hui : un kimono trop grand gêne la prise.` },
+        { question: 'Comment laver un kimono ?', answer: 'À l’eau froide, puis séchage sur un cintre, jamais au sèche-linge, surtout pour le coton. Le ripstop supporte mieux la machine.' },
+        { question: 'Quelles marques trouve-t-on ?', answer: `${marquesTexte(f, 6)}. Chaque marque a sa grille, reprise sur la fiche.` },
+        ...(kk && pd ? [{ question: 'Combien coûte un premier équipement d’arts martiaux ?', answer: `Au premier prix du rayon, un kimono de karaté et un protège-dents reviennent à ${money(kk.price + pd.price)} ; un gi de JJB avec sa ceinture, à ${money((prix(kimonoJJB)?.price || 0) + (prix(ceintureGrade)?.price || 0))}.` }] : []),
+      ];
+    },
+    liens: [
+      { titre: 'Les sous-rayons', liens: [{ href: '/kimonos/', texte: 'kimonos' }, { href: '/kimonos-jjb/', texte: 'kimonos de JJB' }, { href: '/ceintures/', texte: 'ceintures' }, { href: '/equipement-jjb/', texte: 'équipement JJB et grappling' }] },
+      { titre: 'Les guides', liens: [{ href: '/guides/choisir-protections/', texte: 'les protections de chaque sport' }, { href: '/guide-des-tailles/', texte: 'lire une grille de tailles' }, { href: '/les-arts-martiaux/', texte: 'les arts martiaux et leurs dojos' }] },
+      { titre: 'Les rayons voisins', liens: [{ href: '/arts-martiaux/', texte: 'matériel d’arts martiaux' }, { href: '/protections-boxe/', texte: 'protections' }, { href: '/materiel-mma/', texte: 'matériel MMA' }, { href: '/rashguards/', texte: 'rashguards' }] },
+    ],
+  },
+
+  /* ---------------------------------------------------------------- matériel d’arts martiaux (22/10) : le rayon des tenues */
+  {
+    slug: 'arts-martiaux',
+    requete: 'matériel arts martiaux',
+    revision: '2026-10-22',
+    h1: 'Matériel d’arts martiaux',
+    eyebrow: 'MATÉRIEL ARTS MARTIAUX · KIMONOS, CEINTURES, ARMES',
+    titre: ({ f }) => `Matériel arts martiaux : kimonos, ceintures, ${fr(f.n)} modèles`,
+    description: ({ f }) => `Matériel arts martiaux : ${fr(f.n)} modèles dès ${money(f.min)}, kimonos de JJB, judo et karaté, doboks, hakama, ceintures, armes d’entraînement. Tissage, grammage, tailles.`,
+    label: ({ f }) => `${fr(f.n)} modèles, dès ${money(f.min)} : kimonos, ceintures, armes d’entraînement.`,
+    intro: 'Le rayon des tenues et de ce qui les accompagne : kimonos de jiu-jitsu brésilien, de judo et de karaté, doboks, hakama, ceintures, armes d’entraînement. Les protections sont au rayon voisin.',
+    guide: {
+      titre: 'Lire un kimono avant de l’acheter',
+      chapeau: ({ f }) => `${fr(f.n)} modèles de ${f.marques.length} marques, de ${money(f.min)} à ${money(f.max)} : le tissage, le grammage et la coupe de chaque tenue, puis la ceinture et les armes d’entraînement.`,
+      chapitres: [
+        {
+          titre: 'Tissage et grammage',
+          texte: [
+            'Le chiffre du nom, 350 ou 450, est le poids du tissu au mètre carré : le premier sèche vite et se porte l’été, le second résiste mieux aux saisies et pèse davantage sur les épaules. Le ripstop, reconnaissable à son quadrillage, arrête les déchirures ; le coton tissé serré est la toile classique.',
+            ({ items }) => {
+              const m = (re: RegExp) => items.filter((p) => re.test(matiere(p))).length;
+              return `D’après les fiches, ${fr(m(/ripstop/))} tenues contiennent du ripstop, ${fr(m(/coton/))} du coton et ${fr(m(/polyester/))} du polyester, en mélange ou seul.`;
+            },
+          ],
+        },
+        {
+          titre: 'La coupe selon l’art',
+          texte: [
+            'Le gi de jiu-jitsu brésilien colle au corps, manches et jambes courtes, pour ne rien offrir à saisir. Le kimono de judo a des revers épais et une veste ample, faits pour être agrippés. Le karaté veut une toile légère et large, qui claque. Le dobok s’enfile par la tête, col en V ; le hakama se noue par-dessus la veste, pour l’aïkido et le kendo.',
+          ],
+        },
+        {
+          titre: 'Les tailles : A0 à A4, ou la stature en centimètres',
+          texte: [
+            ({ items }) => {
+              const cm = centimetres(items.filter((p) => kimono(p) || dobok(p) || hakama(p)));
+              const parts = ['A0', 'A1', 'A2', 'A3', 'A4'].map((x) => [x, items.filter((p) => kimonoJJB(p) && p.price > 0 && tailles(p).some((s) => s.toUpperCase().startsWith(x))).length] as const).filter(([, n]) => n > 0);
+              return `Les kimonos de JJB se taillent en A, d’après la stature et le poids du tableau de la marque : ${liste(parts.map(([x, n]) => `${x} sur ${fr(n)} modèles`))}. Les autres tenues se prennent à la stature${cm ? `, de ${cm[0]} à ${cm[1]} cm au rayon` : ''} ; les L du JJB allongent la coupe sans l’élargir.`;
+            },
+          ],
+        },
+        {
+          titre: 'Les ceintures',
+          texte: [
+            ({ items }) => {
+              const c = items.filter((p) => ceintureGrade(p) && p.price > 0);
+              return `La ceinture suit le grade, de la blanche à la noire, et elle se choisit à la taille du kimono. ${c.length ? `${fr(c.length)} ceintures de JJB, toutes à ${desDe(c)}, de A0 à A4, en coton.` : 'Chaque fiche donne la longueur.'} Un kimono n’est pas toujours vendu avec la sienne : la fiche le dit quand la marque le précise.`;
+            },
+          ],
+        },
+        {
+          titre: 'Les armes d’entraînement',
+          texte: [
+            ({ items }) => {
+              const a = items.filter((p) => armeEntrainement(p) && p.price > 0);
+              return a.length ? `Répliques en plastique ou en mousse pour le travail des défenses, planche de casse pour les enfants qui apprennent la frappe au karaté et au taekwondo, étui pour transporter le tout : ${liste(a.map((p) => `${citeModele(p)} (${money(p.price)})`))}. Pour la pratique encadrée, jamais ailleurs.` : 'Les armes d’entraînement arrivent avec la pratique encadrée.';
+            },
+          ],
+        },
+        {
+          titre: 'Tout-petits et enfants',
+          texte: [
+            ({ items }) => {
+              const b = items.filter((p) => bebe(p) && p.price > 0);
+              const d = items.filter((p) => dobok(p) && p.price > 0);
+              const cm = centimetres(d);
+              return `${b.length ? `${pluriel(b.length, 'kimono pour bébé', 'kimonos pour bébé')}, à ${desDe(b)}, pour les cours d’éveil` : 'Les kimonos d’éveil se prennent à la stature'} ; les doboks${cm ? `, de ${cm[0]} à ${cm[1]} cm,` : ''} suivent la stature de l’enfant. Comme pour les gants, on prend la taille du jour.`;
+            },
+          ],
+        },
+        {
+          titre: 'Les marques du rayon',
+          texte: [
+            ({ f, items }) =>
+              `Marque par marque : ${parMarque('arts-martiaux', items, f, 6, (ps) => {
+                const n = (t: (p: Product) => boolean) => ps.filter(t).length;
+                return [n(kimonoJJB) ? pluriel(n(kimonoJJB), 'gi de JJB', 'gis de JJB') : '', n((p) => kimonoJudo(p) || kimonoKarate(p)) ? pluriel(n((p) => kimonoJudo(p) || kimonoKarate(p)), 'kimono de judo ou de karaté', 'kimonos de judo et de karaté') : '', n(dobok) ? pluriel(n(dobok), 'dobok', 'doboks') : '', n(ceintureGrade) ? pluriel(n(ceintureGrade), 'ceinture', 'ceintures') : '', n(armeEntrainement) ? pluriel(n(armeEntrainement), 'arme d’entraînement', 'armes d’entraînement') : ''].filter(Boolean).join(', ');
+              }, true)}.`,
+          ],
+        },
+        {
+          titre: 'Entretien et durée',
+          texte: ['Le coton rétrécit au premier lavage chaud : eau froide, cintre, pas de sèche-linge. Le ripstop garde sa taille. Lavez après chaque cours : un kimono porté deux fois sans lavage sent, et le tapis le sait. La ceinture, elle, s’aère.'],
+        },
+      ],
+    },
+    usages: {
+      titre: 'Quelle tenue pour quelle pratique',
+      note: 'Le modèle le moins cher du rayon qui remplit la condition, lue dans son nom ou ses tailles.',
+      regles: [
+        { usage: 'Premier gi de JJB', filtre: (p) => kimonoJJB(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} gis de JJB du rayon` },
+        { usage: 'JJB, tissu épais', filtre: (p) => kimonoJJB(p) && grammage(p) === 450, critere: ({ i, n }) => `${rang(i)} parmi ${fr(n)} gis tissés en 450 g/m², les plus durs à saisir` },
+        { usage: 'Judo', filtre: (p) => kimonoJudo(p) && !bebe(p), critere: ({ i, n }) => (n === 1 ? 'le seul kimono de judo adulte' : `${rang(i)} des kimonos de judo hors bébé`) },
+        { usage: 'Karaté', filtre: (p) => kimonoKarate(p) && !bebe(p), critere: ({ i, n }) => (n === 1 ? 'le seul kimono de karaté adulte' : `${rang(i)} des ${fr(n)} kimonos de karaté`) },
+        { usage: 'Taekwondo', filtre: (p) => dobok(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} doboks` },
+        { usage: 'Aïkido, kendo', filtre: (p) => hakama(p), critere: ({ i, n }) => (n === 1 ? 'le seul hakama du rayon' : `${rang(i)} des ${fr(n)} hakamas`) },
+        { usage: 'Bébé, éveil', filtre: (p) => bebe(p), critere: ({ i, n }) => `${rang(i)} parmi ${fr(n)} kimonos taillés pour bébé` },
+        { usage: 'La ceinture', filtre: (p) => ceintureGrade(p), critere: ({ i, n }) => `${rang(i, 'f')} des ${fr(n)} ceintures` },
+        { usage: 'Défenses au couteau', filtre: (p) => /^(tanto|couteau)/.test(nom(p)), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} couteaux d’entraînement` },
+        { usage: 'La casse', filtre: (p) => nom(p).startsWith('planche de rupture'), critere: ({ i, n }) => (n === 1 ? 'la seule planche de casse du rayon' : `${rang(i, 'f')} des ${fr(n)} planches de casse`) },
+      ],
+    },
+    tableau: ({ items }) =>
+      tableauTypes(
+        items,
+        [
+          ['Kimonos de JJB', kimonoJJB, '/kimonos-jjb/'],
+          ['Kimonos de judo', kimonoJudo],
+          ['Kimonos de karaté', kimonoKarate],
+          ['Doboks', dobok],
+          ['Hakama', hakama],
+          ['Ceintures', ceintureGrade, '/ceintures/'],
+          ['Armes d’entraînement et casse', armeEntrainement],
+        ],
+        'Le rayon, tenue par tenue',
+        'Comptes du jour ; premier prix de vente TTC par tenue.',
+      ),
+    faq: ({ f, items }) => {
+      const a = items.filter((p) => armeEntrainement(p) && p.price > 0);
+      const kids = items.filter((p) => p.price > 0 && (bebe(p) || dobok(p) || nom(p).startsWith('planche')));
+      const sansCeinture = items.filter((p) => kimono(p) && /non incluse/i.test(p.specs?.['Ceinture'] || '')).length;
+      return [
+        { question: 'Quelle différence entre un kimono de judo et un kimono de karaté ?', answer: 'Le poids et la coupe. Le judo se saisit : veste lourde, revers épais, coutures renforcées. Le karaté frappe sans saisir : toile légère, veste ample, pantalon large pour les coups de pied.' },
+        { question: 'Que veulent dire 350 et 450 sur un kimono de JJB ?', answer: 'Le poids du tissu de la veste, en grammes par mètre carré. 350 : léger, sèche vite, pour débuter et pour l’été. 450 : plus épais, plus difficile à saisir, plus chaud.' },
+        { question: 'Comment choisir la taille d’un dobok ou d’un kimono en centimètres ?', answer: 'À la stature, dans la grille de la marque : la taille correspond à la hauteur du pratiquant. Entre deux, la plus grande si le tissu est en coton, qui rétrécit au lavage.' },
+        { question: 'Le kimono est-il vendu avec la ceinture ?', answer: `Pas toujours${sansCeinture ? ` : ${pluriel(sansCeinture, 'fiche le précise', 'fiches le précisent')} explicitement, « ceinture non incluse »` : ''}. Quand la marque ne le dit pas, comptez sans, et prenez une ceinture blanche à part.` },
+        { question: 'Un kimono rétrécit-il au lavage ?', answer: 'Le coton, oui, surtout au premier lavage chaud ; le ripstop presque pas. Lavez froid, séchez sur un cintre, et prenez la taille au-dessus si vous hésitez.' },
+        ...(a.length ? [{ question: 'Quelles armes d’entraînement sont au rayon ?', answer: `${liste(a.map((p) => citeModele(p)))} : des copies en plastique ou en mousse, faites pour répéter les défenses et la casse, jamais pour autre chose.` }] : []),
+        { question: 'Y a-t-il des tenues pour les enfants ?', answer: `Oui : ${fr(kids.length)} modèles, dès ${desDe(kids)}, du kimono pour bébé au dobok en centimètres, avec une planche de casse pour les plus jeunes.` },
+        { question: 'Quelles marques trouve-t-on ?', answer: `${marquesTexte(f, 6)}. La grille de chaque marque figure sur ses fiches.` },
+        { question: 'Combien coûte un kimono ?', answer: `Au rayon, de ${money(f.min)} à ${money(f.max)}, pour un prix médian de ${money(f.mediane)} ; les kimonos pour bébé et de karaté sont les moins chers, les gis de JJB en 450 les plus chers.` },
+      ];
+    },
+    liens: [
+      { titre: 'Les sous-rayons', liens: [{ href: '/kimonos/', texte: 'kimonos' }, { href: '/kimonos-jjb/', texte: 'kimono JJB' }, { href: '/ceintures/', texte: 'ceintures' }] },
+      { titre: 'Les guides', liens: [{ href: '/guide-des-tailles/', texte: 'lire une grille de tailles' }, { href: '/guides/debuter-mma/', texte: 'commencer le MMA et le grappling' }, { href: '/les-arts-martiaux/', texte: 'les arts martiaux, leur origine et leurs dojos' }] },
+      { titre: 'Les rayons voisins', liens: [{ href: '/boutique-arts-martiaux/', texte: 'boutique arts martiaux' }, { href: '/equipement-jjb/', texte: 'équipement JJB' }, { href: '/protections-boxe/', texte: 'protections' }, { href: '/materiel-sport-de-combat/', texte: 'matériel sport de combat' }] },
     ],
   },
 ];
