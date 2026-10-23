@@ -41,9 +41,18 @@ export function proxy(request: NextRequest) {
     }
     const liste = LISTE.exec(pathname);
     const page = request.nextUrl.searchParams.get('page');
-    if (liste && !PAS_UNE_LISTE.has(liste[1]) && page && /^[1-9][0-9]{0,3}$/.test(page) && page !== '1') {
+    if (liste && !PAS_UNE_LISTE.has(liste[1]) && page !== null) {
+      // `?page=1` est la liste elle-même : une seule adresse par contenu.
+      if (page === '1') {
+        const base = new URL(request.url);
+        base.searchParams.delete('page');
+        return NextResponse.redirect(base, 308);
+      }
       const interne = new URL(request.url);
-      interne.pathname = `/${liste[1]}/page-${page}/`;
+      // Une valeur qui n’est pas un numéro de page (0, -1, 1.5, Infinity, vide…) n’a pas de page : on la
+      // conduit vers `page-0`, que la route refuse (404), au lieu de servir la première page sous une
+      // adresse de plus. La page statique ignore la requête : c’est ici que cela se décide.
+      interne.pathname = `/${liste[1]}/page-${/^[1-9][0-9]{0,3}$/.test(page) ? page : '0'}/`;
       return NextResponse.rewrite(interne);
     }
   }
