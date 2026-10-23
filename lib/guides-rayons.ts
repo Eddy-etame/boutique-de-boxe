@@ -643,7 +643,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
     },
     liens: [
       { titre: 'Par boxe et par niveau', liens: [{ href: '/materiel-boxe-debutant/', texte: 'pour débuter' }, { href: '/materiel-boxe-competition/', texte: 'pour la compétition' }, { href: '/materiel-boxe-enfant/', texte: 'pour un enfant' }, { href: '/materiel-boxe-femme/', texte: 'équipement de boxe femme' }] },
-      { titre: 'Les guides', liens: [{ href: '/equipement-boxe-anglaise/', texte: 'l’équipement de la boxe anglaise seule' }, { href: '/guides/boxe-anglaise-materiel-indispensable/', texte: 'le matériel indispensable de la boxe anglaise' }, { href: '/guides/debuter-boxe/', texte: 'quel équipement pour un premier cours' }, { href: '/guides/choisir-protections/', texte: 'quelles protections, pour quel sport' }] },
+      { titre: 'Les guides', liens: [{ href: '/equipement-boxe-anglaise/', texte: 'l’équipement de la boxe anglaise seule' }, { href: '/guides/boxe-anglaise-materiel-indispensable/', texte: 'le matériel indispensable de la boxe anglaise' }, { href: '/guides/debuter-boxe/', texte: 'quel équipement pour un premier cours' }, { href: '/guides/choisir-protections/', texte: 'quelles protections, pour quel sport' }, { href: '/guides/sac-de-frappe-poids-hauteur-remplissage/', texte: 'le sac de frappe : poids et hauteur' }] },
       { titre: 'Les rayons voisins', liens: [{ href: '/gants-de-boxe/', texte: 'gants de boxe' }, { href: '/sacs-de-frappe/', texte: 'sac de frappe' }, { href: '/materiel-mma/', texte: 'matériel MMA' }, { href: '/materiel-sport-de-combat/', texte: 'le matériel des autres sports de combat' }] },
     ],
   },
@@ -844,7 +844,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
     },
     liens: [
       { titre: 'Les sous-rayons', liens: [{ href: '/sacs-de-frappe-sur-pied/', texte: 'sac de frappe sur pied' }, { href: '/poires-de-vitesse/', texte: 'poire de vitesse et punching-ball' }] },
-      { titre: 'Les guides', liens: [{ href: '/guides/sac-de-frappe-suspendu-ou-sur-pied/', texte: 'suspendu ou sur pied : lequel choisir' }, { href: '/outils/poids-de-gants/', texte: 'le bon poids de gants pour le sac' }, { href: '/guides/comment-fixer-un-sac-de-frappe/', texte: 'fixer son sac : plafond, mur, potence' }] },
+      { titre: 'Les guides', liens: [{ href: '/guides/sac-de-frappe-suspendu-ou-sur-pied/', texte: 'suspendu ou sur pied : lequel choisir' }, { href: '/outils/poids-de-gants/', texte: 'le bon poids de gants pour le sac' }, { href: '/guides/comment-fixer-un-sac-de-frappe/', texte: 'fixer son sac : plafond, mur, potence' }, { href: '/guides/sac-de-frappe-poids-hauteur-remplissage/', texte: 'poids, hauteur, remplissage : lequel choisir' }] },
       { titre: 'Les rayons voisins', liens: [{ href: '/gants-de-boxe/', texte: 'gants de boxe' }, { href: '/bandes-de-boxe/', texte: 'bandes de boxe' }, { href: '/pattes-d-ours/', texte: 'pattes d’ours et paos' }, { href: '/equipement-entrainement/', texte: 'équipement d’entraînement' }] },
     ],
   },
@@ -1174,7 +1174,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
       ];
     },
     liens: [
-      { titre: 'Les guides', liens: [{ href: '/guide-des-tailles/', texte: 'le guide des tailles' }, { href: '/guides/equipement-femme/', texte: 'choisir la bonne coupe quand on est une femme' }, { href: '/guides/short-de-boxe-quel-short-pour-quel-sport/', texte: 'le short admis en thaï, en kick et en MMA' }, { href: '/guides/protege-tibias-chaussette-ou-scratch/', texte: 'protège-tibias : chaussette ou scratch' }, { href: '/guides/coquille-et-protege-poitrine/', texte: 'la coquille sous le short, et pour qui' }] },
+      { titre: 'Les guides', liens: [{ href: '/guide-des-tailles/', texte: 'le guide des tailles' }, { href: '/guides/equipement-femme/', texte: 'choisir la bonne coupe quand on est une femme' }, { href: '/guides/short-de-boxe-quel-short-pour-quel-sport/', texte: 'le short admis en thaï, en kick et en MMA' }, { href: '/guides/protege-tibias-chaussette-ou-scratch/', texte: 'protège-tibias : chaussette ou scratch' }, { href: '/guides/coquille-et-protege-poitrine/', texte: 'la coquille sous le short, et pour qui' }, { href: '/guides/boxe-thai-ou-kick-boxing-differences/', texte: 'muay-thaï ou kick : ce qui change, règle par règle' }] },
       { titre: 'Les rayons voisins', liens: [{ href: '/materiel-boxe-thai/', texte: 'matériel de boxe thaï' }, { href: '/protege-tibias/', texte: 'protège-tibias' }, { href: '/shorts-mma/', texte: 'shorts MMA' }, { href: '/textile-boxe/', texte: 'textile de boxe' }] },
     ],
   },
@@ -1421,7 +1421,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
       ];
     },
     liens: [
-      { titre: 'Les guides', liens: [{ href: '/guides/choisir-protections/', texte: 'choisir ses protections selon le contact' }, { href: '/guides/mma-equipement-obligatoire-debuter/', texte: 'ce que le MMA impose au premier cours' }, { href: '/guides/protege-tibias-chaussette-ou-scratch/', texte: 'chaussette ou scratch, quelle taille, pour quel sport' }] },
+      { titre: 'Les guides', liens: [{ href: '/guides/choisir-protections/', texte: 'choisir ses protections selon le contact' }, { href: '/guides/mma-equipement-obligatoire-debuter/', texte: 'ce que le MMA impose au premier cours' }, { href: '/guides/protege-tibias-chaussette-ou-scratch/', texte: 'chaussette ou scratch, quelle taille, pour quel sport' }, { href: '/guides/boxe-thai-ou-kick-boxing-differences/', texte: 'thaï ou kick : les techniques et le sac de chacun' }] },
       { titre: 'Les rayons voisins', liens: [{ href: '/materiel-boxe-thai/', texte: 'matériel de boxe thaï' }, { href: '/materiel-kick-boxing/', texte: 'matériel de kick-boxing' }, { href: '/shorts-de-boxe-thai/', texte: 'short de boxe thaï' }, { href: '/coquilles/', texte: 'coquille de boxe' }, { href: '/protections-boxe/', texte: 'toutes les protections' }] },
     ],
   },
@@ -1953,7 +1953,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
     },
     liens: [
       { titre: 'Par discipline', liens: [{ href: '/materiel-boxe/', texte: 'matériel de boxe' }, { href: '/materiel-mma/', texte: 'matériel MMA' }, { href: '/materiel-boxe-thai/', texte: 'boxe thaï' }, { href: '/materiel-kick-boxing/', texte: 'kick-boxing' }, { href: '/materiel-boxe-francaise/', texte: 'savate boxe française' }, { href: '/equipement-jjb/', texte: 'jiu-jitsu brésilien' }, { href: '/arts-martiaux/', texte: 'matériel d’arts martiaux' }] },
-      { titre: 'Les guides', liens: [{ href: '/guides/', texte: 'tous les guides d’achat' }, { href: '/guides/choisir-protections/', texte: 'les protections de chaque sport' }, { href: '/sports-de-combat/', texte: 'les sports de combat en France' }] },
+      { titre: 'Les guides', liens: [{ href: '/guides/', texte: 'tous les guides d’achat' }, { href: '/guides/choisir-protections/', texte: 'les protections de chaque sport' }, { href: '/sports-de-combat/', texte: 'les sports de combat en France' }, { href: '/guides/boxe-thai-ou-kick-boxing-differences/', texte: 'boxe thaï ou kick-boxing : les différences' }] },
       { titre: 'La boutique', liens: [{ href: '/livraison/', texte: 'livraison et délais' }, { href: '/retours/', texte: 'retours et échanges' }, { href: '/boutique-sport-de-combat/', texte: 'boutique sport de combat en France' }] },
     ],
   },
