@@ -62,6 +62,8 @@ export const GUIDES: Lien[] = [
   { href: '/guides/debuter-mma/', label: 'Commencer le MMA' },
   { href: '/guides/choisir-protections/', label: 'Choisir ses protections' },
   { href: '/guides/sac-de-frappe-suspendu-ou-sur-pied/', label: 'Sac de frappe suspendu ou sur pied ?' },
+  { href: '/guides/casque-de-boxe-obligatoire/', label: 'Casque de boxe : obligatoire ou pas ?' },
+  { href: '/guides/boxe-thai-ou-kick-boxing-differences/', label: 'Boxe thaï ou kick-boxing ?' },
   { href: '/guide-des-tailles/', label: 'Guide des tailles' },
   { href: '/sports-de-combat/', label: 'Qu’est-ce qu’un sport de combat ?' },
   { href: '/les-arts-martiaux/', label: 'Arts martiaux : la liste et leur origine' },

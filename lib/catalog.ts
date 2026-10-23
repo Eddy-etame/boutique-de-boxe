@@ -75,7 +75,8 @@ export const shop = {
   /** Disponibilité publiée dans l'offre de chaque fiche le jour où les ventes ouvrent (schema.org) :
    *  'InStock' si le stock est réellement là, 'BackOrder' si la commande part chez le fournisseur. À confirmer le jour J. */
   // 13/10/2026 : stock ou commande fournisseur pas encore tranché par le propriétaire → « sur commande ».
-  disponibiliteOffre: 'BackOrder' as 'InStock' | 'BackOrder',
+  // 23 octobre 2026 : ventes ouvertes, le propriétaire confirme l'offre « en stock » (fiches et flux marchand).
+  disponibiliteOffre: 'InStock' as 'InStock' | 'BackOrder',
   /** Délais annoncés (CGV, livraison, fiches) tant que le propriétaire n'a pas fixé mieux (13/10/2026). */
   delais: { expedition: '7 jours ouvrés', livraisonMax: '30 jours' },
   /** Version des CGV acceptée à la commande ; elle est enregistrée avec chaque commande. */
