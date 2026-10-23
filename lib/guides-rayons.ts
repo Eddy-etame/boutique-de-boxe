@@ -643,7 +643,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
     },
     liens: [
       { titre: 'Par boxe et par niveau', liens: [{ href: '/materiel-boxe-debutant/', texte: 'pour débuter' }, { href: '/materiel-boxe-competition/', texte: 'pour la compétition' }, { href: '/materiel-boxe-enfant/', texte: 'pour un enfant' }, { href: '/materiel-boxe-femme/', texte: 'équipement de boxe femme' }] },
-      { titre: 'Les guides', liens: [{ href: '/equipement-boxe-anglaise/', texte: 'l’équipement de la boxe anglaise seule' }, { href: '/guides/boxe-anglaise-materiel-indispensable/', texte: 'le matériel indispensable de la boxe anglaise' }, { href: '/guides/debuter-boxe/', texte: 'quel équipement pour un premier cours' }, { href: '/guides/choisir-protections/', texte: 'quelles protections, pour quel sport' }, { href: '/guides/sac-de-frappe-poids-hauteur-remplissage/', texte: 'le sac de frappe : poids et hauteur' }] },
+      { titre: 'Les guides', liens: [{ href: '/equipement-boxe-anglaise/', texte: 'l’équipement de la boxe anglaise seule' }, { href: '/guides/boxe-anglaise-materiel-indispensable/', texte: 'le matériel indispensable de la boxe anglaise' }, { href: '/guides/debuter-boxe/', texte: 'quel équipement pour un premier cours' }, { href: '/guides/choisir-protections/', texte: 'quelles protections, pour quel sport' }, { href: '/guides/sac-de-frappe-poids-hauteur-remplissage/', texte: 'le sac de frappe : poids et hauteur' }, { href: '/guides/corde-a-sauter-boxe-quelle-longueur/', texte: 'régler sa corde à sauter' }] },
       { titre: 'Les rayons voisins', liens: [{ href: '/gants-de-boxe/', texte: 'gants de boxe' }, { href: '/sacs-de-frappe/', texte: 'sac de frappe' }, { href: '/materiel-mma/', texte: 'matériel MMA' }, { href: '/materiel-sport-de-combat/', texte: 'le matériel des autres sports de combat' }] },
     ],
   },
@@ -1421,7 +1421,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
       ];
     },
     liens: [
-      { titre: 'Les guides', liens: [{ href: '/guides/choisir-protections/', texte: 'choisir ses protections selon le contact' }, { href: '/guides/mma-equipement-obligatoire-debuter/', texte: 'ce que le MMA impose au premier cours' }, { href: '/guides/protege-tibias-chaussette-ou-scratch/', texte: 'chaussette ou scratch, quelle taille, pour quel sport' }, { href: '/guides/boxe-thai-ou-kick-boxing-differences/', texte: 'thaï ou kick : les techniques et le sac de chacun' }] },
+      { titre: 'Les guides', liens: [{ href: '/guides/choisir-protections/', texte: 'choisir ses protections selon le contact' }, { href: '/guides/mma-equipement-obligatoire-debuter/', texte: 'ce que le MMA impose au premier cours' }, { href: '/guides/protege-tibias-chaussette-ou-scratch/', texte: 'chaussette ou scratch, quelle taille, pour quel sport' }, { href: '/guides/boxe-thai-ou-kick-boxing-differences/', texte: 'thaï ou kick : les techniques et le sac de chacun' }, { href: '/guides/boxe-anglaise-ou-savate-boxe-francaise/', texte: 'les protège-tibias de la savate, selon la rencontre' }] },
       { titre: 'Les rayons voisins', liens: [{ href: '/materiel-boxe-thai/', texte: 'matériel de boxe thaï' }, { href: '/materiel-kick-boxing/', texte: 'matériel de kick-boxing' }, { href: '/shorts-de-boxe-thai/', texte: 'short de boxe thaï' }, { href: '/coquilles/', texte: 'coquille de boxe' }, { href: '/protections-boxe/', texte: 'toutes les protections' }] },
     ],
   },
@@ -1953,7 +1953,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
     },
     liens: [
       { titre: 'Par discipline', liens: [{ href: '/materiel-boxe/', texte: 'matériel de boxe' }, { href: '/materiel-mma/', texte: 'matériel MMA' }, { href: '/materiel-boxe-thai/', texte: 'boxe thaï' }, { href: '/materiel-kick-boxing/', texte: 'kick-boxing' }, { href: '/materiel-boxe-francaise/', texte: 'savate boxe française' }, { href: '/equipement-jjb/', texte: 'jiu-jitsu brésilien' }, { href: '/arts-martiaux/', texte: 'matériel d’arts martiaux' }] },
-      { titre: 'Les guides', liens: [{ href: '/guides/', texte: 'tous les guides d’achat' }, { href: '/guides/choisir-protections/', texte: 'les protections de chaque sport' }, { href: '/sports-de-combat/', texte: 'les sports de combat en France' }, { href: '/guides/boxe-thai-ou-kick-boxing-differences/', texte: 'boxe thaï ou kick-boxing : les différences' }] },
+      { titre: 'Les guides', liens: [{ href: '/guides/', texte: 'tous les guides d’achat' }, { href: '/guides/choisir-protections/', texte: 'les protections de chaque sport' }, { href: '/sports-de-combat/', texte: 'les sports de combat en France' }, { href: '/guides/boxe-thai-ou-kick-boxing-differences/', texte: 'boxe thaï ou kick-boxing : les différences' }, { href: '/guides/boxe-anglaise-ou-savate-boxe-francaise/', texte: 'boxe anglaise ou savate : les deux tenues' }] },
       { titre: 'La boutique', liens: [{ href: '/livraison/', texte: 'livraison et délais' }, { href: '/retours/', texte: 'retours et échanges' }, { href: '/boutique-sport-de-combat/', texte: 'boutique sport de combat en France' }] },
     ],
   },
@@ -2095,7 +2095,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
     },
     liens: [
       { titre: 'Les sous-rayons', liens: [{ href: '/bandes-de-boxe/', texte: 'bandes de boxe' }, { href: '/sous-gants/', texte: 'sous-gants et mitaines' }, { href: '/cordes-a-sauter/', texte: 'cordes à sauter' }] },
-      { titre: 'Les guides', liens: [{ href: '/guides/bandes-de-boxe-ou-sous-gants/', texte: 'bandes ou sous-gants, selon la séance' }, { href: '/guides/debuter-boxe/', texte: 'l’équipement du premier cours' }] },
+      { titre: 'Les guides', liens: [{ href: '/guides/bandes-de-boxe-ou-sous-gants/', texte: 'bandes ou sous-gants, selon la séance' }, { href: '/guides/debuter-boxe/', texte: 'l’équipement du premier cours' }, { href: '/guides/corde-a-sauter-boxe-quelle-longueur/', texte: 'la corde à sauter : laquelle, à quelle longueur' }] },
       { titre: 'Les rayons voisins', liens: [{ href: '/protections-boxe/', texte: 'protections de boxe' }, { href: '/gants-de-boxe/', texte: 'gants de boxe' }, { href: '/sacs-de-sport/', texte: 'sacs de sport' }, { href: '/materiel-boxe-debutant/', texte: 'le premier sac, chiffré' }] },
     ],
   },
@@ -2974,7 +2974,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
     },
     liens: [
       { titre: 'Les rayons de l’anglaise', liens: [{ href: '/gants-de-boxe/', texte: 'gants de boxe' }, { href: '/bandes-de-boxe/', texte: 'bandes de boxe' }, { href: '/protege-dents/', texte: 'protège-dents' }, { href: '/casques-de-boxe/', texte: 'casques de boxe' }, { href: '/coquilles/', texte: 'coquilles' }, { href: '/chaussures-boxe/', texte: 'chaussures de boxe' }, { href: '/shorts-de-boxe-anglaise/', texte: 'shorts de boxe anglaise' }] },
-      { titre: 'Les guides', liens: [{ href: '/guides/boxe-anglaise-materiel-indispensable/', texte: 'le matériel indispensable, pièce par pièce' }, { href: '/guides/debuter-boxe/', texte: 'l’équipement du premier cours' }, { href: '/guides/comment-mettre-des-bandes-de-boxe/', texte: 'poser ses bandes' }, { href: '/guides/casque-de-boxe-obligatoire/', texte: 'le casque, selon les règlements' }, { href: '/guides/coquille-et-protege-poitrine/', texte: 'coquille et protège-poitrine, selon les règlements' }] },
+      { titre: 'Les guides', liens: [{ href: '/guides/boxe-anglaise-materiel-indispensable/', texte: 'le matériel indispensable, pièce par pièce' }, { href: '/guides/debuter-boxe/', texte: 'l’équipement du premier cours' }, { href: '/guides/comment-mettre-des-bandes-de-boxe/', texte: 'poser ses bandes' }, { href: '/guides/casque-de-boxe-obligatoire/', texte: 'le casque, selon les règlements' }, { href: '/guides/coquille-et-protege-poitrine/', texte: 'coquille et protège-poitrine, selon les règlements' }, { href: '/guides/boxe-anglaise-ou-savate-boxe-francaise/', texte: 'anglaise ou savate : ce qui change' }] },
       { titre: 'Les autres boxes', liens: [{ href: '/materiel-boxe/', texte: 'tout le matériel de boxe' }, { href: '/materiel-boxe-francaise/', texte: 'savate boxe française' }, { href: '/materiel-boxe-thai/', texte: 'boxe thaï' }, { href: '/materiel-boxe-competition/', texte: 'le matériel de compétition' }] },
     ],
   },
