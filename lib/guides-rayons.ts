@@ -2894,10 +2894,17 @@ export const GUIDES_RAYONS: GuideRayon[] = [
           ],
         },
         {
-          titre: 'Le jour du combat : ce qu’impose le code sportif amateur',
+          // Deux chapitres plutôt qu’un : en trois colonnes, un seul paragraphe de 260 mots laissait un trou sous ses deux voisins.
+          titre: 'Le jour du combat : les gants et le casque du code sportif amateur',
           texte: [
             'Le [code sportif de la boxe amateur 2026-2027 de la Fédération française de boxe](https://www.ffboxe.com/wp-content/uploads/2026/07/FFBoxe_Saison-2026-2027_Code-Sportif-Boxe-Amateur_VF_Validation_CODIR_2026-07-09.pdf), en vigueur depuis le 9 juillet 2026, fixe la tenue à sa règle 11. Les gants, de 10 onces (284 g) ou 12 onces (341 g) à la couleur du coin, sont validés par la fédération et fournis par l’organisation : les deux boxeurs portent la même marque et le même modèle, personne ne monte avec les siens. Seniors et juniors hommes en trois reprises de deux ou trois minutes boxent en 10 oz jusqu’aux mi-moyens (63 à 67 kg) et en 12 oz à partir des moyens légers (67 kg) ; toutes les autres catégories boxent en 10 oz.',
-            'Le casque, sans pommette ni mentonnière et à la couleur du coin, est obligatoire pour toutes les catégories sauf les seniors hommes en trois fois trois minutes ; le protège-dents ne peut pas être rouge, même en partie ; la coquille ou la ceinture protectrice est obligatoire pour les hommes, conseillée pour les femmes comme le protège-poitrine. Les bandes, souples et sèches, mesurent de 2,50 m à 4,50 m pour 5,7 cm de large au plus, enroulées à plat, croisées entre les doigts si l’on veut, sans épingle ; les bandages réutilisables du type Bandax sont interdits. Le short ne descend pas sous le genou, une bande élastique de 10 cm marque la ceinture quand short et maillot ont la même couleur, le legging est interdit dessous, le débardeur se rentre, les chaussettes ne cachent pas les genoux. Une tenue incomplète vaut disqualification.',
+            'Le casque, sans pommette ni mentonnière et à la couleur du coin, est obligatoire pour toutes les catégories sauf les seniors hommes en trois fois trois minutes ; le protège-dents ne peut pas être rouge, même en partie ; la coquille ou la ceinture protectrice est obligatoire pour les hommes, conseillée pour les femmes comme le protège-poitrine.',
+          ],
+        },
+        {
+          titre: 'Le jour du combat : les bandes et la tenue de la règle 11',
+          texte: [
+            'Les bandes, souples et sèches, mesurent de 2,50 m à 4,50 m pour 5,7 cm de large au plus, enroulées à plat, croisées entre les doigts si l’on veut, sans épingle ; les bandages réutilisables du type Bandax sont interdits. Le short ne descend pas sous le genou, une bande élastique de 10 cm marque la ceinture quand short et maillot ont la même couleur, le legging est interdit dessous, le débardeur se rentre, les chaussettes ne cachent pas les genoux. Une tenue incomplète vaut disqualification.',
           ],
         },
         {
