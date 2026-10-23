@@ -153,7 +153,7 @@ export const BALMA = {
 
 /* Chaque discipline renvoie à la page du catalogue qui l'équipe. */
 export const RAYON: Record<string, string> = {
-  'Boxe anglaise': '/materiel-boxe/',
+  'Boxe anglaise': '/equipement-boxe-anglaise/',
   'Savate boxe française': '/chaussures-boxe/',
   'Muay-thaï': '/protege-tibias/',
   'Kick-boxing': '/gants-de-boxe-sparring/',

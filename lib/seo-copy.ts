@@ -79,10 +79,10 @@ export const SEO_COPY: Record<string, SeoCopy> = {
   },
 
   'materiel-boxe': {
-    title: 'Matériel de boxe : équipement boxe anglaise, gants, bandes',
-    description: 'Matériel de boxe et équipement boxe anglaise, thaï, kick-boxing : gants, bandes, protège-dents, casques, sacs de frappe, chaussures. Tailles du fabricant, prix TTC, livraison partout en France.',
+    title: 'Matériel de boxe : gants, bandes, protections, sacs de frappe',
+    description: 'Matériel de boxe pour l’anglaise, la thaï et le kick-boxing : gants, bandes, protège-dents, casques, sacs de frappe, chaussures. Tailles du fabricant, prix TTC, livraison partout en France.',
     eyebrow: 'MATÉRIEL DE BOXE · ÉQUIPEMENT BOXE ANGLAISE',
-    prioritaires: ['matériel de boxe', 'matériel boxe', 'équipement boxe anglaise', 'équipement de boxe'],
+    prioritaires: ['matériel de boxe', 'matériel boxe', 'équipement de boxe'],
     secondaires: ['matériel de boxe en ligne', 'matériel de boxe thaï', 'matériel de kick-boxing', 'matériel de boxe débutant', 'gants de boxe', 'bandes de boxe', 'protège-dents', 'casque de boxe', 'sac de frappe', 'chaussures de boxe', 'boxe anglaise débutant'],
     sections: [
       {
@@ -128,7 +128,7 @@ export const SEO_COPY: Record<string, SeoCopy> = {
       },
     ],
     faq: [
-      { question: 'Quel équipement boxe anglaise pour débuter ?', answer: 'L’équipement boxe anglaise de départ tient en quatre pièces : des bandes de 4,50 m, des gants de 12 oz, un protège-dents et une corde à sauter. Le casque et les chaussures viennent avec le sparring.' },
+      { question: 'Quel matériel pour un premier cours de boxe ?', answer: 'Le sac de départ tient en quatre pièces : des bandes de 4,50 m, des gants de 12 oz, un protège-dents et une corde à sauter. Le casque et les chaussures viennent avec le sparring.' },
       { question: 'Quel matériel de boxe pour débuter ?', answer: 'Des bandes de 2,50 m ou 4,50 m et une paire de gants de 10 ou 12 oz. Ajoutez un protège-dents dès le premier travail à deux. Le reste attend que votre salle vous le demande.' },
       { question: 'Quel poids de gants de boxe choisir ?', answer: '10 oz pour le sac, 12 oz pour la technique, 14 ou 16 oz avec un partenaire. Votre salle peut imposer un poids pour le sparring : demandez avant d’acheter.' },
       { question: 'Le matériel de boxe est-il livré partout en France ?', answer: `Oui, dans toute la ${livraison.zone} : ${livraison.tarifs} ; sacs de frappe et matériel lourd sur devis.` },
@@ -571,7 +571,7 @@ export const QUERY_MAP: { query: string; path: string; answer: string }[] = [
   { query: 'Vente matériel de boxe', path: '/vente-materiel-de-boxe/', answer: 'Vente matériel de boxe en ligne : Boutique de Boxe, boutique en ligne installée à Toulouse, vend plus de 1 000 modèles en dix rayons, livrés en France continentale en point relais ou à domicile, avec quatorze jours pour changer d’avis ; les ventes sont ouvertes depuis le 13 octobre 2026, paiement par carte.' },
   { query: 'Boutique boxe', path: '/boutique-boxe/', answer: 'Boutique boxe en ligne française et indépendante, Boutique de Boxe vend le matériel de boxe : gants, bandes, protections, textile, sacs de frappe, chaussures, du 4 oz enfant au 20 oz sparring, livrés dans toute la France.' },
   { query: 'Matos boxe', path: '/boutique-boxe/', answer: 'Matos boxe : gants du 4 au 20 oz, bandes, protège-dents, casques, sacs de frappe et chaussures, des marques Fairtex, Twins, Cleto Reyes, Elion, Adidas et Everlast, chez Boutique de Boxe, livrés dans toute la France.' },
-  { query: 'Équipement boxe anglaise', path: '/materiel-boxe/', answer: 'Équipement boxe anglaise pour débuter : des bandes de 4,50 m, des gants de 12 oz, un protège-dents et une corde à sauter ; le casque et les chaussures arrivent avec le sparring. Boutique de Boxe les vend en ligne, livrés dans toute la France.' },
+  { query: 'Équipement boxe anglaise', path: '/equipement-boxe-anglaise/', answer: 'Équipement boxe anglaise : bandes, gants et protège-dents pour commencer ; casque, coquille et chaussures montantes avec le sparring. Boutique de Boxe réunit ces pièces sur une page, avec la tenue qu’impose le code sportif amateur le jour d’un combat.' },
   { query: 'Matériel MMA', path: '/materiel-mma/', answer: 'Matériel MMA : gants à doigts libres pour le travail mixte, gants de boxe de 14 ou 16 oz pour le sparring debout, protège-tibias, coquille, protège-dents, rashguard et short sans poche, avec les tailles réelles de chaque modèle.' },
   { query: 'Équipement MMA', path: '/materiel-mma/', answer: 'Équipement MMA pour un premier cours : protège-dents, short sans poche, rashguard, puis les gants demandés par le club, gants MMA à doigts libres ou gants de boxe de 14 à 16 oz. Boutique de Boxe les vend en ligne avec leurs tailles réelles.' },
   { query: 'Matériel sport de combat', path: '/materiel-sport-de-combat/', answer: 'Matériel sport de combat pour la boxe anglaise, le MMA, le muay-thaï, le kick-boxing, le jiu-jitsu brésilien et la savate : gants, protections, textile, sacs de frappe et chaussures, chez Boutique de Boxe, livrés dans toute la France.' },

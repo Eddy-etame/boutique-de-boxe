@@ -556,9 +556,9 @@ export const GUIDES_RAYONS: GuideRayon[] = [
     requete: 'matériel de boxe',
     revision: '2026-10-22',
     h1: 'Matériel de boxe',
-    eyebrow: 'ÉQUIPEMENT BOXE ANGLAISE · THAÏ · KICK · SAVATE',
-    titre: ({ f }) => `Matériel de boxe : équipement boxe anglaise, ${fr(f.n)} modèles`,
-    description: ({ f }) => `Matériel de boxe et équipement boxe anglaise : ${fr(f.n)} modèles dès ${money(f.min)}, gants, bandes, protections, sacs de frappe, tenues, chaussures. Budget par niveau.`,
+    eyebrow: 'BOXE ANGLAISE · THAÏ · KICK · SAVATE',
+    titre: ({ f }) => `Matériel de boxe : ${fr(f.n)} modèles, du premier cours au ring`,
+    description: ({ f }) => `Matériel de boxe : ${fr(f.n)} modèles dès ${money(f.min)}, gants, bandes, protections, sacs de frappe, tenues, chaussures. Budget par niveau, guide, réponses.`,
     label: ({ f }) => `${fr(f.n)} modèles en huit rayons, dès ${money(f.min)}.`,
     intro: 'Bandes, gants et protège-dents pour commencer ; casque, coquille et chaussures quand le sparring arrive. Chaque modèle donne ses tailles réelles et son prix.',
     guide: {
@@ -643,7 +643,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
     },
     liens: [
       { titre: 'Par boxe et par niveau', liens: [{ href: '/materiel-boxe-debutant/', texte: 'pour débuter' }, { href: '/materiel-boxe-competition/', texte: 'pour la compétition' }, { href: '/materiel-boxe-enfant/', texte: 'pour un enfant' }, { href: '/materiel-boxe-femme/', texte: 'équipement de boxe femme' }] },
-      { titre: 'Les guides', liens: [{ href: '/guides/boxe-anglaise-materiel-indispensable/', texte: 'le matériel indispensable de la boxe anglaise' }, { href: '/guides/debuter-boxe/', texte: 'quel équipement pour un premier cours' }, { href: '/guides/choisir-protections/', texte: 'quelles protections, pour quel sport' }] },
+      { titre: 'Les guides', liens: [{ href: '/equipement-boxe-anglaise/', texte: 'l’équipement de la boxe anglaise seule' }, { href: '/guides/boxe-anglaise-materiel-indispensable/', texte: 'le matériel indispensable de la boxe anglaise' }, { href: '/guides/debuter-boxe/', texte: 'quel équipement pour un premier cours' }, { href: '/guides/choisir-protections/', texte: 'quelles protections, pour quel sport' }] },
       { titre: 'Les rayons voisins', liens: [{ href: '/gants-de-boxe/', texte: 'gants de boxe' }, { href: '/sacs-de-frappe/', texte: 'sac de frappe' }, { href: '/materiel-mma/', texte: 'matériel MMA' }, { href: '/materiel-sport-de-combat/', texte: 'le matériel des autres sports de combat' }] },
     ],
   },
@@ -2816,6 +2816,159 @@ export const GUIDES_RAYONS: GuideRayon[] = [
       { titre: 'Les sous-rayons', liens: [{ href: '/kimonos/', texte: 'kimonos' }, { href: '/kimonos-jjb/', texte: 'kimono JJB' }, { href: '/ceintures/', texte: 'ceintures' }] },
       { titre: 'Les guides', liens: [{ href: '/guide-des-tailles/', texte: 'lire une grille de tailles' }, { href: '/guides/debuter-mma/', texte: 'commencer le MMA et le grappling' }, { href: '/les-arts-martiaux/', texte: 'les arts martiaux, leur origine et leurs dojos' }] },
       { titre: 'Les rayons voisins', liens: [{ href: '/boutique-arts-martiaux/', texte: 'boutique arts martiaux' }, { href: '/equipement-jjb/', texte: 'équipement JJB' }, { href: '/protections-boxe/', texte: 'protections' }, { href: '/materiel-sport-de-combat/', texte: 'matériel sport de combat' }] },
+    ],
+  },
+  /* ---------------------------------------------------------------- équipement de boxe anglaise (23/10) */
+  // La seule boxe aux poings seuls : pas de tibias, pas de coudes. Les faits réglementaires viennent du code
+  // sportif de la boxe amateur 2026-2027 de la FFBoxe (règle 11, la tenue), cité en lien dans le chapitre.
+  {
+    slug: 'equipement-boxe-anglaise',
+    requete: 'équipement boxe anglaise',
+    revision: '2026-10-23',
+    h1: 'Équipement de boxe anglaise',
+    eyebrow: 'ÉQUIPEMENT BOXE ANGLAISE · LES POINGS SEULS',
+    titre: ({ f }) => `Équipement boxe anglaise : ${fr(f.n)} modèles, dès ${money(f.min)}`,
+    description: ({ f }) => `Équipement boxe anglaise : ${fr(f.n)} modèles dès ${money(f.min)} : gants, bandes, protège-dents, casque, chaussures, short, sac. La règle du club, puis celle du combat.`,
+    label: ({ f }) => `${fr(f.n)} modèles, dès ${money(f.min)} : des bandes au sac de frappe.`,
+    intro: 'Les poings frappent, le reste encaisse : bandes, gants et protège-dents dès le premier cours ; casque, coquille et chaussures montantes quand le travail à deux commence. Le guide suit la liste, avec la règle de la compétition amateur.',
+    guide: {
+      titre: 'S’équiper pour la boxe anglaise',
+      chapeau: ({ f }) => `${fr(f.n)} modèles de ${f.marques.length} marques, de ${money(f.min)} à ${money(f.max)} : ce que chaque pièce fait, quand elle devient nécessaire, et ce que la fédération exige le jour d’un combat.`,
+      chapitres: [
+        {
+          titre: 'Les mains : bandes, puis gants',
+          texte: [
+            'Les bandes passent en premier : elles tiennent le poignet dans l’axe, serrent les métacarpes et boivent la sueur avant qu’elle n’atteigne la mousse ; 4 ou 4,50 m pour un adulte, 2,50 m pour une main d’enfant. Les gants viennent ensuite, au poids de la séance : dix onces pour le sac, douze pour la technique, quatorze à seize dès qu’un partenaire est en face.',
+            ({ items }) => {
+              const b = items.filter((p) => bandes(p) && p.price > 0);
+              const g = items.filter((p) => gantBoxe(p) && p.price > 0);
+              return `${fr(b.length)} paires de bandes et ${fr(g.length)} paires de gants au rayon, dès ${desDe(b)} et ${desDe(g)} ; ${fr(g.filter((p) => velcro(p) && !aLacets(p)).length)} gants ferment au velcro, ${fr(g.filter(aLacets).length)} à lacets. Les pages [bandes de boxe](/bandes-de-boxe/) et [gants de boxe](/gants-de-boxe/) détaillent la pose et le poids.`;
+            },
+          ],
+        },
+        {
+          titre: 'Les dents et la tête',
+          texte: [
+            'Le protège-dents se porte dès le premier exercice à deux : simple pour la plupart, double quand le contact appuie, à mouler dans l’eau chaude, chez soi, en quelques minutes. Le casque vient quand le sparring commence, selon ce que la salle impose : ouvert pour voir, à barre ou intégral pour couvrir le nez.',
+            ({ items }) => {
+              const pd = items.filter((p) => protegeDents(p) && p.price > 0);
+              const c = items.filter((p) => casque(p) && p.price > 0);
+              const couverts = c.filter((p) => couverture(p) === 'barre' || couverture(p) === 'integral').length;
+              return `${fr(pd.length)} protège-dents dès ${desDe(pd)}, ${fr(c.length)} casques dès ${desDe(c)}, dont ${fr(couverts)} à barre ou intégraux. Le [protège-dents](/protege-dents/) et le [casque de boxe](/casques-de-boxe/) ont chacun leur page.`;
+            },
+          ],
+        },
+        {
+          titre: 'Le bas-ventre et les appuis',
+          texte: [
+            'La coquille protège le bas-ventre dès le travail à deux ; elle se glisse sous le short, tenue par un support ou intégrée à un short de compression. Les chaussures de boxe montent sur la cheville et tiennent les pivots : pour commencer, une paire de sport propre réservée à la salle suffit, jusqu’à ce que le club demande des montantes.',
+            ({ items }) => {
+              const co = items.filter((p) => coquille(p) && p.price > 0);
+              const ch = items.filter((p) => p.category === 'chaussures-boxe' && p.price > 0);
+              return `${fr(co.length)} coquilles et supports dès ${desDe(co)} ; ${fr(ch.length)} paires de [chaussures de boxe](/chaussures-boxe/) dès ${desDe(ch)}, ${fr(ch.filter(enCuir).length)} en cuir d’après leur fiche.`;
+            },
+          ],
+        },
+        {
+          titre: 'La tenue : short à la ceinture, débardeur',
+          texte: [
+            'Le short de boxe anglaise descend vers le genou sans le couvrir et marque la ceinture, limite basse des coups permis ; le débardeur se rentre dans le short. À l’entraînement, un short et un t-shirt qui sèchent vite font l’affaire ; la tenue réglementaire ne compte que le jour d’un combat.',
+            ({ items }) => {
+              const sh = items.filter((p) => shortAnglais(p) && p.price > 0);
+              const de = items.filter((p) => debardeur(p) && p.price > 0);
+              const pe = items.filter((p) => peignoir(p) && p.price > 0);
+              return `${fr(sh.length)} [shorts de boxe anglaise](/shorts-de-boxe-anglaise/) dès ${desDe(sh)}, ${fr(de.length)} débardeurs dès ${desDe(de)}${pe.length ? `, et ${pluriel(pe.length, 'peignoir à capuche', 'peignoirs à capuche')} pour l’entrée sur le ring` : ''}.`;
+            },
+          ],
+        },
+        {
+          titre: 'Le sac, les pattes d’ours, la corde',
+          texte: [
+            'Le sac de frappe travaille la puissance et les enchaînements : suspendu, il demande une poutre ou une potence ; sur pied, il se pose au sol et se range. Les pattes d’ours, tenues par un partenaire, affinent la précision ; la corde à sauter ouvre presque tous les cours.',
+            ({ items }) => {
+              const s = sacs(items).filter((p) => p.price > 0);
+              const pa = items.filter((p) => /^pattes? d/.test(nom(p)) && p.price > 0);
+              const co = items.filter((p) => cordeASauter(p) && p.price > 0);
+              return `${fr(s.length)} [sacs de frappe](/sacs-de-frappe/) dès ${desDe(s)}, ${fr(pa.length)} paires de pattes d’ours dès ${desDe(pa)}, ${fr(co.length)} cordes dès ${desDe(co)}. Pour accrocher un sac sans se tromper de support, le guide [fixer un sac de frappe](/guides/comment-fixer-un-sac-de-frappe/) part du plafond.`;
+            },
+          ],
+        },
+        {
+          titre: 'Le jour du combat : ce qu’impose le code sportif amateur',
+          texte: [
+            'Le [code sportif de la boxe amateur 2026-2027 de la Fédération française de boxe](https://www.ffboxe.com/wp-content/uploads/2026/07/FFBoxe_Saison-2026-2027_Code-Sportif-Boxe-Amateur_VF_Validation_CODIR_2026-07-09.pdf), en vigueur depuis le 9 juillet 2026, fixe la tenue à sa règle 11. Les gants, de 10 onces (284 g) ou 12 onces (341 g) à la couleur du coin, sont validés par la fédération et fournis par l’organisation : les deux boxeurs portent la même marque et le même modèle, personne ne monte avec les siens. Seniors et juniors hommes en trois reprises de deux ou trois minutes boxent en 10 oz jusqu’aux mi-moyens (63 à 67 kg) et en 12 oz à partir des moyens légers (67 kg) ; toutes les autres catégories boxent en 10 oz.',
+            'Le casque, sans pommette ni mentonnière et à la couleur du coin, est obligatoire pour toutes les catégories sauf les seniors hommes en trois fois trois minutes ; le protège-dents ne peut pas être rouge, même en partie ; la coquille ou la ceinture protectrice est obligatoire pour les hommes, conseillée pour les femmes comme le protège-poitrine. Les bandes, souples et sèches, mesurent de 2,50 m à 4,50 m pour 5,7 cm de large au plus, enroulées à plat, croisées entre les doigts si l’on veut, sans épingle ; les bandages réutilisables du type Bandax sont interdits. Le short ne descend pas sous le genou, une bande élastique de 10 cm marque la ceinture quand short et maillot ont la même couleur, le legging est interdit dessous, le débardeur se rentre, les chaussettes ne cachent pas les genoux. Une tenue incomplète vaut disqualification.',
+          ],
+        },
+        {
+          titre: 'Les marques du rayon',
+          texte: [({ f, items }) => `Ce que chacune apporte à l’anglaise : ${parMarque('equipement-boxe-anglaise', items, f, 6, undefined, true)}.`],
+        },
+        {
+          titre: 'Commander, recevoir',
+          texte: [() => `Paiement par carte chez PayPlug, sur sa page sécurisée ; expédition ${shop.delais.expedition} après la commande, en point relais à ${money(shop.livraison.relais)}, offert à partir de ${money(shop.livraison.franco)} d’achats, ou à domicile à ${money(shop.livraison.domicile)}. Les sacs de frappe voyagent à part, sur devis. Une pièce qui ne va pas se renvoie dans les quatorze jours qui suivent sa réception, non portée.`],
+        },
+      ],
+    },
+    usages: {
+      titre: 'Un modèle par pièce, du premier cours au ring',
+      note: 'Le premier prix du rayon qui remplit le rôle, en taille adulte ; une pièce déjà citée laisse sa place.',
+      regles: [
+        { usage: 'Bander les mains', filtre: (p) => bandes(p) && longueur(p) === 4.5, critere: ({ i, n }) => `${rang(i, 'f')} parmi ${fr(n)} bandes de 4,50 m, celles d’une main adulte` },
+        { usage: 'Premiers gants, technique', filtre: (p) => gantBoxe(p) && adulte(p) && ouncesOf(p).includes(12) && velcro(p), critere: ({ i, n }) => `${rang(i)} parmi ${fr(n)} gants de 12 oz à velcro` },
+        { usage: 'Sparring, la plupart des adultes', filtre: (p) => gantBoxe(p) && adulte(p) && ouncesOf(p).includes(16), critere: ({ i, n }) => `${rang(i)} parmi ${fr(n)} paires de 16 oz, le poids du sparring` },
+        { usage: 'Protéger les dents', filtre: (p) => protegeDents(p) && adulte(p) && !propose(p, /junior|enfant/i), critere: ({ i, n }) => `${rang(i)} parmi ${fr(n)} protège-dents en taille adulte` },
+        { usage: 'Le casque du sparring', filtre: (p) => casque(p) && adulte(p), critere: ({ i, n }) => `${rang(i)} parmi ${fr(n)} casques, à régler au tour de tête` },
+        { usage: 'Le bas-ventre', filtre: (p) => coquille(p), critere: ({ i, n }) => `${rang(i, 'f')} parmi ${fr(n)} coquilles et supports` },
+        { usage: 'Tenir la cheville', filtre: (p) => p.category === 'chaussures-boxe' && nom(p).startsWith('chaussures de boxe') && adulte(p), critere: ({ i, n }) => `${rang(i, 'f')} parmi ${fr(n)} chaussures montantes` },
+        { usage: 'Le short', filtre: (p) => shortAnglais(p) && adulte(p), critere: ({ i, n }) => `${rang(i)} parmi ${fr(n)} shorts d’anglaise, longs et à la ceinture` },
+        { usage: 'Le débardeur', filtre: (p) => debardeur(p) && adulte(p), critere: ({ i, n }) => `${rang(i)} parmi ${fr(n)} débardeurs` },
+        { usage: 'Frapper chez soi', filtre: (p) => surPied(p) && adulte(p), critere: ({ i, n }) => `${rang(i)} parmi ${fr(n)} sacs sur pied, rien à percer` },
+        { usage: 'La précision à deux', filtre: (p) => /^pattes? d/.test(nom(p)), critere: ({ i, n }) => `${rang(i, 'f')} parmi ${fr(n)} pattes d’ours vendues par paire` },
+        { usage: 'S’échauffer', filtre: (p) => cordeASauter(p), critere: ({ i, n }) => `${rang(i, 'f')} parmi ${fr(n)} cordes, l’échauffement de presque tous les cours` },
+      ],
+    },
+    tableau: ({ items }) =>
+      tableauTypes(
+        items,
+        [
+          ['Bandes', bandes, '/bandes-de-boxe/'],
+          ['Gants de boxe', gantBoxe, '/gants-de-boxe/'],
+          ['Protège-dents', protegeDents, '/protege-dents/'],
+          ['Casques', casque, '/casques-de-boxe/'],
+          ['Coquilles et supports', coquille, '/coquilles/'],
+          ['Chaussures', (p) => p.category === 'chaussures-boxe', '/chaussures-boxe/'],
+          ['Shorts de boxe anglaise', shortAnglais, '/shorts-de-boxe-anglaise/'],
+          ['Débardeurs', debardeur, '/debardeurs-boxe/'],
+          ['Sacs de frappe', (p) => ['suspendu', 'pied', 'eau'].includes(genreSac(p)), '/sacs-de-frappe/'],
+          ['Pattes d’ours', (p) => /^pattes? d/.test(nom(p)), '/pattes-d-ours/'],
+          ['Cordes à sauter', cordeASauter, '/cordes-a-sauter/'],
+        ],
+        'L’équipement, pièce par pièce',
+        'Comptes du jour et premier prix TTC ; le sac de frappe se livre sur devis, à domicile.',
+      ),
+    faq: ({ f, items }) => {
+      const premierDe = (t: (p: Product) => boolean) => premier(items.filter((p) => p.price > 0 && t(p)));
+      const pieces = [premierDe((p) => bandes(p) && longueur(p) === 4.5), premierDe((p) => gantBoxe(p) && adulte(p) && ouncesOf(p).includes(12) && velcro(p)), premierDe((p) => protegeDents(p) && adulte(p) && !propose(p, /junior|enfant/i)), premierDe((p) => casque(p) && adulte(p)), premierDe(coquille), premierDe((p) => p.category === 'chaussures-boxe' && nom(p).startsWith('chaussures de boxe') && adulte(p))];
+      const complet = pieces.every(Boolean) ? pieces.reduce((s, p) => s + p!.price, 0) : null;
+      const debut = pieces.slice(0, 3).every(Boolean) ? pieces.slice(0, 3).reduce((s, p) => s + p!.price, 0) : null;
+      return [
+        { question: 'Quel équipement de boxe anglaise pour débuter ?', answer: 'Quatre pièces : des bandes adaptées à votre main, une paire de gants de 12 oz fermée au velcro, un protège-dents à mouler et une corde. Casque, coquille et chaussures viennent quand le club les demande.' },
+        { question: 'Quel poids de gants pour la boxe anglaise ?', answer: 'Dix onces au sac, douze en technique, quatorze à seize dès qu’on travaille à deux. En compétition amateur, 10 oz jusqu’aux mi-moyens et 12 oz au-delà pour les seniors et juniors hommes, 10 oz ailleurs : des gants fournis par l’organisation, pas les vôtres.' },
+        { question: 'Faut-il des chaussures de boxe ?', answer: 'Pas le premier mois : une paire de sport propre, réservée à la salle, suffit. Les montantes tiennent la cheville dans les pivots et s’imposent avec le sparring et la compétition ; le code sportif amateur demande des chaussures de sport et des chaussettes qui ne cachent pas les genoux.' },
+        { question: 'Faut-il un casque en boxe anglaise ?', answer: 'À l’entraînement, la salle décide, souvent dès le sparring. En compétition amateur, il l’est pour toutes les catégories sauf les seniors hommes en trois reprises de trois minutes, et il se porte sans pommette ni mentonnière.' },
+        { question: 'Quelle longueur de bandes ?', answer: '4 ou 4,50 m pour un adulte, 2,50 m pour un enfant. La compétition amateur admet de 2,50 m à 4,50 m, 5,7 cm de large au plus, posées à plat et sans épingle.' },
+        { question: 'Quelle tenue pour un combat amateur ?', answer: 'Short au-dessus du genou, débardeur rentré, chaussures de sport, chaussettes sous le genou, protège-dents d’une couleur autre que rouge, bandes réglementaires, coquille pour les hommes ; gants et casque validés par la fédération, aux couleurs du coin. Une tenue incomplète entraîne la disqualification.' },
+        { question: 'Et pour une femme ?', answer: 'Le même matériel, avec une coupe à sa morphologie pour la coquille et, si elle le souhaite, un protège-poitrine : en compétition amateur, les deux sont conseillés sans être obligatoires, et la jupe-short peut remplacer le short.' },
+        { question: 'Quel sac de frappe pour s’entraîner chez soi ?', answer: 'Un sac suspendu qui pèse autour de la moitié de votre poids, si une poutre ou une potence peut le porter ; sinon un sac sur pied, dont le socle se leste d’eau ou de sable. Le guide pour le fixer compare les supports.' },
+        ...(complet !== null && debut !== null ? [{ question: 'Combien coûte l’équipement complet ?', answer: `Au premier prix du rayon, ${money(debut)} pour les trois pièces du premier cours (bandes, gants, protège-dents) et ${money(complet)} avec le casque, la coquille et les chaussures. Prix de vente TTC, hors livraison.` }] : []),
+        { question: 'Quelles marques pour la boxe anglaise ?', answer: `${marquesTexte(f, 5)}, parmi ${fr(f.marques.length)} marques ; la grille de chaque fabricant est reprise sur sa fiche.` },
+      ];
+    },
+    liens: [
+      { titre: 'Les rayons de l’anglaise', liens: [{ href: '/gants-de-boxe/', texte: 'gants de boxe' }, { href: '/bandes-de-boxe/', texte: 'bandes de boxe' }, { href: '/protege-dents/', texte: 'protège-dents' }, { href: '/casques-de-boxe/', texte: 'casques de boxe' }, { href: '/coquilles/', texte: 'coquilles' }, { href: '/chaussures-boxe/', texte: 'chaussures de boxe' }, { href: '/shorts-de-boxe-anglaise/', texte: 'shorts de boxe anglaise' }] },
+      { titre: 'Les guides', liens: [{ href: '/guides/boxe-anglaise-materiel-indispensable/', texte: 'le matériel indispensable, pièce par pièce' }, { href: '/guides/debuter-boxe/', texte: 'l’équipement du premier cours' }, { href: '/guides/comment-mettre-des-bandes-de-boxe/', texte: 'poser ses bandes' }] },
+      { titre: 'Les autres boxes', liens: [{ href: '/materiel-boxe/', texte: 'tout le matériel de boxe' }, { href: '/materiel-boxe-francaise/', texte: 'savate boxe française' }, { href: '/materiel-boxe-thai/', texte: 'boxe thaï' }, { href: '/materiel-boxe-competition/', texte: 'le matériel de compétition' }] },
     ],
   },
 ];

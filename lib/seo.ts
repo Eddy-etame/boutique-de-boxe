@@ -508,7 +508,7 @@ export function collectionGraph(o: { path: string; name: string; description: st
 }
 
 /** L’entité de chaque page par boxe : ce dont elle parle, avant sa famille parente. */
-const DISCIPLINE_ENTITY: Record<string, Entity> = { 'Muay-thaï': ENTITY.muayThai, 'Kick-boxing': ENTITY.kickBoxing, 'Savate boxe française': ENTITY.savate, 'Jiu-jitsu brésilien': ENTITY.jjb };
+const DISCIPLINE_ENTITY: Record<string, Entity> = { 'Boxe anglaise': ENTITY.boxe, 'Muay-thaï': ENTITY.muayThai, 'Kick-boxing': ENTITY.kickBoxing, 'Savate boxe française': ENTITY.savate, 'Jiu-jitsu brésilien': ENTITY.jjb };
 
 /** Sous-famille : CollectionPage, liste, questions ; renvoie à la famille parente par `about`. */
 export function subfamilyGraph(sub: Subfamily, items: Product[], page = 1, tete?: { faq: SeoFaq[]; description: string; name: string; requete: string; revision: string }) {

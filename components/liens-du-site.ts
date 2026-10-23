@@ -16,7 +16,7 @@
  * « Rayons » de l’entête, le bloc « Rayons » du pied de page et l’index « Par discipline » de l’accueil
  * la lient aussitôt (l’index y envoie alors « Boxe anglaise » au lieu de /materiel-boxe/).
  */
-export const EQUIPEMENT_BOXE_ANGLAISE_PRET = false;
+export const EQUIPEMENT_BOXE_ANGLAISE_PRET = true;
 
 export type Lien = { href: string; label: string };
 

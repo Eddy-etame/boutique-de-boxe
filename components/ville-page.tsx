@@ -234,7 +234,7 @@ function Arrondissements({ v }: { v: Ville }) {
 }
 
 const RAYON_DE: Record<string, [string, string]> = {
-  'Boxe anglaise': ['/materiel-boxe/', 'Le matériel de boxe anglaise'],
+  'Boxe anglaise': ['/equipement-boxe-anglaise/', 'L’équipement de boxe anglaise'],
   'Savate boxe française': ['/chaussures-boxe/', 'Les chaussures de boxe'],
   'Muay-thaï': ['/protege-tibias/', 'Les protège-tibias'],
   'Kick-boxing': ['/protections-boxe/', 'Les protections de boxe'],

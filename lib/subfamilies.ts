@@ -659,6 +659,37 @@ export const SUBFAMILIES: Subfamily[] = [
 
   /* ── Par boxe et par niveau (03/10) : les pages d’entrée sous « Matériel de boxe » ─────────── */
   {
+    slug: 'equipement-boxe-anglaise',
+    parent: 'materiel-boxe',
+    kind: 'discipline',
+    discipline: 'Boxe anglaise',
+    name: 'Équipement de boxe anglaise',
+    eyebrow: 'ÉQUIPEMENT BOXE ANGLAISE · LES POINGS SEULS',
+    title: 'Équipement boxe anglaise : gants, bandes, casque, chaussures',
+    description: 'Équipement boxe anglaise : gants de 10 à 16 oz, bandes, protège-dents, casque, coquille, chaussures montantes, short et débardeur, sacs de frappe. Ce que demande le club, puis le code sportif amateur.',
+    prioritaires: ['équipement boxe anglaise', 'équipement de boxe anglaise', 'matériel de boxe anglaise'],
+    secondaires: ['tenue de boxe anglaise', 'gants de boxe anglaise', 'chaussures de boxe anglaise', 'short de boxe anglaise', 'casque de boxe anglaise', 'débuter la boxe anglaise', 'matériel boxe anglaise compétition', 'noble art équipement'],
+    intro: 'La boxe anglaise ne frappe qu’avec les poings : l’équipement protège les mains, la tête et le bas-ventre, et tient les appuis. Bandes, gants et protège-dents pour les premiers cours ; casque, coquille et chaussures montantes quand le travail à deux commence.',
+    sections: [
+      { h2: 'Ce que la boxe anglaise demande, et rien de plus', paragraphs: ['Pas de protège-tibias, pas de coudières, pas de kimono : des bandes, des gants, un protège-dents, puis un casque, une coquille et des chaussures montantes qui tiennent la cheville dans les déplacements. Le short s’arrête au-dessus du genou et marque la ceinture, la limite que l’adversaire n’a pas le droit de franchir.'] },
+      { h2: 'Le club décide avant le catalogue', paragraphs: ['Le poids des gants pour le sparring, le casque imposé ou non, la tenue du cours : chaque salle a sa règle. Demandez la liste avant d’acheter ; en compétition amateur, c’est le code sportif de la Fédération française de boxe qui fixe la tenue, et les gants y sont fournis par l’organisation.'] },
+    ],
+    faq: [
+      { question: 'Quel équipement pour débuter la boxe anglaise ?', answer: 'Des bandes de 4,50 m, des gants de 12 oz à velcro, un protège-dents et une corde à sauter. Le casque, la coquille et les chaussures montantes arrivent avec le sparring, quand le club les demande.' },
+      { question: 'Quelle différence avec le matériel de boxe thaï ou de kick-boxing ?', answer: 'Les gants et les bandes sont les mêmes. L’anglaise n’a pas besoin de protège-tibias ni de coudières, mais elle veut des chaussures montantes et un short long, là où le pieds-poings se pratique pieds nus en short court.' },
+      { question: 'Peut-on boxer en compétition avec ses propres gants ?', answer: 'Non, en amateur : le code sportif de la FFBoxe prévoit des gants fournis par l’organisation, validés par la fédération, de même marque et de même modèle pour les deux boxeurs. Vos gants servent à l’entraînement et au sparring.' },
+    ],
+    guide: 'boxe-anglaise-materiel-indispensable',
+    match: (p) =>
+      tagged(p, 'boxe-anglaise') ||
+      /boxe anglaise/.test(n(p)) ||
+      (p.category === 'gants-de-boxe' && /^gants? de (boxe|sac)/.test(n(p)) && !/tha[iï]|muay|mma|kick|savate/.test(n(p))) ||
+      /^bandes? de boxe|^sous-gants|^mitaines de maintien|^protège-dents|^coquille|^support et coquille|^pattes? d’ours|^corde à sauter|^poire de vitesse|^sac de frappe/.test(n(p)) ||
+      (n(p).startsWith('casque') && !n(p).startsWith('casquette') && !/mma|grappling|lutte|taekwondo/.test(n(p))) ||
+      (p.category === 'chaussures-boxe' && /^chaussures de boxe/.test(n(p)) && !/lutte|savate|française/.test(n(p))) ||
+      /^débardeur de boxe|^peignoir/.test(n(p)),
+  },
+  {
     slug: 'materiel-boxe-thai',
     parent: 'materiel-boxe',
     kind: 'discipline',
