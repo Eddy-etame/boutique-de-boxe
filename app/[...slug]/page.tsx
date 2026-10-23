@@ -49,6 +49,8 @@ import { VentePage, VENTE } from '@/components/vente-page';
 import { PlanDuSite, PLAN } from '@/components/plan-du-site';
 import { DisciplinesPage, DISCIPLINES_PAGES } from '@/components/disciplines-page';
 import { MaterielParNiveau, KitNiveau, KitDiscipline, budgetFaq } from '@/components/materiel-de-boxe';
+import { guideRayon, faits } from '@/lib/guides-rayons';
+import { GuideRayon } from '@/components/guide-rayon';
 /**
  * Fiches, rayons, sous-familles, pages-villes, guides : un HTML statique régénéré toutes les minutes
  * (ISR), servi par le CDN. Rien ici ne lit la requête : `?seance=` se lit dans le navigateur, les
@@ -350,18 +352,27 @@ export default async function Page({ params }: Props) {
     );
     const parent = categoryFor(sub.parent);
     const siblings = subfamiliesOf(sub.parent).filter((x) => x.slug !== sub.slug);
+    // Page de tête (20/10) : H1, titre et texte du guide du rayon ; le guide passe sous la grille.
+    const tete = guideRayon(sub.slug);
+    const ctx = tete ? { f: faits(sub.slug, data), items: data, all: products } : null;
+    const faqTete = tete && ctx ? tete.faq(ctx) : null;
     return (
-      <main id="contenu" className="page-wrap">
+      <main id="contenu" className={'page-wrap' + (tete ? ' rayon-tete' : '')}>
         <Breadcrumb items={[...(parent ? [{ label: parent.name, href: '/' + parent.slug + '/' }] : []), { label: sub.name }]} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: subfamilyGraph(sub, data, currentPage) }} />
-        <section className="page-heading">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: subfamilyGraph(sub, data, currentPage, tete && ctx ? { faq: faqTete!, description: tete.description(ctx), name: tete.h1, requete: tete.requete, revision: tete.revision } : undefined) }} />
+        <section className="page-heading" {...(tete ? { 'data-rayon-texte': '' } : {})}>
           <div>
-            <span className="eyebrow">{sub.eyebrow}</span>
-            <h1>{sub.name}</h1>
+            <span className="eyebrow">{tete ? tete.eyebrow : sub.eyebrow}</span>
+            <h1>{tete ? tete.h1 : sub.name}</h1>
           </div>
           <div>
-            <div className="label">{data.length} modèles, avec leurs tailles et leurs prix TTC.</div>
-            <p>{sub.intro}</p>
+            <div className="label">{tete && ctx ? tete.label(ctx) : `${data.length} modèles, avec leurs tailles et leurs prix TTC.`}</div>
+            <p>{tete ? tete.intro : sub.intro}</p>
+            {tete && currentPage === 1 && (
+              <a className="rayon-ancre" href="#guide-rayon">
+                Le guide d’achat, sous la liste
+              </a>
+            )}
           </div>
         </section>
         <nav className="subfamily-links" aria-label="Pages voisines">
@@ -379,9 +390,10 @@ export default async function Page({ params }: Props) {
           initialPage={currentPage}
           showFamilies={false}
         />
-        {currentPage === 1 && <KeywordHub scope={sub.slug} name={sub.name} items={data} all={products} />}
-        {currentPage === 1 && <SeoBody sections={sub.sections} faq={sub.faq} />}
-        {currentPage === 1 && (
+        {currentPage === 1 && tete && faqTete && <GuideRayon g={tete} items={data} all={products} faq={faqTete} />}
+        {currentPage === 1 && <KeywordHub scope={sub.slug} name={sub.name} items={data} all={products} prix={!tete} />}
+        {currentPage === 1 && !tete && <SeoBody sections={sub.sections} faq={sub.faq} />}
+        {currentPage === 1 && !tete && (
           <section className="spec-section">
             <div>
               <h2>Pour choisir sans se tromper.</h2>
@@ -406,9 +418,13 @@ export default async function Page({ params }: Props) {
     const materiel = cat?.slug === 'materiel-sport-de-combat';
     // « Matériel de boxe » (03/10) : les trois sacs chiffrés sur le catalogue, et la question du budget.
     const boxe = cat?.slug === 'materiel-boxe';
-    const faq = cat && SEO_COPY[cat.slug] ? [...SEO_COPY[cat.slug].faq, ...(materiel ? materielFaq() : []), ...(boxe ? budgetFaq(products) : [])] : undefined;
+    // Page de tête (20/10) : H1, titre, texte et questions du guide du rayon (lib/guides-rayons.ts).
+    const tete = cat ? guideRayon(cat.slug) : undefined;
+    const ctx = tete && cat ? { f: faits(cat.slug, data), items: data, all: products } : null;
+    const enPlus = [...(materiel ? materielFaq() : []), ...(boxe ? budgetFaq(products) : [])];
+    const faq = tete && ctx ? [...tete.faq(ctx), ...enPlus] : cat && SEO_COPY[cat.slug] ? [...SEO_COPY[cat.slug].faq, ...enPlus] : undefined;
     return (
-      <main id="contenu" className="page-wrap">
+      <main id="contenu" className={'page-wrap' + (tete ? ' rayon-tete' : '')}>
         <Breadcrumb
           items={[
             {
@@ -422,8 +438,10 @@ export default async function Page({ params }: Props) {
           dangerouslySetInnerHTML={{
             __html: collectionGraph({
               path: '/' + path + '/',
-              name: cat?.name || 'Nouveautés',
-              description: cat?.description || 'Les derniers modèles ajoutés au catalogue Boutique de Boxe.',
+              name: tete ? tete.h1 : cat?.name || 'Nouveautés',
+              description: tete && ctx ? tete.description(ctx) : cat?.description || 'Les derniers modèles ajoutés au catalogue Boutique de Boxe.',
+              requete: tete?.requete,
+              revision: tete?.revision,
               items: data.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE),
               total: data.length,
               page: currentPage,
@@ -433,22 +451,27 @@ export default async function Page({ params }: Props) {
             }),
           }}
         />
-        <section className="page-heading">
+        <section className="page-heading" {...(tete ? { 'data-rayon-texte': '' } : {})}>
           <div>
             <span className="eyebrow">
-              {(cat && SEO_COPY[cat.slug]?.eyebrow) || 'LE CATALOGUE / ' + (cat?.number || 'INDEX')}
+              {tete ? tete.eyebrow : (cat && SEO_COPY[cat.slug]?.eyebrow) || 'LE CATALOGUE / ' + (cat?.number || 'INDEX')}
             </span>
             <h1>
-              {cat?.name || 'Les nouveautés'}
+              {tete ? tete.h1 : cat?.name || 'Les nouveautés'}
             </h1>
           </div>
           <div>
             <div className="label">
-              {cat?.label || 'Tous les modèles.'}
+              {tete && ctx ? tete.label(ctx) : cat?.label || 'Tous les modèles.'}
             </div>
             <p>
-              {cat?.intro || 'Tous les modèles du catalogue, avec leurs tailles et leurs prix de vente TTC.'}
+              {tete ? tete.intro : cat?.intro || 'Tous les modèles du catalogue, avec leurs tailles et leurs prix de vente TTC.'}
             </p>
+            {tete && currentPage === 1 && (
+              <a className="rayon-ancre" href="#guide-rayon">
+                Le guide d’achat, sous la liste
+              </a>
+            )}
           </div>
         </section>
         {cat && (() => {
@@ -461,9 +484,9 @@ export default async function Page({ params }: Props) {
             </nav>
           ) : null;
         })()}
-        {/* la réponse propre à la page d’abord, le catalogue ensuite */}
-        {materiel && currentPage === 1 && <MaterielParDiscipline all={products} />}
-        {boxe && currentPage === 1 && <MaterielParNiveau all={products} />}
+        {/* les modèles d’abord ; sur une page de tête, la réponse du rayon passe sous la grille */}
+        {!tete && materiel && currentPage === 1 && <MaterielParDiscipline all={products} />}
+        {!tete && boxe && currentPage === 1 && <MaterielParNiveau all={products} />}
         <Catalog
           items={data.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map(listItem)}
           total={data.length}
@@ -471,8 +494,11 @@ export default async function Page({ params }: Props) {
           initialPage={currentPage}
           showFamilies={!cat || cat.families.length > 1}
         />
-        {cat && currentPage === 1 && <KeywordHub scope={cat.slug} name={cat.name} items={data} all={products} />}
-        {cat && (
+        {tete && faq && currentPage === 1 && (
+          <GuideRayon g={tete} items={data} all={products} faq={faq} apresChapitres={materiel ? <MaterielParDiscipline all={products} /> : boxe ? <MaterielParNiveau all={products} /> : undefined} />
+        )}
+        {cat && currentPage === 1 && <KeywordHub scope={cat.slug} name={cat.name} items={data} all={products} prix={!tete} />}
+        {cat && !tete && (
           <section className="spec-section">
             <div>
               <h2>
@@ -514,7 +540,7 @@ export default async function Page({ params }: Props) {
             </div>
           </section>
         )}
-        {cat && SEO_COPY[cat.slug] && <SeoBody sections={SEO_COPY[cat.slug].sections} faq={faq} />}
+        {cat && !tete && SEO_COPY[cat.slug] && <SeoBody sections={SEO_COPY[cat.slug].sections} faq={faq} />}
       </main>
     );
   }

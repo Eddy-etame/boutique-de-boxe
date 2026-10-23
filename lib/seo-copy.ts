@@ -10,6 +10,12 @@ import { livraison } from './catalog';
  *
  * Voix : phrases courtes, faits, « vous ». Aucun stock, aucune remise, aucune
  * date : la vente n’est pas ouverte.
+ *
+ * 20/10/2026 : les six familles qui sont aussi des pages de tête (gants de boxe, matériel de boxe,
+ * sacs de frappe, gants MMA, matériel MMA, matériel sport de combat) affichent le titre, la
+ * description, le texte et les questions de leur guide (lib/guides-rayons.ts). Leurs `sections` et
+ * leur `faq` ci-dessous ne s’affichent plus ; `prioritaires` et `secondaires` nourrissent toujours les
+ * mots-clés du graphe.
  */
 
 export type SeoSection = { h2: string; paragraphs: string[] };
@@ -66,7 +72,7 @@ export const SEO_COPY: Record<string, SeoCopy> = {
     ],
     faq: [
       { question: 'Matos boxe : que trouve-t-on ici ?', answer: 'Tout le matos boxe d’une séance : bandes, gants du 4 au 20 oz, protège-dents, casque, sac de frappe, corde, short et chaussures. Le matos boxe, livré chez vous dans toute la France.' },
-      { question: 'Boutique de Boxe est-elle liée à un club ?', answer: 'Non. Boutique de Boxe est une boutique en ligne de matériel de boxe et de sports de combat. Elle ne propose ni cours ni salle. L’éditeur est la société SAS BOXING CENTER, à Toulouse.' },
+      { question: 'Boutique de Boxe est-elle liée à un club ?', answer: 'Non. Boutique de Boxe est une boutique en ligne de matériel de boxe et de sports de combat. Elle ne propose ni cours ni salle ; les mentions légales nomment son éditeur.' },
       { question: 'Peut-on commander en ligne ?', answer: 'Oui, depuis le 13 octobre 2026 : les prix affichés sont les prix de vente TTC, et le panier se paie par carte sur la page sécurisée de PayPlug.' },
       { question: 'Livrez-vous partout en France ?', answer: `Oui, dans toute la ${livraison.zone} : ${livraison.tarifs}. Le matériel lourd se livre sur devis ; la Corse, l’outre-mer et Monaco, sur demande.` },
     ],
@@ -597,6 +603,14 @@ export const QUERY_MAP: { query: string; path: string; answer: string }[] = [
   { query: 'Gants de boxe en cuir', path: '/gants-de-boxe-cuir/', answer: 'Gants de boxe en cuir : Cleto Reyes, Fairtex, Twins et Elion, à velcro ou à lacets, de 8 à 18 oz. Le cuir dure plus longtemps que le synthétique et se fait à la main ; il se justifie à partir de trois séances par semaine.' },
   { query: 'Short de boxe thaï', path: '/shorts-de-boxe-thai/', answer: 'Short de boxe thaï : court, large aux cuisses et fendu sur les côtés pour laisser monter le genou ; Wicked One, Fairtex, Elion et 8 Weapons. Il sert aussi au kick-boxing et au K-1 ; la taille se lit au tour de taille, dans la grille de la marque.' },
   { query: 'Kimono de JJB', path: '/kimonos-jjb/', answer: 'Kimono de JJB : plus court et plus ajusté qu’un kimono de judo, tissé serré pour résister aux saisies, de A0 à A4 selon la stature et le poids, en 350 ou 450 g/m² ; blanc, bleu ou noir pour la compétition.' },
+  // Les douze pages de tête (20/10) : la requête exacte de chacune, quand elle manquait ici. Le texte
+  // de la page vit dans lib/guides-rayons.ts ; ces réponses n’y recopient aucun chiffre du jour.
+  { query: 'Gants de boxe', path: '/gants-de-boxe/', answer: 'Gants de boxe : le poids se choisit à l’usage, 10 oz au sac, 12 oz en technique, 14 à 16 oz avec un partenaire, 18 oz pour les lourds ; l’once mesure le rembourrage, pas la main. Boutique de Boxe donne pour chaque paire le poids, la fermeture, la matière et le prix.' },
+  { query: 'Protège-dents boxe', path: '/protege-dents/', answer: 'Protège-dents boxe : à mouler dans l’eau chaude, simple pour la plupart des usages, double pour le contact appuyé, sans moulage pour les bagues ; taille junior jusqu’à 11 ans environ. Descellé, il ne se retourne pas, pour des raisons d’hygiène.' },
+  { query: 'Protège-tibia boxe', path: '/protege-tibias/', answer: 'Protège-tibia boxe : pied couvert et rembourrage épais pour la boxe thaï, le kick-boxing et le MMA ; modèle fin ou chaussette en coton pour le karaté et la savate. La taille se mesure du dessous du genou à la cheville, dans la grille de la marque.' },
+  { query: 'Casque de boxe', path: '/casques-de-boxe/', answer: 'Casque de boxe : ouvert pour la technique, à pommettes pour le sparring, à barre ou intégral pour protéger le nez et le menton ; il se choisit au tour de tête et réduit les coupures, pas le risque de commotion.' },
+  { query: 'Bandes de boxe', path: '/bandes-de-boxe/', answer: 'Bandes de boxe : 4 à 4,50 m pour une main d’adulte, 2,50 m pour un enfant ; semi-élastiques pour la facilité, coton pour le maintien du poignet. Elles se lavent après chaque séance, à 30 °C dans un filet, et sèchent à plat.' },
+  { query: 'Kimono JJB', path: '/kimonos-jjb/', answer: 'Kimono JJB : taille A0 à A4 selon la stature et le poids, L pour les silhouettes élancées ; 350 g/m² pour la légèreté, 450 g/m² pour la résistance ; blanc, bleu ou noir uni en compétition IBJJF ; lavage à froid contre le rétrécissement.' },
 ];
 
 /** Questions de l’accueil : les six réponses qu’un visiteur cherche avant d’entrer dans le catalogue. */

@@ -13,6 +13,7 @@ import './scale.css';
 import './wayfinding.css';
 import './hero.css';
 import './villes.css';
+import './guide-rayon.css';
 import type { Viewport } from 'next';
 
 export const metadata: Metadata = {

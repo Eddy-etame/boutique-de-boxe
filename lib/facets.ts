@@ -43,7 +43,7 @@ const familyName = (slug: string) => categoryFor(slug)?.name || slug;
 export const GLOVE_WEIGHTS = [4, 6, 8, 10, 12, 14, 16, 18] as const;
 
 /** Les repères du guide « Quelle taille de gants de boxe choisir ? », un par poids. */
-const OZ_COPY: Record<number, { who: string; use: string; note: string }> = {
+export const OZ_COPY: Record<number, { who: string; use: string; note: string }> = {
   4: { who: 'les enfants de 5 à 7 ans', use: 'la découverte de la boxe, au sac et aux pattes d’ours', note: 'Le plus petit poids du catalogue. Un gant d’enfant se choisit à l’âge et à la main, jamais « pour grandir dedans ».' },
   6: { who: 'les enfants de 7 à 10 ans', use: 'l’école de boxe, le sac et les pattes d’ours', note: 'Entre 4 et 8 oz, le 6 oz est le poids des premières années de club.' },
   8: { who: 'les enfants de 10 à 13 ans et les gabarits très légers', use: 'le sac, les pattes d’ours et la technique', note: 'Le 8 oz est aussi le poids de compétition de certaines catégories : votre club vous le dira.' },

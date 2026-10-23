@@ -52,15 +52,15 @@ export function MaterielParNiveau({ all }: { all: Product[] }) {
   return (
     <div className="ville-tableau">
       <section className="keyword-hub observatory materiel-disciplines">
-        <h2>Le matériel de boxe, niveau par niveau.</h2>
+        <h2>Trois sacs, niveau par niveau.</h2>
         <p className="materiel-disciplines-lead">
-          Trois sacs, du premier cours au ring : ce que chacun contient, puis ce qu’il coûte en entier, au premier prix et au prix médian du catalogue. Boxe par boxe, la liste change : voir le{' '}
-          <a href="/materiel-boxe-thai/">matériel de boxe thaï</a>, le <a href="/materiel-kick-boxing/">matériel de kick-boxing</a>, le{' '}
-          <a href="/materiel-boxe-francaise/">matériel de boxe française</a>, le <a href="/materiel-mma/">matériel MMA</a> et l’<a href="/equipement-jjb/">équipement JJB</a>.
+          Du premier cours au ring : ce que chaque sac contient, puis ce qu’il coûte en entier, au premier prix et au prix médian du catalogue. Boxe par boxe, la liste change : voir la{' '}
+          <a href="/materiel-boxe-thai/">boxe thaï</a>, le <a href="/materiel-kick-boxing/">kick-boxing</a>, la{' '}
+          <a href="/materiel-boxe-francaise/">savate</a>, le <a href="/materiel-mma/">MMA</a> et le <a href="/equipement-jjb/">jiu-jitsu brésilien</a>.
         </p>
         <div className="hub-prices salles-table">
           <table>
-            <caption>Le matériel de boxe et son budget, niveau par niveau</caption>
+            <caption>Le budget de chaque sac, niveau par niveau</caption>
             <thead>
               <tr>
                 <th scope="col">Niveau</th>
