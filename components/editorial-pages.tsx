@@ -1,27 +1,59 @@
-import { guides, guidePublished, dateEnLettres, guidesEnLettres, type Guide, type Service } from '@/lib/editorial';
+import type { ReactNode } from 'react';
+import { guides, guidesAvecLiens, LIEN_GUIDE, guidePublished, dateEnLettres, guidesEnLettres, type Guide, type Service } from '@/lib/editorial';
 import { articleGraph } from '@/lib/seo';
 import { categories, categoryFor, getCategoryProducts } from '@/lib/catalog';
+import { subfamilyFor, subfamilyProducts } from '@/lib/subfamilies';
 import { readCatalog } from '@/lib/database';
 import selection from '@/lib/data/selection.json';
 import { Breadcrumb, ArrowLink } from './shop-shell';
 import { SeoBody } from './seo-body';
-const covers = [
-  'LE GANT.',
-  'LE POIDS.',
-  'LES SAISIES.',
-  'PREMIER ROUND.',
-  'LE MMA.',
-  'LES PROTECTIONS.',
-  'DEUX GANTS.',
-  'LA RELÈVE.',
-  'VOTRE COUPE.',
-  'LA LISTE.',
-  'LE MINIMUM.',
-  'LA TAILLE.',
-  'LE CUIR.',
-  'LE SAC.',
-  'SOUS LE GANT.',
-];
+/** Le mot de couverture de chaque guide, par adresse : l’ordre des guides peut changer sans décaler les couvertures. */
+const covers: Record<string, string> = {
+  'choisir-gants-boxe': 'LE GANT.',
+  'taille-poids-gants-boxe': 'LE POIDS.',
+  'choisir-gants-mma': 'LES SAISIES.',
+  'debuter-boxe': 'PREMIER ROUND.',
+  'debuter-mma': 'LE MMA.',
+  'choisir-protections': 'LES PROTECTIONS.',
+  'difference-gants-boxe-mma': 'DEUX GANTS.',
+  'equipement-enfant': 'LA RELÈVE.',
+  'equipement-femme': 'VOTRE COUPE.',
+  'boxe-anglaise-materiel-indispensable': 'LA LISTE.',
+  'mma-equipement-obligatoire-debuter': 'LE MINIMUM.',
+  'quelle-taille-gants-de-boxe': 'LA TAILLE.',
+  'gants-de-boxe-cuir-ou-synthetique': 'LE CUIR.',
+  'sac-de-frappe-suspendu-ou-sur-pied': 'LE SAC.',
+  'bandes-de-boxe-ou-sous-gants': 'SOUS LE GANT.',
+};
+/** Une page du site citée par un guide : une famille du catalogue ou une sous-famille (rayon, discipline). */
+const rayon = (slug: string) => {
+  const c = categories.find((x) => x.slug === slug);
+  if (c) return { slug, name: c.name };
+  const s = subfamilyFor(slug);
+  return s ? { slug, name: s.name } : null;
+};
+/**
+ * Le texte d’un guide, avec ses liens « [texte](/adresse/) » rendus en vrais liens, côté serveur : le
+ * HTML arrive complet, React échappe le texte et l’adresse, et seule une adresse interne est reconnue.
+ */
+function Texte({ children: texte }: { children: string }) {
+  const morceaux: ReactNode[] = [];
+  let fin = 0;
+  for (const m of texte.matchAll(LIEN_GUIDE)) {
+    if (m.index > fin) morceaux.push(texte.slice(fin, m.index));
+    morceaux.push(
+      <a className="lien-texte" href={m[2]} key={m.index}>
+        {m[1]}
+      </a>,
+    );
+    fin = m.index + m[0].length;
+  }
+  if (fin < texte.length) morceaux.push(texte.slice(fin));
+  return <>{morceaux}</>;
+}
+/** Le lien dans le texte d’un guide se voit sans la couleur : souligné du jaune du site, en gras. */
+const LIEN_TEXTE_CSS =
+  '.lien-texte{color:var(--ink);font-weight:650;text-decoration:underline;text-decoration-color:var(--tape);text-decoration-thickness:2px;text-underline-offset:4px;transition:text-decoration-color .2s}.lien-texte:hover{text-decoration-color:currentColor}';
 export async function GuidesIndex() {
   const products = await readCatalog();
   return (
@@ -38,7 +70,7 @@ export async function GuidesIndex() {
         </div>
         <p>
           {guidesEnLettres().charAt(0).toUpperCase() + guidesEnLettres().slice(1)} guides pour choisir la bonne taille, le bon poids et le bon
-          modèle avant d’acheter.
+          modèle avant d’acheter, puis pour bien vous en servir.
         </p>
       </section>
       <div className="guides-grid">
@@ -54,13 +86,17 @@ export async function GuidesIndex() {
                 const id = selection.guides.find(
                   (x) => x.slug === g.slug,
                 )?.imageProductId;
-                // Référence retirée du catalogue : la première photo de la famille liée, jamais une couverture vide.
-                const family = categoryFor(g.relatedCategories[0]);
+                // Référence retirée du catalogue, ou guide sans photo choisie : la première photo de la première
+                // page liée (famille ou sous-famille, la plus précise en tête), jamais une couverture vide.
                 const p =
                   products.find((p) => p.id === id) ||
-                  (family ? getCategoryProducts(family, products) : []).find(
-                    (p) => p.images[0],
-                  );
+                  g.relatedCategories
+                    .map((slug) => {
+                      const family = categoryFor(slug);
+                      const sub = family ? undefined : subfamilyFor(slug);
+                      return (family ? getCategoryProducts(family, products) : sub ? subfamilyProducts(sub, products) : []).find((x) => x.images[0]);
+                    })
+                    .find(Boolean);
                 return p ? (
                   <img
                     src={p.cut?.small ?? p.images[0].small}
@@ -73,7 +109,7 @@ export async function GuidesIndex() {
                   />
                 ) : null;
               })()}
-              <strong>{covers[i]}</strong>
+              <strong>{covers[g.slug] ?? g.eyebrow.split('·').pop()?.trim().toUpperCase() + '.'}</strong>
               <span>{g.readMinutes} MIN DE LECTURE ↗</span>
             </div>
             <h2>{g.title}</h2>
@@ -89,8 +125,13 @@ export async function GuidePage({ guide: g }: { guide: Guide }) {
   const photo = (await readCatalog()).find(
     (p) => p.id === summary?.imageProductId,
   );
+  // Le texte du guide avec ses liens : le guide reçu est la version sans liens, que lit le JSON-LD.
+  const texte = guidesAvecLiens.find((x) => x.slug === g.slug) ?? g;
   return (
     <main id="contenu" className="page-wrap">
+      <style href="bdb-lien-texte" precedence="medium">
+        {LIEN_TEXTE_CSS}
+      </style>
       <Breadcrumb
         items={[{ label: 'Guides', href: '/guides/' }, { label: g.title }]}
       />
@@ -157,7 +198,7 @@ export async function GuidePage({ guide: g }: { guide: Guide }) {
           <nav aria-label="Sommaire">
             {g.sections.map((s, i) => (
               <a href={'#repere-' + i} key={s.title}>
-                <span>0{i + 1}</span>
+                <span>{String(i + 1).padStart(2, '0')}</span>
                 {s.title}
               </a>
             ))}
@@ -167,17 +208,21 @@ export async function GuidePage({ guide: g }: { guide: Guide }) {
           </a>
         </aside>
         <article>
-          {g.sections.map((s, i) => (
+          {texte.sections.map((s, i) => (
             <section id={'repere-' + i} key={s.title}>
-              <span className="section-number">0{i + 1}</span>
+              <span className="section-number">{String(i + 1).padStart(2, '0')}</span>
               <h2>{s.title}</h2>
               {s.paragraphs.map((p) => (
-                <p key={p}>{p}</p>
+                <p key={p}>
+                  <Texte>{p}</Texte>
+                </p>
               ))}
               {'bullets' in s && s.bullets && (
                 <ul>
                   {s.bullets.map((b) => (
-                    <li key={b}>{b}</li>
+                    <li key={b}>
+                      <Texte>{b}</Texte>
+                    </li>
                   ))}
                 </ul>
               )}
@@ -207,13 +252,15 @@ export async function GuidePage({ guide: g }: { guide: Guide }) {
           </section>
           <section className="guide-faq">
             <h2>Les questions qui reviennent.</h2>
-            {g.faq.map((f) => (
+            {texte.faq.map((f) => (
               <details key={f.question}>
                 <summary>
                   {f.question}
                   <span>+</span>
                 </summary>
-                <p>{f.answer}</p>
+                <p>
+                  <Texte>{f.answer}</Texte>
+                </p>
               </details>
             ))}
           </section>
@@ -238,11 +285,11 @@ export async function GuidePage({ guide: g }: { guide: Guide }) {
         <h2>Les modèles à regarder.</h2>
         <div className="category-crosslinks">
           {g.relatedCategories.map((slug) => {
-            const c = categories.find((x) => x.slug === slug);
+            const r = rayon(slug);
             return (
-              c && (
-                <a href={'/' + slug + '/'} key={slug}>
-                  {c.name} ↗
+              r && (
+                <a href={'/' + r.slug + '/'} key={r.slug}>
+                  {r.name} ↗
                 </a>
               )
             );

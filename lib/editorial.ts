@@ -1,12 +1,36 @@
 import seed from './data/guides.json';
 import { livraison } from './catalog';
-export const guides = seed;
+/**
+ * Un lien interne dans le texte d’un guide s’écrit « [texte](/adresse/) » : une adresse du site, en
+ * minuscules, qui finit par une barre (une ancre « #… » permise). Rien d’autre n’est interprété ; un
+ * crochet qui ne suit pas cette forme reste du texte.
+ */
+export const LIEN_GUIDE = /\[([^[\]\n]+)\]\((\/(?:[a-z0-9-]+\/)*(?:#[a-z0-9-]+)?)\)/g;
+/** Le texte tel qu’on le lit : les liens ne gardent que leur texte. */
+export const sansLiens = (s: string) => s.replace(LIEN_GUIDE, '$1');
+/** Les guides tels qu’ils s’écrivent, liens compris : seule la page du guide s’en sert, pour les rendre. */
+export const guidesAvecLiens = seed;
+/**
+ * Les guides tels qu’on les lit, sans la syntaxe des liens : c’est ce que reçoivent le JSON-LD,
+ * llms.txt, llms-full.txt, le serveur MCP et la recherche.
+ */
+export const guides = seed.map((g) => ({
+  ...g,
+  intro: sansLiens(g.intro),
+  sections: g.sections.map((s) => ({
+    ...s,
+    paragraphs: s.paragraphs.map(sansLiens),
+    ...('bullets' in s && s.bullets ? { bullets: s.bullets.map(sansLiens) } : {}),
+  })),
+  faq: g.faq.map((f) => ({ ...f, answer: sansLiens(f.answer) })),
+})) as typeof seed;
 export type Guide = (typeof seed)[number];
 /** Les guides du lancement datent du 9 septembre 2026 ; ceux écrits ensuite portent leur date (« published »). */
 export const guidePublished = (g: Guide): string => ('published' in g && typeof g.published === 'string' ? g.published : '2026-09-09');
 /** La date en toutes lettres : « 3 octobre 2026 ». */
 export const dateEnLettres = (iso: string) => new Date(iso + 'T12:00:00Z').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
-const EN_LETTRES = ['zéro', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf', 'dix', 'onze', 'douze', 'treize', 'quatorze', 'quinze', 'seize', 'dix-sept', 'dix-huit', 'dix-neuf', 'vingt'];
+// Orthographe traditionnelle, la même partout sur le site (« trente-six ») : « vingt et un », puis un trait d’union.
+const EN_LETTRES = ['zéro', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf', 'dix', 'onze', 'douze', 'treize', 'quatorze', 'quinze', 'seize', 'dix-sept', 'dix-huit', 'dix-neuf', 'vingt', 'vingt et un', 'vingt-deux', 'vingt-trois', 'vingt-quatre', 'vingt-cinq', 'vingt-six', 'vingt-sept', 'vingt-huit', 'vingt-neuf', 'trente'];
 /** Le nombre de guides, en toutes lettres : il ne se périme plus quand on en ajoute un. */
 export const guidesEnLettres = () => EN_LETTRES[guides.length] || String(guides.length);
 export type Service = {
