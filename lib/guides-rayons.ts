@@ -2076,7 +2076,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
           ['Le reste : corde, convertisseur de lacets, porte-clés', (p) => !bandes(p) && !sousGants(p) && !tapes(p) && !hygiene(p) && !gourde(p)],
         ],
         'Les accessoires, type par type',
-        'Nombre de modèles et premier prix du catalogue du jour, prix de vente TTC.',
+        'Comptes et premiers prix TTC, lus dans le catalogue du jour.',
       ),
     faq: ({ f, items, all }) => {
       const c = all.filter((p) => cordeASauter(p) && p.price > 0);
@@ -2326,7 +2326,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
           ],
         },
         {
-          titre: 'La taille, dans la grille de la marque',
+          titre: 'La taille se lit dans la grille de sa marque',
           texte: [
             'Un short se prend au tour de taille, un pantalon à la stature, un haut au tour de poitrine : la grille de la fiche fait foi, et une coupe thaïlandaise taille souvent une lettre en dessous d’une coupe européenne. Entre deux tailles, la plus grande pour un short, la plus ajustée pour un rashguard.',
             'Essayez en levant les bras et en fléchissant les jambes : la tenue doit rester en place sans qu’on y pense.',
