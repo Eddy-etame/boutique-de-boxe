@@ -11,7 +11,7 @@ import { QUERY_MAP } from './seo-copy';
 import { VILLES, REGIONS, CARREFOUR, SOURCE, villePath, regionTotal, franceEnChiffres, rang } from './villes';
 import { SUBFAMILIES, subfamilyProducts, subfamilyFor } from './subfamilies';
 import { brandsOf } from './brands';
-import { ozFacets, brandFamilyFacets } from './facets';
+import { ozFacets, brandFamilyFacets, brandSubfamilyFacets } from './facets';
 import { observatory, observatorySentences } from './observatory';
 
 const fr = (n: number) => n.toLocaleString('fr-FR');
@@ -57,6 +57,14 @@ function longTail(products: Product[]) {
     '## Marques par équipement (pages dédiées)',
     ...bf.map((f) => `- [${f.name}](${urlOf(f.path)}) : ${f.products.length} modèles.`),
   ].join('\n');
+}
+
+/* Marque × sous-famille (22/10) : « protège-tibias Elion », « short de boxe thaï Wicked One » — une page par
+   marque et par équipement précis, à partir de six modèles, jamais en doublon d’une page marque × famille. */
+function brandSubfamilies(products: Product[]) {
+  const pages = brandSubfamilyFacets(products);
+  if (!pages.length) return '';
+  return ['## Marques par équipement précis (pages dédiées)', ...pages.map((f) => `- [${f.name}](${urlOf(f.path)}) : ${f.intro.split('. ')[0]}.`)].join('\n');
 }
 
 function prices(products: Product[]) {
@@ -155,6 +163,7 @@ export function llmsTxt(products: Product[]) {
     subfamilies(products),
     brands(products),
     longTail(products),
+    brandSubfamilies(products),
     '',
     prices(products),
     '',
@@ -192,6 +201,7 @@ export function llmsFullTxt(products: Product[]) {
     '',
     subfamilies(products),
     brands(products),
+    brandSubfamilies(products),
     '',
     ...fam.flatMap((f) => [`## ${f.name} (${fr(f.count)} modèles) — ${f.url}`, f.label, '', ...(byFamily.get(f.slug) || []).map(line), '']),
     '## Guides d’achat',

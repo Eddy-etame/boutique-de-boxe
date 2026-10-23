@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { readCatalog } from '@/lib/database';
 import { listItem, money } from '@/lib/catalog';
 import { brandCopy, brandFor, brandsOf, priceTable } from '@/lib/brands';
-import { brandFamilyFacet } from '@/lib/facets';
+import { brandFamilyFacet, brandSubfamilyFacetsOf } from '@/lib/facets';
 import { collectionGraph } from '@/lib/seo';
 import { ogImage } from '@/lib/og';
 import { Breadcrumb } from '@/components/shop-shell';
@@ -60,6 +60,8 @@ export default async function BrandPage({ params }: Props) {
   const others = brandsOf(products).filter((x) => x.slug !== b.slug).slice(0, 12);
   // Les familles de la marque qui ont leur propre page (six modèles et plus) : « gants de boxe Fairtex ».
   const familyPages = new Map(b.families.map((f) => [f.slug, brandFamilyFacet(b, f.slug)] as const));
+  // Les équipements précis de la marque qui ont leur page (six modèles et plus, hors doublon) : « protège-tibias Elion ».
+  const rayons = brandSubfamilyFacetsOf(b, products);
   return (
     <main id="contenu" className="page-wrap">
       <Breadcrumb items={[{ label: 'Marques', href: '/marques/' }, { label: b.name }]} />
@@ -91,6 +93,15 @@ export default async function BrandPage({ params }: Props) {
               </a>
             ) : null;
           }))}
+        </nav>
+      )}
+      {rayons.length > 0 && (
+        <nav className="subfamily-links" aria-label={'Les équipements précis ' + b.name}>
+          {spaced(rayons.map((f) => (
+            <a key={f.path} href={f.path}>
+              {f.name} · {f.products.length}
+            </a>
+          )))}
         </nav>
       )}
       <Catalog items={pageItems.map(listItem)} total={b.products.length} scope={'marque-' + b.slug} initialPage={currentPage} showFamilies={b.families.length > 1} />

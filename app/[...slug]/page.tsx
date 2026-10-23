@@ -8,7 +8,7 @@ import { longDescription, practiceLevel, disciplinesOf, careAdvice, productFaq, 
 import { SUBFAMILIES } from '@/lib/subfamilies';
 import { SeoBody } from '@/components/seo-body';
 import { KeywordHub } from '@/components/keyword-hub';
-import { FacetPage } from '@/components/facet-page';
+import { FacetPage, BrandPagesOfSubfamily } from '@/components/facet-page';
 import { facetFor, brandFamilyFacet, allFacets } from '@/lib/facets';
 import { brandFor, brandSlug } from '@/lib/brands';
 import { notFound } from 'next/navigation';
@@ -381,6 +381,7 @@ export default async function Page({ params }: Props) {
             <a key={x.slug} href={'/' + x.slug + '/'}>{x.name}</a>
           )))}
         </nav>
+        {currentPage === 1 && <BrandPagesOfSubfamily sub={sub} all={products} />}
         {currentPage === 1 && sub.discipline && <KitDiscipline discipline={sub.discipline} nom={sub.name} all={products} />}
         {currentPage === 1 && sub.niveau && <KitNiveau niveau={sub.niveau} all={products} />}
         <Catalog

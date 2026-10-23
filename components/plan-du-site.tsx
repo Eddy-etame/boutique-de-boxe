@@ -54,6 +54,7 @@ export function PlanDuSite({ all }: { all: Product[] }) {
     { titre: 'Gants de boxe par poids', liens: facettes.filter((f) => f.kind === 'oz').map((f) => ({ href: f.path, nom: f.name, n: f.products.length })) },
     { titre: 'Gants de boxe par couleur', liens: facettes.filter((f) => f.kind === 'couleur').map((f) => ({ href: f.path, nom: f.name, n: f.products.length })) },
     { titre: 'Une marque dans un rayon', liens: facettes.filter((f) => f.kind === 'marque-famille').map((f) => ({ href: f.path, nom: f.name, n: f.products.length })) },
+    { titre: 'Une marque dans un équipement précis', liens: facettes.filter((f) => f.kind === 'marque-sous-famille').map((f) => ({ href: f.path, nom: f.name, n: f.products.length })) },
     { titre: 'Les marques', liens: [{ href: '/marques/', nom: 'Toutes les marques' }, ...brandsOf(all).map((b) => ({ href: '/marques/' + b.slug + '/', nom: b.name, n: b.products.length }))] },
     {
       titre: 'Guides et outils',
