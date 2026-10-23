@@ -1038,7 +1038,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
       { question: 'Peut-on retourner un protège-dents ?', answer: 'Pas une fois descellé : pour des raisons d’hygiène, un protège-dents ouvert après la livraison ne peut pas être repris. Vérifiez la taille, adulte ou junior, avant d’ouvrir l’emballage.' },
     ],
     liens: [
-      { titre: 'Les guides', liens: [{ href: '/guides/choisir-protections/', texte: 'quelles protections pour les sports de combat' }, { href: '/guides/equipement-enfant/', texte: 'équiper un enfant pour ses premiers cours' }, { href: '/guides/comment-mouler-un-protege-dents/', texte: 'mouler son protège-dents, étape par étape' }] },
+      { titre: 'Les guides', liens: [{ href: '/guides/choisir-protections/', texte: 'quelles protections pour les sports de combat' }, { href: '/guides/equipement-enfant/', texte: 'équiper un enfant pour ses premiers cours' }, { href: '/guides/comment-mouler-un-protege-dents/', texte: 'mouler son protège-dents, étape par étape' }, { href: '/guides/protege-dents-appareil-dentaire/', texte: 'avec un appareil dentaire : lequel, comment' }] },
       { titre: 'Les rayons voisins', liens: [{ href: '/protections-boxe/', texte: 'protections de boxe' }, { href: '/casques-de-boxe/', texte: 'casques' }, { href: '/coquilles/', texte: 'coquilles' }, { href: '/protege-tibias/', texte: 'protège-tibias' }, { href: '/gants-de-boxe/', texte: 'gants de boxe' }] },
     ],
   },
@@ -1174,7 +1174,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
       ];
     },
     liens: [
-      { titre: 'Les guides', liens: [{ href: '/guide-des-tailles/', texte: 'le guide des tailles' }, { href: '/guides/equipement-femme/', texte: 'choisir la bonne coupe quand on est une femme' }] },
+      { titre: 'Les guides', liens: [{ href: '/guide-des-tailles/', texte: 'le guide des tailles' }, { href: '/guides/equipement-femme/', texte: 'choisir la bonne coupe quand on est une femme' }, { href: '/guides/short-de-boxe-quel-short-pour-quel-sport/', texte: 'le short admis en thaï, en kick et en MMA' }, { href: '/guides/protege-tibias-chaussette-ou-scratch/', texte: 'protège-tibias : chaussette ou scratch' }, { href: '/guides/coquille-et-protege-poitrine/', texte: 'la coquille sous le short, et pour qui' }] },
       { titre: 'Les rayons voisins', liens: [{ href: '/materiel-boxe-thai/', texte: 'matériel de boxe thaï' }, { href: '/protege-tibias/', texte: 'protège-tibias' }, { href: '/shorts-mma/', texte: 'shorts MMA' }, { href: '/textile-boxe/', texte: 'textile de boxe' }] },
     ],
   },
@@ -1421,7 +1421,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
       ];
     },
     liens: [
-      { titre: 'Les guides', liens: [{ href: '/guides/choisir-protections/', texte: 'choisir ses protections selon le contact' }, { href: '/guides/mma-equipement-obligatoire-debuter/', texte: 'ce que le MMA impose au premier cours' }] },
+      { titre: 'Les guides', liens: [{ href: '/guides/choisir-protections/', texte: 'choisir ses protections selon le contact' }, { href: '/guides/mma-equipement-obligatoire-debuter/', texte: 'ce que le MMA impose au premier cours' }, { href: '/guides/protege-tibias-chaussette-ou-scratch/', texte: 'chaussette ou scratch, quelle taille, pour quel sport' }] },
       { titre: 'Les rayons voisins', liens: [{ href: '/materiel-boxe-thai/', texte: 'matériel de boxe thaï' }, { href: '/materiel-kick-boxing/', texte: 'matériel de kick-boxing' }, { href: '/shorts-de-boxe-thai/', texte: 'short de boxe thaï' }, { href: '/coquilles/', texte: 'coquille de boxe' }, { href: '/protections-boxe/', texte: 'toutes les protections' }] },
     ],
   },
@@ -1537,7 +1537,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
       ];
     },
     liens: [
-      { titre: 'Les guides', liens: [{ href: '/guides/choisir-protections/', texte: 'casque et protège-tibias : la tenue en mouvement' }, { href: '/guides/boxe-anglaise-materiel-indispensable/', texte: 'quand le casque arrive dans le sac' }] },
+      { titre: 'Les guides', liens: [{ href: '/guides/choisir-protections/', texte: 'casque et protège-tibias : la tenue en mouvement' }, { href: '/guides/boxe-anglaise-materiel-indispensable/', texte: 'quand le casque arrive dans le sac' }, { href: '/guides/casque-de-boxe-obligatoire/', texte: 'obligatoire ou pas : les règlements, les études' }] },
       { titre: 'Les rayons voisins', liens: [{ href: '/protege-dents/', texte: 'protège-dents de boxe' }, { href: '/gants-de-boxe-sparring/', texte: 'gants de sparring 14, 16 et 18 oz' }, { href: '/materiel-boxe-competition/', texte: 'matériel de compétition' }, { href: '/protections-boxe/', texte: 'protections de boxe' }] },
     ],
   },
@@ -1827,7 +1827,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
       ];
     },
     liens: [
-      { titre: 'Les guides', liens: [{ href: '/guides/mma-equipement-obligatoire-debuter/', texte: 'l’équipement obligatoire pour débuter' }, { href: '/guides/debuter-mma/', texte: 'quel matériel pour commencer' }, { href: '/guides/difference-gants-boxe-mma/', texte: 'gants de boxe et gants MMA : les différences' }] },
+      { titre: 'Les guides', liens: [{ href: '/guides/mma-equipement-obligatoire-debuter/', texte: 'l’équipement obligatoire pour débuter' }, { href: '/guides/debuter-mma/', texte: 'quel matériel pour commencer' }, { href: '/guides/difference-gants-boxe-mma/', texte: 'gants de boxe et gants MMA : les différences' }, { href: '/guides/short-de-boxe-quel-short-pour-quel-sport/', texte: 'short de MMA, de thaï ou de kick : lequel' }, { href: '/guides/protege-tibias-chaussette-ou-scratch/', texte: 'choisir ses protège-tibias' }] },
       { titre: 'Les rayons voisins', liens: [{ href: '/gants-mma/', texte: 'gants MMA' }, { href: '/shorts-mma/', texte: 'short MMA' }, { href: '/rashguards/', texte: 'rashguard MMA et JJB' }, { href: '/equipement-jjb/', texte: 'équipement JJB' }, { href: '/protege-tibias/', texte: 'protège-tibia boxe' }] },
     ],
   },
@@ -2255,7 +2255,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
     },
     liens: [
       { titre: 'Les sous-rayons', liens: [{ href: '/protege-dents/', texte: 'protège-dents' }, { href: '/casques-de-boxe/', texte: 'casques de boxe' }, { href: '/protege-tibias/', texte: 'protège-tibias' }, { href: '/coquilles/', texte: 'coquilles et protections pelviennes' }] },
-      { titre: 'Les guides', liens: [{ href: '/guides/choisir-protections/', texte: 'quelle protection pour quel sport' }, { href: '/guides/equipement-enfant/', texte: 'protéger un enfant' }, { href: '/guides/equipement-femme/', texte: 'l’équipement pour femme' }] },
+      { titre: 'Les guides', liens: [{ href: '/guides/choisir-protections/', texte: 'quelle protection pour quel sport' }, { href: '/guides/equipement-enfant/', texte: 'protéger un enfant' }, { href: '/guides/equipement-femme/', texte: 'l’équipement pour femme' }, { href: '/guides/casque-de-boxe-obligatoire/', texte: 'le casque est-il obligatoire ?' }, { href: '/guides/coquille-et-protege-poitrine/', texte: 'coquille et protège-poitrine : pour qui' }, { href: '/guides/protege-dents-appareil-dentaire/', texte: 'protège-dents avec un appareil dentaire' }] },
       { titre: 'Les rayons voisins', liens: [{ href: '/gants-de-boxe/', texte: 'gants de boxe' }, { href: '/materiel-boxe-thai/', texte: 'matériel de boxe thaï' }, { href: '/materiel-mma/', texte: 'matériel MMA' }, { href: '/materiel-boxe-competition/', texte: 'matériel de compétition' }] },
     ],
   },
@@ -2412,7 +2412,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
     },
     liens: [
       { titre: 'Les sous-rayons', liens: [{ href: '/shorts-de-boxe-anglaise/', texte: 'shorts de boxe anglaise' }, { href: '/shorts-de-boxe-thai/', texte: 'short de boxe thaï' }, { href: '/shorts-mma/', texte: 'shorts MMA' }, { href: '/rashguards/', texte: 'rashguards' }, { href: '/t-shirts-boxe/', texte: 't-shirts' }, { href: '/sweats-boxe/', texte: 'sweats et vestes' }, { href: '/leggings/', texte: 'spats et pantalons' }] },
-      { titre: 'Les guides', liens: [{ href: '/guide-des-tailles/', texte: 'lire une grille de tailles' }, { href: '/guides/equipement-femme/', texte: 'la coupe quand on est une femme' }, { href: '/guides/equipement-enfant/', texte: 'habiller un enfant pour le cours' }] },
+      { titre: 'Les guides', liens: [{ href: '/guide-des-tailles/', texte: 'lire une grille de tailles' }, { href: '/guides/equipement-femme/', texte: 'la coupe quand on est une femme' }, { href: '/guides/equipement-enfant/', texte: 'habiller un enfant pour le cours' }, { href: '/guides/short-de-boxe-quel-short-pour-quel-sport/', texte: 'quel short pour quel sport, et ce que la règle accepte' }] },
       { titre: 'Les rayons voisins', liens: [{ href: '/materiel-boxe/', texte: 'matériel de boxe' }, { href: '/materiel-mma/', texte: 'matériel MMA' }, { href: '/chaussures-boxe/', texte: 'chaussures de boxe' }, { href: '/materiel-boxe-femme/', texte: 'matériel de boxe femme' }] },
     ],
   },
@@ -2974,7 +2974,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
     },
     liens: [
       { titre: 'Les rayons de l’anglaise', liens: [{ href: '/gants-de-boxe/', texte: 'gants de boxe' }, { href: '/bandes-de-boxe/', texte: 'bandes de boxe' }, { href: '/protege-dents/', texte: 'protège-dents' }, { href: '/casques-de-boxe/', texte: 'casques de boxe' }, { href: '/coquilles/', texte: 'coquilles' }, { href: '/chaussures-boxe/', texte: 'chaussures de boxe' }, { href: '/shorts-de-boxe-anglaise/', texte: 'shorts de boxe anglaise' }] },
-      { titre: 'Les guides', liens: [{ href: '/guides/boxe-anglaise-materiel-indispensable/', texte: 'le matériel indispensable, pièce par pièce' }, { href: '/guides/debuter-boxe/', texte: 'l’équipement du premier cours' }, { href: '/guides/comment-mettre-des-bandes-de-boxe/', texte: 'poser ses bandes' }] },
+      { titre: 'Les guides', liens: [{ href: '/guides/boxe-anglaise-materiel-indispensable/', texte: 'le matériel indispensable, pièce par pièce' }, { href: '/guides/debuter-boxe/', texte: 'l’équipement du premier cours' }, { href: '/guides/comment-mettre-des-bandes-de-boxe/', texte: 'poser ses bandes' }, { href: '/guides/casque-de-boxe-obligatoire/', texte: 'le casque, selon les règlements' }, { href: '/guides/coquille-et-protege-poitrine/', texte: 'coquille et protège-poitrine, selon les règlements' }] },
       { titre: 'Les autres boxes', liens: [{ href: '/materiel-boxe/', texte: 'tout le matériel de boxe' }, { href: '/materiel-boxe-francaise/', texte: 'savate boxe française' }, { href: '/materiel-boxe-thai/', texte: 'boxe thaï' }, { href: '/materiel-boxe-competition/', texte: 'le matériel de compétition' }] },
     ],
   },
