@@ -1151,6 +1151,35 @@ export function ProductDetails({ product: p, note = null }: { product: Product; 
             : 'Livraison en France : tarifs prévus à l’ouverture'}{' '}
           <ArrowUpRight size={15} />
         </a>
+        {/* Ventes ouvertes : la fiche garde une porte pour les contacts — une alerte prix, lue dans l’atelier (source « fiche-prix »).
+            Le matériel lourd passe par la demande de devis, qui recueille déjà l’adresse. */}
+        {shop.ventesOuvertes && !estLourd(p) && (
+        <section className="launch-ticket" id="alerte-prix" aria-labelledby="alerte-prix-titre">
+          <span className="eyebrow">ALERTE PRIX</span>
+          <p id="alerte-prix-titre" className="launch-ticket-title">
+            Prévenu si le prix baisse.
+          </p>
+          <p className="launch-ticket-copy">
+            {'Un e-mail si le prix de '}
+            <strong>
+              {cleanName(p)}
+              {size ? `, ${size}` : ''}
+            </strong>
+            {' baisse ou si une offre concerne ce modèle. Rien d’autre.'}
+          </p>
+          <AlertForm
+            productId={p.id}
+            variant={size}
+            source="fiche-prix"
+            labels={{
+              field: 'Votre adresse e-mail',
+              placeholder: 'vous@exemple.fr',
+              consent: 'J’accepte de recevoir un e-mail si le prix baisse ou si une offre concerne ce modèle.',
+              submit: 'M’inscrire à l’alerte prix',
+            }}
+          />
+        </section>
+        )}
         <NotezCeModele produit={p.id} note={note} />
       </div>
       <div
