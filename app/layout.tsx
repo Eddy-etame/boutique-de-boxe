@@ -16,6 +16,14 @@ import './villes.css';
 import './guide-rayon.css';
 import type { Viewport } from 'next';
 
+/**
+ * Jeton Search Console de la propriété « https://www.boutique-de-boxe.com/ », créée le 30 octobre 2026 avec
+ * le compte du propriétaire ; la variable d’environnement, si elle existe, l’emporte. Un jeton de vérification
+ * se lit dans la page de tout visiteur : il est public par nature, ce n’est pas un secret.
+ */
+const GOOGLE_SITE_VERIFICATION =
+  process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || 'HG8Al0rS9dge89FwHo_G7zbSrDUmFJf00peqgC5977s';
+
 export const metadata: Metadata = {
   metadataBase: new URL(shop.origin),
   title: {
@@ -31,14 +39,14 @@ export const metadata: Metadata = {
   category: 'shopping',
   robots: { index: true, follow: true },
   // Search Console, Bing Webmaster, Yandex Webmaster : les balises de vérification arrivent par
-  // variable d’environnement (projet Vercel), jamais en dur. Yandex ajouté le 13/10/2026.
-  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ||
+  // variable d’environnement (projet Vercel) ; Google a aussi son jeton ci-dessus. Yandex ajouté le 13/10/2026.
+  ...(GOOGLE_SITE_VERIFICATION ||
   process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION ||
   process.env.NEXT_PUBLIC_YANDEX_SITE_VERIFICATION
     ? {
         verification: {
-          ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
-            ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }
+          ...(GOOGLE_SITE_VERIFICATION
+            ? { google: GOOGLE_SITE_VERIFICATION }
             : {}),
           ...(process.env.NEXT_PUBLIC_YANDEX_SITE_VERIFICATION
             ? { yandex: process.env.NEXT_PUBLIC_YANDEX_SITE_VERIFICATION }
