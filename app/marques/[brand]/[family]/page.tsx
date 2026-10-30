@@ -5,7 +5,10 @@ import { allFacets, facetFor } from '@/lib/facets';
 import { FacetPage, facetMetadata } from '@/components/facet-page';
 
 /** HTML statique régénéré toutes les minutes ; `?page=N` se lit dans le navigateur (components/shop-interactions.tsx). */
-export const revalidate = 60;
+// Six heures (30/10/2026) : à 60 s, chaque page redevenait périmée entre deux passages d’un robot et se
+// régénérait en rafale (18 réponses de 2 à 14 s sur 882 mesurées ce jour-là) ; une modification du
+// catalogue appelle déjà revalidatePath('/', 'layout'), une note modérée revalide sa fiche.
+export const revalidate = 21600;
 type Props = {
   params: Promise<{ brand: string; family: string }>;
 };

@@ -8,7 +8,10 @@ import { Breadcrumb } from '@/components/shop-shell';
 import { BrandGridMotion } from '@/components/brand-grid-motion';
 import { brandFamilyFacet } from '@/lib/facets';
 
-export const revalidate = 60;
+// Six heures (30/10/2026) : à 60 s, chaque page redevenait périmée entre deux passages d’un robot et se
+// régénérait en rafale (18 réponses de 2 à 14 s sur 882 mesurées ce jour-là) ; une modification du
+// catalogue appelle déjà revalidatePath('/', 'layout'), une note modérée revalide sa fiche.
+export const revalidate = 21600;
 const TITLE = 'Marques de boxe et MMA : Elion, Fairtex, Cleto Reyes, Venum';
 const DESCRIPTION =
   'Toutes les marques de la Boutique de Boxe : Elion, Fairtex, Cleto Reyes, Everlast, Adidas, Venum, Twins, Metal Boxe. Modèles et prix TTC par marque.';

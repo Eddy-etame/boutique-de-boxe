@@ -20,7 +20,10 @@ const VENTE_PATH = '/vente-materiel-de-boxe/';
 const INFO_PATHS = new Set(['/sports-de-combat/', '/les-arts-martiaux/']);
 // Pages-villes et carrefour (29/09) : datées par le recensement du ministère des Sports qui les nourrit.
 const VILLE_PATHS = new Set(['/' + CARREFOUR + '/', ...[...VILLES, ...REGIONS].map((v) => villePath(v.slug))]);
-export const revalidate = 60;
+// Six heures (30/10/2026) : à 60 s, chaque page redevenait périmée entre deux passages d’un robot et se
+// régénérait en rafale (18 réponses de 2 à 14 s sur 882 mesurées ce jour-là) ; une modification du
+// catalogue appelle déjà revalidatePath('/', 'layout'), une note modérée revalide sa fiche.
+export const revalidate = 21600;
 
 const productDate = (product: { updatedAt?: string; dateAdded: string }) =>
   product.updatedAt || product.dateAdded;

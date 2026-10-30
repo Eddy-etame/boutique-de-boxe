@@ -8,7 +8,10 @@ import { Breadcrumb, ArrowLink } from '@/components/shop-shell';
 import type { SeoFaq } from '@/lib/seo-copy';
 import { SeoBody } from '@/components/seo-body';
 
-export const revalidate = 60;
+// Six heures (30/10/2026) : à 60 s, chaque page redevenait périmée entre deux passages d’un robot et se
+// régénérait en rafale (18 réponses de 2 à 14 s sur 882 mesurées ce jour-là) ; une modification du
+// catalogue appelle déjà revalidatePath('/', 'layout'), une note modérée revalide sa fiche.
+export const revalidate = 21600;
 const PATH = '/observatoire-des-prix/';
 const TITLE = 'Observatoire des prix du matériel de boxe : gants, casques';
 const DESCRIPTION =
