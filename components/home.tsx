@@ -11,7 +11,20 @@ import {
 import { EquipmentCompare } from './equipment-compare';
 import selection from '@/lib/data/selection.json';
 import { spaced } from '@/lib/spaced';
-import { EQUIPEMENT_BOXE_ANGLAISE_PRET, RAYONS_PRATIQUE, nomDeRayon } from './liens-du-site';
+import { EQUIPEMENT_BOXE_ANGLAISE_PRET, GUIDES, PAR_DISCIPLINE, RAYONS_PRATIQUE, RAYONS_TYPE, nomDeRayon } from './liens-du-site';
+import { QUERY_MAP } from '@/lib/seo-copy';
+
+/**
+ * Les recherches du cahier des charges que ni l’entête, ni le pied de page, ni les index de l’accueil ne lient
+ * déjà : une seule porte par page, la première requête de la carte pour ancre.
+ */
+const DEJA_LIEES = new Set([
+  ...RAYONS_PRATIQUE, ...RAYONS_TYPE, ...PAR_DISCIPLINE, ...GUIDES,
+].map((l) => l.href).concat([
+  '/boutique-boxe/', '/vente-materiel-de-boxe/', '/boutique-sport-de-combat/',
+  '/boutique-de-boxe-toulouse/', '/boutique-de-boxe-paris/',
+]));
+const RECHERCHES_ACCUEIL = QUERY_MAP.filter((q, i, a) => !DEJA_LIEES.has(q.path) && a.findIndex((x) => x.path === q.path) === i);
 
 /** « 1 042 » : un compte tel que les textes l’écrivent (insécable U+00A0, la police d’affichage n’a pas l’espace fine). */
 const nombre = (n: number) => n.toLocaleString('fr-FR').replace(/ /g, ' ');
@@ -279,6 +292,22 @@ export default function Home({ items }: { items: Product[] }) {
         <AlertForm />
       </section>
       )}
+      {/* Les recherches du cahier des charges (30/10/2026) : chaque page visée par une requête est liée depuis
+          l’accueil, avec la requête pour ancre. Le pied de page ne porte plus ce répertoire sur 1 290 pages ;
+          l’accueil, lui, ouvre ces portes une fois, en clair — l’audit SEO vérifie que chacune y est. */}
+      <nav className="home-recherches section-pad" aria-labelledby="home-recherches-titre">
+        <div>
+          <span className="eyebrow">CE QUE L’ON CHERCHE</span>
+          <h2 id="home-recherches-titre">Les recherches fréquentes, page par page.</h2>
+        </div>
+        <ul>
+          {RECHERCHES_ACCUEIL.map((q) => (
+            <li key={q.path}>
+              <a href={q.path}>{q.query}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
       {/* L’accueil n’a pas le conteneur des pages : la FAQ prend la gouttière des sections. */}
       <div className="home-faq section-pad">
         <div className="home-faq-intro">

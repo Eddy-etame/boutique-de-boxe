@@ -1,6 +1,5 @@
 'use client';
 import { usePathname } from 'next/navigation';
-import { QUERY_MAP } from '@/lib/seo-copy';
 import { CookiesButton } from './consent-tracker';
 import { useEffect, useId, useRef, useState, useSyncExternalStore } from 'react';
 import { ArrowUpRight, Menu, ArrowRight, X, ChevronDown } from 'lucide-react';
@@ -28,9 +27,15 @@ const RAYONS_PIED: Lien[] = [
   { href: '/marques/', label: 'Toutes les marques' },
   { href: '/nouveautes/', label: 'Nouveautés' },
 ];
-const pli = (s: string) => s.toLowerCase().replace(/[’']/g, '’').trim();
-/** Un lien du répertoire des recherches qui répète mot pour mot un lien des blocs du pied de page n’y est pas repris. */
-const dejaAuPied = new Set([...RAYONS_PIED, ...GUIDES].map((l) => l.href + '|' + pli(l.label)));
+/**
+ * Le bloc « Guides » du pied de page (30/10/2026) : quatre portes seulement — l’index des guides, le guide des
+ * tailles et les deux pages d’information visées par « sport de combat » et « arts martiaux ». Les autres guides
+ * restent dans l’entête, dans l’index et sous chaque rayon : 81 liens de pied de page sont devenus 38, chaque
+ * lien vers une page de tête pèse d’autant plus.
+ */
+const GUIDES_PIED: Lien[] = GUIDES.filter((g) =>
+  ['/guides/', '/guide-des-tailles/', '/sports-de-combat/', '/les-arts-martiaux/'].includes(g.href),
+);
 
 /**
  * « Rayons » : un bouton dans l’entête, un panneau sous l’entête. Les liens sont écrits dans le HTML de chaque
@@ -255,8 +260,8 @@ export function Footer() {
               01
             </span>{' '}
             <span>
-              <strong>Trouver mon équipement</strong>{' '}
-              <small>Dans la boutique boxe&nbsp;: gants, protections, textile et sacs.</small>
+              <strong>Boutique boxe</strong>{' '}
+              <small>Trouver mon équipement&nbsp;: gants, protections, textile et sacs.</small>
             </span>
             <ArrowUpRight aria-hidden="true" />
           </a>{' '}
@@ -287,7 +292,7 @@ export function Footer() {
           <i className="status-dot" aria-hidden="true" />
           {shop.ventesOuvertes ? (
             <>
-              <strong>Les ventes sont ouvertes.</strong> Paiement par carte, livraison dans toute la France.
+              <a href="/offres-de-lancement/"><strong>Les ventes sont ouvertes.</strong></a> Paiement par carte, livraison dans toute la France.
             </>
           ) : (
             <>
@@ -313,6 +318,11 @@ export function Footer() {
             La boutique sport de combat en France, ville par ville{' '}
             <ArrowUpRight size={15} aria-hidden="true" />
           </a>{' '}
+          {/* Près de chez vous (30/10/2026) : les deux pages-villes que l’on vise, en clair sur chaque page. */}
+          <span className="footer-villes">
+            Près de chez vous&nbsp;: <a href="/boutique-de-boxe-toulouse/">Boutique de boxe Toulouse</a> ·{' '}
+            <a href="/boutique-de-boxe-paris/">Boutique de boxe Paris</a>
+          </span>{' '}
           <a href="/contact/" className="email-link">
             Une question sur le matériel ?{' '}
             <ArrowUpRight size={16} aria-hidden="true" />
@@ -328,7 +338,7 @@ export function Footer() {
         </nav>
         <nav aria-labelledby="footer-guides" className="footer-guides">
           <h3 id="footer-guides">Guides</h3>
-          {spaced(GUIDES.map((g) => (
+          {spaced(GUIDES_PIED.map((g) => (
             <a key={g.href} href={g.href}>
               {g.label}
             </a>
@@ -339,27 +349,12 @@ export function Footer() {
           <a href="/faq/">Questions fréquentes</a>{' '}
           <a href="/livraison/">{shop.ventesOuvertes ? 'Livraison et frais' : 'Livraison et frais prévus'}</a>{' '}
           <a href="/retours/">Retours</a>{' '}
-          <a href="/contact/">Nous contacter</a>{' '}
           <a href="/a-propos/">À propos</a>{' '}
-          <a href="/offres-de-lancement/">Ouverture de la boutique</a>{' '}
           <a href="/contact/#formulaire" className="footer-contact">
             {shop.email} <ArrowUpRight size={14} aria-hidden="true" />
           </a>
         </nav>
       </div>
-      <details className="footer-directory">
-        <summary>
-          Explorer les recherches par équipement{' '}
-          <span aria-hidden="true">+</span>
-        </summary>
-        <nav className="footer-queries" aria-label="Recherches par équipement">
-          {spaced(QUERY_MAP.filter((q) => !dejaAuPied.has(q.path + '|' + pli(q.query))).map((q) => (
-            <a key={q.query} href={q.path}>
-              {q.query}
-            </a>
-          )))}
-        </nav>
-      </details>
       <div className="footer-bottom">
         <MotionControl />{' '}
         <span>© {new Date().getFullYear()} Boutique de Boxe</span>{' '}

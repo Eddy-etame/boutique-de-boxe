@@ -981,6 +981,19 @@ html[data-scrolled] .site-header {
   max-width: 235px;
   margin-top: 22px;
 }
+/* Les recherches fréquentes de l’accueil (30/10/2026) : une liste sobre, deux à quatre colonnes selon la largeur. */
+.home-recherches { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 24px 40px; align-items: start; border-top: 1px solid var(--line); }
+.home-recherches h2 { font: 800 clamp(22px, 2vw, 30px) / 1.06 Barlow, Impact, sans-serif; text-transform: uppercase; margin: 10px 0 0; max-width: 18ch; }
+.home-recherches ul { list-style: none; margin: 0; padding: 0; columns: 2; column-gap: 28px; }
+.home-recherches li { break-inside: avoid; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 14px; line-height: 1.5; }
+.home-recherches a { color: var(--ink); text-decoration: none; }
+.home-recherches a:hover { text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 860px) { .home-recherches { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 520px) { .home-recherches ul { columns: 1; } }
+/* Près de chez vous (30/10/2026) : les deux pages-villes visées, en clair sous la présentation. */
+.footer-villes { display: block; margin: 10px 0 6px; font-size: 14px; line-height: 1.6; color: #b3b9a5; }
+.footer-villes a { color: var(--paper); text-decoration: underline; text-underline-offset: 3px; }
+.footer-villes a:hover { color: var(--tape); }
 .footer-grid .email-link {
   display: flex !important;
   align-items: center;

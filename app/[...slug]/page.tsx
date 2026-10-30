@@ -219,6 +219,14 @@ export default async function Page({ params }: Props) {
     // Les notes des visiteurs (20/10/2026) : la moyenne visible, lue au rendu (ISR), jamais inventée.
     const note = await moyenneDuModele(p.id);
     const declaredLevel = practiceLevel(p);
+    // Chaque fiche vote pour sa page de tête (30/10/2026) : « Matériel MMA » pour les gants MMA, « Boutique arts
+    // martiaux » pour les arts martiaux, « Matériel de boxe » pour tout le reste — l’ancre est la requête visée.
+    const tete =
+      p.category === 'gants-mma'
+        ? { href: '/materiel-mma/', label: 'Matériel MMA' }
+        : p.category === 'arts-martiaux'
+        ? { href: '/boutique-arts-martiaux/', label: 'Boutique arts martiaux' }
+        : { href: '/materiel-boxe/', label: 'Matériel de boxe' };
     return (
       <main id="contenu" className="page-wrap">
         <Breadcrumb
@@ -237,6 +245,7 @@ export default async function Page({ params }: Props) {
               <div><span>Discipline</span>{' '}{disciplinesOf(p).join(', ')}</div>
               {declaredLevel && <div><span>Niveau conseillé</span>{' '}{declaredLevel}</div>}
               <div><span>Famille</span>{' '}<a href={'/' + p.category + '/'}>{cat.name}</a></div>
+              <div><span>Rayon</span>{' '}<a href={tete.href}>{tete.label}</a></div>
               {brand && (
                 <div>
                   <span>Marque</span>{' '}
