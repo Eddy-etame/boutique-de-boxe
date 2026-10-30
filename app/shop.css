@@ -3382,6 +3382,12 @@ div.gallery-main[style*='--drag'] > img { transition: none; }
 .pack-add .form-status a { text-decoration: underline; text-underline-offset: 3px; }
 .kit-notice { margin-top: 22px; padding: 22px 24px; border: 1px solid #68725d; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; align-items: start; }
 .kit-notice > p { font-size: 14px; line-height: 1.6; max-width: 52ch; }
+/* Alerte de rayon (30 octobre 2026) : sous la grille, sur le papier, deux colonnes comme le pack. */
+.rayon-alerte { margin: 28px 0 6px; padding: 22px 24px; border: 1px solid var(--line); border-top: 3px solid var(--ink); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+.rayon-alerte-titre { font: 800 clamp(20px, 1.6vw, 24px) / 1.08 Barlow, Impact, sans-serif; text-transform: uppercase; margin: 0 0 8px; max-width: 26ch; }
+.rayon-alerte > div > p:not(.rayon-alerte-titre) { font-size: 14px; line-height: 1.6; max-width: 52ch; margin: 0; color: var(--muted); }
+.rayon-alerte .alert-form { margin: 0; padding: 0; border: 0; background: transparent; }
+@media (max-width: 720px) { .rayon-alerte { grid-template-columns: minmax(0, 1fr); padding: 18px; } }
 /* Sur le fond sombre du sac de séance, le formulaire d’alerte reprend les tons clairs. */
 :is(.kit-notice, .launch-ticket) .alert-form .consent, :is(.kit-notice, .launch-ticket) .alert-form .consent a, :is(.kit-notice, .launch-ticket) .alert-done, :is(.kit-notice, .launch-ticket) .form-status, :is(.kit-notice, .launch-ticket) .text-button { color: #d5d9c9; }
 :is(.kit-notice, .launch-ticket) .alert-input { border-bottom: 1px solid #8a937c; }

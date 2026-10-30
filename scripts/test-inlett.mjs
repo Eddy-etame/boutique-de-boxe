@@ -691,7 +691,10 @@ function apiHarness({ forceKeyReadRace = false } = {}) {
             origin: 'https://unit.test.invalid',
             intendedDomain: 'https://unit.test.invalid',
           },
+          // Alertes de rayon (30 octobre 2026) : aucun identifiant « rayon:<slug> » n'est posté ici.
+          categoryFor: () => undefined,
         };
+      if (specifier === '@/lib/subfamilies') return { subfamilyFor: () => undefined };
       if (specifier === '@/lib/request') return { clientIp: () => 'unit-test' };
       if (specifier === '@/lib/auth')
         return { getSessionUser: async () => null, DEV_OWNER_EMAIL: 'seedy@sites.test' };

@@ -3,7 +3,8 @@ import { renouvelerCookie } from '@/lib/team';
 
 import { validateProduct } from '@/lib/product-input';
 
-import { shop, listItem } from '@/lib/catalog';
+import { shop, listItem, categoryFor } from '@/lib/catalog';
+import { subfamilyFor } from '@/lib/subfamilies';
 import { listingFor } from '@/lib/listing';
 import { nearest, suggest } from '@/lib/suggest';
 
@@ -509,11 +510,16 @@ export async function POST(
           : response({ error: 'Inscription introuvable. Recommencez avec votre e-mail.' }, 404);
       }
 
-      const p = (await readCatalog()).find((p) => p.id === data.productId);
+      // Alerte de rayon (30 octobre 2026) : « rayon:<slug> », le slug doit être une catégorie ou une sous-famille.
+      const rayon =
+        typeof data.productId === 'string' &&
+        /^rayon:[a-z0-9-]{1,60}$/.test(data.productId) &&
+        Boolean(categoryFor(data.productId.slice(6)) || subfamilyFor(data.productId.slice(6)));
+      const p = rayon ? undefined : (await readCatalog()).find((p) => p.id === data.productId);
 
       if (
         data.consent !== true ||
-        (!p && data.productId !== 'launch') ||
+        (!p && !rayon && data.productId !== 'launch') ||
         typeof data.variant !== 'string' ||
         (p && data.variant && !p.sizes.includes(data.variant)) ||
         data.variant.length > 100

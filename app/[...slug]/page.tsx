@@ -9,6 +9,7 @@ import { SUBFAMILIES } from '@/lib/subfamilies';
 import { SeoBody } from '@/components/seo-body';
 import { KeywordHub } from '@/components/keyword-hub';
 import { BuyingBrief } from '@/components/buying-brief';
+import { AlerteRayon } from '@/components/alerte-rayon';
 import { ManufacturerSizingGuide } from '@/components/manufacturer-sizing';
 import { FacetPage, BrandPagesOfSubfamily } from '@/components/facet-page';
 import { facetFor, brandFamilyFacet, allFacets } from '@/lib/facets';
@@ -397,6 +398,7 @@ export default async function Page({ params }: Props) {
           initialPage={currentPage}
           showFamilies={false}
         />
+        {currentPage === 1 && <AlerteRayon slug={sub.slug} nom={sub.name} modeles={data.length} />}
         {currentPage === 1 && tete && faqTete && <GuideRayon g={tete} items={data} all={products} faq={faqTete} />}
         {currentPage === 1 && <KeywordHub scope={sub.slug} name={sub.name} items={data} all={products} prix={!tete} />}
         {currentPage === 1 && !tete && <SeoBody sections={sub.sections} faq={sub.faq} />}
@@ -502,6 +504,7 @@ export default async function Page({ params }: Props) {
           initialPage={currentPage}
           showFamilies={!cat || cat.families.length > 1}
         />
+        {cat && currentPage === 1 && <AlerteRayon slug={cat.slug} nom={cat.name} modeles={data.length} />}
         {tete && faq && currentPage === 1 && (
           <GuideRayon g={tete} items={data} all={products} faq={faq} apresChapitres={materiel ? <MaterielParDiscipline all={products} /> : boxe ? <MaterielParNiveau all={products} /> : undefined} />
         )}
