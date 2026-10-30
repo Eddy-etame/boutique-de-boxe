@@ -9,6 +9,7 @@ import { ProductCard } from './shop-interactions';
 import { dansLeRayon } from '@/lib/rayons';
 import { VILLES, REGIONS, CARREFOUR, FRAPPE, villePath } from '@/lib/villes';
 import { jsonLd } from '@/lib/json-ld';
+import { buyingDecision } from '@/lib/buying-brief';
 
 /* « Toucher toute la France » (13/10) : chaque page de catalogue nomme les grandes villes, avec le
    nombre de lieux où l'on pratique SA discipline (recensement du ministère des Sports), et les lie.
@@ -131,10 +132,24 @@ export async function KeywordHub({
     .sort((a, b) => b.n - a.n)
     .slice(0, 8);
   // Les pages d’entrée par boxe et par niveau (03/10) : leur colonne à elles, sur chaque page-pilier.
-  const entries = SUBFAMILIES.filter((s) => s.kind && s.slug !== scope).map((s) => ({ s, n: subfamilyProducts(s, all).length }));
-  // Les autres recherches du brief : une ligne par page, avec la requête exacte en texte de lien.
+  const entries = SUBFAMILIES.filter((s) => s.kind && s.slug !== scope)
+    .map((s) => ({ s, n: subfamilyProducts(s, all).filter((p) => ids.has(p.id)).length }))
+    .filter(({ n }) => n >= 4)
+    .sort((a, b) => b.n - a.n)
+    .slice(0, 4);
+  // Des recherches liées au choix de ce rayon, pas les dix mêmes requêtes sur toutes les pages.
   const seenPaths = new Set<string>([path]);
-  const searches = QUERY_MAP.filter((q) => (seenPaths.has(q.path) ? false : (seenPaths.add(q.path), true))).slice(0, 10);
+  const usefulPaths = new Set([
+    ...(buyingDecision(scope)?.links.map((l) => l.href) || []),
+    ...families.map((f) => '/' + f.slug + '/'),
+    ...subs.map(({ s }) => '/' + s.slug + '/'),
+    ...entries.map(({ s }) => '/' + s.slug + '/'),
+  ]);
+  const searches = QUERY_MAP.filter((q) => {
+    if (!usefulPaths.has(q.path) || seenPaths.has(q.path)) return false;
+    seenPaths.add(q.path);
+    return true;
+  }).slice(0, 6);
   const graph = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
@@ -288,16 +303,18 @@ export async function KeywordHub({
             </ul>
           </div>
         )}
-        <div>
-          <h3>Recherches voisines</h3>
-          <ul>
-            {searches.map((q) => (
-              <li key={q.path}>
-                <a href={q.path}>{q.query}</a>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {searches.length > 0 && (
+          <div>
+            <h3>Pour compléter votre choix</h3>
+            <ul>
+              {searches.map((q) => (
+                <li key={q.path}>
+                  <a href={q.path}>{q.query}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
         <div>
           <h3>La boutique</h3>
           <ul>

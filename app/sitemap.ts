@@ -9,6 +9,9 @@ import { allFacets } from '@/lib/facets';
 import { VILLES, REGIONS, CARREFOUR, SOURCE, villePath } from '@/lib/villes';
 import { VILLES_DATE, CARREFOUR_DATE } from '@/components/ville-page';
 import { GUIDES_RAYONS } from '@/lib/guides-rayons';
+import { buyingBrief, BUYING_BRIEF_REVISION } from '@/lib/buying-brief';
+import { PRODUCT_EVIDENCE_REVISION } from '@/lib/describe';
+import { GLOVE_WEIGHT_REVISION } from '@/lib/glove-weight';
 const SUBFAMILY_PATHS = new Set(SUBFAMILIES.map((s) => '/' + s.slug + '/'));
 const TOOL_PATHS = new Set(['/observatoire-des-prix/', '/outils/poids-de-gants/']);
 // « Vente matériel de boxe » (03/10) : une page de catalogue qui n'est pas une famille ; ses chiffres suivent le catalogue.
@@ -51,13 +54,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const dates = new Map(
     products.map((p) => [
       '/produits/' + p.slug + '/',
-      collectionDate([p]),
+      [collectionDate([p]), PRODUCT_EVIDENCE_REVISION].sort().at(-1)!,
     ]),
   );
 
   // Une recherche par chemin au lieu de parcourir le catalogue pour chacune des 1 240 adresses.
   const bySlug = new Map(products.map((p) => ['/produits/' + p.slug + '/', p] as const));
   const allProductsDate = collectionDate(products);
+  dates.set('/outils/poids-de-gants/', GLOVE_WEIGHT_REVISION);
   for (const path of ['/', '/marques/', '/observatoire-des-prix/', '/nouveautes/', VENTE_PATH, '/plan-du-site/'])
     dates.set(path, allProductsDate);
   for (const c of categories) {
@@ -68,11 +72,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const brand of brands)
     dates.set('/marques/' + brand.slug + '/', collectionDate(brand.products));
   for (const facet of facets)
-    dates.set(facet.path, collectionDate(facet.products));
+    dates.set(facet.path, [collectionDate(facet.products), facet.revision || ''].sort().at(-1)!);
+  for (const [slug, service] of Object.entries(services)) {
+    if (service.revision) dates.set('/' + slug + '/', service.revision);
+  }
   // Une page de tête (lib/guides-rayons.ts) date aussi la dernière révision de son texte : la plus récente l’emporte.
   for (const g of GUIDES_RAYONS) {
     const path = '/' + g.slug + '/';
     dates.set(path, [dates.get(path) || '', g.revision].sort().at(-1)!);
+  }
+  // Seuls les rayons réellement enrichis le 24/10 portent la révision de leur nouvelle réponse
+  // d'achat ; ne pas rafraîchir artificiellement les produits, guides ou pages d'information.
+  for (const c of categories) {
+    if (buyingBrief(c.slug, getCategoryProducts(c, products))) {
+      const path = '/' + c.slug + '/';
+      dates.set(path, [dates.get(path) || '', BUYING_BRIEF_REVISION].sort().at(-1)!);
+    }
+  }
+  for (const sub of SUBFAMILIES) {
+    if (buyingBrief(sub.slug, subfamilyProducts(sub, products))) {
+      const path = '/' + sub.slug + '/';
+      dates.set(path, [dates.get(path) || '', BUYING_BRIEF_REVISION].sort().at(-1)!);
+    }
   }
   // Le jour où les ventes ouvrent, le texte des pages-villes passe au présent : leur date le dit.
   for (const path of VILLE_PATHS) dates.set(path, VILLES_DATE);

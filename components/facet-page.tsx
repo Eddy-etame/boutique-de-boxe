@@ -50,7 +50,7 @@ export function FacetPage({ facet: f, all, page = 1 }: { facet: Facet; all: Prod
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: collectionGraph({ path: f.path, name: f.name, description: f.description, items: pageItems, total: f.products.length, page, perPage: PAGE_SIZE, faq: f.faq, keywords: [f.name.toLowerCase(), ...f.keywords] }),
+          __html: collectionGraph({ path: f.path, name: f.name, description: f.description, items: pageItems, total: f.products.length, page, perPage: PAGE_SIZE, faq: f.faq, keywords: [f.name.toLowerCase(), ...f.keywords], revision: f.revision }),
         }}
       />
       <section className="page-heading">

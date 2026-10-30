@@ -8,7 +8,7 @@ import { ProductCard } from './shop-interactions';
 export type WeightFacts = { oz: number; count: number; median: number; min: number; path: string | null; picks: Product[] };
 
 /**
- * Le calculateur de poids de gants : trois questions, une réponse en onces, les modèles à ce poids.
+ * Le calculateur de poids de gants : trois questions, un repère indicatif, les modèles à comparer.
  * Rendu côté serveur avec les valeurs de l’URL (la page marche sans script et se partage), puis vivant.
  */
 export function GloveWeightTool({ initial, facts }: { initial: { usage: GloveUsage | null; kg: number | null; age: number | null }; facts: WeightFacts[] }) {
@@ -55,14 +55,14 @@ export function GloveWeightTool({ initial, facts }: { initial: { usage: GloveUsa
           </div>
           <div>
             <label htmlFor={id + '-age'}>
-              <span>03</span> Votre âge <em>(facultatif, décisif avant 16 ans)</em>
+              <span>03</span> Votre âge <em>(facultatif, pour les repères enfant et ado)</em>
             </label>
             <input id={id + '-age'} name="age" type="number" inputMode="numeric" min={4} max={99} step={1} value={age} onChange={(e) => setAge(e.target.value)} placeholder="30" />
           </div>
         </div>
         <noscript>
           <button className="button button-dark" type="submit">
-            Voir le poids conseillé
+            Voir le repère indicatif
           </button>
         </noscript>
       </form>
@@ -70,7 +70,7 @@ export function GloveWeightTool({ initial, facts }: { initial: { usage: GloveUsa
       <div className="glove-answer" aria-live="polite">
         {advice ? (
           <>
-            <span className="eyebrow">LE POIDS CONSEILLÉ / POUR {advice.who.toUpperCase()}</span>
+            <span className="eyebrow">REPÈRE À FAIRE VALIDER / POUR {advice.who.toUpperCase()}</span>
             <p className="glove-ounces">
               <strong>{advice.ounces}</strong>
               <span>
@@ -78,16 +78,17 @@ export function GloveWeightTool({ initial, facts }: { initial: { usage: GloveUsa
                 {advice.range[0] !== advice.range[1] && (
                   <em>
                     {' '}
-                    ({advice.range[0]} à {advice.range[1]} oz selon la salle)
+                    ({advice.range[0]} à {advice.range[1]} oz, fourchette indicative)
                   </em>
                 )}
               </span>
             </p>
             <p className="glove-why">{advice.why}</p>
             <p className="glove-caution">{advice.caution}</p>
+            <p className="glove-caution"><a href="/guide-des-tailles/">Vérifier les repères du fabricant</a> · <a href="/contact/">Demander conseil sur le modèle</a></p>
             {fact && fact.count > 0 && (
               <p className="glove-facts">
-                {fact.count} modèles proposés en {fact.oz} oz au catalogue, de {money(fact.min)}, prix médian {money(fact.median)}.
+                {fact.count} modèles proposés en {fact.oz} oz au catalogue, à partir de {money(fact.min)}, prix médian {money(fact.median)}.
                 {fact.path && (
                   <>
                     {' '}
@@ -99,12 +100,12 @@ export function GloveWeightTool({ initial, facts }: { initial: { usage: GloveUsa
           </>
         ) : (
           <>
-            <span className="eyebrow">LE POIDS CONSEILLÉ</span>
+            <span className="eyebrow">LE REPÈRE INDICATIF</span>
             <p className="glove-ounces glove-ounces-empty">
               <strong>?</strong>
               <span>oz</span>
             </p>
-            <p className="glove-why">Choisissez la séance : la réponse s’affiche ici, avec les modèles à ce poids.</p>
+            <p className="glove-why">Choisissez la séance : un repère de comparaison s’affiche ici avec les modèles à ce poids. Le choix reste à valider pour votre modèle et votre cours.</p>
           </>
         )}
       </div>
@@ -112,9 +113,10 @@ export function GloveWeightTool({ initial, facts }: { initial: { usage: GloveUsa
       {fact && fact.picks.length > 0 && (
         <section className="glove-picks" aria-label={'Des modèles en ' + fact.oz + ' oz'}>
           <h2>
-            Quatre paires en {fact.oz} oz, <br />
-            une par marque.
+            Des paires en {fact.oz} oz <br />
+            à comparer.
           </h2>
+          <p>La sélection est présentée par poids ; elle ne valide pas chaque modèle pour la séance choisie.</p>
           <div className="product-grid">
             {fact.picks.map((p, i) => (
               <ProductCard key={p.id} product={p} index={i} />

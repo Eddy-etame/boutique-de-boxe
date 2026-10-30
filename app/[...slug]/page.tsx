@@ -4,10 +4,12 @@ import { slugMetadata, splitPage } from './metadata';
 import { SeanceContext } from '@/components/seance-context';
 import { SEO_COPY } from '@/lib/seo-copy';
 import { subfamilyFor, subfamiliesOf, subfamilyProducts } from '@/lib/subfamilies';
-import { longDescription, practiceLevel, disciplinesOf, careAdvice, productFaq, placeDansLaFamille } from '@/lib/describe';
+import { longDescription, practiceLevel, disciplinesOf, careAdvice, productFaq, placeDansLaFamille, PRODUCT_EVIDENCE_REVISION } from '@/lib/describe';
 import { SUBFAMILIES } from '@/lib/subfamilies';
 import { SeoBody } from '@/components/seo-body';
 import { KeywordHub } from '@/components/keyword-hub';
+import { BuyingBrief } from '@/components/buying-brief';
+import { ManufacturerSizingGuide } from '@/components/manufacturer-sizing';
 import { FacetPage, BrandPagesOfSubfamily } from '@/components/facet-page';
 import { facetFor, brandFamilyFacet, allFacets } from '@/lib/facets';
 import { brandFor, brandSlug } from '@/lib/brands';
@@ -124,7 +126,9 @@ export default async function Page({ params }: Props) {
   if (services[path])
     return (
       <>
-        <ServicePage service={services[path]} slug={path} />
+        <ServicePage service={services[path]} slug={path}>
+          {path === 'guide-des-tailles' ? <ManufacturerSizingGuide /> : null}
+        </ServicePage>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serviceGraph(path, services[path]) }} />
       </>
     );
@@ -213,6 +217,7 @@ export default async function Page({ params }: Props) {
     const sub = subfamiliesOf(p.category).find((x) => x.match(p));
     // Les notes des visiteurs (20/10/2026) : la moyenne visible, lue au rendu (ISR), jamais inventée.
     const note = await moyenneDuModele(p.id);
+    const declaredLevel = practiceLevel(p);
     return (
       <main id="contenu" className="page-wrap">
         <Breadcrumb
@@ -229,7 +234,7 @@ export default async function Page({ params }: Props) {
             <span className="eyebrow">LE MODÈLE</span>
             <div className="product-facts">
               <div><span>Discipline</span>{' '}{disciplinesOf(p).join(', ')}</div>
-              <div><span>Niveau conseillé</span>{' '}{practiceLevel(p)}</div>
+              {declaredLevel && <div><span>Niveau conseillé</span>{' '}{declaredLevel}</div>}
               <div><span>Famille</span>{' '}<a href={'/' + p.category + '/'}>{cat.name}</a></div>
               {brand && (
                 <div>
@@ -331,7 +336,7 @@ export default async function Page({ params }: Props) {
             </div>
           </section>
         )}
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: productGraph(p, related, { description: longDescription(p), faq: productFaq(p, products), note }) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: productGraph(p, related, { description: longDescription(p), faq: productFaq(p, products), note, revision: PRODUCT_EVIDENCE_REVISION }) }} />
       </main>
     );
   }
@@ -375,6 +380,7 @@ export default async function Page({ params }: Props) {
             )}
           </div>
         </section>
+        {currentPage === 1 && <BuyingBrief scope={sub.slug} name={sub.name} items={data} />}
         <nav className="subfamily-links" aria-label="Pages voisines">
           {parent && <><a href={'/' + parent.slug + '/'}>Toute la famille : {parent.name}</a>{' '}</>}
           {spaced(siblings.map((x) => (
@@ -475,6 +481,7 @@ export default async function Page({ params }: Props) {
             )}
           </div>
         </section>
+        {cat && currentPage === 1 && <BuyingBrief scope={cat.slug} name={cat.name} items={data} />}
         {cat && (() => {
           const subs = [...subfamiliesOf(cat.slug), ...cat.families.flatMap((f) => subfamiliesOf(f))].filter((x, i, a) => a.indexOf(x) === i);
           return subs.length ? (

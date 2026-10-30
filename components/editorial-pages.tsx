@@ -303,9 +303,11 @@ export async function GuidePage({ guide: g }: { guide: Guide }) {
 export function ServicePage({
   service: s,
   slug,
+  children,
 }: {
   service: Service;
   slug: string;
+  children?: ReactNode;
 }) {
   return (
     <main id="contenu" className="page-wrap">
@@ -321,6 +323,7 @@ export function ServicePage({
           <ArrowLink href="/contact/">Nous contacter</ArrowLink>
         </aside>
         <div>
+          {children}
           {s.sections.map((section) => (
             <section key={section.title} id={section.id}>
               <h2>{section.title}</h2>

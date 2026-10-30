@@ -1,5 +1,6 @@
 import seed from './data/guides.json';
 import { livraison } from './catalog';
+import { MANUFACTURER_SIZING_REVISION } from './manufacturer-sizing';
 /**
  * Un lien interne dans le texte d’un guide s’écrit « [texte](/adresse/) » : une adresse du site, en
  * minuscules, qui finit par une barre (une ancre « #… » permise). Rien d’autre n’est interprété ; un
@@ -37,6 +38,7 @@ export type Service = {
   title: string;
   description: string;
   eyebrow: string;
+  revision?: string;
   /** `id` : l'ancre d'une section vers laquelle d'autres pages renvoient (la modération des notes). */
   sections: { id?: string; title: string; paragraphs: string[] }[];
   /** Questions visibles en bas de page, publiées en FAQPage pour les moteurs et les assistants. */
@@ -395,8 +397,9 @@ export const services: Record<string, Service> = {
   },
   'guide-des-tailles': {
     title: 'Tailles, poids et ajustement',
+    revision: MANUFACTURER_SIZING_REVISION,
     description:
-      'Comprendre les onces des gants de boxe et vérifier l’ajustement des gants MMA, textiles, chaussures et équipements enfant.',
+      'Guides fabricant Fairtex et Metal Boxe, tableau Fairtex SP5 et conseils de mesure : vérifier les tailles des gants, protections, textiles et chaussures.',
     eyebrow: 'LES REPÈRES / AJUSTEMENT',
     sections: [
       {

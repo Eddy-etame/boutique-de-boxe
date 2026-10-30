@@ -48,6 +48,9 @@ const securityHeaders = [
 // chaque page. D'ici là, tout JSON écrit dans une page passe par jsonLd() (lib/json-ld.ts).
 
 const nextConfig: NextConfig = {
+  // Les gabarits lisent le catalogue complet : borner les workers évite les pics mémoire au build,
+  // sans changer le rendu des visiteurs ni la fréquence de mise à jour des prix.
+  experimental: { cpus: 2, staticGenerationMaxConcurrency: 1 },
   trailingSlash: true,
   // Le proxy normalise seulement les pages HTML ; les callbacks et POST d'API ne doivent jamais
   // recevoir la redirection automatique de Next.

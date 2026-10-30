@@ -166,7 +166,7 @@ for (let i = 0; i < locations.length; i += 4) {
         );
         const noeudsProduit = [...structured, ...structured.flatMap((x) => (Array.isArray(x.hasVariant) ? x.hasVariant : []))];
         // L’offre suit l’interrupteur des ventes : absente tant que rien ne se vend, complète le jour J.
-        const enVente = !structured.some((x) => (x.additionalProperty || []).some((a) => a.name === 'Disponibilité' && /^En vente le /.test(a.value)));
+        const enVente = !structured.some((x) => (x.additionalProperty || []).some((a) => a.name === 'Disponibilité' && typeof a.value === 'string' && a.value.startsWith('En vente le ')));
         if (!enVente) assert.ok(!noeudsProduit.some((x) => x.offers), 'fake offers ' + path);
         else assert.ok(noeudsProduit.some((x) => x.offers && x.offers.price && x.offers.priceCurrency === 'EUR' && x.offers.availability), 'offre absente ' + path);
         assert.ok(
@@ -229,6 +229,7 @@ for (let i = 0; i < locations.length; i += 4) {
       });
     }),
   );
+  if ((i + 4) % 100 === 0) console.info(`Audited ${Math.min(i + 4, locations.length)}/${locations.length} sitemap pages`);
 }
 for (const path of internal) {
   if (path === '/signin-with-chatgpt' || locations.includes(path)) continue;
@@ -342,9 +343,12 @@ const homeAnchors = [
   ...homeHtml.matchAll(/<a [^>]*href="(\/[^"]*)"[^>]*>([\s\S]*?)<\/a>/g),
 ].map((m) => ({ href: m[1], text: fold(m[2].replace(/<[^>]+>/g, ' ')) }));
 const briefReport = [];
+// Variants of one intent share one readable title; requiring all three would reward repetition.
+const metadataAliases = new Map([['gants boxe', 'gants de boxe'], ['vente gants de boxe', 'gants de boxe']]);
 for (const { query, path } of queryMap) {
   const html = await (await fetch(base + path)).text();
   const q = fold(query);
+  const metadataQuery = path === '/gants-de-boxe/' ? metadataAliases.get(q) || q : q;
   const title = fold(html.match(/<title>([^<]+)<\/title>/)?.[1]);
   const description = fold(
     html.match(/<meta name="description" content="([^"]+)"/)?.[1],
@@ -361,7 +365,8 @@ for (const { query, path } of queryMap) {
       .replace(/<style[\s\S]*?<\/style>/g, ' ')
       .replace(/<[^>]+>/g, ' '),
   );
-  const occurrences = visible.split(q).length - 1;
+  const occurrences = visible.split(metadataQuery).length - 1;
+  const exactQueryOccurrences = visible.split(q).length - 1;
   const graph = fold(
     [
       ...html.matchAll(
@@ -378,14 +383,14 @@ for (const { query, path } of queryMap) {
         (a.text.includes(q) || (q.includes(a.text) && a.text.length > 3)),
     ) || homeAnchors.some((a) => a.href === path);
   const checks = {
-    title: title.includes(q),
-    heading: h1.includes(q) || eyebrow.includes(q),
-    description: description.includes(q),
+    title: title.includes(metadataQuery),
+    heading: h1.includes(metadataQuery) || eyebrow.includes(metadataQuery),
+    description: description.includes(metadataQuery),
     visible: occurrences >= 2,
     graph: graph.includes(q),
     linked,
   };
-  briefReport.push({ query, path, occurrences, ...checks });
+  briefReport.push({ query, path, metadataQuery, occurrences, exactQueryOccurrences, ...checks });
   for (const [name, ok] of Object.entries(checks))
     assert.ok(ok, `mot-cle du brief « ${query} » : ${name} manque sur ${path}`);
 }

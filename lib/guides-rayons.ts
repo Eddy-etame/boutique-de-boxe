@@ -16,7 +16,7 @@
  */
 import { money, shop, livraison, estLourd, type Product } from './catalog';
 import { dansLeRayon, ENFANT } from './rayons';
-import { ouncesOf, OZ_COPY } from './facets';
+import { ouncesOf, ozFacets } from './facets';
 import type { SeoFaq } from './seo-copy';
 
 /* ------------------------------------------------------------------ outils */
@@ -392,47 +392,46 @@ export const GUIDES_RAYONS: GuideRayon[] = [
   {
     slug: 'gants-de-boxe',
     requete: 'gants de boxe',
-    revision: '2026-10-22',
+    revision: '2026-10-24',
     h1: 'Gants de boxe',
-    // Les deux requêtes du concours qui mènent ici, « vente gants de boxe » et « gants boxe » : dans le titre, le
-    // surtitre et la description (scripts/audit-seo.mjs), nulle part ailleurs.
-    eyebrow: 'GANTS BOXE · VENTE GANTS DE BOXE',
-    titre: ({ items }) => {
+    // Les variantes de recherche partagent cette destination : le titre reste lisible sans les empiler.
+    eyebrow: 'GANTS DE BOXE · POIDS ET AJUSTEMENT',
+    titre: ({ f, items }) => {
       const oz = items.flatMap(ouncesOf);
-      return `Gants de boxe : vente gants de boxe, gants boxe ${Math.min(...oz)} à ${Math.max(...oz)} oz`;
+      return `Gants de boxe : ${fr(f.n)} modèles, de ${Math.min(...oz)} à ${Math.max(...oz)} oz`;
     },
     description: ({ f, items }) => {
       const oz = items.flatMap(ouncesOf);
-      return `Gants boxe, vente gants de boxe : ${fr(f.n)} modèles dès ${money(f.min)}, de ${Math.min(...oz)} à ${Math.max(...oz)} oz, velcro ou lacets, cuir ou synthétique. Guide par usage, prix, marques.`;
+      return `Gants de boxe : ${fr(f.n)} modèles de ${Math.min(...oz)} à ${Math.max(...oz)} oz, dès ${money(f.min)}. Comparez les poids, matières, fermetures et tailles du fabricant.`;
     },
     label: ({ f, items }) => {
       const oz = items.flatMap(ouncesOf);
       return `${fr(f.n)} modèles, de ${Math.min(...oz)} à ${Math.max(...oz)} oz, dès ${money(f.min)}.`;
     },
-    intro: 'L’usage d’abord, le poids ensuite : 10 oz au sac, 12 oz en technique, 14 à 16 oz face à un partenaire. Le guide d’achat suit la liste.',
+    intro: 'Comparez le modèle, son ajustement et les poids réellement proposés. L’usage se vérifie avec votre salle et la fiche du fabricant ; le guide d’achat suit la liste.',
     guide: {
       titre: 'Comment choisir ses gants de boxe',
       chapeau: ({ f }) => `${fr(f.compte)} paires, ${f.marques.length} marques, de ${money(f.min)} à ${money(f.max)} : ce qui départage deux modèles, puis un modèle réel pour chaque usage.`,
       chapitres: [
         {
-          titre: 'L’usage fixe le poids',
+          titre: 'La séance et les consignes du club',
           texte: [
-            'Une paire se choisit pour ce que vous en ferez. Au sac et aux pattes d’ours, 10 oz suffisent : moins de mousse, plus de vitesse. En technique et en cours collectif, 12 oz font le poids à tout faire. Face à un partenaire, le rembourrage protège aussi l’autre : 14 oz pour les gabarits légers, 16 oz pour la plupart des adultes, 18 oz pour les lourds.',
+            'Précisez les exercices prévus : sac, pattes d’ours, travail technique ou opposition. Le nombre d’onces ne suffit pas à valider une paire pour une séance : la construction du modèle, son ajustement et les consignes de l’encadrant comptent aussi.',
             'Votre salle peut imposer un poids pour le sparring : demandez-le avant de commander. Le [calculateur de poids](/outils/poids-de-gants/) pose les trois questions utiles, la séance, votre poids et votre âge.',
           ],
         },
         {
           titre: 'Le gabarit affine le chiffre',
           texte: [
-            'Sous 55 kg, on reste entre 10 et 12 oz ; de 55 à 75 kg, entre 12 et 14 oz ; au-delà, entre 14 et 16 oz. Ce sont des repères, pas des règles.',
-            'Pour un enfant, l’âge donne une première indication : 4 oz de 5 à 7 ans, 6 oz de 7 à 10 ans, 8 oz de 10 à 13 ans, puis 10 oz à l’adolescence selon la corpulence. Une paire d’enfant se prend à sa main du jour, jamais pour grandir dedans.',
+            'La stature et le poids du pratiquant peuvent entrer dans la grille d’un fabricant, sans remplacer l’essai ni les règles de la salle. Utilisez le tableau du modèle retenu ; une correspondance identique pour toutes les marques donnerait une précision trompeuse.',
+            'Pour un enfant, demandez le matériel et les tailles acceptés par son encadrant. Vérifiez la main, la fermeture et les indications du fabricant : un âge seul ne valide ni le poids ni la coupe.',
           ],
         },
         {
           titre: 'Une once n’est pas une pointure',
           texte: [
-            'L’once mesure le rembourrage, pas la place pour la main. Deux paires de 14 oz peuvent chausser très différemment : essayez avec les bandes que vous porterez, fermez le poing, vérifiez que les doigts ne flottent pas et que le pouce se place sans forcer.',
-            'Chaque marque a sa forme. Fairtex et Twins taillent compact, à la thaïlandaise ; Cleto Reyes, à la mexicaine, plus allongé ; Elion, Adidas et Everlast plus large, pour l’entraînement. Quand une paire vous va, notez son nom complet : la couleur ne suffit pas à retrouver la coupe.',
+            'L’once est une unité de masse ; elle ne mesure pas la place pour la main. Deux modèles de même poids peuvent avoir un ajustement différent : essayez avec les bandes que vous utiliserez et vérifiez la fermeture du poing et la position du pouce.',
+            'Comparez une référence précise plutôt qu’une réputation de marque. La coupe peut changer d’une gamme à l’autre ; notez le nom complet, les matériaux et la fermeture de la paire essayée.',
           ],
         },
         {
@@ -442,15 +441,15 @@ export const GUIDES_RAYONS: GuideRayon[] = [
               const v = items.filter((p) => velcro(p) && !aLacets(p)).length;
               const l = items.filter((p) => aLacets(p) && !velcro(p)).length;
               const deux = items.filter((p) => aLacets(p) && velcro(p)).length;
-              return `La fermeture auto-agrippante, le velcro, équipe ${fr(v)} modèles du rayon : elle se serre seul, en quelques secondes, et convient à l’entraînement. Les lacets, sur ${fr(l)} modèles, et ${fr(deux)} autres qui annoncent les deux fermetures, tiennent mieux le poignet et ne s’ouvrent pas dans l’échange.`;
+              return `La fermeture auto-agrippante est annoncée seule sur ${fr(v)} modèles du rayon ; ${fr(l)} modèles indiquent des lacets seuls et ${fr(deux)} indiquent les deux fermetures. Comparez le réglage et la manipulation du modèle avant de choisir.`;
             },
-            'Il faut quelqu’un pour les nouer : c’est le choix du sparring encadré et de la compétition. Seul à la salle, prenez le velcro.',
+            'Les lacets peuvent demander l’aide d’un partenaire. Leur présence n’établit pas une homologation de compétition : vérifiez les règles de l’épreuve et les équipements fournis par l’organisateur.',
           ],
         },
         {
           titre: 'Cuir, cuir synthétique ou PU',
           texte: [
-            'Le PU, léger et bon marché, suffit pour une séance par semaine. Le cuir synthétique technique tient la distance à deux séances. À partir de trois, le cuir devient le moins coûteux à l’usage : il se remplace moins souvent et finit par prendre la forme de la main.',
+            'La matière extérieure est un critère de comparaison, sans durée de vie ni nombre de séances garantis. Regardez aussi les coutures, la doublure, le rembourrage, les consignes d’entretien et votre fréquence d’utilisation ; le prix d’achat ne prouve pas un coût inférieur à long terme.',
             ({ items }) => `${fr(items.filter((p) => adulte(p) && enCuir(p)).length)} modèles adultes du rayon ont une enveloppe en cuir, d’après leur fiche. La matière ne dit rien du rembourrage : regardez aussi les coutures et l’épaisseur de mousse sur les jointures. Le guide [cuir ou synthétique](/guides/gants-de-boxe-cuir-ou-synthetique/) détaille l’écart.`,
           ],
         },
@@ -459,7 +458,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
           texte: [
             ({ items }) => {
               const r = (re: RegExp) => items.filter((p) => re.test(spec(p, 'Rembourrage'))).length;
-              return `La mousse fait la protection. Les fiches du rayon annoncent une mousse triple densité sur ${fr(r(/triple/))} modèles, injectée sur ${fr(r(/inject/))}, double densité sur ${fr(r(/double/))}. Un gant de sparring porte un rembourrage plus épais et plus souple qu’un gant de sac ; celui d’un gant de compétition est trop mince pour le travail avec partenaire.`;
+              return `Les fiches du rayon annoncent une mousse triple densité sur ${fr(r(/triple/))} modèles, injectée sur ${fr(r(/inject/))}, double densité sur ${fr(r(/double/))}. Ces désignations ne constituent pas un classement de protection : vérifiez les indications d’usage propres au modèle et l’accord de votre encadrant pour le travail avec partenaire.`;
             },
             ({ items }) => `${fr(items.filter((p) => /attach/.test(spec(p, 'Pouce'))).length)} modèles annoncent un pouce attaché sur leur fiche. Essayez-le poing fermé : il doit trouver sa place sans forcer.`,
           ],
@@ -467,7 +466,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
         {
           titre: 'Selon la boxe pratiquée',
           texte: [
-            'En boxe anglaise et en savate, la paire est la même : la savate se pratique avec les gants de l’anglaise. En boxe thaï, les modèles thaïlandais ont en général une paume plus souple, pensée pour saisir au corps-à-corps ; une paire d’anglaise convient pour apprendre. Les gants mexicains, comme Cleto Reyes, ont la réputation d’un rembourrage ferme.',
+            'Précisez la discipline et le contenu du cours. Les saisies, les exercices à deux et les règles de compétition peuvent modifier le choix : faites confirmer le modèle et le poids plutôt que de déduire leur compatibilité du pays d’origine ou du nom de la marque.',
             ({ items }) => {
               const thai = items.filter((p) => /^(fairtex|twins)$/i.test(p.brand) && p.price > 0).map((p) => p.price);
               const cleto = items.filter((p) => /cleto/i.test(p.brand) && p.price > 0).map((p) => p.price);
@@ -493,54 +492,55 @@ export const GUIDES_RAYONS: GuideRayon[] = [
         {
           titre: 'Faire durer une paire',
           texte: [
-            'C’est l’humidité qui use une paire, bien avant les coups. Après chaque séance, passez un chiffon propre sur l’extérieur, ouvrez grand les gants et laissez-les sécher à l’air, loin d’un radiateur ; jamais jusqu’au lendemain dans le sac.',
+            'Après chaque séance, sortez les gants du sac et suivez la notice d’entretien du modèle. Laissez-les sécher à l’air, loin d’un radiateur ; ne transposez pas un traitement pour cuir à une enveloppe en PU.',
             'Des bandes lavées à chaque fois gardent la sueur hors de la mousse : c’est ce qui limite le plus l’odeur. Le cuir apprécie une noisette de crème deux ou trois fois par an.',
           ],
         },
       ],
     },
     usages: {
-      titre: 'Quel modèle pour quel usage',
-      note: 'Pour chaque ligne, le premier prix du rayon qui répond au critère ; un modèle déjà retenu plus haut laisse la place au suivant.',
+      titre: 'Comparer les caractéristiques des modèles',
+      note: 'Pour chaque caractéristique annoncée, le premier prix du rayon qui répond au critère. Cette sélection ne valide pas un usage ni une homologation ; un modèle déjà retenu laisse la place au suivant.',
       regles: [
-        { usage: 'Premier gant, au sac', filtre: (p) => gantBoxe(p) && adulte(p) && ouncesOf(p).includes(10), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} modèles adultes proposés en 10 oz` },
-        { usage: 'Technique, cours collectif', filtre: (p) => gantBoxe(p) && adulte(p) && ouncesOf(p).includes(12) && velcro(p), critere: ({ i, n }) => `${rang(i)} en 12 oz parmi les ${fr(n)} paires à velcro` },
-        { usage: 'Sparring, gabarit moyen', filtre: (p) => gantBoxe(p) && adulte(p) && ouncesOf(p).includes(16), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} paires disponibles en 16 oz, le poids de sparring de la plupart des adultes` },
-        { usage: 'Sparring, gabarit lourd', filtre: (p) => gantBoxe(p) && adulte(p) && Math.max(0, ...ouncesOf(p)) >= 18, critere: ({ i, n }) => `${rang(i)} parmi les ${fr(n)} qui montent à 18 oz ou au-delà` },
-        { usage: 'Compétition, poignet serré', filtre: (p) => gantBoxe(p) && adulte(p) && aLacets(p) && !velcro(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} modèles fermés par lacets seuls` },
+        { usage: 'Modèles adultes en 10 oz', filtre: (p) => gantBoxe(p) && adulte(p) && ouncesOf(p).includes(10), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} modèles adultes proposés en 10 oz` },
+        { usage: '12 oz et fermeture auto-agrippante', filtre: (p) => gantBoxe(p) && adulte(p) && ouncesOf(p).includes(12) && velcro(p), critere: ({ i, n }) => `${rang(i)} en 12 oz parmi les ${fr(n)} paires à velcro` },
+        { usage: 'Modèles adultes en 16 oz', filtre: (p) => gantBoxe(p) && adulte(p) && ouncesOf(p).includes(16), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} paires disponibles en 16 oz` },
+        { usage: 'Poids de 18 oz ou plus', filtre: (p) => gantBoxe(p) && adulte(p) && Math.max(0, ...ouncesOf(p)) >= 18, critere: ({ i, n }) => `${rang(i)} parmi les ${fr(n)} qui montent à 18 oz ou au-delà` },
+        { usage: 'Fermeture par lacets seuls', filtre: (p) => gantBoxe(p) && adulte(p) && aLacets(p) && !velcro(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} modèles fermés par lacets seuls` },
         { usage: 'Lacets ou velcro au choix', filtre: (p) => gantBoxe(p) && aLacets(p) && velcro(p), critere: ({ i, n }) => `${rang(i, 'f')} des ${fr(n)} paires à double fermeture` },
-        { usage: 'Le sac, rien que le sac', filtre: (p) => nom(p).startsWith('gants de sac') || /sac/.test(spec(p, 'Type')), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} gants de sac, moins rembourrés qu’un gant de sparring` },
-        { usage: 'Trois séances par semaine', filtre: (p) => gantBoxe(p) && adulte(p) && enCuir(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} paires adultes en cuir, la matière qui dure le plus` },
-        { usage: 'Enfant de 5 à 10 ans', filtre: (p) => gantBoxe(p) && (ouncesOf(p).includes(4) || ouncesOf(p).includes(6)), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} modèles proposés en 4 ou 6 oz` },
-        { usage: 'Très grand gabarit', filtre: (p) => gantBoxe(p) && ouncesOf(p).includes(20), critere: ({ i, n }) => (n === 1 ? 'le seul modèle du rayon proposé en 20 oz' : `${rang(i)} des ${fr(n)} modèles proposés en 20 oz`) },
+        { usage: 'Désignation « gants de sac »', filtre: (p) => nom(p).startsWith('gants de sac') || /sac/.test(spec(p, 'Type')), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} modèles désignés comme gants de sac` },
+        { usage: 'Enveloppe en cuir annoncée', filtre: (p) => gantBoxe(p) && adulte(p) && enCuir(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} paires adultes indiquant du cuir` },
+        { usage: 'Poids de 4 ou 6 oz', filtre: (p) => gantBoxe(p) && (ouncesOf(p).includes(4) || ouncesOf(p).includes(6)), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} modèles proposés en 4 ou 6 oz` },
+        { usage: 'Poids de 20 oz', filtre: (p) => gantBoxe(p) && ouncesOf(p).includes(20), critere: ({ i, n }) => (n === 1 ? 'le seul modèle du rayon proposé en 20 oz' : `${rang(i)} des ${fr(n)} modèles proposés en 20 oz`) },
       ],
     },
     tableau: ({ items, all }) => {
       const lignes: Cellule[][] = [];
       const oz = [...new Set(items.flatMap(ouncesOf))].sort((a, b) => a - b);
+      const facetPaths = new Set(ozFacets(all).map((f) => f.path));
       for (const o of oz) {
         const ps = items.filter((p) => p.price > 0 && ouncesOf(p).includes(o));
-        const repere = OZ_COPY[o];
-        const page = all.filter((p) => p.category === 'gants-de-boxe' && ouncesOf(p).includes(o)).length >= 6 && repere ? `/gants-de-boxe-${o}-oz/` : null;
-        lignes.push([page ? { texte: `${o} oz`, href: page } : `${o} oz`, repere ? `${repere.who.charAt(0).toUpperCase() + repere.who.slice(1)} : ${repere.use}` : 'Le poids le plus lourd du rayon', fr(ps.length), money(Math.min(...ps.map((p) => p.price)))]);
+        const candidate = `/gants-de-boxe-${o}-oz/`;
+        const page = facetPaths.has(candidate) ? candidate : null;
+        lignes.push([page ? { texte: `${o} oz`, href: page } : `${o} oz`, fr(ps.length), money(Math.min(...ps.map((p) => p.price)))]);
       }
-      return { titre: 'Les poids du rayon', colonnes: ['Poids', 'Pour qui, pour quoi', 'Modèles', 'Dès'], lignes, note: 'Repères du [guide des tailles](/guides/quelle-taille-gants-de-boxe/) ; nombre de modèles et premier prix tirés du catalogue du jour.' };
+      return { titre: 'Les poids proposés au rayon', colonnes: ['Poids proposé', 'Modèles', 'Dès'], lignes, note: 'Nombre de modèles et premier prix tirés du catalogue du jour. Le poids annoncé ne valide pas une séance ; consultez le [guide des tailles](/guides/quelle-taille-gants-de-boxe/) et les consignes de votre salle.' };
     },
     faq: ({ f, items }) => {
       const kids = items.filter((p) => p.price > 0 && (ouncesOf(p).includes(4) || ouncesOf(p).includes(6)));
       const nSac = items.filter((p) => nom(p).startsWith('gants de sac') || /sac/.test(spec(p, 'Type'))).length;
       return [
-        { question: 'Quel gant choisir pour débuter la boxe ?', answer: 'Une paire d’entraînement à velcro, en 12 oz pour la plupart des adultes : assez de mousse pour le sac et la technique, et acceptée dans la majorité des cours. Passez à 14 ou 16 oz quand le travail à deux commence.' },
-        { question: 'Combien d’onces choisir ?', answer: '10 oz au sac, 12 oz en technique, 14 à 16 oz avec un partenaire, 18 oz pour les lourds en sparring. Le chiffre se choisit à l’usage et au gabarit, jamais à la taille de la main.' },
-        { question: 'Quelle taille pour une femme ?', answer: 'Le même raisonnement que pour un homme : 10 à 12 oz au sac et en technique selon le gabarit, 14 oz avec un partenaire. Une main fine cherche une coupe qui ferme bien, pas forcément moins d’onces.' },
-        { question: 'Et pour un enfant ?', answer: `4 oz de 5 à 7 ans, 6 oz de 7 à 10 ans, 8 oz de 10 à 13 ans, fermés au velcro et essayés avec des bandes de 2,50 m. Le rayon compte ${fr(kids.length)} modèles proposés en 4 ou 6 oz${kids.length ? `, dès ${money(Math.min(...kids.map((p) => p.price)))}` : ''}.` },
-        { question: 'Quels gants pour frapper dans un sac ?', answer: `Un 10 ou 12 oz à velcro, porté sur des bandes. Les ${fr(nSac)} gants de sac du rayon, moins rembourrés, se réservent au sac : ils ne servent pas au sparring.` },
-        { question: 'Quel poids pour le sparring ?', answer: '16 oz pour la plupart des adultes, 14 oz pour les gabarits légers, 18 oz pour les lourds. Le rembourrage protège le partenaire autant que vos mains ; votre salle peut imposer son poids.' },
-        { question: 'Combien coûte une bonne paire ?', answer: `Ici, de ${money(f.min)} à ${money(f.max)}, pour un prix médian de ${money(f.mediane)}. Le cuir coûte plus cher que le synthétique, mais il dure plus longtemps sous un usage intensif.` },
-        { question: 'Quelle marque de gants choisir ?', answer: `Le rayon réunit ${marquesTexte(f)}, entre autres. Aucune n’est meilleure pour tout le monde : la coupe décide, compacte chez Fairtex et Twins, allongée chez Cleto Reyes, plus large chez Elion et Adidas.` },
+        { question: 'Quel gant choisir pour débuter la boxe ?', answer: 'Demandez les modèles et poids acceptés pour le premier cours. Comparez ensuite le réglage, les matériaux et la grille du fabricant ; une paire adaptée à votre main et à cette séance compte davantage qu’un poids présenté comme universel.' },
+        { question: 'Combien d’onces choisir ?', answer: 'Les onces indiquent le poids du gant. Elles ne remplacent ni les indications d’usage du modèle ni les exigences du club ; vérifiez aussi l’ajustement avec vos bandes.' },
+        { question: 'Quelle taille pour une femme ?', answer: 'Utilisez la grille du modèle et les consignes de la séance. La taille de la main et l’ajustement se vérifient ; le sexe ne suffit pas à choisir un nombre d’onces ou une coupe.' },
+        { question: 'Et pour un enfant ?', answer: `Faites valider le modèle et la taille par son encadrant, puis vérifiez les indications du fabricant. Le rayon compte ${fr(kids.length)} modèles proposés en 4 ou 6 oz${kids.length ? `, dès ${money(Math.min(...kids.map((p) => p.price)))}` : ''} ; ces poids ne constituent pas une correspondance universelle par âge.` },
+        { question: 'Quels gants pour frapper dans un sac ?', answer: `Choisissez un modèle dont le fabricant indique cet usage et vérifiez son ajustement. Le rayon compte ${fr(nSac)} modèles désignés comme gants de sac ; cette désignation ne les valide pas pour un exercice avec partenaire.` },
+        { question: 'Quel poids pour le sparring ?', answer: 'Faites confirmer le modèle et le poids acceptés par votre encadrant. L’épaisseur et la répartition du rembourrage varient : le nombre d’onces seul ne valide pas une paire pour travailler avec un partenaire.' },
+        { question: 'Combien coûte une bonne paire ?', answer: `Ici, de ${money(f.min)} à ${money(f.max)}, pour un prix médian de ${money(f.mediane)}. Comparez ce que chaque modèle annonce ; un prix ou une matière ne prouve pas à lui seul la durée de vie.` },
+        { question: 'Quelle marque de gants choisir ?', answer: `Le rayon réunit ${marquesTexte(f)}, entre autres. Comparez les caractéristiques et la grille d’une référence précise ; une coupe ne se déduit pas de toute une marque.` },
         { question: 'Comment nettoyer des gants qui sentent ?', answer: 'Essuyez l’extérieur au chiffon, puis laissez sécher les gants grands ouverts, à l’air et loin d’une source de chaleur. Portez des bandes propres à chaque séance : elles gardent la sueur hors du rembourrage. Pour l’intérieur, suivez la notice du fabricant.' },
         { question: 'Pourquoi mettre des bandes sous les gants ?', answer: 'Le gant amortit le coup ; la bande tient la main. Elle garde le poignet dans l’axe, serre les métacarpes et épaissit les jointures. Elle boit aussi la sueur, si bien que la paire garde moins d’odeur et s’use moins vite.' },
-        { question: 'Combien de temps dure une paire ?', answer: 'Cela dépend du nombre de séances et de la matière : le PU s’use le plus vite, le cuir dure le plus. Une paire séchée ouverte après chaque séance, et portée sur des bandes propres, tient plus longtemps.' },
+        { question: 'Combien de temps dure une paire ?', answer: 'La durée dépend du modèle, de l’intensité, des conditions d’utilisation et de son entretien. Aucune durée comparative n’est établie ici entre cuir et synthétique ; suivez la notice et contrôlez l’état de la paire.' },
       ];
     },
     liens: [
@@ -554,7 +554,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
   {
     slug: 'materiel-boxe',
     requete: 'matériel de boxe',
-    revision: '2026-10-22',
+    revision: '2026-10-24',
     h1: 'Matériel de boxe',
     eyebrow: 'BOXE ANGLAISE · THAÏ · KICK · SAVATE',
     titre: ({ f }) => `Matériel de boxe : ${fr(f.n)} modèles, du premier cours au ring`,
@@ -568,14 +568,14 @@ export const GUIDES_RAYONS: GuideRayon[] = [
         {
           titre: 'Le premier cours : trois pièces',
           texte: [
-            'Des bandes, une paire de gants à velcro de 10 ou 12 oz et un protège-dents : le reste peut attendre. Beaucoup de salles prêtent des gants à la séance d’essai ; demandez avant d’acheter.',
+            'Demandez au club la liste du premier cours : bandes, gants et protège-dents peuvent en faire partie, selon les exercices prévus. Faites préciser les modèles et tailles acceptés, ainsi que le matériel éventuellement prêté avant d’acheter.',
             'Les bandes et le protège-dents passent en premier parce qu’ils sont personnels : ils ne se prêtent pas. La corde à sauter sert à l’échauffement de presque tous les cours.',
           ],
         },
         {
           titre: 'Quand le travail à deux commence',
           texte: [
-            'Le sparring change la liste : des gants de 14 ou 16 oz, un casque si la salle le demande, une coquille. Les chaussures de boxe tiennent la cheville dans les déplacements ; au début, une paire de sport propre suffit.',
+            'Le travail avec partenaire demande de faire valider la paire de gants et les protections par l’encadrant. Demandez aussi la tenue et les chaussures requises : cette liste dépend de la séance.',
             'Attendez que votre entraîneur vous les demande : il vous dira aussi le poids de gants imposé.',
           ],
         },
@@ -583,14 +583,14 @@ export const GUIDES_RAYONS: GuideRayon[] = [
           titre: 'D’une boxe à l’autre',
           texte: [
             'La boxe anglaise ne frappe qu’avec les poings : gants, bandes, protège-dents et chaussures montantes font le tour. La boxe thaï ajoute des protège-tibias, un short court et, pour les coudes, des coudières. Le kick-boxing veut des protège-tibias qui couvrent le pied ; la savate se pratique chaussée.',
-            'Les gants passent d’une boxe à l’autre : une paire de 14 ou 16 oz sert au sparring en anglaise comme en pieds-poings. Chaque discipline a sa page : [la boxe thaï](/materiel-boxe-thai/), [le kick-boxing](/materiel-kick-boxing/), [la savate](/materiel-boxe-francaise/).',
+            'Une paire n’est pas automatiquement adaptée à toutes les boxes : faites confirmer son usage et les contraintes de la séance. Chaque discipline a sa page : [la boxe thaï](/materiel-boxe-thai/), [le kick-boxing](/materiel-kick-boxing/), [la savate](/materiel-boxe-francaise/).',
           ],
         },
         {
           titre: 'S’entraîner chez soi',
           texte: [
-            'Un sac suspendu demande un support fait pour lui : poutre, dalle, potence murale ou portique. Sans pouvoir percer, le sac sur pied s’installe et se range dans un coin. Comptez pour son poids environ la moitié du vôtre.',
-            'Ajoutez une corde à sauter et des gants de 10 ou 12 oz. Les articles encombrants arrivent à domicile, après un devis ; tout le reste voyage en colis.',
+            'Un sac suspendu demande un support et une fixation compatibles avec le modèle et ses charges en mouvement. Pour un sac sur pied, vérifiez l’espace de travail, la base et le remplissage autorisé par le fabricant.',
+            'Choisissez les gants selon les indications d’usage du modèle ; la corde à sauter se compare par sa longueur et son réglage. Le matériel lourd se livre sur devis ; les autres conditions de transport figurent sur la page Livraison.',
           ],
         },
         {
@@ -607,7 +607,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
       note: 'Le premier prix du catalogue pour chaque besoin, modèles adultes ; tous les rayons du matériel sont concernés.',
       regles: [
         { usage: 'Bander ses mains', parmi: 'catalogue', filtre: (p) => /^bandes? de boxe/.test(nom(p)) && longueur(p) === 4.5, critere: ({ i }) => `${rang(i, 'f')} en 4,50 m, la longueur d’une main d’adulte` },
-        { usage: 'Les premiers gants', parmi: 'catalogue', filtre: (p) => gantBoxe(p) && adulte(p) && ouncesOf(p).includes(12) && velcro(p), critere: ({ i }) => `${rang(i)} en 12 oz à velcro` },
+        { usage: 'Exemple de gants en 12 oz', parmi: 'catalogue', filtre: (p) => gantBoxe(p) && adulte(p) && ouncesOf(p).includes(12) && velcro(p), critere: ({ i }) => `${rang(i)} en 12 oz à velcro, usage à confirmer avec le club` },
         { usage: 'Protéger les dents', parmi: 'catalogue', filtre: (p) => protegeDents(p) && adulte(p) && !propose(p, /junior|enfant/i), critere: ({ i }) => `${rang(i)} en taille adulte` },
         { usage: 'L’échauffement', parmi: 'catalogue', filtre: (p) => nom(p).startsWith('corde à sauter'), critere: ({ i, n }) => `${rang(i, 'f')} des ${fr(n)} cordes à sauter` },
         { usage: 'Le sparring : la tête', parmi: 'catalogue', filtre: (p) => nom(p).startsWith('casque') && !nom(p).startsWith('casquette') && adulte(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} casques` },
@@ -631,10 +631,10 @@ export const GUIDES_RAYONS: GuideRayon[] = [
     faq: ({ f, all }) => {
       const kids = all.filter((p) => p.price > 0 && enfant(p) && ['gants-de-boxe', 'protections-boxe', 'accessoires-boxe', 'textile-boxe'].includes(p.category));
       return [
-        { question: 'Quel matériel pour débuter la boxe anglaise ?', answer: 'Des bandes de 4,50 m, des gants de 12 oz, un protège-dents et une corde à sauter. Le casque et les chaussures arrivent avec le sparring, quand la salle les demande.' },
+        { question: 'Quel matériel pour débuter la boxe anglaise ?', answer: 'Demandez la liste du cours, le matériel prêté et les modèles acceptés. Comparez ensuite vos bandes, gants et protections avec les tailles du fabricant ; le casque, la tenue et les chaussures suivent les exigences de la salle.' },
         { question: 'Quels accessoires sont indispensables ?', answer: 'Les bandes et la corde à sauter, dès la première séance. Les sous-gants, les mitaines et le tape viennent ensuite, selon le rythme des entraînements ; une boîte garde le protège-dents propre.' },
-        { question: 'Quel kit pour un enfant ?', answer: `Des gants de 4 à 8 oz au velcro, des bandes de 2,50 m et un protège-dents junior ; le casque et les protège-tibias attendent que le cours les demande. Le catalogue compte ${fr(kids.length)} gants, protections, accessoires et tenues taillés pour l’enfant.` },
-        { question: 'Quel matériel pour s’entraîner à la maison ?', answer: 'Un sac à la mesure de votre plafond, ou sur pied si vous ne pouvez pas percer, des gants de 10 ou 12 oz, des bandes et une corde à sauter. Mesurez la hauteur libre et vérifiez le support avant de choisir le sac.' },
+        { question: 'Quel kit pour un enfant ?', answer: `L’encadrant définit les pièces et tailles nécessaires au cours. Vérifiez ensuite la grille du modèle et son ajustement ; le catalogue compte ${fr(kids.length)} gants, protections, accessoires et tenues annoncés pour l’enfant.` },
+        { question: 'Quel matériel pour s’entraîner à la maison ?', answer: 'Un sac compatible avec votre installation et l’espace libre, des gants dont le fabricant indique l’usage prévu, et les accessoires de votre programme. Vérifiez les charges du support ou les instructions de la base avant de commander.' },
         { question: 'Le même équipement sert-il en boxe thaï ?', answer: 'Les gants, les bandes et le protège-dents, oui. La boxe thaï demande en plus des protège-tibias, une coquille et un short court ; la boxe anglaise, des chaussures montantes pour le ring.' },
         { question: 'Quel matériel de boxe choisir ?', answer: 'Celui de la séance que vous allez faire : sac, technique ou travail à deux. Commencez par ce qui est personnel, les bandes et le protège-dents, puis prenez les gants au poids que la salle demande.' },
         { question: 'Où l’acheter en ligne ?', answer: `Ici : ${fr(f.n)} modèles, chacun avec les tailles de son fabricant et son prix TTC, payés par carte et expédiés sous ${shop.delais.expedition}, avec le point relais offert à partir de ${livraison.franco} d’achats.` },
@@ -652,7 +652,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
   {
     slug: 'sacs-de-frappe',
     requete: 'sac de frappe',
-    revision: '2026-10-22',
+    revision: '2026-10-24',
     h1: 'Sac de frappe',
     eyebrow: 'SUSPENDU · SUR PIED · À EAU',
     titre: ({ f }) => `Sac de frappe : suspendu, sur pied ou à eau, ${fr(f.n)} modèles`,
@@ -680,12 +680,12 @@ export const GUIDES_RAYONS: GuideRayon[] = [
           ],
         },
         {
-          titre: 'Le poids : environ la moitié du vôtre',
+          titre: 'Le poids annoncé et l’installation',
           texte: [
-            'Le repère le plus répandu : un sac qui pèse à peu près la moitié de votre poids, autour de 30 kg pour 60 kg, de 40 kg pour 80 kg. Plus lourd, il bouge moins et renvoie davantage dans les poignets et les épaules ; plus léger, il se balance trop et casse le rythme.',
+            'Comparez le poids du sac rempli, la fixation et les charges admises par le support. Le rapport au poids du pratiquant ne suffit pas à choisir une installation ; le modèle et les exercices prévus doivent être vérifiés avec le fabricant et votre encadrant.',
             ({ items }) => {
               const kg = sacs(items).map(kilos).filter((x): x is number => x !== null);
-              return `Un débutant gagne à rester un peu en dessous. Les sacs du rayon qui annoncent leur poids vont de ${Math.min(...kg)} à ${Math.max(...kg)} kg.`;
+              return `Les sacs du rayon qui annoncent leur poids vont de ${Math.min(...kg)} à ${Math.max(...kg)} kg. Vérifiez si la fiche décrit un sac vide ou déjà rempli.`;
             },
           ],
         },
@@ -826,13 +826,13 @@ export const GUIDES_RAYONS: GuideRayon[] = [
       const kid = items.find((p) => enfant(p) && genreSac(p) === 'pied');
       const nGantsSac = all.filter((p) => p.category === 'gants-de-boxe' && (nom(p).startsWith('gants de sac') || /sac/.test(spec(p, 'Type')))).length;
       return [
-        { question: 'Quel sac de frappe choisir pour débuter ?', answer: 'Celui que votre logement peut porter : suspendu si un plafond ou une potence le permet, sur pied sinon. Restez un peu sous la moitié de votre poids ; pour les poings, 1 m à 1,20 m de hauteur suffisent.' },
-        { question: 'Combien doit peser un sac ?', answer: 'Environ la moitié de votre poids : autour de 30 kg pour 60 kg, de 40 kg pour 80 kg. Un débutant reste un peu en dessous ; un frappeur qui travaille la puissance peut monter.' },
+        { question: 'Quel sac de frappe choisir pour débuter ?', answer: 'Celui dont les dimensions, le remplissage et la fixation conviennent à votre installation et aux exercices prévus. Vérifiez les instructions du fabricant et l’espace libre plutôt qu’une correspondance universelle avec votre poids.' },
+        { question: 'Combien doit peser un sac ?', answer: 'Comparez le poids rempli indiqué par le fabricant et les limites du support. Faites confirmer le modèle pour vos exercices ; le poids du pratiquant seul ne permet pas de valider le poids du sac ni sa fixation.' },
         { question: 'Quelle hauteur prendre ?', answer: '1 m à 1,20 m pour les poings, 1,50 m à 1,80 m pour les coups de pied et le muay-thaï. Gardez autour un cercle libre d’environ 1,50 m.' },
         { question: 'Comment accrocher un sac au plafond ?', answer: 'Sur une poutre ou une dalle, avec une attache prévue pour le poids, puis une chaîne ou un ressort. Un plafond en plaques ne convient pas : il reste le portique, posé au sol, ou le sac sur pied.' },
         { question: 'Comment remplir un sac livré vide ?', answer: 'Avec des chutes de tissu, et du sable au cœur pour gagner du poids. La base d’un sac sur pied, elle, se remplit d’eau ou de sable, jusqu’en haut.' },
         { question: 'Sac sur pied ou suspendu ?', answer: 'Pour le cardio, la technique et les enchaînements, le sac sur pied fait aussi bien. Pour les frappes lourdes, le suspendu reste plus stable ; une base remplie de sable et un tapis en caoutchouc réduisent l’écart.' },
-        { question: 'Quels gants pour frapper au sac ?', answer: `Des 10 ou 12 oz à velcro, sur des bandes. Le rayon des gants compte aussi ${fr(nGantsSac)} gants de sac, moins rembourrés, réservés à cet usage.` },
+        { question: 'Quels gants pour frapper au sac ?', answer: `Un modèle dont le fabricant indique cet usage, avec un ajustement et un poids validés pour votre séance. Le rayon des gants compte aussi ${fr(nGantsSac)} modèles désignés comme gants de sac.` },
         { question: 'Combien coûte un sac ?', answer: `Ici, un sac suspendu coûte ${fourchette('suspendu')}, un sac sur pied ${fourchette('pied')}, un sac à eau ${fourchette('eau')}. Ce sont des prix de vente ; leur livraison se chiffre sur devis.` },
         ...(kid ? [{ question: 'Existe-t-il un modèle pour enfant ?', answer: `Oui : le modèle sur pied ${citeModele(kid)}, à ${money(kid.price)}. Sa base se remplit d’eau ou de sable, comme celle des modèles adultes.` }] : []),
         { question: 'Peut-on installer un sac en appartement ?', answer: 'Oui, sur pied, sans percer : comptez un cercle libre d’environ 1,50 m autour et un tapis dessous. Un sac suspendu demande une poutre, une dalle ou un portique ; pensez aussi au bruit pour les voisins.' },
@@ -853,7 +853,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
   {
     slug: 'gants-mma',
     requete: 'gants mma',
-    revision: '2026-10-22',
+    revision: '2026-10-24',
     h1: 'Gants MMA',
     eyebrow: 'FRAPPER ET SAISIR',
     titre: ({ f }) => `Gants MMA : ${fr(f.n)} modèles à doigts libres, dès ${money(f.min)}`,
@@ -867,7 +867,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
         {
           titre: 'Sparring, entraînement ou compétition',
           texte: [
-            'Les fabricants séparent les modèles d’entraînement et de sparring, plus rembourrés, des gants de compétition de 4 oz, qui suivent les règles des fédérations. Un gant vu sur un combat professionnel n’est pas un conseil pour une première séance.',
+            'Vérifiez la pratique annoncée pour la référence : entraînement, exercices avec partenaire ou compétition. Le poids et le nom d’une gamme ne prouvent pas une homologation ; les règles applicables et les modèles acceptés sont à confirmer avec le club ou l’organisateur.',
             ({ items }) => `${fr(items.filter((p) => /sparring/.test(nom(p))).length)} modèles du rayon portent la mention sparring dans leur nom. Faites préciser au club la liste de chaque cours : frappes debout, travail mixte ou sol.`,
           ],
         },
@@ -888,8 +888,8 @@ export const GUIDES_RAYONS: GuideRayon[] = [
         {
           titre: 'Doigts libres ou gants de boxe',
           texte: [
-            'Pour le sparring debout, la plupart des salles demandent des gants de boxe de 14 ou 16 oz : ils protègent mieux le partenaire. Les gants à doigts libres servent aux exercices qui mêlent frappes et saisies.',
-            'Pour de longues séances au sac, une paire de boxe ménage mieux les mains. Le guide [boxe ou MMA : quelles différences](/guides/difference-gants-boxe-mma/) compare les deux.',
+            'Demandez quelle paire est acceptée pour chaque exercice : le choix peut changer entre frappes debout, travail avec partenaire et séances mêlant frappes et saisies. Faites valider le modèle précis et son ajustement.',
+            'Pour le sac, vérifiez l’usage indiqué par le fabricant plutôt que de comparer la protection à partir du seul format. Le guide [boxe ou MMA : quelles différences](/guides/difference-gants-boxe-mma/) présente les deux familles.',
           ],
         },
         {
@@ -899,17 +899,17 @@ export const GUIDES_RAYONS: GuideRayon[] = [
       ],
     },
     usages: {
-      titre: 'Quel modèle pour quelle séance',
-      note: 'Une paire par séance : la moins chère qui coche le critère, sauf à la dernière ligne, choisie au sommet des prix.',
+      titre: 'Comparer les caractéristiques des gants MMA',
+      note: 'La moins chère qui coche chaque caractéristique, sauf à la dernière ligne, choisie au sommet des prix. Le modèle et son usage doivent être validés pour votre séance.',
       regles: [
         { usage: 'Coupe femme', filtre: (p) => /femme/.test(nom(p)), critere: ({ i, n }) => (n === 1 ? 'le seul modèle coupé pour la femme' : `${rang(i)} des ${fr(n)} coupes femme`) },
         { usage: 'Enfant, junior', filtre: (p) => propose(p, /^junior$/i), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} modèles proposés en junior` },
-        { usage: 'Premier cours', filtre: (p) => adulte(p), critere: ({ p, i }) => `${rang(i)} du rayon${p.sizes.length ? ', tailles ' + liste(tailles(p)) : ''}` },
-        { usage: 'Sparring', filtre: (p) => /sparring/.test(nom(p)) && !/super sparring/.test(nom(p)), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} gants de la série « Sparring »` },
-        { usage: 'Rembourrage renforcé', filtre: (p) => /super sparring/.test(nom(p)), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} déclinaisons « Super Sparring »` },
+        { usage: 'Modèles adultes', filtre: (p) => adulte(p), critere: ({ p, i }) => `${rang(i)} du rayon${p.sizes.length ? ', tailles ' + liste(tailles(p)) : ''}` },
+        { usage: 'Série « Sparring »', filtre: (p) => /sparring/.test(nom(p)) && !/super sparring/.test(nom(p)), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} gants de la série « Sparring »` },
+        { usage: 'Série « Super Sparring »', filtre: (p) => /super sparring/.test(nom(p)), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} déclinaisons « Super Sparring »` },
         { usage: 'Paume dégagée', filtre: (p) => paumeOuverte(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} modèles à paume ouverte` },
         { usage: 'En cuir', filtre: (p) => enCuir(p), critere: ({ i, n }) => (n === 1 ? 'le seul modèle en cuir du rayon' : `${rang(i)} des ${fr(n)} modèles en cuir`) },
-        { usage: 'Haut de gamme', filtre: () => true, ordre: (a, b) => b.price - a.price, critere: ({ p, candidats }) => `${plusCher(p, candidats)}${p.sizes.length ? ', en ' + liste(tailles(p)) : ''}` },
+        { usage: 'Prix le plus élevé', filtre: () => true, ordre: (a, b) => b.price - a.price, critere: ({ p, candidats }) => `${plusCher(p, candidats)}${p.sizes.length ? ', en ' + liste(tailles(p)) : ''}` },
       ],
     },
     tableau: ({ items }) => tableauTailles(items, TAILLES_LETTRES.concat([['Adulte', /^adulte$/i]]), 'Les tailles du rayon', 'Chaque marque a sa grille : la lettre ne se transpose pas de l’une à l’autre.'),
@@ -917,15 +917,15 @@ export const GUIDES_RAYONS: GuideRayon[] = [
       const femme = items.find((p) => /femme/.test(nom(p)));
       const junior = items.filter((p) => propose(p, /^junior$/i));
       return [
-        { question: 'Quels gants MMA choisir pour débuter ?', answer: 'Un modèle d’entraînement rembourré, à la taille du tableau de la marque, accepté par votre salle. Les gants de compétition de 4 oz viennent plus tard.' },
+        { question: 'Quels gants MMA choisir pour débuter ?', answer: 'Un modèle accepté pour les exercices de votre salle, choisi avec la grille du fabricant et essayé avec l’équipement porté dessous. Faites confirmer les caractéristiques nécessaires avant d’acheter.' },
         { question: 'Quelle taille prendre ?', answer: 'Mesurez le tour de la paume sous les articulations, sans le pouce, et lisez le tableau du fabricant. Une taille ne se transpose pas d’une marque à l’autre.' },
-        { question: 'Sparring ou compétition : quelle différence ?', answer: 'Le gant de sparring est plus rembourré, pour l’entraînement à deux. Le gant de compétition, de 4 oz, suit le règlement de l’épreuve ; il ne sert au sparring qu’avec l’accord de la salle.' },
+        { question: 'Sparring ou compétition : quelle différence ?', answer: 'Vérifiez les indications d’usage de la référence. En compétition, l’organisateur fixe les modèles et caractéristiques acceptés ; pour une séance avec partenaire, votre encadrant valide l’équipement. Un nom de gamme ne suffit pas.' },
         { question: 'Comment les nettoyer ?', answer: 'Selon la notice du modèle, puis séchage à l’air, hors du sac. Profitez-en pour contrôler les coutures, les boucles et la fermeture.' },
-        { question: 'Peut-on frapper au sac avec ?', answer: 'Oui, avec un modèle d’entraînement rembourré et des bandes. Pour de longues séances au sac, des gants de boxe protègent mieux les mains.' },
-        { question: 'Doigts libres ou gants de boxe pour le sparring ?', answer: 'Debout, la plupart des salles demandent des gants de boxe de 14 ou 16 oz. Les doigts libres servent quand frappes et saisies se mêlent.' },
-        ...(femme ? [{ question: 'Existe-t-il des modèles pour femme ?', answer: `Oui, un : ${cite(femme)}, à ${money(femme.price)}. Les autres modèles sont mixtes ; la mesure de la main compte plus que l’étiquette.` }] : []),
+        { question: 'Peut-on frapper au sac avec ?', answer: 'Seulement si le fabricant prévoit cet usage pour le modèle retenu. Vérifiez la fermeture et l’ajustement, puis faites confirmer la paire pour votre séance.' },
+        { question: 'Doigts libres ou gants de boxe pour le sparring ?', answer: 'Le format dépend des exercices et des règles de la salle. Demandez une référence et un poids acceptés ; ne déduisez pas leur compatibilité du seul nombre d’onces.' },
+        ...(femme ? [{ question: 'Existe-t-il des modèles pour femme ?', answer: `Le rayon présente ${cite(femme)}, à ${money(femme.price)}. Pour chaque référence, vérifiez la mesure de la main et la grille du fabricant.` }] : []),
         ...(junior.length ? [{ question: 'Et pour un enfant ?', answer: `${fr(junior.length)} modèles existent en taille junior, dès ${money(Math.min(...junior.map((p) => p.price)))}. Demandez au club si le cours des jeunes travaille avec des doigts libres.` }] : []),
-        { question: 'Quelles marques au rayon ?', answer: `${marquesTexte(f, 5)}. Chaque marque a son tableau de tailles, repris sur la fiche.` },
+        { question: 'Quelles marques au rayon ?', answer: `${marquesTexte(f, 5)}. Les tailles proposées figurent sur chaque fiche ; comparez-les à la grille du modèle chez le fabricant.` },
       ];
     },
     liens: [
@@ -938,7 +938,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
   {
     slug: 'protege-dents',
     requete: 'protège dents boxe',
-    revision: '2026-10-22',
+    revision: '2026-10-24',
     h1: 'Protège-dents boxe',
     eyebrow: 'LA PREMIÈRE PROTECTION',
     titre: () => 'Protège-dents boxe : à mouler, double ou pour bagues',
@@ -955,7 +955,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
         {
           titre: 'Simple ou double',
           texte: [
-            'Le simple protège l’arcade du haut : il gêne moins la respiration et convient à la plupart des usages. Le double couvre les deux mâchoires ; il sert au contact appuyé, ou quand la salle l’impose.',
+            'Comparez la couverture annoncée, l’ajustement et les indications d’usage du fabricant. Un modèle simple ou double ne se choisit pas uniquement d’après l’intensité supposée du contact ; demandez ce que le club accepte.',
             ({ items }) => {
               const d = items.filter((p) => protegeDents(p) && double(p));
               return `Le rayon compte ${pluriel(d.length, 'modèle double', 'modèles doubles')}, dont ${fr(d.filter(bagues).length)} pour bagues.`;
@@ -965,21 +965,21 @@ export const GUIDES_RAYONS: GuideRayon[] = [
         {
           titre: 'Adulte ou junior',
           texte: [
-            'La taille junior va jusqu’à 11 ans environ, l’adulte au-delà, selon la grille de la marque. Comme tout équipement d’enfant, il se prend à la bonne taille, jamais trop grand pour durer.',
+            'Les seuils junior et adulte varient selon la marque et le modèle. Lisez la grille de la référence avant d’ouvrir l’emballage et vérifiez son ajustement ; aucun âge universel n’est appliqué à tout le rayon.',
             ({ items }) => `${fr(items.filter(pdJunior).length)} modèles existent en taille enfant ou junior.`,
           ],
         },
         {
           titre: 'Avec un appareil dentaire',
           texte: [
-            'Un protège-dents classique se moule sur les dents ; sur des bagues, il ne le faut pas. Les modèles prévus pour les appareils ne se moulent pas : suivez leur notice et demandez conseil à votre orthodontiste, surtout pour un enfant.',
+            'Vérifiez que la référence est explicitement prévue pour votre appareil dentaire. Les méthodes d’ajustement varient, y compris parmi les modèles pour bagues : suivez la notice de cette référence et demandez conseil à votre orthodontiste avant utilisation.',
             ({ items }) => `${fr(items.filter((p) => protegeDents(p) && bagues(p)).length)} modèles du rayon sont conçus pour les bagues.`,
           ],
         },
         {
           titre: 'Mouler sans se tromper',
           texte: [
-            'Trempez le protège-dents dans l’eau chaude le temps indiqué par la notice, placez-le sur les dents du haut, mordez et aspirez, puis passez-le à l’eau froide. S’il ne va pas, il se remoule.',
+            'Identifiez d’abord le modèle et sa méthode d’ajustement : tous les protège-dents ne se préparent pas de la même façon. Appliquez exclusivement sa notice, avec les outils et les étapes prévus ; ne supposez pas qu’il peut être remoulé.',
             'Les temps et les températures changent d’un modèle à l’autre : n’improvisez pas avec la notice d’un autre. Moulez-le chez vous, avant le cours.',
           ],
         },
@@ -1026,13 +1026,13 @@ export const GUIDES_RAYONS: GuideRayon[] = [
       return { titre: 'Le rayon, type par type', colonnes: ['Type', 'Modèles', 'Dès'], lignes, note: 'Un modèle peut compter dans deux lignes : un double pour bagues, par exemple.' };
     },
     faq: ({ f, items }) => [
-      { question: 'Quel protège-dents choisir pour la boxe ?', answer: 'Un modèle à mouler, simple, à votre taille : adulte, ou junior jusqu’à 11 ans environ. Le double sert au contact appuyé ou quand la salle l’impose ; avec des bagues, un modèle prévu pour elles.' },
-      { question: 'Comment mouler un protège-dents ?', answer: 'Dans l’eau chaude le temps que donne la notice, puis sur les dents du haut : mordez, aspirez, passez-le à l’eau froide. Il se remoule si le résultat ne va pas.' },
-      { question: 'Quelle taille prendre ?', answer: `Junior jusqu’à 11 ans environ, adulte au-delà, selon la marque. Le rayon compte ${fr(items.filter(pdJunior).length)} modèles pour enfant ou junior et ${fr(items.filter((p) => protegeDents(p) && !pdJunior(p)).length)} pour adulte.` },
-      { question: 'Peut-on boxer avec un appareil dentaire ?', answer: 'Oui, avec un protège-dents prévu pour les bagues, qui ne se moule pas. Demandez conseil à votre orthodontiste avant la première séance.' },
-      { question: 'Comment le mettre et le garder en place ?', answer: 'Placez-le sur les dents du haut. Bien moulé, il tient sans que vous serriez les dents ; s’il bouge, remoulez-le en suivant sa notice.' },
+      { question: 'Quel protège-dents choisir pour la boxe ?', answer: 'Un modèle dont la taille, la couverture et l’usage annoncé conviennent aux exigences de votre cours. Vérifiez sa propre notice ; avec un appareil dentaire, faites confirmer une référence compatible par votre orthodontiste.' },
+      { question: 'Comment mouler un protège-dents ?', answer: 'Vérifiez d’abord si le modèle est à mouler. Les outils, températures, temps et possibilités de remoulage varient : suivez uniquement la notice fournie pour cette référence.' },
+      { question: 'Quelle taille prendre ?', answer: `Consultez la grille du modèle : les limites d’âge junior et adulte ne sont pas identiques entre fabricants. Le rayon compte ${fr(items.filter(pdJunior).length)} modèles pour enfant ou junior et ${fr(items.filter((p) => protegeDents(p) && !pdJunior(p)).length)} autres modèles de protège-dents.` },
+      { question: 'Peut-on boxer avec un appareil dentaire ?', answer: 'Demandez d’abord conseil à votre orthodontiste et au club. Choisissez une référence explicitement compatible avec votre appareil et suivez sa méthode d’ajustement, sans appliquer celle d’un autre modèle.' },
+      { question: 'Comment le mettre et le garder en place ?', answer: 'Respectez le positionnement et la méthode d’ajustement de la notice. Si le résultat ne convient pas, demandez conseil au fabricant ; ne recommencez un moulage que si ses instructions le permettent.' },
       { question: 'Est-il obligatoire ?', answer: 'Dans la plupart des salles, dès qu’il y a du travail à deux, même léger. Pour le sac et la technique en solo, non.' },
-      { question: 'Le même pour la boxe thaï et le MMA ?', answer: 'Oui : un protège-dents sert dans toutes les boxes comme au MMA. Prenez un double si le contact devient appuyé ou si la salle le demande.' },
+      { question: 'Le même pour la boxe thaï et le MMA ?', answer: 'Vérifiez l’usage annoncé par le fabricant, l’ajustement et les exigences de chaque cours. Le choix simple ou double ne découle pas à lui seul du nom de la discipline.' },
       { question: 'Quelle marque choisir ?', answer: `${marquesTexte(f)}. Chaque modèle suit sa propre notice : c’est elle qui fait foi.` },
       { question: 'Quand le remplacer ?', answer: 'Quand il se déforme, se perce ou ne tient plus en place. Un protège-dents ne se prête pas, même rincé.' },
       { question: 'Peut-on retourner un protège-dents ?', answer: 'Pas une fois descellé : pour des raisons d’hygiène, un protège-dents ouvert après la livraison ne peut pas être repris. Vérifiez la taille, adulte ou junior, avant d’ouvrir l’emballage.' },
@@ -1047,7 +1047,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
   {
     slug: 'shorts-de-boxe-thai',
     requete: 'short de boxe thai',
-    revision: '2026-10-22',
+    revision: '2026-10-24',
     h1: 'Short de boxe thaï',
     eyebrow: 'MUAY-THAÏ · KICK-BOXING · K-1',
     // Autant de marques que le titre en tient dans ses 60 caractères, jamais un nom coupé.
@@ -1092,7 +1092,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
         {
           titre: 'La taille, au tour de taille',
           texte: [
-            'Mesurez votre tour de taille et reportez-vous à la grille de la marque, pas à votre taille habituelle : les marques thaïlandaises taillent souvent plus petit que les européennes. Entre deux tailles, prenez la plus grande : la ceinture se resserre, la longueur ne s’allonge pas.',
+            'Mesurez votre tour de taille et reportez-vous à la grille du modèle, puis comparez la longueur et la coupe. Une origine de marque ne suffit pas à prévoir l’ajustement ; entre deux mesures, demandez les dimensions de la référence avant de commander.',
             ({ items }) => `${fr(items.filter((p) => propose(p, /^(xxxl|3xl)$/i)).length)} modèles montent jusqu’au XXXL.`,
           ],
         },
@@ -1134,7 +1134,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
         },
         {
           titre: 'Commander sa taille en ligne',
-          texte: ['Prenez votre tour de taille, comparez-le à la grille de la fiche et notez la taille entre deux mesures. Si le short reçu ne tombe pas bien, vous disposez de quatorze jours après sa réception pour le renvoyer, non porté et dans son emballage ; un échange de taille se demande par e-mail, avec le numéro de commande.'],
+          texte: ['Prenez votre tour de taille et comparez-le à la grille du modèle chez le fabricant, puis vérifiez les tailles réellement proposées sur la fiche. Si le short reçu ne tombe pas bien, vous disposez de quatorze jours après sa réception pour le renvoyer, non porté et dans son emballage ; un échange de taille se demande par e-mail, avec le numéro de commande.'],
         },
         {
           titre: 'Entretien',
@@ -1161,7 +1161,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
       const t = kid ? tailles(kid) : [];
       return [
         { question: 'Quel short de boxe thaï choisir ?', answer: 'Un short court, fendu, à ceinture haute, pris au tour de taille dans la grille de la marque. Le reste tient au goût : couleur, motif, matière.' },
-        { question: 'Comment choisir sa taille ?', answer: 'Au tour de taille, dans la grille de la marque. Les marques thaïlandaises taillent souvent petit ; entre deux tailles, prenez la plus grande.' },
+        { question: 'Comment choisir sa taille ?', answer: 'Avec votre tour de taille et la grille de la référence. Comparez aussi la longueur et les indications de coupe ; entre deux mesures, demandez confirmation plutôt qu’une taille supérieure systématique.' },
         { question: 'Se porte-t-il en kick-boxing ?', answer: 'Oui, c’est le short le plus porté en kick-boxing et en K-1, pour la liberté des jambes.' },
         { question: 'Satin ou polyester ?', answer: 'Le satin est la tenue traditionnelle, légère et brillante ; le polyester mat résiste mieux aux lavages. Les deux se lavent à 30 °C, à l’envers.' },
         { question: 'Un modèle pour femme ?', answer: 'Les coupes du rayon sont mixtes : la taille se prend au tour de taille, quelle que soit l’étiquette. Le guide de l’équipement pour femme explique comment comparer deux coupes.' },
@@ -1183,7 +1183,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
   {
     slug: 'kimonos-jjb',
     requete: 'kimono jjb',
-    revision: '2026-10-22',
+    revision: '2026-10-24',
     h1: 'Kimono JJB',
     // Deux requêtes du brief mènent ici, « kimono JJB » et « kimono de JJB » : le H1 porte l’une, le surtitre l’autre.
     eyebrow: 'KIMONO DE JJB · LE GI DU JIU-JITSU BRÉSILIEN',
@@ -1272,7 +1272,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
       { question: 'Quel kimono JJB choisir ?', answer: 'Un gi à votre taille A, lue dans le tableau taille et poids de la marque. 350 g/m² pour débuter ou pour l’été, 450 pour la résistance ; blanc, bleu ou noir si vous visez la compétition.' },
       { question: 'Quelle taille de kimono JJB ?', answer: 'De A0 à A4, selon votre taille et votre poids dans le tableau de la marque ; les L allongent à poids égal. Sur un kimono qui n’est pas prérétréci, l’hésitation se tranche vers la taille au-dessus.' },
       { question: 'Quelle couleur choisir ?', answer: 'Blanc, bleu ou noir uni pour la compétition IBJJF. À l’entraînement, la couleur est libre, sauf règle de la salle.' },
-      { question: 'Quelle marque ?', answer: `${marquesTexte(f, 5)}. Chacune a son tableau taille et poids, repris sur la fiche.` },
+      { question: 'Quelle marque ?', answer: `${marquesTexte(f, 5)}. La fiche présente les tailles proposées ; vérifiez leur correspondance dans le tableau du modèle chez le fabricant.` },
       ...(items.some((p) => /femme/.test(nom(p))) ? [] : [{ question: 'Un kimono pour femme ?', answer: 'Le rayon ne propose pas de coupe réservée : la taille A se lit à la stature et au poids, et les L conviennent aux silhouettes élancées.' }]),
       { question: 'Faut-il une ceinture ?', answer: 'Oui, une ceinture de JJB, blanche pour commencer. Elle n’est pas toujours vendue avec le kimono : la fiche le dit.' },
       { question: 'Peut-on pratiquer en kimono de judo ?', answer: 'Pour essayer, oui. Plus ample, à manches plus longues, il donne plus de prise à l’adversaire ; le gi de JJB devient utile quand la pratique s’installe.' },
@@ -1546,7 +1546,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
   {
     slug: 'bandes-de-boxe',
     requete: 'bandes de boxe',
-    revision: '2026-10-22',
+    revision: '2026-10-24',
     h1: 'Bandes de boxe',
     eyebrow: 'SOUS LE GANT, À CHAQUE SÉANCE',
     titre: ({ f, items }) => {
@@ -1561,7 +1561,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
       const l = items.map(longueur).filter((x): x is number => x !== null);
       return `${fr(f.n)} modèles, de ${metres(Math.min(...l))} à ${metres(Math.max(...l))}, dès ${money(f.min)}.`;
     },
-    intro: 'Elles tiennent le poignet et protègent les articulations sous le gant. 4 à 4,50 m pour une main d’adulte, 2,50 m pour un enfant ; elles se lavent après chaque séance.',
+    intro: 'Comparez la longueur, la composition et la fermeture annoncées. La pose et la place sous vos gants se vérifient avec l’encadrant ; l’entretien suit la notice du modèle.',
     guide: {
       titre: 'Choisir et poser ses bandes',
       chapeau: ({ f }) => `${fr(f.n)} modèles, ${f.marques.length} marques : la longueur se choisit à la main, la matière au maintien voulu.`,
@@ -1569,14 +1569,14 @@ export const GUIDES_RAYONS: GuideRayon[] = [
         {
           titre: 'Ce qu’elles font sous le gant',
           texte: [
-            'Le gant amortit le coup ; dessous, la bande tient la main. Le poignet reste dans l’axe, les petits os du métacarpe restent serrés, les jointures gagnent une épaisseur.',
-            'Second effet, moins connu : le tissu boit la sueur avant la mousse. Un gant porté sur des bandes sent moins et dure plus longtemps.',
+            'Les bandes s’utilisent sous les gants selon la pose enseignée au club. Vérifiez le montage avec votre encadrant et l’ajustement avec la paire que vous porterez.',
+            'Comparez aussi le tissu et sa notice d’entretien. Le catalogue ne fournit pas d’essai comparatif permettant de promettre une durée de vie supérieure à vos gants.',
           ],
         },
         {
           titre: 'La longueur, selon la main',
           texte: [
-            'Une main d’adulte demande 4 à 4,50 m ; une petite main ou un enfant, 2,50 m. Plus la pose couvre le poignet et les jointures, plus il faut de longueur : en cas de doute, prenez la plus longue, on peut toujours faire un tour de plus.',
+            'La longueur se choisit avec la pose prévue, la main et la place sous le gant. Demandez au club la référence nécessaire ; une mesure unique par âge ou une longueur supérieure systématique peut conduire à un mauvais ajustement.',
             ({ items }) => {
               const l = items.map(longueur).filter((x): x is number => x !== null);
               return `Le rayon va de ${metres(Math.min(...l))} à ${metres(Math.max(...l))} ; ${fr(l.filter((x) => x === 4.5).length)} modèles mesurent 4,50 m.`;
@@ -1586,27 +1586,27 @@ export const GUIDES_RAYONS: GuideRayon[] = [
         {
           titre: 'Semi-élastiques ou coton',
           texte: [
-            'Les semi-élastiques épousent la main et se serrent facilement : c’est le choix le plus courant. Le coton, plus rigide, tient mieux le poignet et convient aux frappeurs lourds. Les deux se portent sous tous les gants.',
+            'Comparez la composition et le caractère élastique annoncés sur la fiche. Ces informations ne suffisent pas à établir un meilleur maintien pour une catégorie de pratiquants ; vérifiez la pose et l’ajustement avec votre encadrant.',
             ({ items }) => `Au rayon, ${fr(items.filter((p) => /coton/.test(matiere(p)) && /lycra/.test(matiere(p))).length)} modèles mêlent coton et lycra, ${fr(items.filter((p) => /coton/.test(matiere(p)) && !/lycra|polyester|nylon/.test(matiere(p))).length)} sont en coton seul ; ${fr(items.filter((p) => /oui/.test(spec(p, 'Passant pour le pouce'))).length)} ont une boucle pour le pouce et ${fr(items.filter(velcro).length)} une fermeture auto-agrippante.`,
           ],
         },
         {
           titre: 'La pose, en quelques minutes',
           texte: [
-            'Passez la boucle autour du pouce, faites quelques tours au poignet, montez sur la paume et couvrez les jointures, puis passez entre les doigts avant de revenir fermer au poignet. Réglez à votre main : plus de tours au poignet si vous vous le tordez, plus d’épaisseur sur les jointures si vous frappez fort.',
-            'Comptez quelques cours pour retenir le geste.',
+            'Faites montrer et vérifier la pose par votre encadrant, avec vos gants. Une recette identique ne tient pas compte de chaque main ni du modèle de bandes ; suivez également les instructions du fabricant.',
+            'N’utilisez pas un ajout de tours comme réponse à une douleur ou à une blessure : demandez un avis adapté avant de reprendre l’exercice.',
           ],
         },
         {
           titre: 'Laver, sécher, alterner',
           texte: [
-            'Lavez-les après chaque séance, en machine à 30 °C dans un filet pour qu’elles ne s’emmêlent pas, et séchez-les à plat, jamais au sèche-linge. Une bande humide restée dans le sac se détend et sent.',
+            'Sortez les bandes humides du sac et respectez les instructions de lavage et de séchage propres au modèle. Une température ou un passage en machine ne se déduit pas de toute la famille de produits.',
             'Plusieurs séances par semaine ? Deux jeux évitent de remettre une bande humide.',
           ],
         },
         {
           titre: 'Bandes ou sous-gants',
-          texte: ['Le sous-gant s’enfile comme une mitaine, avec un rembourrage souvent en gel déjà placé sur les jointures : rien à apprendre, mais un maintien du poignet fixe. Pour le sparring et le sac lourd, la bande reste le choix le plus sûr. Les [sous-gants](/sous-gants/) ont leur page.'],
+          texte: ['Comparez la construction de chaque référence et les consignes de votre salle. La forme de mitaine ou la présence de gel ne prouvent pas une protection équivalente à des bandes, ni une supériorité de sécurité. Les [sous-gants](/sous-gants/) ont leur page.'],
         },
         {
           titre: 'Les marques, longueur par longueur',
@@ -1633,45 +1633,45 @@ export const GUIDES_RAYONS: GuideRayon[] = [
       ],
     },
     usages: {
-      titre: 'Quelle paire pour quelle main',
+      titre: 'Comparer longueurs et caractéristiques',
       note: 'Les deux lignes de longueur retiennent la mesure extrême ; les autres, le premier prix du critère.',
       regles: [
-        { usage: 'Enfant, petite main', filtre: (p) => (longueur(p) || 9) <= 3, ordre: (a, b) => (longueur(a) || 9) - (longueur(b) || 9) || parPrix(a, b), critere: ({ p, i }) => (i === 0 ? `la plus courte du rayon : ${metres(longueur(p) || 0)}` : `${metres(longueur(p) || 0)} de long`) },
-        { usage: 'Adulte, usage courant', filtre: (p) => longueur(p) === 4.5, critere: ({ i, n }) => `${rang(i, 'f')} des ${fr(n)} paires de 4,50 m` },
-        { usage: 'Grande main, pose couvrante', filtre: (p) => longueur(p) !== null, ordre: (a, b) => (longueur(b) || 0) - (longueur(a) || 0) || parPrix(a, b), critere: ({ p, i }) => (i === 0 ? `la plus longue du rayon : ${metres(longueur(p) || 0)}` : `${metres(longueur(p) || 0)} de long`) },
-        { usage: 'Maintien, coton seul', filtre: (p) => /coton/.test(matiere(p)) && !/lycra|polyester|nylon/.test(matiere(p)), critere: ({ i, n }) => `${rang(i, 'f')} des ${fr(n)} paires en coton seul` },
+        { usage: 'Les références jusqu’à 3 m', filtre: (p) => (longueur(p) || 9) <= 3, ordre: (a, b) => (longueur(a) || 9) - (longueur(b) || 9) || parPrix(a, b), critere: ({ p, i }) => (i === 0 ? `la plus courte du rayon : ${metres(longueur(p) || 0)}` : `${metres(longueur(p) || 0)} de long`) },
+        { usage: 'Longueur de 4,50 m', filtre: (p) => longueur(p) === 4.5, critere: ({ i, n }) => `${rang(i, 'f')} des ${fr(n)} paires de 4,50 m` },
+        { usage: 'Les références les plus longues', filtre: (p) => longueur(p) !== null, ordre: (a, b) => (longueur(b) || 0) - (longueur(a) || 0) || parPrix(a, b), critere: ({ p, i }) => (i === 0 ? `la plus longue du rayon : ${metres(longueur(p) || 0)}` : `${metres(longueur(p) || 0)} de long`) },
+        { usage: 'Composition coton seul', filtre: (p) => /coton/.test(matiere(p)) && !/lycra|polyester|nylon/.test(matiere(p)), critere: ({ i, n }) => `${rang(i, 'f')} des ${fr(n)} paires en coton seul` },
         { usage: 'Boucle pour le pouce', filtre: (p) => /oui/.test(spec(p, 'Passant pour le pouce')), critere: ({ i, n }) => `${rang(i, 'f')} des ${fr(n)} paires avec boucle pour le pouce` },
-        { usage: 'Marque née en Thaïlande', filtre: (p) => /fairtex/i.test(p.brand), critere: ({ i, n }) => `${rang(i, 'f')} des ${fr(n)} paires Fairtex` },
+        { usage: 'Marque Fairtex', filtre: (p) => /fairtex/i.test(p.brand), critere: ({ i, n }) => `${rang(i, 'f')} des ${fr(n)} paires Fairtex` },
         { usage: 'Trame ajourée', filtre: (p) => /mesh/.test(nom(p)), critere: ({ i, n }) => `${rang(i, 'f')} des ${fr(n)} paires à trame ajourée, dite mesh` },
       ],
     },
     tableau: ({ items }) => {
-      const groupes: [string, (x: number) => boolean, string][] = [
-        ['2,50 m', (x) => x <= 2.5, 'Enfant, petite main'],
-        ['3 à 3,50 m', (x) => x > 2.5 && x <= 3.5, 'Petite main'],
-        ['4 à 4,50 m', (x) => x > 3.5 && x <= 4.5, 'Main d’adulte'],
-        ['5 m et plus', (x) => x > 4.5, 'Grande main, pose très couvrante'],
+      const groupes: [string, (x: number) => boolean][] = [
+        ['Jusqu’à 2,50 m', (x) => x <= 2.5],
+        ['Plus de 2,50 à 3,50 m', (x) => x > 2.5 && x <= 3.5],
+        ['Plus de 3,50 à 4,50 m', (x) => x > 3.5 && x <= 4.5],
+        ['Plus de 4,50 m', (x) => x > 4.5],
       ];
       const lignes: Cellule[][] = groupes
-        .map(([libelle, test, qui]) => {
+        .map(([libelle, test]) => {
           const ps = items.filter((p) => p.price > 0 && longueur(p) !== null && test(longueur(p)!));
-          return ps.length ? [libelle, qui, fr(ps.length), money(Math.min(...ps.map((p) => p.price)))] : null;
+          return ps.length ? [libelle, fr(ps.length), money(Math.min(...ps.map((p) => p.price)))] : null;
         })
         .filter(nonNul);
       const sans = items.filter((p) => longueur(p) === null).length;
-      return { titre: 'Les longueurs du rayon', colonnes: ['Longueur', 'Pour qui', 'Modèles', 'Dès'], lignes, note: sans ? `${pluriel(sans, 'modèle ne donne', 'modèles ne donnent')} pas sa longueur sur la fiche.` : undefined };
+      return { titre: 'Les longueurs du rayon', colonnes: ['Longueur annoncée', 'Modèles', 'Dès'], lignes, note: `${sans ? `${pluriel(sans, 'modèle ne donne', 'modèles ne donnent')} pas sa longueur sur la fiche. ` : ''}La longueur n’établit pas une correspondance universelle avec l’âge ou la main.` };
     },
     faq: ({ items }) => {
       const l = items.map(longueur);
       return [
-        { question: 'Comment mettre des bandes de boxe ?', answer: 'Boucle au pouce, quelques tours au poignet, la paume et les jointures, un passage entre les doigts, puis retour au poignet pour fermer. Quelques cours suffisent à retenir le geste.' },
-        { question: 'Quelle longueur choisir ?', answer: '4 à 4,50 m pour une main d’adulte, 2,50 m pour un enfant ou une petite main. Plus la pose couvre, plus il faut de longueur.' },
-        { question: '4 m ou 4,50 m ?', answer: `Les deux couvrent une main d’adulte ; 4,50 m laisse un tour de plus au poignet ou aux jointures. Le rayon compte ${fr(l.filter((x) => x === 4).length)} modèles de 4 m et ${fr(l.filter((x) => x === 4.5).length)} de 4,50 m.` },
-        { question: 'Semi-élastiques ou coton ?', answer: 'Semi-élastiques pour la facilité, coton pour le maintien du poignet. Les deux vont sous n’importe quel gant.' },
-        { question: 'Pourquoi mettre des bandes ?', answer: 'Pour tenir le poignet dans l’axe, serrer les métacarpes et épaissir les jointures sous le gant. Elles boivent aussi la sueur, ce qui garde le gant plus sain.' },
-        { question: 'Comment les laver ?', answer: 'Après chaque séance, à 30 °C dans un filet, puis séchage à plat. Jamais au sèche-linge.' },
-        { question: 'Bandes ou sous-gants ?', answer: 'Les bandes tiennent mieux le poignet et se règlent à la main ; les sous-gants s’enfilent en dix secondes. Pour le sparring et le sac lourd, les bandes.' },
-        { question: 'Peut-on boxer sans ?', answer: 'On le peut, mais le poignet est moins tenu, les jointures moins couvertes, et la sueur entre directement dans le gant, qui s’use plus vite.' },
+        { question: 'Comment mettre des bandes de boxe ?', answer: 'Faites montrer puis vérifier la pose par l’encadrant, avec vos gants et selon la notice du modèle. La longueur et le montage se choisissent ensemble.' },
+        { question: 'Quelle longueur choisir ?', answer: 'Demandez la longueur adaptée à la pose enseignée, à votre main et à la place sous le gant. Une taille unique par âge n’est pas appliquée à toutes les références.' },
+        { question: '4 m ou 4,50 m ?', answer: `Comparez ces longueurs avec la pose demandée. Le rayon compte ${fr(l.filter((x) => x === 4).length)} modèles de 4 m et ${fr(l.filter((x) => x === 4.5).length)} de 4,50 m ; leur adéquation se vérifie lors de l’essai.` },
+        { question: 'Semi-élastiques ou coton ?', answer: 'Comparez les compositions annoncées et faites vérifier la pose. Le caractère élastique et la longueur ne garantissent pas une compatibilité avec chaque gant.' },
+        { question: 'Pourquoi mettre des bandes ?', answer: 'Elles font partie du matériel porté sous les gants selon les consignes du cours. Faites vérifier la pose, le maintien recherché et la place dans votre modèle par l’encadrant.' },
+        { question: 'Comment les laver ?', answer: 'Lisez l’étiquette ou la notice de la référence pour la température, la méthode et le séchage. Sortez le matériel humide du sac après la séance.' },
+        { question: 'Bandes ou sous-gants ?', answer: 'Faites confirmer le format accepté pour votre séance, puis vérifiez sa construction et sa place sous le gant. Aucun classement général de sécurité entre ces deux familles n’est établi ici.' },
+        { question: 'Peut-on boxer sans ?', answer: 'Demandez à la salle et consultez les instructions de vos gants avant le cours. Ne déduisez pas qu’un accessoire est facultatif du seul prix ou du nom du modèle.' },
         { question: 'Bandage ou bandes : quelle différence ?', answer: 'Aucune : le bandage désigne le geste, les bandes le produit.' },
         { question: 'Combien de paires prévoir ?', answer: 'Une pour commencer ; deux dès que vous vous entraînez plusieurs fois par semaine, pour ne jamais remettre une paire humide.' },
       ];
@@ -1686,7 +1686,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
   {
     slug: 'materiel-mma',
     requete: 'matériel mma',
-    revision: '2026-10-22',
+    revision: '2026-10-24',
     h1: 'Matériel MMA',
     // « équipement MMA », seconde requête du brief pour cette page : dans le titre, le surtitre et la description.
     eyebrow: 'ÉQUIPEMENT MMA · FRAPPES, SAISIES, SOL',
@@ -1714,7 +1714,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
         {
           titre: 'Les gants, selon la séance',
           texte: [
-            'Quand la séance mêle coups et saisies, il faut une paire à doigts libres, rembourrée, prise dans la grille du fabricant. Le sparring debout se fait souvent en gants de boxe, 14 ou 16 oz selon le gabarit. Les modèles de compétition, à 4 oz, attendent votre premier combat.',
+            'Demandez les gants acceptés pour vos exercices : frappes, saisies ou travail mixte. La grille du fabricant aide à choisir l’ajustement ; le modèle, son poids et son usage se confirment avec l’encadrant. En compétition, vérifiez le règlement et les références imposées par l’organisateur.',
             ({ all }) => {
               const g = all.filter((p) => gantMMA(p) && p.price > 0);
               const b = all.filter((p) => gantBoxe(p) && adulte(p) && ouncesOf(p).includes(16) && p.price > 0);
@@ -1750,7 +1750,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
         },
         {
           titre: 'Selon votre niveau',
-          texte: ['Pour débuter : protège-dents, short, rashguard, et les gants que la salle prête ou demande. Quand l’entraînement devient régulier : votre propre paire à doigts libres, des protège-tibias et une coquille. En vue d’une compétition : les gants de 4 oz et la tenue que fixe l’organisateur.'],
+          texte: ['Pour débuter : demandez la liste de votre cours et ce que la salle prête. Pour compléter ensuite votre matériel, partez des séances réelles et de l’ajustement des protections. En vue d’une compétition, récupérez les règles applicables et la liste de l’organisateur avant d’acheter.'],
         },
         {
           titre: 'Les marques, famille par famille',
@@ -1774,13 +1774,13 @@ export const GUIDES_RAYONS: GuideRayon[] = [
     },
     usages: {
       titre: 'Le premier prix de chaque pièce',
-      note: 'Modèles adultes du catalogue ; les gants de boxe viennent du rayon voisin, pour le sparring debout.',
+      note: 'Modèles adultes du catalogue ; la ligne des gants de boxe illustre les références proposées en 16 oz. Ce poids ne suffit pas à valider une paire pour le sparring.',
       regles: [
         { usage: 'Premier cours : la bouche', parmi: 'catalogue', filtre: (p) => protegeDents(p) && adulte(p) && !propose(p, /junior|enfant/i), critere: ({ i }) => `${rang(i)} pour adulte, tout le catalogue confondu` },
         { usage: 'Premier cours : le short', parmi: 'catalogue', filtre: (p) => nom(p).startsWith('short mma') && adulte(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} shorts MMA pour adulte, sans poche ni fermeture` },
         { usage: 'Premier cours : le haut', parmi: 'catalogue', filtre: (p) => nom(p).startsWith('rashguard') && adulte(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} rashguards pour adulte` },
         { usage: 'Frappes et saisies', parmi: 'catalogue', filtre: (p) => gantMMA(p) && adulte(p), critere: ({ i }) => `${rang(i)} des gants à doigts libres` },
-        { usage: 'Sparring debout', parmi: 'catalogue', filtre: (p) => gantBoxe(p) && adulte(p) && ouncesOf(p).includes(16), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} gants de boxe en 16 oz` },
+        { usage: 'Gants de boxe proposés en 16 oz', parmi: 'catalogue', filtre: (p) => gantBoxe(p) && adulte(p) && ouncesOf(p).includes(16), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} gants de boxe en 16 oz` },
         { usage: 'Coups de pied', parmi: 'catalogue', filtre: (p) => tibiaPied(p) && adulte(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} protège-tibias et pieds hors coton` },
         { usage: 'Le contact', parmi: 'catalogue', filtre: (p) => nom(p).startsWith('coquille'), critere: ({ i, n }) => `${rang(i, 'f')} des ${fr(n)} coquilles` },
         { usage: 'Jambes au sol', parmi: 'catalogue', filtre: (p) => /^(spats|legging)/.test(nom(p)) && adulte(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} spats et leggings pour adulte` },
@@ -1792,7 +1792,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
         ['Short MMA', '/shorts-mma/', 'Premier cours', (p) => nom(p).startsWith('short mma')],
         ['Rashguard', '/rashguards/', 'Premier cours', (p) => nom(p).startsWith('rashguard')],
         ['Gants à doigts libres', '/gants-mma/', 'Travail mixte', gantMMA],
-        ['Gants de boxe 16 oz', '/gants-de-boxe-16-oz/', 'Sparring debout', (p) => gantBoxe(p) && adulte(p) && ouncesOf(p).includes(16)],
+        ['Gants de boxe 16 oz', '/gants-de-boxe-16-oz/', 'Usage à confirmer avec le club', (p) => gantBoxe(p) && adulte(p) && ouncesOf(p).includes(16)],
         ['Protège-tibias', '/protege-tibias/', 'Dès le contact', tibias],
         ['Coquille', '/coquilles/', 'Dès le contact', (p) => nom(p).startsWith('coquille')],
         ['Spats et leggings', '/leggings/', 'Au sol', (p) => /^(spats|legging)/.test(nom(p))],
@@ -1814,7 +1814,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
       const rg = premier(all.filter((p) => nom(p).startsWith('rashguard') && adulte(p)));
       const total = [pd, sh, rg].reduce((s, p) => s + (p?.price || 0), 0);
       return [
-        { question: 'Quel équipement pour commencer le MMA ?', answer: 'Un protège-dents, un short sans poche et un rashguard ou un t-shirt. Puis les gants que la salle demande : à doigts libres pour le travail mixte, de boxe en 14 ou 16 oz pour le sparring debout.' },
+        { question: 'Quel équipement pour commencer le MMA ?', answer: 'Demandez la liste du cours : protège-dents, tenue et gants adaptés aux exercices prévus. Faites préciser le format, le modèle et la taille acceptés par la salle ; le poids du gant seul ne valide pas son usage.' },
         { question: 'Quel matériel MMA choisir pour s’entraîner ?', answer: 'Celui de vos séances réelles : gants et protège-tibias pour la frappe, rashguard, short et spats pour le sol, protège-dents et coquille dès le contact. Faites la liste avec votre club.' },
         { question: 'Quel matériel pour un enfant ?', answer: `Demandez la liste du cours : les règles des jeunes ne se déduisent pas de celles des adultes. Le rayon compte ${fr(kids.length)} modèles enfant ou junior${kids.length ? `, dès ${money(Math.min(...kids.map((p) => p.price)))}` : ''}.` },
         { question: 'Quels accessoires prévoir ?', answer: 'Une boîte pour le protège-dents, des bandes ou des sous-gants si la salle les demande sous les gants, et un sac qui sépare le linge humide du propre.' },
@@ -2104,7 +2104,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
   {
     slug: 'protections-boxe',
     requete: 'protections boxe',
-    revision: '2026-10-22',
+    revision: '2026-10-24',
     h1: 'Protections de boxe',
     eyebrow: 'PROTECTIONS BOXE · DENTS, TÊTE, TIBIAS, BAS-VENTRE',
     titre: ({ f }) => `Protections boxe : ${fr(f.n)} modèles, du protège-dents au casque`,
@@ -2125,7 +2125,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
         {
           titre: 'Le protège-dents',
           texte: [
-            'Simple pour l’arcade du haut, double quand le contact est appuyé ; à mouler chez soi dans l’eau chaude, sauf les modèles pour bagues, qui ne se moulent pas. Il se choisit adulte ou junior, et il ne se prête jamais.',
+            'Choisissez la couverture et la taille dans la grille de la référence, selon les exigences du cours. La compatibilité avec des bagues et la méthode d’ajustement doivent être explicites ; suivez la notice du modèle et, pour un appareil dentaire, demandez conseil à votre orthodontiste.',
             ({ items }) => `${fr(compte(items, protegeDents))} modèles au rayon, dont ${fr(compte(items, pdJunior))} en taille junior, ${fr(compte(items, (p) => protegeDents(p) && bagues(p)))} pour les bagues et ${fr(compte(items, (p) => protegeDents(p) && double(p)))} à double arcade. Leur page, [protège-dents](/protege-dents/), explique le moulage.`,
           ],
         },
@@ -2249,7 +2249,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
         { question: 'Quelles protections changent d’une boxe à l’autre ?', answer: 'L’anglaise se contente du protège-dents, du casque et de la coquille. Pieds-poings et MMA ajoutent les protège-tibias ; le muay-thaï, les coudières et souvent les chevillères ; le full contact, les protège-pieds.' },
         { question: 'Y a-t-il des protections pour les enfants ?', answer: `Oui : ${fr(compte(items, pdJunior))} protège-dents junior, ${fr(compte(items, (p) => tibias(p) && propose(p, /junior/i)))} protège-tibias en junior${kid ? `, et ${cite(kid)} existe en taille enfant` : ''}. Chaque pièce se prend à la taille du jour, essayée avant le cours.` },
         { question: 'Comment laver ses protections ?', answer: 'Selon la notice de chaque modèle : une mousse, une coque et un textile ne se lavent pas pareil. Tout sèche à l’air, hors du sac ; le protège-dents se rince après chaque séance.' },
-        { question: 'Quelles marques au rayon ?', answer: `${marquesTexte(f, 6)}. La grille du fabricant est reprise sur chaque fiche.` },
+        { question: 'Quelles marques au rayon ?', answer: `${marquesTexte(f, 6)}. Comparez les tailles proposées sur la fiche avec la grille du modèle chez le fabricant.` },
         ...(total !== null ? [{ question: 'Combien coûte un jeu de protections complet ?', answer: `Au premier prix du rayon, protège-dents, casque, coquille et protège-tibias à pied couvert reviennent à ${money(total)}. Le prix médian du rayon est de ${money(f.mediane)}.` }] : []),
       ];
     },
@@ -2264,7 +2264,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
   {
     slug: 'textile-boxe',
     requete: 'textile boxe',
-    revision: '2026-10-22',
+    revision: '2026-10-24',
     h1: 'Textile de boxe',
     eyebrow: 'TEXTILE BOXE · SHORTS, T-SHIRTS, RASHGUARDS, SWEATS',
     titre: ({ f }) => `Textile boxe : shorts, t-shirts, rashguards, ${fr(f.n)} modèles`,
@@ -2328,7 +2328,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
         {
           titre: 'La taille se lit dans la grille de sa marque',
           texte: [
-            'Un short se prend au tour de taille, un pantalon à la stature, un haut au tour de poitrine : la grille de la fiche fait foi, et une coupe thaïlandaise taille souvent une lettre en dessous d’une coupe européenne. Entre deux tailles, la plus grande pour un short, la plus ajustée pour un rashguard.',
+            'Prenez les mesures demandées par le tableau du modèle, puis comparez-les aux tailles proposées sur la fiche. La longueur, l’aisance et la compression varient selon la référence ; une origine de marque ou une règle automatique entre deux tailles ne suffit pas à choisir.',
             'Essayez en levant les bras et en fléchissant les jambes : la tenue doit rester en place sans qu’on y pense.',
           ],
         },
@@ -2399,7 +2399,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
       const en = items.filter((p) => enfant(p) && p.price > 0);
       return [
         { question: 'Quel short pour quelle boxe ?', answer: 'Long et ample pour la boxe anglaise, court et fendu pour le muay-thaï comme pour le kick-boxing ou le K-1, ajusté et sans poche pour le MMA et le grappling. Le short thaï sert aussi au sac, quelle que soit la boxe.' },
-        { question: 'Comment choisir la taille d’un short de boxe ?', answer: 'Avec votre tour de taille reporté dans la grille de sa marque, jamais d’après votre taille habituelle : les coupes thaïlandaises taillent plus petit. Le short se porte à la taille, pas sur les hanches.' },
+        { question: 'Comment choisir la taille d’un short de boxe ?', answer: 'Avec vos mesures reportées dans la grille du modèle. Vérifiez la longueur, la position de la ceinture et la coupe annoncée ; une étiquette ou l’origine de la marque ne suffit pas à prévoir l’ajustement.' },
         { question: 'Le rashguard est-il obligatoire ?', answer: 'Pas partout, mais la plupart des salles de grappling et de JJB no-gi le demandent : il protège la peau et ne donne aucune prise. Sous le kimono, il tient lieu de sous-vêtement.' },
         { question: 'Un t-shirt en coton suffit-il à l’entraînement ?', answer: 'Au sac et en technique, oui. Dès que la séance fait transpirer longtemps, un polyester technique sèche sur vous ; le coton, lui, reste mouillé.' },
         { question: 'Que porter pour la savate ?', answer: 'Une tenue près du corps, pour que l’arbitre lise les touches : combinaison intégrale, ou pantalon ajusté et débardeur. Les gants sont ceux de la boxe anglaise ; les chaussures, propres à la savate.' },
@@ -2421,7 +2421,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
   {
     slug: 'boutique-boxe',
     requete: 'boutique boxe',
-    revision: '2026-10-22',
+    revision: '2026-10-24',
     h1: 'Boutique boxe',
     // « matos boxe », seconde requête du concours pour cette page : dans le titre, le surtitre et un H2 (le titre du guide).
     eyebrow: 'BOUTIQUE BOXE · MATOS BOXE',
@@ -2473,7 +2473,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
         },
         {
           titre: 'Les marques',
-          texte: [({ f }) => `${marquesTexte(f, 8)} sont les plus présentes, parmi ${fr(f.marques.length)} marques. Chacune garde sa grille de tailles, reprise telle quelle sur la fiche : rien n’est converti d’une marque à l’autre, et chaque [marque a sa page](/marques/).`],
+          texte: [({ f }) => `${marquesTexte(f, 8)} sont les plus présentes, parmi ${fr(f.marques.length)} marques. Les fiches affichent les tailles proposées sans les convertir d’une marque à l’autre : vérifiez la grille propre au modèle chez son fabricant. Chaque [marque a sa page](/marques/).`],
         },
         {
           titre: 'Commander, payer, être livré',
@@ -2540,7 +2540,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
   {
     slug: 'boutique-arts-martiaux',
     requete: 'boutique arts martiaux',
-    revision: '2026-10-22',
+    revision: '2026-10-24',
     h1: 'Boutique arts martiaux',
     eyebrow: 'BOUTIQUE ARTS MARTIAUX · KIMONOS, CEINTURES, PROTECTIONS',
     titre: ({ f }) => `Boutique arts martiaux : kimonos, ceintures, ${fr(f.n)} modèles`,
@@ -2668,7 +2668,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
         { question: 'Quelles protections pour le karaté ?', answer: 'Un protège-dents, des protège-tibias fins et des protège-pieds, une coquille pour les hommes ; le casque et le plastron selon la fédération et l’âge. Le club donne la liste.' },
         { question: 'Y a-t-il des kimonos pour les enfants ?', answer: `Oui : ${fr(kids.length)} modèles, dès ${desDe(kids)}, du kimono pour bébé aux doboks en centimètres. On achète à la taille d’aujourd’hui : un kimono trop grand gêne la prise.` },
         { question: 'Comment laver un kimono ?', answer: 'À l’eau froide, puis séchage sur un cintre, jamais au sèche-linge, surtout pour le coton. Le ripstop supporte mieux la machine.' },
-        { question: 'Quelles marques trouve-t-on ?', answer: `${marquesTexte(f, 6)}. Chaque marque a sa grille, reprise sur la fiche.` },
+        { question: 'Quelles marques trouve-t-on ?', answer: `${marquesTexte(f, 6)}. Les tailles proposées sont affichées sur la fiche ; consultez la grille du modèle chez le fabricant avant de choisir.` },
         ...(kk && pd ? [{ question: 'Combien coûte un premier équipement d’arts martiaux ?', answer: `Au premier prix du rayon, un kimono de karaté et un protège-dents reviennent à ${money(kk.price + pd.price)} ; un gi de JJB avec sa ceinture, à ${money((prix(kimonoJJB)?.price || 0) + (prix(ceintureGrade)?.price || 0))}.` }] : []),
       ];
     },
@@ -2824,7 +2824,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
   {
     slug: 'equipement-boxe-anglaise',
     requete: 'équipement boxe anglaise',
-    revision: '2026-10-23',
+    revision: '2026-10-24',
     h1: 'Équipement de boxe anglaise',
     eyebrow: 'ÉQUIPEMENT BOXE ANGLAISE · LES POINGS SEULS',
     titre: ({ f }) => `Équipement boxe anglaise : ${fr(f.n)} modèles, dès ${money(f.min)}`,
@@ -2838,7 +2838,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
         {
           titre: 'Les mains : bandes, puis gants',
           texte: [
-            'Les bandes passent en premier : elles tiennent le poignet dans l’axe, serrent les métacarpes et boivent la sueur avant qu’elle n’atteigne la mousse ; 4 ou 4,50 m pour un adulte, 2,50 m pour une main d’enfant. Les gants viennent ensuite, au poids de la séance : dix onces pour le sac, douze pour la technique, quatorze à seize dès qu’un partenaire est en face.',
+            'Choisissez les bandes selon la main, la pose enseignée et les consignes du club. Pour les gants, faites confirmer une référence et un poids adaptés aux exercices prévus, puis vérifiez l’ajustement du modèle : les onces seules ne prouvent pas sa compatibilité.',
             ({ items }) => {
               const b = items.filter((p) => bandes(p) && p.price > 0);
               const g = items.filter((p) => gantBoxe(p) && p.price > 0);
@@ -2849,7 +2849,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
         {
           titre: 'Les dents et la tête',
           texte: [
-            'Le protège-dents se porte dès le premier exercice à deux : simple pour la plupart, double quand le contact appuie, à mouler dans l’eau chaude, chez soi, en quelques minutes. Le casque vient quand le sparring commence, selon ce que la salle impose : ouvert pour voir, à barre ou intégral pour couvrir le nez.',
+            'La salle précise les protections demandées pour chaque exercice. Pour le protège-dents, vérifiez la taille et la couverture de la référence, puis sa propre méthode d’ajustement ; pour le casque, comparez la couverture annoncée et le réglage avec l’encadrant.',
             ({ items }) => {
               const pd = items.filter((p) => protegeDents(p) && p.price > 0);
               const c = items.filter((p) => casque(p) && p.price > 0);
@@ -2922,8 +2922,8 @@ export const GUIDES_RAYONS: GuideRayon[] = [
       note: 'Le premier prix du rayon qui remplit le rôle, en taille adulte ; une pièce déjà citée laisse sa place.',
       regles: [
         { usage: 'Bander les mains', filtre: (p) => bandes(p) && longueur(p) === 4.5, critere: ({ i, n }) => `${rang(i, 'f')} parmi ${fr(n)} bandes de 4,50 m, celles d’une main adulte` },
-        { usage: 'Premiers gants, technique', filtre: (p) => gantBoxe(p) && adulte(p) && ouncesOf(p).includes(12) && velcro(p), critere: ({ i, n }) => `${rang(i)} parmi ${fr(n)} gants de 12 oz à velcro` },
-        { usage: 'Sparring, la plupart des adultes', filtre: (p) => gantBoxe(p) && adulte(p) && ouncesOf(p).includes(16), critere: ({ i, n }) => `${rang(i)} parmi ${fr(n)} paires de 16 oz, le poids du sparring` },
+        { usage: 'Gants proposés en 12 oz', filtre: (p) => gantBoxe(p) && adulte(p) && ouncesOf(p).includes(12) && velcro(p), critere: ({ i, n }) => `${rang(i)} parmi ${fr(n)} gants de 12 oz à velcro` },
+        { usage: 'Gants proposés en 16 oz', filtre: (p) => gantBoxe(p) && adulte(p) && ouncesOf(p).includes(16), critere: ({ i, n }) => `${rang(i)} parmi ${fr(n)} paires de 16 oz, usage à confirmer avec l’encadrant` },
         { usage: 'Protéger les dents', filtre: (p) => protegeDents(p) && adulte(p) && !propose(p, /junior|enfant/i), critere: ({ i, n }) => `${rang(i)} parmi ${fr(n)} protège-dents en taille adulte` },
         { usage: 'Le casque du sparring', filtre: (p) => casque(p) && adulte(p), critere: ({ i, n }) => `${rang(i)} parmi ${fr(n)} casques, à régler au tour de tête` },
         { usage: 'Le bas-ventre', filtre: (p) => coquille(p), critere: ({ i, n }) => `${rang(i, 'f')} parmi ${fr(n)} coquilles et supports` },
@@ -2960,16 +2960,16 @@ export const GUIDES_RAYONS: GuideRayon[] = [
       const complet = pieces.every(Boolean) ? pieces.reduce((s, p) => s + p!.price, 0) : null;
       const debut = pieces.slice(0, 3).every(Boolean) ? pieces.slice(0, 3).reduce((s, p) => s + p!.price, 0) : null;
       return [
-        { question: 'Quel équipement de boxe anglaise pour débuter ?', answer: 'Quatre pièces : des bandes adaptées à votre main, une paire de gants de 12 oz fermée au velcro, un protège-dents à mouler et une corde. Casque, coquille et chaussures viennent quand le club les demande.' },
-        { question: 'Quel poids de gants pour la boxe anglaise ?', answer: 'Dix onces au sac, douze en technique, quatorze à seize dès qu’on travaille à deux. En compétition amateur, 10 oz jusqu’aux mi-moyens et 12 oz au-delà pour les seniors et juniors hommes, 10 oz ailleurs : des gants fournis par l’organisation, pas les vôtres.' },
-        { question: 'Faut-il des chaussures de boxe ?', answer: 'Pas le premier mois : une paire de sport propre, réservée à la salle, suffit. Les montantes tiennent la cheville dans les pivots et s’imposent avec le sparring et la compétition ; le code sportif amateur demande des chaussures de sport et des chaussettes qui ne cachent pas les genoux.' },
+        { question: 'Quel équipement de boxe anglaise pour débuter ?', answer: 'Demandez au club les pièces nécessaires au premier cours et le matériel prêté. Comparez les gants, bandes et protections selon leurs tailles et usages annoncés ; le casque, la tenue et les chaussures suivent les exigences de la séance.' },
+        { question: 'Quel poids de gants pour la boxe anglaise ?', answer: 'À l’entraînement, faites valider le modèle et le poids par votre encadrant. En compétition amateur, le code applicable précise les gants fournis par l’organisation selon la catégorie et le format ; les exigences de la règle 11 sont détaillées dans le chapitre réglementaire ci-dessus.' },
+        { question: 'Faut-il des chaussures de boxe ?', answer: 'Demandez les chaussures acceptées par votre salle et vérifiez l’ajustement du modèle. Le code sportif amateur cité dans le guide demande des chaussures de sport et des chaussettes qui ne cachent pas les genoux ; il ne suffit pas de choisir une tige montante pour valider une tenue.' },
         { question: 'Faut-il un casque en boxe anglaise ?', answer: 'À l’entraînement, la salle décide, souvent dès le sparring. En compétition amateur, il l’est pour toutes les catégories sauf les seniors hommes en trois reprises de trois minutes, et il se porte sans pommette ni mentonnière.' },
-        { question: 'Quelle longueur de bandes ?', answer: '4 ou 4,50 m pour un adulte, 2,50 m pour un enfant. La compétition amateur admet de 2,50 m à 4,50 m, 5,7 cm de large au plus, posées à plat et sans épingle.' },
+        { question: 'Quelle longueur de bandes ?', answer: 'Choisissez selon votre main et la pose demandée par l’encadrant. Le code de compétition amateur cité admet de 2,50 m à 4,50 m, 5,7 cm de large au plus, posées à plat et sans épingle : ces limites réglementaires ne constituent pas une grille universelle par âge.' },
         { question: 'Quelle tenue pour un combat amateur ?', answer: 'Short au-dessus du genou, débardeur rentré, chaussures de sport, chaussettes sous le genou, protège-dents d’une couleur autre que rouge, bandes réglementaires, coquille pour les hommes ; gants et casque validés par la fédération, aux couleurs du coin. Une tenue incomplète entraîne la disqualification.' },
         { question: 'Et pour une femme ?', answer: 'Le même matériel, avec une coupe à sa morphologie pour la coquille et, si elle le souhaite, un protège-poitrine : en compétition amateur, les deux sont conseillés sans être obligatoires, et la jupe-short peut remplacer le short.' },
-        { question: 'Quel sac de frappe pour s’entraîner chez soi ?', answer: 'Un sac suspendu qui pèse autour de la moitié de votre poids, si une poutre ou une potence peut le porter ; sinon un sac sur pied, dont le socle se leste d’eau ou de sable. Le guide pour le fixer compare les supports.' },
+        { question: 'Quel sac de frappe pour s’entraîner chez soi ?', answer: 'Vérifiez le poids rempli, la fixation et les charges admises par le support. Pour une base sur pied, suivez les instructions de remplissage du fabricant. Le guide pour fixer un sac compare les installations ; le poids du pratiquant seul ne valide pas le modèle.' },
         ...(complet !== null && debut !== null ? [{ question: 'Combien coûte l’équipement complet ?', answer: `Au premier prix du rayon, ${money(debut)} pour les trois pièces du premier cours (bandes, gants, protège-dents) et ${money(complet)} avec le casque, la coquille et les chaussures. Prix de vente TTC, hors livraison.` }] : []),
-        { question: 'Quelles marques pour la boxe anglaise ?', answer: `${marquesTexte(f, 5)}, parmi ${fr(f.marques.length)} marques ; la grille de chaque fabricant est reprise sur sa fiche.` },
+        { question: 'Quelles marques pour la boxe anglaise ?', answer: `${marquesTexte(f, 5)}, parmi ${fr(f.marques.length)} marques. Les tailles proposées figurent sur la fiche ; vérifiez leur correspondance dans la grille du modèle chez le fabricant.` },
       ];
     },
     liens: [

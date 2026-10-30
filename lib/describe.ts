@@ -9,7 +9,9 @@ import { guides } from './editorial';
 import { categoryFor, estLourd, livraison, money, shop, tailleUnique, type Product } from './catalog';
 import { productObject } from './seo';
 import { dansLeRayon, ENFANT } from './rayons';
-import { ouncesOf } from './facets';
+
+/** Révision du contenu des fiches : retrait des niveaux et usages déduits sans preuve du modèle. */
+export const PRODUCT_EVIDENCE_REVISION = '2026-10-24';
 
 const pick = <T>(id: string, list: T[], salt = 0): T => {
   let h = salt;
@@ -19,15 +21,10 @@ const pick = <T>(id: string, list: T[], salt = 0): T => {
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const badBrand = (b: string) => !b || /pr[ée]ciser|^Sélection /i.test(b);
 
-/** Niveau de pratique conseillé, déduit du modèle et de la famille. */
-export function practiceLevel(p: Product): string {
-  const t = (p.name + ' ' + (p.use || '')).toLowerCase();
-  if (p.audience === 'enfant' || /\b(enfant|junior|kids?)\b/.test(t)) return 'Enfant et débutant';
-  if (/compétition|competition|pro sparring|professional|élite|elite/.test(t)) return 'Confirmé et compétition';
-  if (/sparring|à lacets/.test(t)) return 'Pratique régulière, sparring';
-  if (/kit|débutant|initiation|premier/.test(t)) return 'Débutant';
-  if (['sacs-de-sport', 'accessoires-boxe', 'textile-boxe'].includes(p.category)) return 'Tous niveaux';
-  return 'Débutant à confirmé';
+/** Un niveau explicitement renseigné, jamais une déduction depuis un nom de gamme ou l'âge. */
+export function practiceLevel(p: Product): string | null {
+  const declarations = [p.specs?.['Niveau conseillé'], p.specs?.['Niveau de pratique'], p.specs?.Niveau];
+  return declarations.map((level) => level?.trim()).find(Boolean) || null;
 }
 
 /** Disciplines lisibles, depuis les données ou la famille. */
@@ -321,21 +318,11 @@ export function longDescription(p: Product): string {
     );
   return parts.join(' ');
 }
-/* Ce que chaque poids de gant fait, pour un adulte (guide « taille et poids des gants de boxe »). */
-const USAGE_OZ: [number, string][] = [
-  [8, 'la compétition'],
-  [10, 'le sac'],
-  [12, 'la technique'],
-  [14, 'le travail avec partenaire'],
-  [16, 'le travail avec partenaire'],
-  [18, 'le sparring des gabarits lourds'],
-  [20, 'le sparring des gabarits lourds'],
-];
 /**
  * La place du modèle dans sa famille, chiffrée sur le catalogue du jour : son rang de prix parmi les
  * modèles comparables (même famille, même public, accessoires du rayon exclus), le prix médian, sa
- * place dans la gamme de sa marque, ses autres coloris au catalogue et, pour un gant, ce que ses
- * poids permettent. Aucun avis, aucune vente.
+ * place dans la gamme de sa marque et ses autres coloris au catalogue. Les onces présentes sur la
+ * fiche ne suffisent pas à établir un usage ou une homologation. Aucun avis, aucune vente.
  */
 export function placeDansLaFamille(p: Product, all: Product[]): string[] {
   const family = categoryFor(p.category);
@@ -394,18 +381,6 @@ export function placeDansLaFamille(p: Product, all: Product[]): string[] {
       ], 7),
     );
   }
-  if (p.category === 'gants-de-boxe' && !enfant(p)) {
-    const oz = ouncesOf(p);
-    const usages: string[] = [];
-    for (const [poids, usage] of USAGE_OZ) {
-      if (!oz.includes(poids)) continue;
-      const deja = usages.findIndex((u) => u.startsWith(usage));
-      if (deja >= 0) usages[deja] = usages[deja].replace(/ oz\)$/, ` et ${poids} oz)`);
-      else usages.push(`${usage} (${poids} oz)`);
-    }
-    if (usages.length >= 2) out.push(`${G.pl ? 'Leurs' : 'Ses'} poids couvrent ${listeFr(usages)}.`);
-    else if (usages.length === 1) out.push(`${G.pl ? 'Leur' : 'Son'} poids sert surtout pour ${usages[0]}.`);
-  }
   return out;
 }
 const cherAccorde = (G: Genre) => (G.f ? 'chère' : 'cher') + (G.pl ? 's' : '');
@@ -446,7 +421,7 @@ export function productFaq(p: Product, all: Product[] = []): { question: string;
   const { G, v, acc, ce, le, il, de } = reprises(p);
   const guideTitle = family?.guide === 'guide-des-tailles' || !family?.guide ? 'Guide des tailles' : guides.find((x) => x.slug === family.guide)?.title || 'Guide des tailles';
   const sizes = taillesDe(p);
-  const level = practiceLevel(p).charAt(0).toLowerCase() + practiceLevel(p).slice(1);
+  const level = practiceLevel(p);
   const heavy = estLourd(p);
   const ecart = ecartDePrix(p);
   const autres = autresColoris(p, all);
@@ -465,8 +440,10 @@ export function productFaq(p: Product, all: Product[] = []): { question: string;
   return [
     ...(sizes.length || sePorte ? [{ question: pick(p.id, [`Quelle taille choisir pour ${le} ?`, `Comment choisir la taille ${de(le)} ?`, `${cap(ce)} : quelles tailles ?`], 11), answer: size }] : []),
     {
-      question: pick(p.id, [`Pour quelle pratique et quel niveau ?`, `À qui ${v('s’adresse', 's’adressent')} ${ce} ?`, `Pour quel niveau ${v('est', 'sont')} ${acc('pensé')} ${ce} ?`], 12),
-      answer: `${cap(le)} ${v('vise', 'visent')} ${pratiques(p)} ; niveau conseillé : ${level}${p.audience === 'enfant' ? ', en tailles enfant' : ''}.`,
+      question: pick(p.id, level
+        ? [`Pour quelle pratique et quel niveau ?`, `À qui ${v('s’adresse', 's’adressent')} ${ce} ?`, `Pour quel niveau ${v('est', 'sont')} ${acc('pensé')} ${ce} ?`]
+        : ['Pour quelle pratique ?', `À quelle pratique ${v('est', 'sont')} ${acc('destiné')} ${ce} ?`, `Quelles disciplines pour ${ce} ?`], 12),
+      answer: `${cap(le)} ${v('vise', 'visent')} ${pratiques(p)}${level ? ` ; niveau indiqué sur la fiche : ${level}` : ''}${p.audience === 'enfant' ? ' ; modèle enfant' : ''}.`,
     },
     {
       question: pick(p.id, [`Combien ${v('coûte', 'coûtent')} ${le}, et sous quel délai ?`, `Quel prix, et quand ${pron(v('part', 'partent'))} ?`], 13),

@@ -17,6 +17,8 @@ import type { Subfamily } from './subfamilies';
 import { PAGE_SIZE } from './pagination';
 import { photoSrc } from './vignette';
 import { noteStructuree, type Moyenne } from './notes';
+import { productVariantPath } from './merchant-products';
+import { BUYING_BRIEF_REVISION, buyingDecision } from './buying-brief';
 
 /** Date de la dernière révision éditoriale, publiée dans les fichiers agents et les pages. */
 export const EDITORIAL_DATE = '2026-10-13';
@@ -278,7 +280,7 @@ export function organizationNode() {
     legalName: shop.entity,
     url: shop.origin,
     logo: { '@type': 'ImageObject', '@id': ID('logo'), url: abs('/icons/icon-512.png'), width: 512, height: 512 },
-    image: abs('/og/home.png'),
+    image: abs('/vignette/x/home.png'),
     description: 'Boutique en ligne de matériel de boxe, de MMA et de sports de combat : gants, bandes, protections, textile, sacs de frappe, chaussures. Livraison dans toute la France.',
     email: shop.email,
     telephone: shop.phone,
@@ -354,7 +356,7 @@ export function webPageNode(o: { path: string; name: string; description: string
 /** Le délai d’expédition publié (lib/catalog.ts, « 7 jours ouvrés »), lu en nombre pour les données structurées : une seule source. */
 const EXPEDITION_JOURS_OUVRES = Number.parseInt(shop.delais.expedition, 10);
 
-function offerOf(p: Product, cents = p.price) {
+function offerOf(p: Product, cents = p.price, size?: string) {
   const lourd = estLourd(p);
   const zone = { '@type': 'DefinedRegion', addressCountry: 'FR' };
   // Google lit le délai de préparation en jours ouvrés (handlingTime). Le transit n’est pas publié : il n’est pas déclaré.
@@ -368,7 +370,7 @@ function offerOf(p: Product, cents = p.price) {
   });
   return {
     '@type': 'Offer',
-    url: urlOf('/produits/' + p.slug + '/'),
+    url: urlOf(productVariantPath(p, size)),
     price: (cents / 100).toFixed(2),
     priceCurrency: 'EUR',
     availability: 'https://schema.org/' + shop.disponibiliteOffre,
@@ -423,15 +425,16 @@ function productCore(p: Product) {
  * Les tailles d’une fiche publiées en variantes (documentation Google « Variantes de produits ») :
  * seulement quand toutes les tailles ont le prix affiché sur la page. Chaque variante porte alors son
  * offre complète (prix, devise, disponibilité, URL, livraison, retours), son image et son @id.
- * Une fiche dont les tailles changent de prix affiche « Dès … » : elle reste un Product unique, à ce
- * prix-là, avec ses tailles en liste, tant qu’aucune adresse ne présélectionne une taille.
+ * Une fiche dont les tailles changent de prix affiche « Dès … » : elle garde son Product unique
+ * tant que ses variantes n'ont pas été validées pour le flux. Les tailles publiées ont une adresse
+ * qui les présélectionne ; la fiche et sa canonique organique gardent leur adresse sans paramètre.
  */
 export function variantesPubliables(p: Product) {
   return p.sizes.length > 1 && p.sizes.every((s) => variantPrice(p, s) === p.price);
 }
 
 /** Fiche produit : WebPage (ItemPage), Product (ou ProductGroup des tailles), modèles proches, fil d’Ariane. */
-export function productGraph(p: Product, related: Product[], opts: { description?: string; faq?: SeoFaq[]; note?: Moyenne | null } = {}) {
+export function productGraph(p: Product, related: Product[], opts: { description?: string; faq?: SeoFaq[]; note?: Moyenne | null; revision?: string } = {}) {
   const path = '/produits/' + p.slug + '/';
   const family = categoryFor(p.category);
   const core = productCore(p);
@@ -462,10 +465,10 @@ export function productGraph(p: Product, related: Product[], opts: { description
         size: s.split(',')[0],
         sku: sku(s),
         image: core.image,
-        url: urlOf(path),
+        url: urlOf(productVariantPath(p, s)),
         ...(core.brand ? { brand: core.brand } : {}),
         ...(core.color ? { color: core.color } : {}),
-        offers: offerOf(p, variantPrice(p, s)),
+        offers: offerOf(p, variantPrice(p, s), s),
       })),
     };
   }
@@ -474,7 +477,7 @@ export function productGraph(p: Product, related: Product[], opts: { description
   const aggregateRating = noteStructuree(opts.note);
   if (aggregateRating) product = { ...product, aggregateRating };
   return graph([
-    webPageNode({ path, name: p.name, description: p.short, type: 'ItemPage', image: photoSrc(p.slug, p.images[0], 1200), dateModified: [EDITORIAL_DATE, CATALOGUE_REVISION, p.updatedAt || p.dateAdded || EDITORIAL_DATE].sort().at(-1)!.slice(0, 10), about: family ? (CATEGORY_ENTITY[family.slug] || []).map(thing) : [], keywords: productKeywords(p), mainEntity: product['@id'] }),
+    webPageNode({ path, name: p.name, description: p.short, type: 'ItemPage', image: photoSrc(p.slug, p.images[0], 1200), dateModified: [EDITORIAL_DATE, CATALOGUE_REVISION, opts.revision || '', p.updatedAt || p.dateAdded || EDITORIAL_DATE].sort().at(-1)!.slice(0, 10), about: family ? (CATEGORY_ENTITY[family.slug] || []).map(thing) : [], keywords: productKeywords(p), mainEntity: product['@id'] }),
     product,
     ...(opts.faq?.length ? [faqNode(path, opts.faq)] : []),
   ]);
@@ -483,6 +486,7 @@ export function productGraph(p: Product, related: Product[], opts: { description
 /** Page famille : CollectionPage, ItemList paginée, fil d’Ariane. */
 export function collectionGraph(o: { path: string; name: string; description: string; items: Product[]; total: number; page: number; perPage: number; category?: Category; faq?: SeoFaq[]; keywords?: string[]; about?: unknown[]; requete?: string; revision?: string }) {
   const pagePath = o.path + (o.page > 1 ? '?page=' + o.page : '');
+  const buyingRevision = o.page === 1 && o.total > 0 && buyingDecision(o.path.replace(/^\/|\/$/g, '')) ? BUYING_BRIEF_REVISION : '';
   const list = {
     '@type': 'ItemList',
     '@id': urlOf(pagePath) + '#list',
@@ -501,7 +505,7 @@ export function collectionGraph(o: { path: string; name: string; description: st
   // La requête exacte d’une page de tête (lib/guides-rayons.ts) passe en premier mot-clé.
   const keywords = [...new Set([...(o.requete ? [o.requete] : []), ...(o.keywords || (o.category ? categoryKeywords(o.category) : []))])];
   return graph([
-    webPageNode({ path: pagePath, name: o.name, description: o.description, type: 'CollectionPage', about, keywords, mainEntity: list['@id'], dateModified: [CATALOGUE_REVISION, o.revision || ''].sort().at(-1) }),
+    webPageNode({ path: pagePath, name: o.name, description: o.description, type: 'CollectionPage', about, keywords, mainEntity: list['@id'], dateModified: [CATALOGUE_REVISION, o.revision || '', buyingRevision].sort().at(-1) }),
     list,
     ...(o.page === 1 && o.faq?.length ? [faqNode(o.path, o.faq)] : []),
   ]);
@@ -576,10 +580,10 @@ export function homeGraph(products: Product[], faq: SeoFaq[] = []) {
 }
 
 /** Page de service (livraison, retours, questions fréquentes…) : WebPage + FAQPage quand la page porte des questions. */
-export function serviceGraph(slug: string, service: { title: string; description: string; faq?: SeoFaq[] }) {
+export function serviceGraph(slug: string, service: { title: string; description: string; faq?: SeoFaq[]; revision?: string }) {
   const path = '/' + slug + '/';
   return graph([
-    webPageNode({ path, name: service.title, description: service.description, image: '/vignette/x/' + slug + '.png', keywords: PAGE_KEYWORDS[slug] || pageKeywords(slug), ...(service.faq?.length ? { mainEntity: urlOf(path) + '#faq' } : {}) }),
+    webPageNode({ path, name: service.title, description: service.description, image: '/vignette/x/' + slug + '.png', keywords: PAGE_KEYWORDS[slug] || pageKeywords(slug), dateModified: service.revision, ...(service.faq?.length ? { mainEntity: urlOf(path) + '#faq' } : {}) }),
     ...(service.faq?.length ? [faqNode(path, service.faq)] : []),
   ]);
 }

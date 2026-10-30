@@ -1,0 +1,18 @@
+.manufacturer-sizing { margin: 38px 0; padding: 28px 0; border-top: 1px solid var(--ink); }
+.manufacturer-sizing h2 { margin: 0 0 16px; }
+.manufacturer-sizing h3 { margin: 0 0 10px; font-size: 24px; }
+.manufacturer-sizing p { margin: 0 0 14px; max-width: 70ch; line-height: 1.65; }
+.manufacturer-sizing a { display: inline-block; padding: 8px 0; text-decoration: underline; text-underline-offset: 4px; }
+.manufacturer-sizing-guides { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; margin: 24px 0 32px; }
+.manufacturer-sizing-guides > section, .manufacturer-sizing-model { scroll-margin-top: 100px; }
+.manufacturer-sizing-guides > section { border-top: 1px solid var(--line); padding-top: 18px; min-width: 0; }
+.manufacturer-sizing-table { max-width: 100%; overflow-x: auto; margin: 18px 0; }
+.manufacturer-sizing-table table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.manufacturer-sizing-table caption { text-align: left; padding: 0 0 12px; font-weight: 600; }
+.manufacturer-sizing-table th, .manufacturer-sizing-table td { text-align: left; border-bottom: 1px solid var(--line); padding: 12px 10px; }
+.manufacturer-sizing .manufacturer-sizing-note { color: var(--muted); font-size: 13px; }
+@media (max-width: 650px) {
+  .manufacturer-sizing-guides { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  .manufacturer-sizing-table th, .manufacturer-sizing-table td { padding: 10px 6px; }
+  .manufacturer-sizing a { min-height: 44px; }
+}

@@ -48,6 +48,8 @@ import { spaced } from '@/lib/spaced';
 import { photoSrc, thumbSrc } from '@/lib/vignette';
 import type { Moyenne } from '@/lib/notes';
 import { NoteResume, NotezCeModele } from './note-produit';
+import { initialProductSize } from '@/lib/merchant-products';
+import { manufacturerSizingFor } from '@/lib/manufacturer-sizing';
 
 /** Marque inconnue de l’import (« à préciser ») : la carte n’affiche rien plutôt qu’un libellé de chantier. */
 const badBrand = (b: string) => !b || /pr[ée]ciser|^Sélection /i.test(b);
@@ -832,10 +834,25 @@ export function SessionChooser({ items }: { items: Product[] }) {
   );
 }
 
+function subscribeProductLocation(callback: () => void) {
+  window.addEventListener('popstate', callback);
+  return () => window.removeEventListener('popstate', callback);
+}
+const productLocation = () => window.location.search;
+const emptyProductLocation = () => '';
+
 /** La fiche : galerie, achat et, depuis le 20/10/2026, les notes des visiteurs (`note` : la moyenne visible, rendue au serveur). */
 export function ProductDetails({ product: p, note = null }: { product: Product; note?: Moyenne | null }) {
+  const makerSizing = manufacturerSizingFor(p);
   const [image, setImage] = useState(0);
-  const [size, setSize] = useState(p.sizes.length === 1 ? p.sizes[0] : '');
+  // Le flux marchand mène à ?taille= : on sélectionne cette taille réelle sans rendre toutes les
+  // fiches dynamiques côté serveur. Une URL inconnue/ambiguë ne choisit jamais une taille arbitraire.
+  const search = useSyncExternalStore(subscribeProductLocation, productLocation, emptyProductLocation);
+  const [choice, setChoice] = useState<{ productId: string; search: string; size: string } | null>(null);
+  const size = choice?.productId === p.id && choice.search === search
+    ? choice.size
+    : initialProductSize(p, search);
+  const setSize = (value: string) => setChoice({ productId: p.id, search, size: p.sizes.includes(value) ? value : '' });
   const [open, setOpen] = useState(false);
   const [zoom, setZoom] = useState(false);
   const [stuck, setStuck] = useState(false);
@@ -1024,8 +1041,8 @@ export function ProductDetails({ product: p, note = null }: { product: Product; 
           <fieldset className="variant-picker">
             <legend>
               Taille{' '}
-              <a href="/guide-des-tailles/">
-                Comment choisir ? <ArrowUpRight size={13} />
+              <a href={makerSizing?.guidePath || '/guide-des-tailles/'}>
+                {makerSizing ? `Guide ${makerSizing.brand}` : 'Comment choisir ?'} <ArrowUpRight size={13} />
               </a>
             </legend>
             {p.sizes.length === 1 ? (

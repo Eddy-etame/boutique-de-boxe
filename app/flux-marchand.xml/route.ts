@@ -1,5 +1,6 @@
 import { readCatalog, cacheCatalogue, catalogueDeSecours } from '@/lib/database';
-import { categoryFor, estLourd, shop, variantPrice, type Product, fraisDeLivraison } from '@/lib/catalog';
+import { categoryFor, estLourd, shop, type Product, fraisDeLivraison } from '@/lib/catalog';
+import { merchantIdentifiers, merchantVariants } from '@/lib/merchant-products';
 import { SUBFAMILIES } from '@/lib/subfamilies';
 import { categorieGoogle } from '@/lib/categorie-google';
 import { urlOf } from '@/lib/seo';
@@ -8,7 +9,7 @@ import { photoSrc } from '@/lib/vignette';
 /**
  * Flux marchand (13/10/2026) : le catalogue au format RSS 2.0 de Google Merchant Center, que Bing
  * Merchant Center lit aussi. Un article par déclinaison (taille), regroupé par modèle ; prix TTC,
- * disponibilité « sur commande », livraison en France au tarif réel. Le matériel lourd (sur devis)
+ * disponibilité confirmée dans shop, livraison en France au tarif réel. Le matériel lourd (sur devis)
  * et les modèles sans photo ou sans prix n'y entrent pas. Soumis par le propriétaire dans son
  * compte Merchant : https://www.boutique-de-boxe.com/flux-marchand.xml
  */
@@ -19,7 +20,6 @@ const esc = (v: string) =>
 const texte = (s: string) => s.replace(/\s+/g, ' ').trim().slice(0, 4990);
 const prix = (cents: number) => (cents / 100).toFixed(2) + ' EUR';
 const abs = (src: string) => (/^https?:\/\//.test(src) ? src : urlOf(src));
-const badBrand = (b: string) => !b || /pr[ée]ciser/i.test(b);
 
 let memo: { at: number; body: string } | null = null;
 
@@ -37,15 +37,14 @@ function dateDisponibilite(from = new Date()): string {
   return d.toISOString().slice(0, 16) + '+0000';
 }
 
-function item(p: Product, taille: string | null, type: string, disponible: string) {
-  const id = taille ? `${p.id}-${taille.replace(/[^A-Za-z0-9]+/g, '-')}` : p.id;
-  // Le prix de la page d'arrivée : celui de la taille quand elles ont toutes le même, sinon le « Dès ».
-  const montant = taille ? variantPrice(p, taille) : p.price;
+function item(p: Product, variant: ReturnType<typeof merchantVariants>[number], type: string, disponible: string) {
+  const { id, size: taille, price: montant, path } = variant;
+  const identifiers = merchantIdentifiers(p);
   const lignes = [
     `<g:id>${esc(id)}</g:id>`,
     `<g:title>${esc(texte(taille ? `${p.name} — ${taille}` : p.name).slice(0, 150))}</g:title>`,
     `<g:description>${esc(texte(p.description || p.short))}</g:description>`,
-    `<g:link>${esc(urlOf('/produits/' + p.slug + '/'))}</g:link>`,
+    `<g:link>${esc(urlOf(path))}</g:link>`,
     // Photos sur le domaine : celles du fournisseur passent par /vignette/1200/… (WebP), jamais par son hôte.
     `<g:image_link>${esc(abs(photoSrc(p.slug, p.images[0], 1200)))}</g:image_link>`,
     ...p.images.slice(1, 6).map((i) => `<g:additional_image_link>${esc(abs(photoSrc(p.slug, i, 1200)))}</g:additional_image_link>`),
@@ -53,8 +52,10 @@ function item(p: Product, taille: string | null, type: string, disponible: strin
     ...(shop.disponibiliteOffre === 'InStock' ? [] : [`<g:availability_date>${disponible}</g:availability_date>`]),
     `<g:price>${prix(montant)}</g:price>`,
     `<g:condition>new</g:condition>`,
-    ...(badBrand(p.brand) ? [] : [`<g:brand>${esc(p.brand)}</g:brand>`]),
-    `<g:identifier_exists>no</g:identifier_exists>`,
+    ...(identifiers.brand ? [`<g:brand>${esc(identifiers.brand)}</g:brand>`] : []),
+    ...(identifiers.gtin ? [`<g:gtin>${esc(identifiers.gtin)}</g:gtin>`] : []),
+    ...(identifiers.mpn ? [`<g:mpn>${esc(identifiers.mpn)}</g:mpn>`] : []),
+    ...(identifiers.gtin || identifiers.mpn ? ['<g:identifier_exists>yes</g:identifier_exists>'] : []),
     `<g:product_type>${esc(type)}</g:product_type>`,
     // La catégorie de la taxonomie Google (lib/categorie-google.ts) : Merchant Center classe mieux et refuse moins.
     `<g:google_product_category>${categorieGoogle(p)}</g:google_product_category>`,
@@ -80,11 +81,7 @@ export async function GET() {
     const famille = categoryFor(p.category)?.name || p.category;
     const sous = SUBFAMILIES.find((s) => !s.kind && s.match(p))?.name;
     const type = sous ? `${famille} > ${sous}` : famille;
-    const tailles = p.sizes.filter((s) => s.length <= 40 && s.toLowerCase() !== p.name.toLowerCase());
-    // Tailles en articles distincts seulement quand elles ont toutes le prix affiché par la page.
-    const memePrix = tailles.every((t) => variantPrice(p, t) === p.price);
-    if (tailles.length > 1 && memePrix) for (const t of tailles) items.push(item(p, t, type, disponible));
-    else items.push(item(p, null, type, disponible));
+    for (const variant of merchantVariants(p)) items.push(item(p, variant, type, disponible));
   }
   const body =
     `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0"><channel>` +

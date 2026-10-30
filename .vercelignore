@@ -1,0 +1,14 @@
+.git
+.next
+.vercel
+node_modules
+.env
+.env.*
+outputs
+work
+.research
+.postgres-local
+coverage
+docs
+*.tsbuildinfo
+__pycache__

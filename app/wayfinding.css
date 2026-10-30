@@ -424,6 +424,8 @@ main:target {
     line-height: 1.5;
     padding: 7px 5%;
     gap: 8px;
+    display: grid;
+    grid-template-columns: 6px minmax(0, 1fr) max-content;
   }
   .launch-strip a {
     font-size: 11px;
@@ -432,6 +434,7 @@ main:target {
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    margin-left: 0;
   }
   .site-header .brand,
   .site-header .cart-link {

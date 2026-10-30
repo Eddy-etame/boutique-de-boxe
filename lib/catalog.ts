@@ -313,8 +313,18 @@ export const getCategoryProducts = (c: Category, all: Product[]) =>
  * déclinaisons), une famille de 183 gants pesait 525 Ko de HTML. Le contrôle de vitesse
  * (scripts/check-speed.mjs) tient ce poids sous budget.
  */
+/** Les libellés explicites des imports désignent la même caractéristique, sans inférer la matière du nom. */
+export function materialSpec(p: Pick<Product, 'specs'>): string | null {
+  for (const key of ['Matières', 'Matière', 'Matière extérieure']) {
+    const value = p.specs?.[key];
+    if (typeof value === 'string' && value.trim()) return value.trim();
+  }
+  return null;
+}
+
 export function listItem(p: Product): Product {
   const other = p.variants?.find((v) => v.price !== p.price);
+  const material = materialSpec(p);
   return {
     id: p.id,
     slug: p.slug,
@@ -326,7 +336,7 @@ export function listItem(p: Product): Product {
     description: '',
     sizes: p.sizes,
     // Deux caractéristiques seulement, pour les sous-filtres (matière, fermeture) ; le reste attend la fiche.
-    specs: Object.fromEntries(Object.entries(p.specs || {}).filter(([k]) => k === 'Matières' || k === 'Fermeture')),
+    specs: { ...(material ? { 'Matières': material } : {}), ...(p.specs?.Fermeture ? { Fermeture: p.specs.Fermeture } : {}) },
     colors: p.colors,
     images: p.images.slice(0, 1),
     cut: p.cut,

@@ -14,8 +14,8 @@ import { RAYONS_TYPE, GUIDES, nomDeRayon } from './liens-du-site';
 import {
   SOURCE, FRANCE, VILLES, REGIONS, CARREFOUR, villePath, dateSource, regionTotal, regionDisciplines,
   CLUBS_BOXING_CENTER, NOBLE_ART, A_COTE, BALMA, RAYON, a, de, dansDepartement, siteDe, fine, estBoxingCenter,
-  villeTitre, villeDescription, villeDensite, villeChapeau, villeSections, villeFaq, villeKit, parArrondissement, tour,
-  regionTitre, regionDescription, regionChapeau, regionFaq, livraison, livraisonPartout,
+  villeTitre, villeDescription, villeDensite, villeChapeau, villeAchatChapeau, villeSections, villeFaq, villeKit, parArrondissement, tour,
+  regionTitre, regionDescription, regionChapeau, regionAchatChapeau, regionFaq, livraison, livraisonPartout, VILLES_COMMERCE_REVISION,
   SPORTS_BOUTIQUE, CARREFOUR_REVISION, carrefourTitre, carrefourDescription, carrefourChapeau, carrefourFaq, carrefourMarques, franceEnChiffres, type SportBoutique,
   type Ville, type Region, type Lieu, type Groupe,
 } from '@/lib/villes';
@@ -84,7 +84,7 @@ const disciplinesDe = (l: Lieu) => l.disciplines.join(', ');
 const VIDE = <span className="salle-vide">—</span>;
 
 /** Un nombre stable par ville : chaque page montre d'autres modèles que sa voisine. */
-const graine = (s: string) => [...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
+const graine = (s: string) => Array.from(s).reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
 
 /* Ce qu'un premier sac évite, et ce qu'il préfère quand le rayon en a, selon la boxe :
    pas de short thaï ni de chaussure de lutte pour la boxe anglaise ; la chaussure de savate pour la savate. */
@@ -246,14 +246,56 @@ const RAYON_DE: Record<string, [string, string]> = {
   'Full contact': ['/gants-de-boxe/', 'Les gants de boxe'],
 };
 
+/** Conditions de la commande, lues dans la même source que le panier ; pas une promesse d'arrivée. */
+function Commande({ lieu, scope }: { lieu: string; scope: 'city' | 'region' }) {
+  return (
+    <section className="observatory-lead" id="commander" data-city-commerce={scope === 'city' || undefined} data-region-commerce={scope === 'region' || undefined} aria-label={`Commander du matériel, livraison ${lieu}`}>
+      <Chiffres
+        items={[
+          [frais.relais, `point relais, offert dès ${frais.franco}`],
+          [frais.domicile, 'livraison à domicile'],
+          [shop.delais.expedition, shop.ventesOuvertes ? 'délai d’expédition annoncé' : 'délai d’expédition prévu à l’ouverture'],
+          ['14 jours', 'pour exercer la rétractation après réception'],
+        ]}
+      />
+      <p className="hub-prices-note">
+        {shop.ventesOuvertes
+          ? 'Commande en ligne, paiement par carte sur PayPlug. Le délai d’expédition ne comprend pas l’acheminement ; les frais des sacs de frappe et du matériel lourd se confirment sur devis.'
+          : 'Les tarifs sont prévus à l’ouverture des ventes ; aucun paiement avant cette ouverture. Les sacs de frappe et le matériel lourd se livrent sur devis.'}
+      </p>
+      <nav className="subfamily-links" aria-label={`Choix et conditions de livraison ${lieu}`}>
+        <a href="#equipement">Comparer les modèles ci-dessous</a>{' '}
+        <a href="/livraison/">Frais, zones et délais de livraison</a>{' '}
+        <a href="/retours/">Conditions de retour</a>{' '}
+        <a href="/contact/">Un conseil avant de choisir</a>
+      </nav>
+    </section>
+  );
+}
+
+const rangeeKit = (items: Product[]) => items.slice(0, items.length >= 4 ? items.length - (items.length % 4) : items.length - (items.length % 2));
+
+/** Le graphe décrit la sélection effectivement affichée, pas un produit ou un magasin local inventé. */
+function kitNode(path: string, lieu: string, compte: { frappe: number; parDiscipline: Record<string, number>; slug?: string }, all: Product[], seed: number) {
+  const k = villeKit(lieu, compte);
+  const items = rangeeKit(kitProducts(k.sources, all, seed, k.discipline));
+  return {
+    '@type': 'ItemList',
+    '@id': urlOf(path) + '#equipement',
+    name: k.h2,
+    numberOfItems: items.length,
+    itemListElement: items.map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: p.name, url: urlOf('/produits/' + p.slug + '/') })),
+  };
+}
+
 function Kit({ lieu, compte, all, seed }: { lieu: string; compte: { frappe: number; parDiscipline: Record<string, number>; slug?: string }; all: Product[]; seed: number }) {
   const k = villeKit(lieu, compte);
   const items = kitProducts(k.sources, all, seed, k.discipline);
   // jamais une carte seule sur sa rangée : quatre colonnes au bureau, deux au téléphone
-  const rangee = items.slice(0, items.length >= 4 ? items.length - (items.length % 4) : items.length - (items.length % 2));
+  const rangee = rangeeKit(items);
   const [href, texte] = RAYON_DE[k.discipline] || RAYON_DE['Boxe anglaise'];
   return (
-    <section className="ville-kit">
+    <section className="ville-kit" id="equipement">
       <header className="ville-kit-head">
         <h2>{k.h2}</h2>
         <div>
@@ -401,11 +443,11 @@ function adressePostale(adresse: string) {
   return { '@type': 'PostalAddress', streetAddress: rue, ...(cp ? { postalCode: cp, addressLocality: ville } : {}), addressCountry: 'FR' };
 }
 
-/** Date de révision des pages-villes : le recensement, ou le jour où leur texte est passé au présent (ventes ouvertes).
+/** Date de révision des pages-villes : recensement, ouverture ou vrai changement éditorial.
  *  La même date dans le plan du site (app/sitemap.ts) et dans le graphe de la page. */
-export const VILLES_DATE = shop.ventesOuvertes ? [SOURCE.maj, shop.ouverture.iso].sort().at(-1)! : SOURCE.maj;
+export const VILLES_DATE = [SOURCE.maj, ...(shop.ventesOuvertes ? [shop.ouverture.iso] : []), VILLES_COMMERCE_REVISION].sort().at(-1)!;
 /** Le carrefour est daté par sa dernière refonte quand elle est plus récente que le recensement. */
-export const CARREFOUR_DATE = [VILLES_DATE, CARREFOUR_REVISION].sort().at(-1)!;
+export const CARREFOUR_DATE = [SOURCE.maj, ...(shop.ventesOuvertes ? [shop.ouverture.iso] : []), CARREFOUR_REVISION].sort().at(-1)!;
 const sourceNode = () => ({ '@type': 'Dataset', name: SOURCE.nom, url: SOURCE.url, license: SOURCE.licenceUrl, creator: { '@type': 'GovernmentOrganization', name: 'Ministère des Sports' }, dateModified: SOURCE.maj });
 
 /* ── Page d'une ville ──────────────────────────────────────────────────── */
@@ -424,10 +466,11 @@ export function VillePage({ ville: v, all }: { ville: Ville; all: Product[] }) {
         dangerouslySetInnerHTML={{
           __html: graph([
             {
-              ...webPageNode({ path, name: titre, description: villeDescription(v), type: 'CollectionPage', image: '/vignette/x/boutique-de-boxe-' + v.slug + '.png', dateModified: VILLES_DATE, keywords: ['boutique de boxe ' + v.nom.toLowerCase(), 'salle de boxe ' + v.nom], mainEntity: urlOf(path) + '#lieux' }),
+              ...webPageNode({ path, name: titre, description: villeDescription(v), type: 'CollectionPage', image: '/vignette/x/boutique-de-boxe-' + v.slug + '.png', dateModified: VILLES_DATE, keywords: ['boutique de boxe ' + v.nom.toLowerCase(), 'salle de boxe ' + v.nom], mainEntity: urlOf(path) + '#equipement' }),
               spatialCoverage: { '@type': 'City', name: v.nom, containedInPlace: { '@type': 'AdministrativeArea', name: v.departement } },
               isBasedOn: sourceNode(),
             },
+            kitNode(path, a(v.nom), { frappe: v.frappe, parDiscipline: v.parDiscipline, slug: v.slug }, all, graine(v.slug)),
             itemListNode(path, nomListe, v.lieux),
             ...(toulouse ? [clubsNode(path)] : []),
             faqNode(path, faq),
@@ -440,10 +483,13 @@ export function VillePage({ ville: v, all }: { ville: Ville; all: Product[] }) {
           <h1>{`Boutique de boxe ${v.nom}.`}</h1>
         </div>
         <div>
-          <div className="label">{fine(villeDensite(v))}</div>
-          <p>{villeChapeau(v)}</p>
+          <div className="label">{shop.ventesOuvertes ? 'Commande en ligne · livraison en relais ou à domicile' : 'Le matériel à comparer avant l’ouverture des ventes'}</div>
+          <p>{villeAchatChapeau(v)}</p>
         </div>
       </section>
+
+      <Commande lieu={a(v.nom)} scope="city" />
+      <Kit lieu={a(v.nom)} compte={{ frappe: v.frappe, parDiscipline: v.parDiscipline, slug: v.slug }} all={all} seed={graine(v.slug)} />
 
       {toulouse && <ClubsBoxingCenter />}
       {toulouse && (
@@ -466,6 +512,8 @@ export function VillePage({ ville: v, all }: { ville: Ville; all: Product[] }) {
       )}
 
       <section className="observatory-lead" aria-label={`${v.nom} en chiffres`}>
+        <p className="hub-prices-note">{fine(villeDensite(v))}</p>
+        <p>{villeChapeau(v)}</p>
         <Chiffres
           items={[
             [fr(v.lieux.length), `lieux recensés ${a(v.nom)}`],
@@ -488,8 +536,6 @@ export function VillePage({ ville: v, all }: { ville: Ville; all: Product[] }) {
           <Lieux lieux={v.lieux} caption={nomListe} id="lieux" />
         </section>
       </div>
-
-      <Kit lieu={a(v.nom)} compte={{ frappe: v.frappe, parDiscipline: v.parDiscipline, slug: v.slug }} all={all} seed={graine(v.slug)} />
 
       <SeoBody sections={villeSections(v)} faq={faq} heading={[`Questions sur la boxe ${a(v.nom)}`, `La boxe ${a(v.nom)}, en questions`, `Ce qu’on nous demande sur ${v.nom}`][tour(v.slug + 'f', 3)]} />
       <Voisines v={v} />
@@ -546,10 +592,11 @@ export function RegionPage({ region: r, all }: { region: Region; all: Product[] 
         dangerouslySetInnerHTML={{
           __html: graph([
             {
-              ...webPageNode({ path, name: titre, description: regionDescription(r), type: 'CollectionPage', image: '/vignette/x/boutique-de-boxe-' + r.slug + '.png', dateModified: VILLES_DATE, keywords: ['boutique de boxe ' + r.nom.toLowerCase()], mainEntity: urlOf(path) + '#departements' }),
+              ...webPageNode({ path, name: titre, description: regionDescription(r), type: 'CollectionPage', image: '/vignette/x/boutique-de-boxe-' + r.slug + '.png', dateModified: VILLES_DATE, keywords: ['boutique de boxe ' + r.nom.toLowerCase()], mainEntity: urlOf(path) + '#equipement' }),
               spatialCoverage: { '@type': 'AdministrativeArea', name: r.nom },
               isBasedOn: sourceNode(),
             },
+            kitNode(path, 'en ' + r.nom, { frappe: t.frappe, parDiscipline: par }, all, graine(r.slug)),
             {
               '@type': 'ItemList',
               '@id': urlOf(path) + '#departements',
@@ -571,12 +618,16 @@ export function RegionPage({ region: r, all }: { region: Region; all: Product[] 
           <h1>{`Boutique de boxe ${r.nom}.`}</h1>
         </div>
         <div>
-          <div className="label">{`${fr(t.lieux)} lieux de boxe et d’arts martiaux, commune par commune.`}</div>
-          <p>{regionChapeau(r)}</p>
+          <div className="label">{shop.ventesOuvertes ? 'Commande en ligne · livraison en relais ou à domicile' : 'Le matériel à comparer avant l’ouverture des ventes'}</div>
+          <p>{regionAchatChapeau(r)}</p>
         </div>
       </section>
 
+      <Commande lieu={'en ' + r.nom} scope="region" />
+      <Kit lieu={'en ' + r.nom} compte={{ frappe: t.frappe, parDiscipline: par }} all={all} seed={graine(r.slug)} />
+
       <section className="observatory-lead" aria-label={`${r.nom} en chiffres`}>
+        <p>{regionChapeau(r)}</p>
         <Chiffres
           items={[
             [fr(t.lieux), 'lieux recensés hors Paris'],
@@ -611,8 +662,6 @@ export function RegionPage({ region: r, all }: { region: Region; all: Product[] 
           ))}
         </section>
       </div>
-
-      <Kit lieu={'en ' + r.nom} compte={{ frappe: t.frappe, parDiscipline: par }} all={all} seed={graine(r.slug)} />
 
       <SeoBody sections={[{ h2: `Livraison en ${r.nom}`, paragraphs: [livraison('toute l’' + r.nom)] }]} faq={faq} heading={`Questions sur la boxe en ${r.nom}`} />
       <section className="ville-ailleurs">

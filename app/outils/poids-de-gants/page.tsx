@@ -3,7 +3,7 @@ import { readCatalog } from '@/lib/database';
 import { listItem, shop } from '@/lib/catalog';
 import { GLOVE_WEIGHTS, ouncesOf } from '@/lib/facets';
 import { weeklySelection } from '@/lib/hub';
-import { parseNumber, parseUsage, recommendGloveWeight, USAGES } from '@/lib/glove-weight';
+import { parseNumber, parseUsage, recommendGloveWeight, USAGES, GLOVE_WEIGHT_FAQ, GLOVE_WEIGHT_REVISION } from '@/lib/glove-weight';
 import { graph, urlOf, webPageNode, faqNode } from '@/lib/seo';
 import { ogImage } from '@/lib/og';
 import { Breadcrumb, ArrowLink } from '@/components/shop-shell';
@@ -15,7 +15,7 @@ export const dynamic = 'force-dynamic';
 const PATH = '/outils/poids-de-gants/';
 const TITLE = 'Quel poids de gants de boxe choisir ? Calculateur en onces';
 const DESCRIPTION =
-  'Calculateur de poids de gants de boxe : la séance, votre poids, votre âge, et la réponse en onces (8 à 18 oz), avec les modèles à ce poids et leurs prix.';
+  'Calculateur de poids de gants de boxe : un repère indicatif en onces selon la séance, le poids et l’âge. Comparez les modèles et vérifiez les indications du fabricant.';
 type Props = { searchParams: Promise<Record<string, string | undefined>> };
 
 export const metadata: Metadata = {
@@ -28,13 +28,7 @@ export const metadata: Metadata = {
   twitter: { card: 'summary_large_image', title: TITLE, description: DESCRIPTION },
 };
 
-const FAQ: SeoFaq[] = [
-  { question: 'Quel poids de gants de boxe pour débuter ?', answer: '12 oz pour un adulte qui commence en cours collectif : assez de mousse pour le sac, assez léger pour la vitesse. 10 oz si vous ne travaillez qu’au sac. Pour toucher un partenaire, 14 ou 16 oz selon votre gabarit et les règles de la salle.' },
-  { question: '10 oz ou 12 oz ?', answer: '10 oz pour le sac et les pattes d’ours, 12 oz pour la technique et le cours collectif. En dessous de 55 kg, le guide donne 10 à 12 oz ; entre 55 et 75 kg, 12 à 14 oz.' },
-  { question: '14 oz ou 16 oz pour le sparring ?', answer: '16 oz pour la plupart des adultes, 14 oz pour les gabarits légers, 18 oz au-dessus de 90 kg. Beaucoup de salles imposent le 16 oz en sparring : demandez avant d’acheter.' },
-  { question: 'Quel poids de gants pour un enfant ?', answer: '4 oz de 5 à 7 ans, 6 oz de 7 à 10 ans, 8 oz de 10 à 13 ans, puis 10 oz pour les adolescents selon la corpulence. Un gant d’enfant se choisit à l’âge et à la main, jamais « pour grandir dedans ».' },
-  { question: 'Les onces sont-elles une taille de main ?', answer: 'Non. L’once est le poids du rembourrage. Deux paires de 14 oz peuvent avoir une coupe très différente : Fairtex et Twins compactes, Cleto Reyes allongée, Elion, Adidas et Everlast plus larges. Essayez avec vos bandes.' },
-];
+const FAQ: SeoFaq[] = GLOVE_WEIGHT_FAQ;
 
 export default async function GloveWeightPage({ searchParams }: Props) {
   const q = await searchParams;
@@ -69,7 +63,7 @@ export default async function GloveWeightPage({ searchParams }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: graph([
-            webPageNode({ path: PATH, name: TITLE, description: DESCRIPTION, image: '/vignette/x/outils/poids-de-gants.png', mainEntity: app['@id'], keywords: ['quel poids de gants de boxe', 'calculateur poids gants de boxe'] }),
+            webPageNode({ path: PATH, name: TITLE, description: DESCRIPTION, image: '/vignette/x/outils/poids-de-gants.png', mainEntity: app['@id'], dateModified: GLOVE_WEIGHT_REVISION, keywords: ['quel poids de gants de boxe', 'calculateur poids gants de boxe'] }),
             app,
             faqNode(PATH, FAQ),
           ]),
@@ -85,20 +79,20 @@ export default async function GloveWeightPage({ searchParams }: Props) {
           </h1>
         </div>
         <div>
-          <div className="label">Trois questions, une réponse en onces.</div>
+          <div className="label">Trois questions, un repère à vérifier.</div>
           <p>
-            Le calculateur de poids de gants de boxe applique les repères de notre guide : la séance d’abord, puis votre poids et votre âge.
-            Il répond en onces, de 4 à 18 oz, et montre les modèles à ce poids avec leur prix.
-            {advice && ` Aujourd’hui la réponse pour ${advice.who} : ${advice.ounces} oz.`}
+            Le calculateur de poids de gants de boxe utilise une grille indicative de la boutique pour explorer les modèles et leurs prix.
+            Ses seuils de poids et d’âge sont des hypothèses de comparaison, pas un taillage fabricant ni un règlement de compétition.
+            {advice && ` Repère affiché pour ${advice.who} : ${advice.ounces} oz, à faire valider.`}
           </p>
         </div>
       </section>
       <GloveWeightTool initial={initial} facts={facts} />
-      <section className="glove-table" aria-label="Les repères du guide">
-        <h2>Les repères, en un tableau.</h2>
+      <section className="glove-table" aria-label="Les hypothèses de comparaison de l’outil">
+        <h2>Les hypothèses de l’outil.</h2>
         <div className="hub-prices">
           <table>
-            <caption>Le poids selon la séance et le gabarit, d’après le guide « Quelle taille de gants de boxe choisir ? »</caption>
+            <caption>Repères internes de comparaison pour un profil adulte : le modèle et les consignes du club restent à vérifier</caption>
             <thead>
               <tr>
                 <th scope="col">Séance</th>
@@ -119,11 +113,11 @@ export default async function GloveWeightPage({ searchParams }: Props) {
               ))}
               <tr>
                 <th scope="row">Enfant</th>
-                <td colSpan={4}>4 oz de 5 à 7 ans · 6 oz de 7 à 10 ans · 8 oz de 10 à 13 ans · 10 oz pour les adolescents</td>
+                <td colSpan={4}>L’âge seul ne détermine pas le bon poids : faites valider le modèle et le poids par l’encadrant. Les repères enfant affichés par l’outil servent à explorer le catalogue.</td>
               </tr>
             </tbody>
           </table>
-          <p className="hub-prices-note">Des repères, pas des règles : la salle a le dernier mot pour le sparring. Le poids ne remplace ni les bandes ni la technique.</p>
+          <p className="hub-prices-note">Ces seuils sont propres à l’outil et n’ont pas valeur de validation fabricant. Un modèle proposé en 16 oz n’est pas automatiquement un gant de sparring ; pour un enfant, l’âge seul ne suffit pas à choisir une paire.</p>
         </div>
       </section>
       <SeoBody sections={[]} faq={FAQ} heading="Les questions sur le poids des gants" />
@@ -131,6 +125,8 @@ export default async function GloveWeightPage({ searchParams }: Props) {
         <div>
           <h2>Pour aller plus loin.</h2>
           <ArrowLink href="/guides/quelle-taille-gants-de-boxe/">Le guide complet des tailles de gants</ArrowLink>
+          <ArrowLink href="/guide-des-tailles/">Les repères des fabricants</ArrowLink>
+          <ArrowLink href="https://www.fairtex.com/pages/faq">Comment Fairtex distingue les usages des gants</ArrowLink>
           <ArrowLink href="/gants-de-boxe/">Tous les gants de boxe</ArrowLink>
           <ArrowLink href="/observatoire-des-prix/">L’observatoire des prix</ArrowLink>
         </div>

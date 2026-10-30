@@ -483,16 +483,16 @@ export const SUBFAMILIES: Subfamily[] = [
     name: 'Gants de boxe sparring',
     eyebrow: 'GANTS DE SPARRING · 14, 16 ET 18 OZ',
     title: 'Gants de boxe sparring 14, 16 et 18 oz',
-    description: 'Gants de boxe de sparring de 14, 16 et 18 oz, rembourrage épais pour le travail avec partenaire. Cleto Reyes, Fairtex, Twins, Elion, Adidas. Tailles réelles, prix TTC.',
+    description: 'Gants de boxe sparring : modèles à comparer, poids proposés, matières et fermetures. Faites valider la paire pour votre séance. Tailles réelles, prix TTC.',
     prioritaires: ['gants de boxe sparring', 'gants de sparring'],
     secondaires: ['gants de boxe 16 oz', 'gants de boxe 14 oz', 'gants de boxe 18 oz', 'gants de sparring cuir', 'gants Cleto Reyes sparring', 'gants Fairtex sparring', 'poids gants sparring'],
-    intro: 'Le sparring demande des gants plus lourds et plus rembourrés que l’entraînement au sac : 14 oz pour les poids légers, 16 oz pour la plupart des adultes, 18 oz pour les lourds. Ils protègent le partenaire autant que vous.',
+    intro: 'Cette sélection réunit les modèles nommés sparring et ceux proposés en 18 oz. Comparez la référence précise, puis faites valider la paire et le poids par votre encadrant : le nom du rayon et le nombre d’onces ne valent pas homologation.',
     sections: [
-      { h2: '14, 16 ou 18 oz', paragraphs: ['Le poids se choisit avec votre salle, selon votre gabarit et l’intensité du sparring. 16 oz est la norme dans la plupart des clubs. Les onces ne disent rien de la taille de la main : essayez avec les bandes.'] },
-      { h2: 'Rembourrage et fermeture', paragraphs: ['Un gant de sparring a un rembourrage plus épais et plus souple qu’un gant de sac. Lacets pour le sparring encadré, velcro large pour l’entraînement. Cleto Reyes, Fairtex, Twins et Elion sont les marques les plus présentes.'] },
+      { h2: '14, 16 ou 18 oz', paragraphs: ['Demandez le poids imposé pour votre séance et vérifiez que le modèle le propose. Le poids n’est pas une mesure de l’espace intérieur : contrôlez aussi l’ajustement avec les bandes que vous utiliserez.'] },
+      { h2: 'Rembourrage et fermeture', paragraphs: ['Vérifiez les caractéristiques et l’usage annoncés pour chaque référence. Une fermeture à lacets, du velcro ou une enveloppe en cuir ne suffisent pas à valider une paire pour le travail avec partenaire.'] },
     ],
     faq: [
-      { question: 'Peut-on faire du sparring avec des gants de 12 oz ?', answer: 'La plupart des salles l’interdisent : trop peu de rembourrage pour le partenaire. 14 oz minimum, 16 oz en règle générale.' },
+      { question: 'Peut-on faire du sparring avec des gants de 12 oz ?', answer: 'Faites confirmer le modèle et le poids autorisés par votre encadrant. Les règles varient avec la séance et le public ; le chiffre 12 oz ne permet pas à lui seul de conclure sur la coupe, le rembourrage ou l’usage.' },
     ],
     guide: 'choisir-gants-boxe',
     match: (p) => p.category === 'gants-de-boxe' && (/sparring/.test(n(p)) || p.sizes.some((s) => s.startsWith('18 oz'))),
@@ -548,16 +548,16 @@ export const SUBFAMILIES: Subfamily[] = [
     description: 'Gants de boxe pas cher pour adulte : toutes les paires du catalogue à 50 € et moins, Metal Boxe, Elion, Adidas, Venum, Champboxing. Poids, fermeture, prix TTC.',
     prioritaires: ['gants de boxe pas cher', 'gants de boxe pas chers'],
     secondaires: ['gants de boxe moins de 50 euros', 'gants de boxe débutant', 'gants de boxe entrée de gamme', 'premiers gants de boxe', 'gants de boxe synthétique', 'gants de boxe velcro'],
-    intro: 'Toutes les paires pour adulte que le catalogue propose à 50 € et moins. À ce prix, le gant est synthétique et se ferme au velcro : c’est ce qu’il faut pour apprendre au sac, aux pattes d’ours et en cours collectif.',
+    intro: 'Toutes les paires pour adulte que le catalogue propose à 50 € et moins. Comparez la matière, la fermeture et les poids annoncés sur chaque fiche, puis faites valider le modèle pour votre séance.',
     sections: [
-      { h2: 'Ce qu’on trouve à 50 € et moins', paragraphs: ['Une enveloppe synthétique, un rembourrage en mousse injectée, une fermeture velcro qu’on serre seul. Les poids vont le plus souvent de 10 à 14 oz, ceux du sac et de la technique. Les grandes marques d’entrée de gamme y sont, avec leurs propres grilles de tailles.'] },
+      { h2: 'Ce qu’on trouve à 50 € et moins', paragraphs: ['Cette sélection repose sur le prix de vente TTC et le public adulte, pas sur une promesse de performance. Les matières, les fermetures et les tailles proposées restent celles de chaque modèle ; utilisez les filtres pour comparer des caractéristiques identiques.'] },
       { h2: 'Trois contrôles avant de choisir une paire bon marché', paragraphs: ['Le rembourrage des jointures d’abord : il doit être épais et ferme, pas seulement visible. Le poignet ensuite : la sangle doit faire le tour complet et tenir la main droite quand on serre le poing. Les coutures enfin, surtout autour du pouce, là où un gant d’entrée de gamme s’use en premier.'] },
-      { h2: 'Quand payer davantage', paragraphs: ['Dès que le sparring devient régulier, ou à partir de trois séances par semaine. Un gant plus cher n’est pas plus protecteur par principe, mais son rembourrage se tasse moins vite et son enveloppe dure plus longtemps. Le guide « cuir ou synthétique » détaille l’écart.'] },
+      { h2: 'Quand payer davantage', paragraphs: ['Cherchez d’abord ce que le modèle supplémentaire apporte : construction, réglage, coupe et usage déclaré par le fabricant. Ni un prix supérieur ni un nombre de séances ne suffisent à établir sa protection ou sa durée de vie. Le guide « cuir ou synthétique » aide à comparer les matières.'] },
     ],
     faq: [
-      { question: 'Des gants de boxe pas chers suffisent-ils pour débuter ?', answer: 'Oui pour le sac, les pattes d’ours et les exercices techniques. Pour le sparring, votre salle demandera souvent 14 ou 16 oz : prenez ce poids dès le départ si vous comptez y aller vite.' },
-      { question: 'Quel poids prendre pour une première paire pas chère ?', answer: '12 oz pour un adulte de gabarit moyen : assez léger pour le sac, assez rembourré pour la technique à deux. 10 oz si vous ne frappez qu’au sac.' },
-      { question: 'Les gants de boxe d’entrée de gamme sont-ils en cuir ?', answer: 'Presque jamais à ce prix : l’enveloppe est synthétique. C’est une matière plus légère et plus simple à entretenir, qui s’use plus vite qu’un cuir sous un usage intensif.' },
+      { question: 'Des gants de boxe pas chers suffisent-ils pour débuter ?', answer: 'Le prix ne décide pas seul. Vérifiez que le modèle convient aux exercices prévus et aux consignes du club, puis contrôlez les tailles et l’ajustement avec vos bandes.' },
+      { question: 'Quel poids prendre pour une première paire pas chère ?', answer: 'Demandez le poids attendu pour votre séance, puis vérifiez que le modèle le propose. Les onces indiquent un poids ; elles ne garantissent ni l’ajustement de la main ni l’aptitude au sparring.' },
+      { question: 'Les gants de boxe d’entrée de gamme sont-ils en cuir ?', answer: 'Lisez la matière déclarée pour le modèle : cuir, PU et cuir synthétique désignent des enveloppes différentes. Une limite de prix ne remplace pas cette vérification ; la fiche et le filtre matière permettent de comparer.' },
     ],
     guide: 'gants-de-boxe-cuir-ou-synthetique',
     match: (p) => p.category === 'gants-de-boxe' && n(p).startsWith('gant') && !kid(p) && p.price > 0 && p.price <= 5000,
@@ -568,19 +568,19 @@ export const SUBFAMILIES: Subfamily[] = [
     name: 'Gants de boxe en cuir',
     eyebrow: 'GANTS DE BOXE EN CUIR · CLETO REYES, FAIRTEX, TWINS, ELION',
     title: 'Gants de boxe en cuir : Cleto Reyes, Fairtex, Twins, Elion',
-    description: 'Gants de boxe en cuir pour le sac, le sparring et la compétition : Cleto Reyes, Fairtex, Twins, Elion. Velcro ou lacets, 8 à 18 oz, prix TTC, tailles de chaque marque.',
+    description: 'Gants de boxe en cuir : comparez Cleto Reyes, Fairtex, Twins et Elion, les fermetures, les poids proposés et les prix TTC. Tailles à vérifier par modèle.',
     prioritaires: ['gants de boxe en cuir', 'gants de boxe cuir'],
     secondaires: ['gants de boxe cuir véritable', 'gants Cleto Reyes', 'gants Fairtex cuir', 'gants Twins cuir', 'entretien gants cuir', 'gants de boxe haut de gamme'],
-    intro: 'Les gants dont l’enveloppe est en cuir, d’après la fiche de chaque modèle. Le cuir s’assouplit séance après séance et finit par prendre la forme de la main ; c’est la matière des pratiquants réguliers et des rings.',
+    intro: 'Les gants dont l’enveloppe est en cuir, d’après la fiche de chaque modèle. Comparez aussi le rembourrage, la fermeture et la coupe : la matière extérieure ne décide pas à elle seule de l’usage de la paire.',
     sections: [
-      { h2: 'Pourquoi le cuir', paragraphs: ['Il dure plus longtemps que le synthétique et se fait à la main avec le temps : les fabricants le réservent à leurs gammes d’entraînement intensif, de sparring et de compétition. La contrepartie est le prix, et un peu d’entretien.'] },
-      { h2: 'Mexicains, thaïlandais, européens', paragraphs: ['Les gants mexicains, comme Cleto Reyes, ont la réputation d’un rembourrage ferme, qui laisse sentir l’impact. Les gants thaïlandais, Fairtex et Twins, ont en général une paume plus souple, pensée pour saisir au corps-à-corps. L’essai avec les bandes reste le seul juge ; le tableau de cette page compare les prix par marque.'] },
-      { h2: 'Faire durer une paire en cuir', paragraphs: ['Sortir les gants du sac après chaque séance, les laisser sécher ouverts loin d’un radiateur, essuyer l’extérieur au chiffon. Une noisette de crème pour cuir deux ou trois fois par an évite qu’il se dessèche et craquelle.'] },
+      { h2: 'Pourquoi comparer au-delà de la matière', paragraphs: ['L’enveloppe en cuir est une caractéristique du modèle, pas un niveau de protection. Examinez la construction annoncée, le réglage et l’usage prévu. La durée de vie dépend aussi de l’intensité, de l’entretien et du stockage.'] },
+      { h2: 'Comparer les modèles et les marques', paragraphs: ['Une marque peut proposer plusieurs coupes et constructions. Consultez son guide pour le modèle retenu et essayez avec vos bandes ; le tableau de cette page compare les prix par marque sans transformer l’origine du fabricant en garantie d’ajustement.'] },
+      { h2: 'Faire durer une paire en cuir', paragraphs: ['Après la séance, suivez la notice du modèle pour le séchage et le nettoyage. Vérifiez auprès du fabricant tout produit d’entretien ou traitement du cuir avant application ; les finitions et les consignes diffèrent selon la paire.'] },
     ],
     faq: [
-      { question: 'Un gant de boxe en cuir vaut-il son prix ?', answer: 'Pour trois séances par semaine et plus, oui : il dure plus longtemps et devient plus confortable. Pour une séance hebdomadaire, un bon synthétique suffit.' },
-      { question: 'Cuir ou cuir synthétique ?', answer: 'Le cuir synthétique technique approche la tenue du cuir avec moins d’entretien et un prix plus bas ; il se moule moins à la main. Chaque fiche indique la matière à la ligne « Matières ».' },
-      { question: 'Comment choisir la taille d’un gant en cuir ?', answer: 'Comme tout gant : au poids, selon la séance, puis à l’essai avec les bandes. Un gant en cuir neuf est plus ferme qu’après quelques semaines : il ne doit pas comprimer les doigts, mais il se détendra un peu.' },
+      { question: 'Un gant de boxe en cuir vaut-il son prix ?', answer: 'Comparez ce que le modèle apporte pour votre séance : coupe, fermeture, construction et usage déclaré. Le cuir ne garantit pas à lui seul une meilleure protection ou une durée de vie déterminée.' },
+      { question: 'Cuir ou cuir synthétique ?', answer: 'Ce sont des matières d’enveloppe différentes, précisées sur chaque fiche. Comparez deux modèles destinés au même usage, leurs caractéristiques et leurs consignes d’entretien plutôt qu’une durée de vie supposée par matière.' },
+      { question: 'Comment choisir la taille d’un gant en cuir ?', answer: 'Faites confirmer le poids demandé par le club et vérifiez le guide du fabricant pour le modèle. Contrôlez l’ajustement avec vos bandes ; ne choisissez pas une paire trop serrée en comptant sur une détente future du cuir.' },
     ],
     guide: 'gants-de-boxe-cuir-ou-synthetique',
     match: (p) => {
@@ -654,7 +654,7 @@ export const SUBFAMILIES: Subfamily[] = [
       { question: 'Peut-on faire du JJB avec un kimono de judo ?', answer: 'Pour essayer, oui. Plus ample et à manches plus longues, il donne plus de prise à l’adversaire ; un kimono de JJB devient utile quand la pratique s’installe.' },
     ],
     guide: 'debuter-mma',
-    match: (p) => /^kimono/.test(n(p)) && /jjb|jiu|bjj|\bgi\b/.test(n(p)),
+    match: (p) => n(p).startsWith('kimono') && /jjb|jiu|bjj|\bgi\b/.test(n(p)),
   },
 
   /* ── Par boxe et par niveau (03/10) : les pages d’entrée sous « Matériel de boxe » ─────────── */
@@ -686,7 +686,7 @@ export const SUBFAMILIES: Subfamily[] = [
       (p.category === 'gants-de-boxe' && /^gants? de (boxe|sac)/.test(n(p)) && !/tha[iï]|muay|mma|kick|savate/.test(n(p))) ||
       /^bandes? de boxe|^sous-gants|^mitaines de maintien|^protège-dents|^coquille|^support et coquille|^pattes? d’ours|^corde à sauter|^poire de vitesse|^sac de frappe/.test(n(p)) ||
       (n(p).startsWith('casque') && !n(p).startsWith('casquette') && !/mma|grappling|lutte|taekwondo/.test(n(p))) ||
-      (p.category === 'chaussures-boxe' && /^chaussures de boxe/.test(n(p)) && !/lutte|savate|française/.test(n(p))) ||
+      (p.category === 'chaussures-boxe' && n(p).startsWith('chaussures de boxe') && !/lutte|savate|française/.test(n(p))) ||
       /^débardeur de boxe|^peignoir/.test(n(p)),
   },
   {

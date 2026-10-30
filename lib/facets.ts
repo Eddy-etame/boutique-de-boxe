@@ -1,4 +1,4 @@
-import { categoryFor, money, shop, livraison, type Product } from './catalog';
+import { categoryFor, money, shop, livraison, materialSpec, type Product } from './catalog';
 import type { SeoFaq } from './seo-copy';
 import { brandsOf, brandSlug, type Brand } from './brands';
 import { SUBFAMILIES, type Subfamily } from './subfamilies';
@@ -31,6 +31,7 @@ export type Facet = {
   title: string;
   description: string;
   intro: string;
+  revision?: string;
   keywords: string[];
   faq: SeoFaq[];
   guide: string;
@@ -50,16 +51,17 @@ const familyName = (slug: string) => categoryFor(slug)?.name || slug;
 
 export const GLOVE_WEIGHTS = [4, 6, 8, 10, 12, 14, 16, 18] as const;
 
-/** Les repères du guide « Quelle taille de gants de boxe choisir ? », un par poids. */
-export const OZ_COPY: Record<number, { who: string; use: string; note: string }> = {
-  4: { who: 'les enfants de 5 à 7 ans', use: 'la découverte de la boxe, au sac et aux pattes d’ours', note: 'Le plus petit poids du catalogue. Un gant d’enfant se choisit à l’âge et à la main, jamais « pour grandir dedans ».' },
-  6: { who: 'les enfants de 7 à 10 ans', use: 'l’école de boxe, le sac et les pattes d’ours', note: 'Entre 4 et 8 oz, le 6 oz est le poids des premières années de club.' },
-  8: { who: 'les enfants de 10 à 13 ans et les gabarits très légers', use: 'le sac, les pattes d’ours et la technique', note: 'Le 8 oz est aussi le poids de compétition de certaines catégories : votre club vous le dira.' },
-  10: { who: 'les adultes de moins de 55 kg et les adolescents', use: 'le sac et les pattes d’ours', note: 'Le poids du travail au sac pour la plupart des adultes : plus léger, plus rapide, moins de rembourrage.' },
-  12: { who: 'les adultes de 55 à 75 kg', use: 'la technique et le cours collectif', note: 'Le poids « à tout faire » du cours de boxe : assez de mousse pour le sac, assez léger pour la vitesse.' },
-  14: { who: 'les gabarits légers avec un partenaire, et les adultes de 55 à 75 kg', use: 'la technique avec partenaire et le sparring léger', note: 'Le 14 oz est le premier poids qu’une salle accepte en général pour toucher un partenaire.' },
-  16: { who: 'la plupart des adultes avec un partenaire', use: 'le sparring', note: 'Le poids de sparring de référence : il protège le partenaire autant que vos mains. Beaucoup de salles l’imposent.' },
-  18: { who: 'les adultes de plus de 90 kg', use: 'le sparring des lourds', note: 'Réservé aux gabarits lourds : plus de rembourrage, plus de protection pour le partenaire.' },
+export const OZ_GUIDANCE_REVISION = '2026-10-24';
+/** Une offre de poids ne suffit pas à établir un âge, un niveau ou une homologation. */
+export const OZ_COPY: Record<number, { note: string }> = {
+  4: { note: 'Pour un enfant, vérifiez que le modèle est bien prévu pour lui, son ajustement et les consignes de son encadrant. Le chiffre 4 oz ne fixe pas une tranche d’âge.' },
+  6: { note: 'Comparez la coupe et les tailles du modèle : 6 oz n’est pas une mesure de la main. Un équipement enfant doit être adapté dès son achat.' },
+  8: { note: 'La présence du 8 oz dans un catalogue ne vaut pas homologation en compétition. Faites confirmer le modèle et le poids par le règlement de votre épreuve.' },
+  10: { note: 'Deux gants de 10 oz peuvent avoir des constructions et des usages différents. Comparez le type annoncé par le fabricant avant de choisir pour le sac ou le cours.' },
+  12: { note: 'Le 12 oz ne garantit pas un usage polyvalent. Vérifiez les exercices autorisés avec ce modèle et le poids demandé par votre club.' },
+  14: { note: 'Avant un travail avec partenaire, faites valider le modèle et le poids par l’encadrant. Le chiffre 14 oz ne suffit pas à établir sa protection ou son ajustement.' },
+  16: { note: 'Le poids de 16 oz ne permet pas à lui seul de qualifier un gant pour le sparring. Vérifiez son usage déclaré, sa coupe et les consignes de la salle.' },
+  18: { note: 'Le 18 oz est un poids proposé, pas une prescription liée à un poids de corps. Contrôlez l’ajustement et l’usage annoncé pour le modèle choisi.' },
 };
 
 const OZ_RE = /(\d{1,2})\s*oz\b/i;
@@ -114,11 +116,11 @@ export const coloursOf = (p: Product) => [...new Set((p.colors || []).map(colour
 
 /** Une matière lisible pour trier : le premier composant de « Cuir · Nylon ». */
 export function materialOf(p: Product): string | null {
-  const m = p.specs?.['Matières'];
+  const m = materialSpec(p);
   if (!m) return null;
   const first = m.split(' · ')[0].trim();
-  if (/^cuir/i.test(first)) return 'Cuir';
-  if (/^(pu|synth|simili|polyuréthane|vinyle|skaï|skai)/i.test(first)) return 'Synthétique';
+  if (/^(cuir\s+synth|pu\b|synth|simili|polyuréthane|vinyle|skaï|skai)/i.test(first)) return 'Synthétique';
+  if (/^cuir\b/i.test(first)) return 'Cuir';
   if (/^(coton|lycra|élasthanne|elasthanne|polyester|nylon|mesh|laine|microfibre|néoprène|neoprene)/i.test(first)) return first.charAt(0).toUpperCase() + first.slice(1).toLowerCase();
   return first.length <= 16 ? first : null;
 }
@@ -177,19 +179,20 @@ export function ozFacet(oz: number, products: Product[]): Facet | null {
   const scope = `gants-de-boxe-${oz}-oz`;
   return {
     kind: 'oz',
+    revision: OZ_GUIDANCE_REVISION,
     scope,
     path: '/' + scope + '/',
     name,
     eyebrow: `GANTS DE BOXE · ${oz} OZ · ${items.length} MODÈLES`,
     title: `Gants de boxe ${oz} oz : ${items.length} modèles, de ${money(prices[0])} à ${money(prices.at(-1)!)}`.slice(0, 60),
-    description: `Gants de boxe ${oz} oz pour ${copy.who} : ${items.length} modèles ${list(brands.slice(0, 4))}, de ${money(prices[0])} à ${money(prices.at(-1)!)}. ${copy.use.charAt(0).toUpperCase() + copy.use.slice(1)}. Prix, livraison en France.`.slice(0, 158),
-    intro: `${items.length} paires de gants de boxe proposées en ${oz} oz, chez ${list(brands)}. D’après notre guide, le ${oz} oz convient à ${copy.who}, pour ${copy.use}. ${copy.note}`,
+    description: `Gants de boxe ${oz} oz : ${items.length} modèles ${list(brands.slice(0, 4))}, de ${money(prices[0])} à ${money(prices.at(-1)!)}. Comparez matières, fermetures et tailles. Livraison en France.`.slice(0, 158),
+    intro: `${items.length} paires de gants de boxe proposées en ${oz} oz, chez ${list(brands)}. ${copy.note}`,
     keywords: [`gants de boxe ${oz} oz`, `gants ${oz} oz`, `gant de boxe ${oz} oz`, `${oz} oz boxe`, `gants de boxe ${oz} onces`, ...brands.slice(0, 3).map((b) => `gants de boxe ${b} ${oz} oz`)],
     faq: [
-      { question: `À qui conviennent des gants de boxe ${oz} oz ?`, answer: `À ${copy.who}, pour ${copy.use}. Ce sont les repères de notre guide de tailles ; votre salle peut imposer un autre poids pour le sparring, demandez avant d’acheter.` },
+      { question: `À qui conviennent des gants de boxe ${oz} oz ?`, answer: `Le choix dépend du modèle, de l’ajustement et de votre pratique. ${copy.note} Consultez le guide du fabricant et votre encadrant avant de commander.` },
       { question: `Combien coûtent des gants de boxe ${oz} oz ?`, answer: `De ${money(prices[0])} à ${money(prices.at(-1)!)} selon la marque et la matière, prix médian ${money(prices[Math.floor(prices.length / 2)])}. Ce sont les prix de vente TTC, affichés sur chaque fiche.` },
-      { question: `Le ${oz} oz est-il une taille de main ?`, answer: `Non. L’once est un poids de rembourrage, pas une taille. Deux paires de ${oz} oz peuvent avoir une coupe très différente : essayez avec vos bandes et lisez le guide de tailles de la marque quand il existe.` },
-      { question: `Quel poids si j’hésite entre deux ?`, answer: oz >= 14 ? 'Pour le sparring, prenez le plus lourd : il protège le partenaire et beaucoup de salles l’imposent.' : 'Pour le sac et la technique, prenez le plus léger si vous cherchez la vitesse, le plus lourd si vous frappez fort ou si vous prévoyez de toucher un partenaire.' },
+      { question: `Le ${oz} oz est-il une taille de main ?`, answer: `Non. L’once indique un poids, pas la taille intérieure ni la qualité du rembourrage. Deux paires de ${oz} oz peuvent avoir une coupe différente : vérifiez le guide du modèle et l’ajustement avec vos bandes.` },
+      { question: `Quel poids si j’hésite entre deux ?`, answer: 'Faites d’abord confirmer le poids demandé pour votre séance, puis comparez les tailles réellement proposées par le modèle. Prendre plus lourd ou plus léger ne garantit pas à lui seul un meilleur ajustement ni une meilleure protection.' },
     ],
     guide: 'quelle-taille-gants-de-boxe',
     parent: { path: '/gants-de-boxe/', name: 'Gants de boxe' },

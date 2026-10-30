@@ -1,6 +1,14 @@
 /* Pages-villes (29/09) : « Boutique de boxe <ville> », Île-de-France, carrefour « Boutique sport de combat France ».
    Les chiffres, les barres et les tableaux reprennent l’observatoire des prix ; ce fichier n’ajoute que ce qui leur manque. */
 
+/* La réponse d'achat reste courte sur téléphone : les conditions précèdent les modèles sans
+   repousser ces derniers derrière quatre grands blocs de chiffres empilés. */
+@media (max-width: 560px) {
+  .ville-page #commander { padding-top: 22px; }
+  .ville-page #commander .observatory-figures { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+  .ville-page #commander .observatory-figures strong { font-size: clamp(26px, 7vw, 34px); line-height: 1.05; }
+}
+
 .ville-page .observatory-bands li { grid-template-columns: 190px minmax(0, 1fr) 60px; }
 .ville-page .observatory-bands li span a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 4px; transition: text-decoration-color 0.25s; }
 .ville-page .observatory-bands li span a:hover, .ville-page .observatory-bands li span a:focus-visible { text-decoration-color: currentColor; }

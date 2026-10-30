@@ -79,6 +79,8 @@ export const REGIONS = data.regions as unknown as Region[];
 export const PREFIXE = 'boutique-de-boxe-';
 export const CARREFOUR = 'boutique-sport-de-combat';
 export const villePath = (slug: string) => '/' + PREFIXE + slug + '/';
+/** Réorganisation réelle des pages-villes : achat et sélection avant le recensement. Jamais la date du build. */
+export const VILLES_COMMERCE_REVISION = '2026-10-24';
 
 export const villeFor = (path: string) =>
   path.startsWith(PREFIXE) ? VILLES.find((v) => PREFIXE + v.slug === path) : undefined;
@@ -234,44 +236,44 @@ const SAC: Record<string, { titre: string; essentiel: string | string[]; ensuite
   'Boxe anglaise': {
     titre: 'bandes, gants, protège-dents',
     essentiel: [
-      'trois pièces sont personnelles dès le premier mois : des bandes de 4 m, une paire de gants — 10 oz pour le sac, 14 ou 16 oz pour la mise de gants — et un protège-dents',
-      'le club prête les paos et les sacs, pas ce qui touche la peau : des bandes de 4 m, des gants de 10 oz pour le sac (14 ou 16 oz dès qu’on boxe avec un partenaire) et un protège-dents',
-      'il faut ses propres bandes de 4 m, ses gants — 10 oz au sac, 14 ou 16 oz en mise de gants — et son protège-dents : trois achats, et la séance peut commencer',
+      'le premier choix porte sur les bandes, les gants et le protège-dents ; le poids des gants et la longueur des bandes se vérifient avec le club, selon la séance',
+      'comparez d’abord les bandes, les gants et le protège-dents ; avant de commander, faites confirmer par votre club le poids des gants pour le sac ou l’opposition',
+      'préparez les bandes, les gants et le protège-dents en suivant les consignes de votre encadrant ; il confirme le poids adapté à la séance et le matériel déjà fourni',
     ],
     ensuite: [
-      'Casque et chaussures montantes viennent avec l’opposition.',
-      'Le casque et les chaussures montantes n’arrivent qu’avec l’opposition, quand le club le demande.',
-      'Ensuite seulement, pour l’opposition : un casque, puis des chaussures montantes.',
+      'Vérifiez ensuite les chaussures et le casque demandés pour votre séance : les règles de la salle et de la compétition peuvent différer.',
+      'Pour les chaussures et le casque, suivez la liste du club avant de compléter votre sac.',
+      'Le casque et les chaussures se choisissent avec l’encadrant, selon le type de séance et les règles applicables.',
     ],
-    liste: 'des bandes de 4 m, des gants de 10 oz pour le sac ou de 14 à 16 oz pour boxer avec un partenaire, un protège-dents',
+    liste: 'des bandes, des gants au poids demandé par le club et un protège-dents',
     sources: ['bandes-de-boxe', 'gants-de-boxe', 'gants-de-boxe-sparring', 'protege-dents', 'casques-de-boxe', 'chaussures-boxe', 'cordes-a-sauter', 'shorts-de-boxe'],
   },
   'Savate boxe française': {
     titre: 'chaussures, gants, protège-dents',
-    essentiel: 'on boxe chaussé, pieds et poings : des chaussures de boxe française à semelle fine, des gants de 10 à 12 oz, des bandes et un protège-dents',
-    ensuite: 'La coquille et le casque suivent quand viennent les assauts ; le club dit ce que la compétition exige.',
-    liste: 'des chaussures de boxe française à semelle fine, des gants de 10 à 12 oz, des bandes, un protège-dents',
+    essentiel: 'on boxe chaussé, pieds et poings : comparez les chaussures de savate, les gants au poids demandé par le club, les bandes et le protège-dents',
+    ensuite: 'La coquille et le casque se vérifient avec l’encadrant ; le règlement de la compétition fixe ce qui y est admis.',
+    liste: 'des chaussures de savate, des gants au poids demandé par le club, des bandes et un protège-dents',
     sources: ['chaussures-boxe', 'gants-de-boxe', 'bandes-de-boxe', 'protege-dents', 'coquilles', 'casques-de-boxe', 'gants-de-boxe-sparring', 'cordes-a-sauter'],
   },
   'Muay-thaï': {
     titre: 'protège-tibias, gants, short thaï',
-    essentiel: 'il faut protéger tibias et pieds : des protège-tibias avec protège-pied, des gants de 12 à 16 oz, des bandes, un protège-dents et une coquille',
-    ensuite: 'Le short thaï, court et large, laisse passer le genou ; le casque n’arrive qu’en compétition amateur.',
-    liste: 'des protège-tibias avec protège-pied, des gants de 12 à 16 oz, des bandes, un protège-dents, une coquille',
+    essentiel: 'comparez les protège-tibias avec protège-pied, les gants, les bandes, le protège-dents et la coquille ; votre club confirme les modèles et le poids adaptés à ses exercices',
+    ensuite: 'La coupe du short thaï laisse de l’aisance aux jambes ; le casque et les protections supplémentaires dépendent de la séance et du règlement suivi.',
+    liste: 'des protège-tibias avec protège-pied, des gants au poids demandé par le club, des bandes, un protège-dents et une coquille',
     sources: ['protege-tibias', 'gants-de-boxe', 'bandes-de-boxe', 'protege-dents', 'coquilles', 'shorts-de-boxe', 'gants-de-boxe-sparring', 'cordes-a-sauter'],
   },
   'Kick-boxing': {
     titre: 'gants, protège-tibias, coquille',
-    essentiel: 'poings et jambes travaillent ensemble : des gants de 10 à 12 oz, des protège-tibias et pieds, des bandes, un protège-dents et une coquille',
-    ensuite: 'Le casque vient avec la mise de gants ; certains clubs le demandent dès l’opposition légère.',
-    liste: 'des gants de 10 à 12 oz, des protège-tibias et pieds, des bandes, un protège-dents, une coquille',
+    essentiel: 'poings et jambes travaillent ensemble : comparez les gants, les protège-tibias et pieds, les bandes, le protège-dents et la coquille demandés par votre encadrant',
+    ensuite: 'Le casque et les autres protections se confirment avec l’encadrant selon le type d’opposition et le règlement suivi.',
+    liste: 'des gants au poids demandé par le club, des protège-tibias et pieds, des bandes, un protège-dents et une coquille',
     sources: ['gants-de-boxe', 'protege-tibias', 'bandes-de-boxe', 'protege-dents', 'coquilles', 'casques-de-boxe', 'gants-de-boxe-sparring', 'shorts-de-boxe'],
   },
   'Full contact': {
     titre: 'gants, protège-pieds, casque',
-    essentiel: 'il faut des gants de 10 oz, des protège-tibias et pieds, un casque et un protège-dents : les coups de pied portent au-dessus de la ceinture',
-    ensuite: 'Les bandes protègent les poignets sous les gants ; le pantalon long reste la tenue des combats.',
-    liste: 'des gants de 10 oz, des protège-tibias et pieds, un casque, un protège-dents',
+    essentiel: 'les gants, les protège-tibias et pieds, le casque et le protège-dents se choisissent selon les consignes du club et le type de séance',
+    ensuite: 'Les bandes se portent sous les gants ; faites confirmer la tenue et les protections par l’encadrant avant de compléter le sac.',
+    liste: 'des gants au poids demandé par le club, des protège-tibias et pieds, un casque et un protège-dents',
     sources: ['gants-de-boxe', 'protege-tibias', 'casques-de-boxe', 'protege-dents', 'bandes-de-boxe', 'coquilles', 'gants-de-boxe-sparring', 'cordes-a-sauter'],
   },
 };
@@ -291,9 +293,9 @@ export function villeKit(lieu: string, c: { frappe: number; parDiscipline: Recor
     judo || karate
       ? ' ' +
         choisir(cle + 'j', [
-          `Le judo est déclaré dans ${nb(judo, 'lieu', 'lieux')} et le karaté dans ${karate} : là, le kimono passe avant tout, choisi au poids du tissu et à la grille de la marque.`,
-          `Avec ${nb(judo, 'lieu de judo', 'lieux de judo')} et ${nb(karate, 'de karaté', 'de karaté')}, le kimono compte autant ${lieu} : on le choisit au poids du tissu, dans la grille de sa marque.`,
-          `${Maj(lieu)}, ${nb(judo, 'lieu déclare', 'lieux déclarent')} le judo et ${karate} le karaté ; pour eux, l’achat du premier mois est un kimono, au poids du tissu et à la taille de la marque.`,
+          `Le judo est déclaré dans ${nb(judo, 'lieu', 'lieux')} et le karaté dans ${karate} : pour une séance en kimono, faites confirmer le type de tenue par le club, puis la taille dans la grille de la marque.`,
+          `Avec ${nb(judo, 'lieu de judo', 'lieux de judo')} et ${nb(karate, 'de karaté', 'de karaté')}, vérifiez aussi la tenue demandée ${lieu} : un kimono se choisit selon sa discipline, le tissu et la grille de sa marque.`,
+          `${Maj(lieu)}, ${nb(judo, 'lieu déclare', 'lieux déclarent')} le judo et ${karate} le karaté ; avant d’acheter un kimono, vérifiez la tenue demandée par le club et les tailles de la marque.`,
         ])
       : '';
   return {
@@ -303,8 +305,8 @@ export function villeKit(lieu: string, c: { frappe: number; parDiscipline: Recor
       choisir(cle + 'k', [
         `${Maj(lieu)}, ${art(dom)} est la plus déclarée des boxes, dans ${nb(nDom, 'lieu', 'lieux')} sur ${c.frappe}. Pour y débuter, ${essentiel}.`,
         `La boxe la plus déclarée ${lieu} est ${art(dom)} : ${nb(nDom, 'lieu', 'lieux')} sur les ${c.frappe} où l’on boxe. Pour commencer, ${essentiel}.`,
-        `Sur les ${c.frappe} lieux où l’on boxe ${lieu}, ${nDom} déclarent ${art(dom)}, la plus répandue. Le premier mois, ${essentiel}.`,
-        `${Maj(art(dom))} domine ${lieu} : ${nb(nDom, 'lieu', 'lieux')} la déclarent, sur ${c.frappe} où l’on boxe. Dès les premières séances, ${essentiel}.`,
+        `Sur les ${c.frappe} lieux où l’on boxe ${lieu}, ${nDom} déclarent ${art(dom)}, la plus déclarée au recensement. Le premier mois, ${essentiel}.`,
+        `${Maj(art(dom))} est la plus déclarée ${lieu} : ${nb(nDom, 'lieu', 'lieux')} la mentionnent, sur ${c.frappe} où l’on boxe. Dès les premières séances, ${essentiel}.`,
         `${nDom} lieux sur ${c.frappe} ${lieu} enseignent ${art(dom)}, la boxe la plus répandue de la ville. Pour s’y mettre, ${essentiel}.`,
       ]),
       ensuite + suite,
@@ -316,7 +318,7 @@ export function villeKit(lieu: string, c: { frappe: number; parDiscipline: Recor
 /* ── Ville ─────────────────────────────────────────────────────────────── */
 
 /** Un rang stable par ville (0…n-1) : chaque page prend sa propre tournure, jamais celle de sa voisine. */
-export const tour = (slug: string, n: number) => [...slug].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7) % n;
+export const tour = (slug: string, n: number) => Array.from(slug).reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7) % n;
 const choisir = <T,>(slug: string, variantes: T[]) => variantes[tour(slug, variantes.length)];
 /** Le lieu le mieux équipé de la ville : le plus de salles, puis celui où l'on boxe. */
 export function lieuPhare(v: Ville): Lieu | undefined {
@@ -341,8 +343,14 @@ export function villeTitre(v: { nom: string; lieux: { length: number } }) {
 }
 
 export function villeDescription(v: Ville) {
-  const d = `Boutique de boxe ${v.nom} : ${nb(v.lieux.length, 'lieu', 'lieux')} de boxe et d’arts martiaux ${a(v.nom)}, dont ${v.frappe} où l’on boxe, d’après le ministère des Sports, et le matériel de chacun.`;
-  return d.length <= 158 ? d : `Boutique de boxe ${v.nom} : ${v.lieux.length} lieux de boxe et d’arts martiaux, dont ${v.frappe} où l’on boxe, et le matériel de chacun.`;
+  const d = `Boutique de boxe ${v.nom} : gants et protections en ligne, livraison en relais ou à domicile. ${v.lieux.length} lieux de combat recensés pour préparer vos cours.`;
+  return d.length <= 158 ? d : `Boutique de boxe ${v.nom} : matériel en ligne, livraison en relais ou à domicile. Le guide des ${v.lieux.length} lieux de combat de la ville.`;
+}
+
+/** Réponse d'achat avant les chiffres : pas d'adresse de magasin ni de retrait inventé. */
+export function villeAchatChapeau(v: Ville) {
+  const dom = boxeDominante(v.parDiscipline);
+  return fine(`Boutique de Boxe, boutique de boxe en ligne, ${livrer(v.nom)} en point relais ou à domicile. Comparez les modèles, les tailles de chaque marque et les prix TTC ; le premier sac ci-dessous porte sur ${art(dom)}, une discipline déclarée dans ${nb(v.parDiscipline[dom] || 0, 'lieu', 'lieux')} de la ville.`);
 }
 
 /** L'étiquette sous le titre : la densité, fait propre à la ville. */
@@ -469,7 +477,7 @@ export function villeFaq(v: Ville): SeoFaq[] {
   ];
   const bc = v.lieux.filter(estBoxingCenter);
   if (bc.length)
-    faq.unshift({
+    faq.splice(1, 0, {
       question: fine(`Où faire de la boxe ${a(v.nom)} ?`),
       answer: `Dans les ${bc.length} clubs Boxing Center de la ville — Minimes, États-Unis et Saint-Cyprien —, qui proposent une séance d’essai à 10 € ; au sud de l’agglomération, Boxing Center Portet et Ramonville, et le ${NOBLE_ART.nom} à Portet. Le recensement compte ${v.lieux.length} lieux de sports de combat ${a(v.nom)}.`,
     });
@@ -545,8 +553,10 @@ export function regionTitre(r: Region) {
 }
 export function regionDescription(r: Region) {
   const t = regionTotal(r);
-  return `Boutique de boxe ${r.nom} : ${fr(t.lieux)} lieux de boxe et d’arts martiaux hors Paris, commune par commune, et le matériel qu’ils demandent.`;
+  return `Boutique de boxe ${r.nom} : matériel en ligne, livraison en relais ou à domicile. ${fr(t.lieux)} lieux de combat hors Paris, commune par commune.`;
 }
+export const regionAchatChapeau = (r: Region) =>
+  fine(`Boutique de Boxe est une boutique de boxe en ligne qui ${livrer('toute l’' + r.nom)} en point relais ou à domicile. Choisissez le matériel et les tailles pour vos séances ; les modèles ci-dessous précèdent le guide des ${fr(regionTotal(r).lieux)} lieux de combat recensés hors Paris, département par département.`);
 export function regionChapeau(r: Region) {
   const t = regionTotal(r);
   const g = parLieux(r);
