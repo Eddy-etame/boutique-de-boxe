@@ -347,10 +347,9 @@ export function ConsentTracker() {
         <span className="eyebrow">COOKIES ET MESURE D’AUDIENCE</span>
         <h2 id="consent-title">Mesure d’audience</h2>
         <p id="consent-text">
-          Avec votre accord, un cookie nous dit quelles pages vous regardez, ce
-          que vous ajoutez au panier et où vous vous arrêtez. Cela sert à mieux
-          présenter le matériel. Rien n’est vendu ni partagé. Vous changez
-          d’avis quand vous voulez, en bas de page.
+          Avec votre accord, un cookie nous dit quelles pages vous regardez et
+          où vous vous arrêtez, pour mieux présenter le matériel. Rien n’est
+          vendu ni partagé ; vous changez d’avis en bas de page.
         </p>
         <button
           type="button"
