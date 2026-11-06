@@ -3431,22 +3431,27 @@ div.gallery-main[style*='--drag'] > img { transition: none; }
 .product-facts span { display: block; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: #58614f; margin-bottom: 4px; }
 
 /* Carte de consentement : elle couvre l’écran, la page derrière est floutée, le bouton vert domine. */
-.consent-veil { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 16px; background: rgba(236, 237, 231, .55); -webkit-backdrop-filter: blur(11px) saturate(.85); backdrop-filter: blur(11px) saturate(.85); animation: veil-in .5s var(--m-ease, ease) both; }
-/* Rendu dès le serveur ; sans l’attribut posé avant le premier affichage (choix déjà fait), le voile n’existe pas à l’écran. */
+/* 06/11/2026 : la carte des cookies ne couvre plus l'écran et ne fige plus la page. Une carte en bas à droite
+   (en bas de l'écran sur téléphone), la page lisible et utilisable derrière : Google demande qu'un bandeau de
+   consentement n'occupe « qu'une part raisonnable de l'écran », et son robot photographie chaque page avec la
+   carte ouverte. Le voile plein écran, flouté, du 11/09 est retiré. */
+.consent-veil { position: fixed; right: 16px; bottom: 16px; z-index: 60; width: min(400px, calc(100vw - 32px)); animation: veil-in .5s var(--m-ease, ease) both; }
+/* Rendu dès le serveur ; sans l’attribut posé avant le premier affichage (choix déjà fait), la carte n’existe pas à l’écran. */
 html:not([data-consent-open]) .consent-veil { display: none; }
-html[data-consent-open] body { overflow: hidden; }
-.consent-card { width: min(520px, 100%); background: #fff; color: var(--ink); border: 1.5px solid var(--ink); padding: 30px 30px 24px; box-shadow: 0 30px 80px rgba(0,0,0,.22); display: flex; flex-direction: column; gap: 12px; animation: consent-in .6s cubic-bezier(.2,.7,.2,1) .25s backwards; }
+.consent-card { width: 100%; background: #fff; color: var(--ink); border: 1.5px solid var(--ink); padding: 18px 18px 14px; box-shadow: 0 18px 50px rgba(0,0,0,.18); display: flex; flex-direction: column; gap: 8px; animation: consent-in .6s cubic-bezier(.2,.7,.2,1) .25s backwards; }
 @keyframes veil-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes consent-in { from { opacity: 0; transform: translateY(24px) scale(.98); } to { opacity: 1; transform: none; } }
 .consent-card .eyebrow { font-size: 9px; letter-spacing: .12em; }
-.consent-card h2 { font-size: clamp(30px, 4vw, 44px); line-height: 1; text-transform: uppercase; }
-.consent-card p { font-size: 14px; line-height: 1.6; color: #3a3d36; }
-.consent-accept { width: 100%; min-height: 68px; margin-top: 8px; background: var(--tape); color: var(--ink); border: 1.5px solid var(--ink); font-size: 19px; font-weight: 700; cursor: pointer; transition: transform .2s var(--m-ease, ease), background .2s, box-shadow .2s; box-shadow: 0 10px 24px rgba(200, 230, 60, .35); }
-.consent-accept:hover, .consent-accept:focus-visible { transform: translateY(-2px); background: #e6f28a; box-shadow: 0 16px 30px rgba(200, 230, 60, .45); }
-.consent-actions { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
-.consent-refuse { background: transparent; border: 1px solid #d3d6cc; color: #8a9082; font-size: 12px; padding: 7px 11px; cursor: pointer; }
+.consent-card h2 { font-size: clamp(18px, 2vw, 22px); line-height: 1.05; text-transform: uppercase; }
+.consent-card p { font-size: 12.5px; line-height: 1.5; color: #3a3d36; }
+.consent-accept { width: 100%; min-height: 44px; margin-top: 4px; background: var(--tape); color: var(--ink); border: 1.5px solid var(--ink); font-size: 15px; font-weight: 700; cursor: pointer; transition: transform .2s var(--m-ease, ease), background .2s, box-shadow .2s; box-shadow: 0 8px 18px rgba(200, 230, 60, .3); }
+.consent-accept:hover, .consent-accept:focus-visible { transform: translateY(-2px); background: #e6f28a; box-shadow: 0 12px 24px rgba(200, 230, 60, .4); }
+.consent-actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.consent-refuse { background: transparent; border: 1px solid #d3d6cc; color: #8a9082; font-size: 12px; padding: 6px 10px; cursor: pointer; }
 .consent-refuse:hover, .consent-refuse:focus-visible { color: var(--ink); border-color: var(--ink); }
 .consent-actions > a { font-size: 12px; color: #58614f; text-decoration: underline; text-underline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .consent-veil, .consent-card { animation: none; } }
+@media (max-width: 650px) { .consent-veil { right: 10px; bottom: 10px; left: 10px; width: auto; } .consent-card { padding: 14px 14px 12px; } .consent-card h2 { font-size: 17px; } .consent-accept { min-height: 44px; font-size: 15px; } }
 /* Pendant la relance de l’entrée, un instant sans animation : elles repartent toutes du début. */
 html[data-replay] *, html[data-replay] *::before, html[data-replay] *::after { animation: none !important; transition: none !important; }
 @media (prefers-reduced-motion: reduce) { .consent-veil, .consent-card { animation: none; } }

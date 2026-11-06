@@ -77,6 +77,11 @@ export const VILLES = data.villes as unknown as Ville[];
 export const REGIONS = data.regions as unknown as Region[];
 
 export const PREFIXE = 'boutique-de-boxe-';
+/** 06/11/2026 : Google a exploré les 32 pages-villes et n'en garde que cinq (« Explorée, actuellement non
+ *  indexée » pour les autres), et l'accueil a perdu sa première place sur « boutique de boxe » dans la même
+ *  quinzaine. Une page par grande ville est le motif que Google nomme « pages satellites » : seule la ville du
+ *  siège (12 rue de Fenouillet, Toulouse) reste indexable ; les autres restent lisibles, hors index et hors plan du site. */
+export const VILLE_INDEXEE = 'toulouse';
 export const CARREFOUR = 'boutique-sport-de-combat';
 export const villePath = (slug: string) => '/' + PREFIXE + slug + '/';
 /** Réorganisation réelle des pages-villes : achat et sélection avant le recensement. Jamais la date du build. */

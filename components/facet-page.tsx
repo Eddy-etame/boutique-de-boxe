@@ -29,6 +29,7 @@ export function facetMetadata(f: Facet, page = 1): Metadata {
     // le premier mot-clé est le H1 de la page, donc toujours visible ; l’audit le vérifie
     keywords: [f.name.toLowerCase(), ...f.keywords],
     alternates: { canonical, languages: { 'fr-FR': canonical, 'x-default': canonical } },
+    ...(page > 1 ? { robots: { index: false, follow: true } } : {}),
     openGraph: { title, description, url: canonical, type: 'website', images: ogImage('x', f.path.replace(/^\/|\/$/g, ''), f.name) },
     twitter: { card: 'summary_large_image', title, description },
   };

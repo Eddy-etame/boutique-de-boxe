@@ -341,12 +341,11 @@ export function ConsentTracker() {
       <aside
         className="consent-card"
         role="dialog"
-        aria-modal="true"
         aria-labelledby="consent-title"
         aria-describedby="consent-text"
       >
         <span className="eyebrow">COOKIES ET MESURE D’AUDIENCE</span>
-        <h2 id="consent-title">Avant d’entrer.</h2>
+        <h2 id="consent-title">Mesure d’audience</h2>
         <p id="consent-text">
           Avec votre accord, un cookie nous dit quelles pages vous regardez, ce
           que vous ajoutez au panier et où vous vous arrêtez. Cela sert à mieux
@@ -358,7 +357,7 @@ export function ConsentTracker() {
           className="consent-accept"
           onClick={() => decide('accepted')}
         >
-          J’accepte et j’entre
+          J’accepte
         </button>
         <div className="consent-actions">
           <button

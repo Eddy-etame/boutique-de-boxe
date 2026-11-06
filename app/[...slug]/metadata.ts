@@ -174,6 +174,9 @@ export async function slugMetadata(rawSlug: string[], rawPage?: string): Promise
     // le premier mot-clé est toujours une phrase visible de la page (son titre) ; l’audit le vérifie
     keywords: product ? productKeywords(product) : tete ? [...new Set([tete.h1.toLowerCase(), tete.requete, ...(cat ? categoryKeywords(cat) : sub ? subfamilyKeywords(sub) : [])])] : cat ? categoryKeywords(cat) : sub ? subfamilyKeywords(sub) : guide ? guideKeywords(guide) : [(service?.title || special[path]?.[0] || '').toLowerCase(), ...(pageKeywords(path) || [])].filter(Boolean),
     alternates: { canonical, languages: { 'fr-FR': canonical, 'x-default': canonical } },
+    // 06/11/2026 : les pages 2 et suivantes d'une liste répètent la page 1 (même texte, autres vignettes) ; Google les
+    // tenait pour des pages à part (site: les sortait en tête) pendant qu'il refusait les pages de tête. Hors index, suivies.
+    ...(paginated && page > 1 ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       title: pageTitle,
       description,

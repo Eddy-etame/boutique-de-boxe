@@ -6,7 +6,7 @@ import { EDITORIAL_DATE, CATALOGUE_REVISION, urlOf } from '@/lib/seo';
 import { SUBFAMILIES, subfamilyProducts } from '@/lib/subfamilies';
 import { brandsOf } from '@/lib/brands';
 import { allFacets } from '@/lib/facets';
-import { VILLES, REGIONS, CARREFOUR, SOURCE, villePath } from '@/lib/villes';
+import { VILLES, REGIONS, CARREFOUR, SOURCE, villePath, VILLE_INDEXEE } from '@/lib/villes';
 import { VILLES_DATE, CARREFOUR_DATE } from '@/components/ville-page';
 import { GUIDES_RAYONS } from '@/lib/guides-rayons';
 import { buyingBrief, BUYING_BRIEF_REVISION } from '@/lib/buying-brief';
@@ -116,7 +116,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...facets.map((f) => f.path),
     '/observatoire-des-prix/',
     '/outils/poids-de-gants/',
-    ...VILLE_PATHS,
+    // 06/11/2026 : les pages-villes hors index (lib/villes.ts, VILLE_INDEXEE) ne sont plus proposées à Google.
+    ...[...VILLE_PATHS].filter((p) => p === '/' + CARREFOUR + '/' || p === villePath(VILLE_INDEXEE)),
     ...products.map((p) => '/produits/' + p.slug + '/'),
     '/nouveautes/',
     '/guides/',

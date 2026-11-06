@@ -17,6 +17,7 @@ import {
   villeTitre, villeDescription, villeDensite, villeChapeau, villeAchatChapeau, villeSections, villeFaq, villeKit, parArrondissement, tour,
   regionTitre, regionDescription, regionChapeau, regionAchatChapeau, regionFaq, livraison, livraisonPartout, VILLES_COMMERCE_REVISION,
   SPORTS_BOUTIQUE, CARREFOUR_REVISION, carrefourTitre, carrefourDescription, carrefourChapeau, carrefourFaq, carrefourMarques, franceEnChiffres, type SportBoutique,
+  VILLE_INDEXEE,
   type Ville, type Region, type Lieu, type Groupe,
 } from '@/lib/villes';
 
@@ -32,10 +33,12 @@ const HUB_CRUMB = { label: 'Boutique sport de combat', href: HUB_PATH };
 const MATERIEL = '/materiel-sport-de-combat/';
 const IDF = ['75', '92', '93', '94', '78', '91', '95', '77'];
 
-const meta = (path: string, title: string, description: string, key: string, keywords: string[]): Metadata => ({
+const meta = (path: string, title: string, description: string, key: string, keywords: string[], index = true): Metadata => ({
   title: { absolute: title },
   description,
   keywords,
+  // Hors index, les liens restent suivis : la page garde son rôle de passage vers les rayons.
+  ...(index ? {} : { robots: { index: false, follow: true } }),
   alternates: { canonical: path, languages: { 'fr-FR': path, 'x-default': path } },
   openGraph: { title, description, url: path, type: 'website', locale: 'fr_FR', siteName: 'Boutique de Boxe', images: ogImage('x', key, title) },
   twitter: { card: 'summary_large_image', title, description },
@@ -47,13 +50,13 @@ export const villeMetadata = (v: Ville) =>
     'salle de boxe ' + v.nom,
     'matériel de boxe ' + v.nom,
     'club de boxe ' + v.nom,
-  ]);
+  ], v.slug === VILLE_INDEXEE);
 export const regionMetadata = (r: Region) =>
   meta(villePath(r.slug), regionTitre(r), regionDescription(r), 'boutique-de-boxe-' + r.slug, [
     'boutique de boxe ' + r.nom.toLowerCase(),
     'salle de boxe ' + r.nom,
     'matériel de boxe ' + r.nom,
-  ]);
+  ], false);
 /** Le carrefour compte ses modèles dans le titre et la description : il lui faut le catalogue du jour. */
 export const carrefourMetadata = (all: Product[]) =>
   meta(HUB_PATH, carrefourTitre(all.length), carrefourDescription(all.length), CARREFOUR, ['boutique sport de combat france', 'boutique sport de combat', 'boutique de boxe en ligne', 'matériel sport de combat']);
