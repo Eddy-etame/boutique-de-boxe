@@ -94,7 +94,7 @@ export async function relayContact(
   try {
     signal?.throwIfAborted();
     const initial = await timedJson(
-      'https://inlett.vercel.app/api/challenge',
+      'https://eam-inlet.vercel.app/api/challenge',
       { cache: 'no-store', credentials: 'omit' },
       10000,
       signal,
@@ -131,7 +131,7 @@ export async function relayContact(
     // Any interruption after this point is ambiguous; never automatically retry.
     posted = true;
     const submission = await timedJson(
-      'https://inlett.vercel.app/api/submit/ede03bbe-6591-4e33-a351-1ffe4f050895',
+      'https://eam-inlet.vercel.app/api/submit/ede03bbe-6591-4e33-a351-1ffe4f050895',
       {
         method: 'POST',
         credentials: 'omit',

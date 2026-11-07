@@ -26,7 +26,7 @@ const csp = [
   "font-src 'self'",
   "style-src 'self' 'unsafe-inline'",
   "script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com https://maps.boxtal.com" + (isProd ? '' : " 'unsafe-eval'"),
-  "connect-src 'self' https://inlett.vercel.app https://va.vercel-scripts.com https://vitals.vercel-insights.com https://maps.boxtal.com" + (isProd ? '' : ' ws: wss:'),
+  "connect-src 'self' https://eam-inlet.vercel.app https://va.vercel-scripts.com https://vitals.vercel-insights.com https://maps.boxtal.com" + (isProd ? '' : ' ws: wss:'),
   "worker-src 'self'",
   "manifest-src 'self'",
   ...(isProd ? ['upgrade-insecure-requests'] : []),

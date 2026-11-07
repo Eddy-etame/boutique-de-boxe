@@ -101,9 +101,9 @@ function harness({
     },
     async fetch(url, options) {
       assert.ok(
-        url === 'https://inlett.vercel.app/api/challenge' ||
+        url === 'https://eam-inlet.vercel.app/api/challenge' ||
           url ===
-            'https://inlett.vercel.app/api/submit/ede03bbe-6591-4e33-a351-1ffe4f050895',
+            'https://eam-inlet.vercel.app/api/submit/ede03bbe-6591-4e33-a351-1ffe4f050895',
         'Unexpected endpoint; network never allowed',
       );
       calls.push({ url, options });
