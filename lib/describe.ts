@@ -1,23 +1,20 @@
 import { guides } from './editorial';
 /**
- * Description longue et originale de chaque modèle, écrite depuis ses faits :
- * objet, marque, famille, tailles, couleurs, matières, usage. Les tournures
- * varient d’une fiche à l’autre (choix déterministe par identifiant), les faits
- * ne varient jamais. Aucune phrase copiée d’un fournisseur, aucun stock, aucune
- * remise, aucune date.
+ * Le texte de chaque fiche, écrit depuis ses faits : objet, marque, famille, tailles, couleurs,
+ * matières, usage. Une seule tournure pour toutes les fiches : les faits changent d’un modèle à
+ * l’autre, la phrase qui les porte ne change pas. Aucune phrase copiée d’un fournisseur, aucun
+ * stock, aucune remise, aucune date.
  */
 import { categoryFor, estLourd, livraison, money, shop, tailleUnique, type Product } from './catalog';
 import { productObject } from './seo';
 import { dansLeRayon, ENFANT } from './rayons';
 
-/** Révision du contenu des fiches : retrait des niveaux et usages déduits sans preuve du modèle. */
-export const PRODUCT_EVIDENCE_REVISION = '2026-10-24';
+/**
+ * Révision du contenu des fiches. 24/10 : retrait des niveaux et usages déduits sans preuve du modèle.
+ * 09/11 : une seule tournure par phrase, la description réduite à ses faits (voir longDescription).
+ */
+export const PRODUCT_EVIDENCE_REVISION = '2026-11-09';
 
-const pick = <T>(id: string, list: T[], salt = 0): T => {
-  let h = salt;
-  for (const ch of id) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
-  return list[h % list.length];
-};
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const badBrand = (b: string) => !b || /pr[ée]ciser|^Sélection /i.test(b);
 
@@ -43,13 +40,15 @@ export function disciplinesOf(p: Product): string[] {
 }
 
 /* ------------------------------------------------------------------------------------------------
- * 20/10/2026 — fiches uniques et lisibles. L'audit du 19/10 mesurait 57 % de phrases partagées par
- * fiche : les phrases-gabarits (usage par famille, « Disciplines : … », entretien, FAQ de livraison)
- * étaient les mêmes sur des centaines de fiches. Chaque phrase dit maintenant un fait du modèle
- * (fiche technique, tailles, prix et rang, gamme de la marque, autres coloris, seuil du relais
- * offert). Le nom complet n'est écrit qu'une fois, dans la première phrase de la description ;
- * ensuite le texte reprend le modèle comme on parle : « les Blade », « ces gants », « ce short »,
- * accordé grâce à la table GENRES. La syntaxe varie par identifiant, les faits jamais.
+ * 20/10/2026 — chaque phrase porte un fait du modèle, et le texte reprend le modèle comme on parle :
+ * « les Blade », « ces gants », « ce short », accordé grâce à la table GENRES.
+ *
+ * 09/11/2026 — plus de tournures tirées au sort. Le 20/10, chaque fiche choisissait sa syntaxe parmi
+ * deux à quatre variantes (choix par identifiant) pour qu'aucune phrase ne se répète d'une fiche à
+ * l'autre. Search Console, rapport « Pages » du 9/11 : Google avait indexé 651 des 725 fiches explorées
+ * avant le 5/10, et aucune des 47 explorées depuis le 20/10. Un texte qui change de forme sans changer
+ * de fond se lit comme un texte « spinné ». Chaque phrase a désormais une seule forme ; la description
+ * se réduit au modèle, à sa pratique et à ses tailles, et la fiche technique reste dans le tableau.
  * ---------------------------------------------------------------------------------------------- */
 
 /** Mots d'un coloris ou d'une matière : ce qui suit la dernière virgule du nom se lit alors « en … ». */
@@ -235,24 +234,7 @@ function reprises(p: Product) {
   const nomSeul = a.modele && a.modele.length <= 28 && /^[A-Z0-9À-Ý]/.test(a.modele) && !/^\d+(?:[.,]\d+)?\s*(?:m|cm|kg|ml|l|oz)\b/i.test(a.modele) ? a.modele : '';
   const le = nomSeul ? (G.pl ? 'les ' : voyelle(nomSeul) ? 'l’' : G.f ? 'la ' : 'le ') + nomSeul : ce;
   const il = G.pl ? (G.f ? 'elles' : 'ils') : G.f ? 'elle' : 'il';
-  /** « les Blade », « le Black Acid Jazz », « la casquette Ferry » : l'article défini devant le nom. */
-  const leNom = (x: string) => (G.pl ? 'les ' : voyelle(x) ? 'l’' : G.f ? 'la ' : 'le ') + x;
-  const de = (x: string) => (x.startsWith('les ') ? 'des ' + x.slice(4) : x.startsWith('le ') ? 'du ' + x.slice(3) : 'de ' + x);
-  return { a, G, v, acc, ce, le, il, de, leNom };
-}
-
-/** Les caractéristiques de fabrication, dans l'ordre de la fiche technique ; le coloris d'abord. */
-const HORS_FABRICATION = /^(Référence|Référence interne|Type|Coloris|Modèle|Gamme|Taille)$/;
-function fabrication(p: Product): string[] {
-  const a = appellation(p);
-  const coloris = a.teinte ? a.teinte : p.specs?.Coloris ? communes(p.specs.Coloris).toLowerCase() : '';
-  const out = coloris ? [`coloris : ${coloris}`] : [];
-  for (const [k, v] of Object.entries(p.specs || {})) {
-    if (HORS_FABRICATION.test(k) || !v || v.length > 80 || out.length >= 5) continue;
-    const val = /mati[èe]re|composition|tissu|ext[ée]rieur|doublure|enveloppe/i.test(k) ? matieres(v) : communes(v);
-    out.push(`${k.toLowerCase()} : ${val}`);
-  }
-  return out;
+  return { a, G, v, acc, ce, le, il };
 }
 
 const taillesDe = (p: Product) => p.sizes.map((s) => s.split(',')[0].trim()).filter(Boolean);
@@ -274,48 +256,23 @@ function autresColoris(p: Product, all: Product[]): string[] {
   return [...new Set(freres.map((x) => appellation(x).variante).filter((v) => v && v !== a.variante))];
 }
 
-/** « à la boxe anglaise et aux sports de combat ». */
-const aPratiques = (p: Product) => pratiques(p).replace(/(^|, | et )(les?|la) /g, (_m, sep: string, art: string) => sep + (art === 'le' ? 'au ' : art === 'les' ? 'aux ' : 'à la '));
-
+/**
+ * La description : une phrase type, la même pour toutes les fiches (le modèle, sa pratique, sa famille
+ * quand le nom ne la dit pas), puis les tailles réellement proposées. Matières, fermeture, rembourrage
+ * et coloris sont dans le tableau des caractéristiques ; le prix et la livraison, dans le bloc d’achat
+ * et les questions de la fiche.
+ */
 export function longDescription(p: Product): string {
-  const { a, v, ce, le, il, de, leNom } = reprises(p);
+  const a = appellation(p);
   const family = categoryFor(p.category)?.name.toLowerCase() || 'matériel de sports de combat';
-  const objet = minuscule(a.objet);
-  const horsFamille = !objet.toLowerCase().startsWith(family.split(' ')[0]);
-  const nomComplet = `${a.base}${a.en}`;
-  const parts: string[] = [];
-
-  // 1. La seule phrase qui écrit le nom complet, coloris compris.
-  parts.push(
-    pick(p.id, [
-      `${cap(leNom(minuscule(nomComplet)))} ${v('se destine', 'se destinent')} ${aPratiques(p)}${horsFamille ? ` ; ${il} ${v('fait', 'font')} partie de la famille ${family}` : ''}.`,
-      `Pour ${pratiques(p)}, voici ${leNom(minuscule(nomComplet))}${horsFamille ? `, de la famille ${family}` : ''}.`,
-    ]),
-  );
-
-  // 2. La fabrication, depuis la fiche technique, et les tailles réelles dans la même phrase.
-  const fab = fabrication(p);
+  // « Sac de frappe… » dit déjà « sacs de frappe » : on compare au singulier du premier mot de la famille.
+  const horsFamille = !minuscule(a.objet).toLowerCase().startsWith(family.split(' ')[0].replace(/s$/, ''));
+  const parts = [`${cap(a.base)}${a.en}, pour ${pratiques(p)}${horsFamille ? ` ; famille : ${family}` : ''}.`];
   const t = taillesDe(p);
   const ecart = ecartDePrix(p);
-  if (t.length > 1) fab.push(`${t.length} tailles : ${t.join(', ')}${ecart ? ` (${ecart})` : ''}`);
-  else if (t.length === 1 && !/taille unique/i.test(t[0])) fab.push(`taille : ${t[0]}`);
-  const unique = (t.length === 1 && /taille unique/i.test(t[0])) || (!t.length && tailleUnique(p));
-  if (unique) fab.push('taille unique');
-  if (fab.length === 1 && fab[0].startsWith('coloris')) parts.push(`${cap(fab[0])}.`);
-  else if (fab.length)
-    parts.push(
-      pick(p.id, [`Fiche technique ${de(le)} — ${fab.join(' ; ')}.`, `Côté fabrication — ${fab.join(' ; ')}.`, `Ce que dit la fiche technique — ${fab.join(' ; ')}.`, `${cap(ce)} en quelques faits — ${fab.join(' ; ')}.`], 1),
-    );
-
-  // 4. Le prix, et ce qu'il fait de la livraison.
-  if (p.price > 0)
-    parts.push(
-      estLourd(p)
-        ? `Matériel lourd : livraison à domicile sur devis, en ${livraison.zone} ; écrivez-nous avec ce modèle et votre code postal.`
-        : p.price >= shop.livraison.franco
-          ? pick(p.id, [`À ${money(p.price)} TTC, le point relais est offert dès ce seul achat.`, `Prix : ${money(p.price)} TTC, de quoi recevoir la commande en point relais sans frais.`], 3)
-          : pick(p.id, [`À ${money(p.price)} TTC, il reste ${money(shop.livraison.franco - p.price)} d’achats avant le point relais offert.`, `Prix : ${money(p.price)} TTC ; le point relais devient gratuit avec ${money(shop.livraison.franco - p.price)} d’achats de plus.`], 3),
-    );
+  if (t.length > 1) parts.push(`Tailles : ${t.join(', ')}${ecart ? `, ${ecart}` : ''}.`);
+  else if (t.length === 1) parts.push(/taille unique/i.test(t[0]) ? 'Taille unique.' : `Taille : ${t[0]}.`);
+  else if (tailleUnique(p)) parts.push('Taille unique.');
   return parts.join(' ');
 }
 /**
@@ -334,12 +291,7 @@ export function placeDansLaFamille(p: Product, all: Product[]): string[] {
   const compte = (k: number, un: string, plusieurs: string) => (k === 0 ? `aucun n’est ${un}` : k === 1 ? `un seul est ${un}` : `${k} sont ${plusieurs}`);
   const autres = autresColoris(p, all);
   if (autres.length)
-    out.push(
-      pick(p.id, [
-        `${cap(le)} ${v('existe', 'existent')} aussi en ${autres.join(' / ')} ; cette fiche présente ${a.teinte ? 'le coloris' : 'la version'} ${a.variante}.`,
-        `Autres ${a.teinte ? 'coloris' : 'versions'} au catalogue : ${autres.join(' / ')} ; ici, ${a.teinte ? 'le' : 'la version'} ${a.variante}.`,
-      ], 8),
-    );
+    out.push(`Autres ${a.teinte ? 'coloris' : 'versions'} au catalogue : ${autres.join(' / ')} ; cette fiche présente ${a.teinte ? 'le coloris' : 'la version'} ${a.variante}.`);
   if (pairs.length >= 6) {
     const prix = pairs.map((x) => x.price).sort((x, y) => x - y);
     const moins = prix.filter((x) => x < p.price).length;
@@ -375,10 +327,7 @@ export function placeDansLaFamille(p: Product, all: Product[]): string[] {
       else gamme = ` ; c’est le seul modèle ${a.marque} de la famille`;
     }
     out.push(
-      pick(p.id, [
-        `Parmi les ${n} modèles${enfant(p) ? ' pour enfant' : ''} de la famille « ${family.name} », ${compte(moins, 'moins cher', 'moins chers')} et ${compte(plus, 'plus cher', 'plus chers')} : à ${money(p.price)}, ${rang}, pour un prix médian de ${money(median)}${gamme}.`,
-        `À ${money(p.price)}, ${rang} parmi les ${n} modèles${enfant(p) ? ' pour enfant' : ''} de la famille « ${family.name} » (prix médian : ${money(median)})${gamme}.`,
-      ], 7),
+      `Parmi les ${n} modèles${enfant(p) ? ' pour enfant' : ''} de la famille « ${family.name} », ${compte(moins, 'moins cher', 'moins chers')} et ${compte(plus, 'plus cher', 'plus chers')} : à ${money(p.price)}, ${rang}, pour un prix médian de ${money(median)}${gamme}.`,
     );
   }
   return out;
@@ -405,10 +354,9 @@ function gestesEntretien(p: Product): string {
 /** Entretien : la consigne propre à la fiche quand elle existe, sinon les gestes de sa famille, avec la matière. */
 export function careAdvice(p: Product): string {
   if (p.care) return p.care;
-  const { ce, de } = reprises(p);
+  const { ce } = reprises(p);
   const mat = p.specs?.['Matières'] || p.specs?.['Matière'] || p.specs?.['Matière extérieure'] || '';
-  const sujet = `${ce}${mat ? ` en ${matieres(mat)}` : ''}`;
-  return pick(p.id, [`Pour ${sujet} : ${gestesEntretien(p)}.`, `Entretien ${de(sujet)} : ${gestesEntretien(p)}.`], 9);
+  return `Pour ${ce}${mat ? ` en ${matieres(mat)}` : ''} : ${gestesEntretien(p)}.`;
 }
 
 /**
@@ -418,14 +366,13 @@ export function careAdvice(p: Product): string {
  */
 export function productFaq(p: Product, all: Product[] = []): { question: string; answer: string }[] {
   const family = categoryFor(p.category);
-  const { G, v, acc, ce, le, il, de } = reprises(p);
+  const { G, v, acc, ce, le, il } = reprises(p);
   const guideTitle = family?.guide === 'guide-des-tailles' || !family?.guide ? 'Guide des tailles' : guides.find((x) => x.slug === family.guide)?.title || 'Guide des tailles';
   const sizes = taillesDe(p);
   const level = practiceLevel(p);
   const heavy = estLourd(p);
   const ecart = ecartDePrix(p);
   const autres = autresColoris(p, all);
-  const pron = (x: string) => x.replace(/^(\S+)/, (verbe) => `${verbe}-${il}`);
   const size =
     sizes.length > 1
       ? `${sizes.length} tailles : ${sizes.join(', ')} ; choisissez d’après l’usage, écrivez-nous en cas de doute entre deux tailles, et ouvrez le guide « ${guideTitle} ».`
@@ -438,27 +385,25 @@ export function productFaq(p: Product, all: Product[] = []): { question: string;
   // Sans taille renseignée, la question n'a de sens que pour ce qui se porte (gants, protections, textile, chaussures, kimonos).
   const sePorte = ['gants-de-boxe', 'gants-mma', 'protections-boxe', 'textile-boxe', 'chaussures-boxe', 'arts-martiaux'].includes(p.category);
   return [
-    ...(sizes.length || sePorte ? [{ question: pick(p.id, [`Quelle taille choisir pour ${le} ?`, `Comment choisir la taille ${de(le)} ?`, `${cap(ce)} : quelles tailles ?`], 11), answer: size }] : []),
+    ...(sizes.length || sePorte ? [{ question: `Quelle taille choisir pour ${le} ?`, answer: size }] : []),
     {
-      question: pick(p.id, level
-        ? [`Pour quelle pratique et quel niveau ?`, `À qui ${v('s’adresse', 's’adressent')} ${ce} ?`, `Pour quel niveau ${v('est', 'sont')} ${acc('pensé')} ${ce} ?`]
-        : ['Pour quelle pratique ?', `À quelle pratique ${v('est', 'sont')} ${acc('destiné')} ${ce} ?`, `Quelles disciplines pour ${ce} ?`], 12),
+      question: level ? 'Pour quelle pratique et quel niveau ?' : 'Pour quelle pratique ?',
       answer: `${cap(le)} ${v('vise', 'visent')} ${pratiques(p)}${level ? ` ; niveau indiqué sur la fiche : ${level}` : ''}${p.audience === 'enfant' ? ' ; modèle enfant' : ''}.`,
     },
     {
-      question: pick(p.id, [`Combien ${v('coûte', 'coûtent')} ${le}, et sous quel délai ?`, `Quel prix, et quand ${pron(v('part', 'partent'))} ?`], 13),
+      question: `Combien ${v('coûte', 'coûtent')} ${le}, et sous quel délai ?`,
       answer: heavy
         ? `${money(p.price)} TTC, hors livraison ; en matériel lourd, la livraison se fait sur devis : écrivez-nous avec votre code postal.`
         : `${money(p.price)} TTC${ecart ? ' (' + ecart + ')' : ''}, hors livraison ; après le paiement par carte, ${il} ${v('part', 'partent')} sous ${shop.delais.expedition}.`,
     },
     {
-      question: heavy ? 'Comment se passe la livraison du matériel lourd ?' : pick(p.id, ['Comment se passe la livraison ?', `Quels frais de port pour ${ce} ?`, 'Le point relais est-il offert ?'], 14),
+      question: heavy ? 'Comment se passe la livraison du matériel lourd ?' : 'Comment se passe la livraison ?',
       answer: heavy
         ? `À domicile, sur devis, en ${livraison.zone} : écrivez-nous avec le modèle et votre code postal ; le point relais n’accepte pas les colis lourds.`
         : `En ${livraison.zone} : ${livraison.tarifs} ; ${seuil}.`,
     },
     {
-      question: pick(p.id, [`Peut-on retourner ou échanger ${ce} ?`, 'Retour ou échange possibles ?', `Et si ${le} ne ${v('convient', 'conviennent')} pas ?`], 15),
+      question: `Peut-on retourner ou échanger ${ce} ?`,
       answer: `Retour possible sous quatorze jours après réception, ${acc('non utilisé')} et dans ${G.pl ? 'leur' : 'son'} emballage, à vos frais${changer.length ? ` ; pour changer ${changer.join(' ou ')}, écrivez-nous avec la référence de la commande` : ' ; pour un échange, écrivez-nous avec la référence de la commande'}.`,
     },
   ];

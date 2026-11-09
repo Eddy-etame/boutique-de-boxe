@@ -109,7 +109,25 @@ test('authored use and care, PU care and object-specific bottle care stay intact
   const bottle = bySlug('bouteille-650ml-infinity-noir');
   assert.doesNotMatch(careAdvice(bottle), /laver à 30|filet|sécher à plat|nourrir le cuir/);
   assert.match(careAdvice(bottle), /notice du fabricant/);
-  assert.equal(PRODUCT_EVIDENCE_REVISION, '2026-10-24');
+  assert.equal(PRODUCT_EVIDENCE_REVISION, '2026-11-09');
+});
+
+// 09/11/2026 : Google n'indexait plus aucune fiche explorée après la réécriture du 20/10, qui tirait la
+// syntaxe de chaque phrase parmi plusieurs variantes. Chaque phrase garde désormais une seule forme.
+test('every product sentence has one wording: only the facts change from one product to the next', () => {
+  for (const p of all) {
+    const description = longDescription(p);
+    assert.match(description, /^[^;]+?, pour [^.]+?(?: ; famille : [^.]+)?\.(?: Tailles? : .+\.| Taille unique\.)?$/, p.slug + ' description');
+    if (!p.care) assert.match(careAdvice(p), /^Pour .+ : .+\.$/, p.slug + ' care');
+    for (const line of placeDansLaFamille(p, all)) assert.match(line, /^(?:Autres (?:coloris|versions) au catalogue : |Parmi les \d+ modèles)/, p.slug + ' comparison');
+    const questions = productFaq(p, all).map((f) => f.question);
+    for (const q of questions)
+      assert.match(
+        q,
+        /^(?:Quelle taille choisir pour .+ \?|Pour quelle pratique(?: et quel niveau)? \?|Combien coûte(?:nt)? .+, et sous quel délai \?|Comment se passe la livraison(?: du matériel lourd)? \?|Peut-on retourner ou échanger .+ \?)$/,
+        p.slug + ' question',
+      );
+  }
 });
 
 test('glove guide metadata and weight table report actual catalogue facts without keyword repetition or use assignments', () => {
