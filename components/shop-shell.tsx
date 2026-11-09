@@ -108,9 +108,9 @@ function RayonsMenu() {
               )))}
             </div>
           </div>
-          <a className="rayons-all" href="/boutique-boxe/" onClick={close}>
+          <a className="rayons-all" href="/materiel-sport-de-combat/" onClick={close}>
             <span className="eyebrow">Tout le catalogue</span>{' '}
-            <strong>Parcourir la boutique boxe</strong>{' '}
+            <strong>Parcourir toute la boutique</strong>{' '}
             <small>Chaque modèle avec ses tailles réelles et son prix TTC.</small>
             <ArrowUpRight size={22} aria-hidden="true" />
           </a>
@@ -216,7 +216,7 @@ export function Header() {
                     </a>
                   ))}
                 </div>
-                <a href="/boutique-boxe/" onClick={() => setMenu(false)}>
+                <a href="/materiel-sport-de-combat/" onClick={() => setMenu(false)}>
                   Toute la boutique <ArrowUpRight />
                 </a>
                 <a href="/guides/" onClick={() => setMenu(false)}>
@@ -254,13 +254,13 @@ export function Footer() {
         <nav className="footer-routes" aria-label="Votre prochaine étape">
           <a
             className="footer-route footer-route-primary"
-            href="/boutique-boxe/"
+            href="/materiel-boxe/"
           >
             <span className="footer-route-index" aria-hidden="true">
               01
             </span>{' '}
             <span>
-              <strong>Boutique boxe</strong>{' '}
+              <strong>Tout le matériel de boxe</strong>{' '}
               <small>Trouver mon équipement&nbsp;: gants, protections, textile et sacs.</small>
             </span>
             <ArrowUpRight aria-hidden="true" />
@@ -314,10 +314,6 @@ export function Footer() {
             Matériel de boxe, MMA et arts martiaux. Des modèles à examiner, des
             guides pour choisir. {shop.ventesOuvertes ? 'Livraison dans toute la France.' : 'Livraison en France à l’ouverture des ventes.'}
           </p>
-          <a href="/boutique-sport-de-combat/" className="footer-france">
-            La boutique sport de combat en France, ville par ville{' '}
-            <ArrowUpRight size={15} aria-hidden="true" />
-          </a>{' '}
           {/* Près de chez vous (30/10/2026) : les deux pages-villes que l’on vise, en clair sur chaque page. */}
           <span className="footer-villes">
             Près de chez vous&nbsp;: <a href="/boutique-de-boxe-toulouse/">Boutique de boxe Toulouse</a> ·{' '}

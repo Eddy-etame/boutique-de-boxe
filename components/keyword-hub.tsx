@@ -7,7 +7,7 @@ import { SUBFAMILIES, subfamilyProducts } from '@/lib/subfamilies';
 import { ozFacets, colourFacets, brandFamilyFacet } from '@/lib/facets';
 import { ProductCard } from './shop-interactions';
 import { dansLeRayon } from '@/lib/rayons';
-import { VILLES, REGIONS, CARREFOUR, FRAPPE, villePath } from '@/lib/villes';
+import { VILLES, REGIONS, FRAPPE, villePath } from '@/lib/villes';
 import { jsonLd } from '@/lib/json-ld';
 import { buyingDecision } from '@/lib/buying-brief';
 
@@ -59,9 +59,6 @@ function Villes({ scope, name }: { scope: string; name: string }) {
             <a href={villePath(idf.slug)}>{'Boutique de boxe ' + idf.nom}</a>
           </li>
         )}
-        <li>
-          <a href={'/' + CARREFOUR + '/'}>Toutes les grandes villes</a>
-        </li>
       </ul>
     </div>
   );

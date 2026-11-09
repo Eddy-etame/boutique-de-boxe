@@ -4,7 +4,7 @@ import { brandsOf } from '@/lib/brands';
 import { allFacets } from '@/lib/facets';
 import { guides, services } from '@/lib/editorial';
 import { graph, urlOf, webPageNode, pageKeywords } from '@/lib/seo';
-import { VILLES, REGIONS, CARREFOUR, villePath } from '@/lib/villes';
+import { VILLES, REGIONS, villePath } from '@/lib/villes';
 import { Breadcrumb } from './shop-shell';
 
 /**
@@ -38,7 +38,7 @@ function Groupe({ titre, liens }: { titre: string; liens: Lien[] }) {
 export function PlanDuSite({ all }: { all: Product[] }) {
   const sousFamille = (s: (typeof SUBFAMILIES)[number]) => ({ href: '/' + s.slug + '/', nom: s.name, n: subfamilyProducts(s, all).length });
   const facettes = allFacets(all);
-  const entrees = ['materiel-boxe', 'boutique-boxe', 'materiel-mma', 'boutique-arts-martiaux', 'materiel-sport-de-combat'];
+  const entrees = ['materiel-boxe', 'materiel-mma', 'materiel-sport-de-combat'];
   const groupes: { titre: string; liens: Lien[] }[] = [
     {
       titre: 'Les entrées du catalogue',
@@ -70,7 +70,7 @@ export function PlanDuSite({ all }: { all: Product[] }) {
     },
     {
       titre: 'Ville par ville',
-      liens: [{ href: '/' + CARREFOUR + '/', nom: 'Boutique sport de combat France' }, ...[...VILLES, ...REGIONS].map((v) => ({ href: villePath(v.slug), nom: 'Boutique de boxe ' + v.nom }))],
+      liens: [...VILLES, ...REGIONS].map((v) => ({ href: villePath(v.slug), nom: 'Boutique de boxe ' + v.nom })),
     },
     {
       titre: 'La boutique',

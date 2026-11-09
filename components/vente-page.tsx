@@ -266,7 +266,6 @@ export function VentePage({ all }: { all: Product[] }) {
           <h2>Entrer dans le catalogue.</h2>
           {spaced([
             <ArrowLink key="m" href="/materiel-boxe/">Matériel de boxe</ArrowLink>,
-            <ArrowLink key="b" href="/boutique-boxe/">Boutique boxe</ArrowLink>,
             <ArrowLink key="mma" href="/materiel-mma/">Matériel MMA</ArrowLink>,
             <ArrowLink key="sc" href="/materiel-sport-de-combat/">Matériel sport de combat</ArrowLink>,
           ])}

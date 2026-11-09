@@ -148,7 +148,9 @@ test('empty catalogue remains renderable without fictional products', () => {
   assert.ok(html.includes('id="lieux"'));
 });
 
-test('dates represent actual editorial changes and do not refresh the unchanged national hub', () => {
+test('dates represent actual editorial changes; the national hub is merged into the home page', () => {
   assert.equal(pages.VILLES_DATE, '2026-10-24');
-  assert.equal(pages.CARREFOUR_DATE, '2026-10-23');
+  // 09/11/2026 : le carrefour « Boutique sport de combat France » est fusionné dans l'accueil (proxy.ts, 308).
+  assert.equal(pages.CARREFOUR_DATE, undefined);
+  assert.equal(pages.CarrefourPage, undefined);
 });

@@ -8,7 +8,7 @@ import { GUIDES_RAYONS, guideEnTexte, faits, prixAffiche } from './guides-rayons
 import { guides, services } from './editorial';
 import { ATTRIBUTION, EDITORIAL_DATE, familiesWithCounts, urlOf } from './seo';
 import { QUERY_MAP } from './seo-copy';
-import { VILLES, REGIONS, CARREFOUR, SOURCE, villePath, regionTotal, franceEnChiffres, rang } from './villes';
+import { VILLES, REGIONS, SOURCE, villePath, regionTotal, franceEnChiffres, rang } from './villes';
 import { SUBFAMILIES, subfamilyProducts, subfamilyFor } from './subfamilies';
 import { brandsOf } from './brands';
 import { ozFacets, brandFamilyFacets, brandSubfamilyFacets } from './facets';
@@ -81,7 +81,7 @@ function prices(products: Product[]) {
 function villes() {
   return [
     '## Boutique de boxe, ville par ville (recensement du ministère des Sports)',
-    `Carrefour : [Boutique sport de combat France](${urlOf('/' + CARREFOUR + '/')}). Source des chiffres : ${SOURCE.nom}, ${SOURCE.editeur}, ${SOURCE.licence}, mis à jour le ${SOURCE.maj} ; populations légales de l’Insee. Une page par commune de plus de ${SOURCE.seuilHabitants.toLocaleString('fr-FR')} habitants comptant au moins ${SOURCE.seuil} lieux, dont ${SOURCE.seuilFrappe} où l’on boxe. Le matériel de chaque discipline : [Matériel sport de combat](${urlOf('/materiel-sport-de-combat/')}).`,
+    `Source des chiffres : ${SOURCE.nom}, ${SOURCE.editeur}, ${SOURCE.licence}, mis à jour le ${SOURCE.maj} ; populations légales de l’Insee. Une page par commune de plus de ${SOURCE.seuilHabitants.toLocaleString('fr-FR')} habitants comptant au moins ${SOURCE.seuil} lieux, dont ${SOURCE.seuilFrappe} où l’on boxe. Le matériel de chaque discipline : [Matériel sport de combat](${urlOf('/materiel-sport-de-combat/')}).`,
     ...franceEnChiffres(),
     ...VILLES.map((v) => `- [Boutique de boxe ${v.nom}](${urlOf(villePath(v.slug))}) : ${v.lieux.length} lieux de boxe et d’arts martiaux, dont ${v.frappe} où l’on boxe et ${v.boxe} salles de boxe ; un lieu pour ${v.habitantsParLieu.toLocaleString('fr-FR')} habitants (${rang(v.rangDensite)} des ${VILLES.length} grandes villes) ; discipline la plus déclarée : ${Object.keys(v.parDiscipline)[0] || '—'}.`),
     ...REGIONS.map((r) => {
@@ -152,7 +152,7 @@ export function llmsTxt(products: Product[]) {
     ...fam.map((f) => `- [${f.name}](${f.url}) : ${fr(f.count)} modèles. ${f.label}`),
     `- Vente : [Vente matériel de boxe](${urlOf('/vente-materiel-de-boxe/')}) — qui vend, les prix par rayon, la livraison, le retour.`,
     `- Information : [Les sports de combat](${urlOf('/sports-de-combat/')}) et [les arts martiaux](${urlOf('/les-arts-martiaux/')}), discipline par discipline, avec le nombre de lieux qui les déclarent en France (recensement du ministère des Sports).`,
-    `- Pages d’entrée par discipline : [Matériel de boxe](${urlOf('/materiel-boxe/')}), [Boxe thaï](${urlOf('/materiel-boxe-thai/')}), [Kick-boxing](${urlOf('/materiel-kick-boxing/')}), [Boxe française](${urlOf('/materiel-boxe-francaise/')}), [MMA](${urlOf('/materiel-mma/')}), [JJB et grappling](${urlOf('/equipement-jjb/')}), [Arts martiaux](${urlOf('/boutique-arts-martiaux/')}), [Matériel sport de combat, tout le catalogue](${urlOf('/materiel-sport-de-combat/')}).`,
+    `- Pages d’entrée par discipline : [Matériel de boxe](${urlOf('/materiel-boxe/')}), [Boxe thaï](${urlOf('/materiel-boxe-thai/')}), [Kick-boxing](${urlOf('/materiel-kick-boxing/')}), [Boxe française](${urlOf('/materiel-boxe-francaise/')}), [MMA](${urlOf('/materiel-mma/')}), [JJB et grappling](${urlOf('/equipement-jjb/')}), [Arts martiaux](${urlOf('/arts-martiaux/')}), [Matériel sport de combat, tout le catalogue](${urlOf('/materiel-sport-de-combat/')}).`,
     '',
     '## Guides d’achat (réponses courtes, sourcées)',
     ...guides.map((g) => `- [${g.title}](${urlOf('/guides/' + g.slug + '/')}) — ${g.description}`),

@@ -26,7 +26,9 @@ function descriptionAccueil(items: { brand: string }[]) {
       .filter((b) => b && !/pr[ée]ciser|^Sélection /i.test(b))
       .map((b) => b.toLowerCase()),
   ).size;
-  return `${nombre(items.length)} modèles pour la boxe, le MMA et les arts martiaux, ${nombre(marques)} marques, prix TTC. Livraison en ${livraison.zone} : point relais ${livraison.relais}, offert dès ${livraison.franco}.`;
+  // 09/11/2026 : l'accueil porte aussi « boutique boxe » et « boutique sport de combat France », dont les pages
+  // doublons sont fusionnées (proxy.ts) ; la description dit ce qu'est la page, en moins de 160 caractères.
+  return `Boutique de boxe en ligne : ${nombre(items.length)} modèles de boxe, MMA, arts martiaux et sports de combat, ${nombre(marques)} marques, prix TTC. Point relais ${livraison.relais}, offert dès ${livraison.franco}.`;
 }
 
 export async function generateMetadata(): Promise<Metadata> {

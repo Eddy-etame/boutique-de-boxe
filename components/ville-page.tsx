@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { categoryFor, getCategoryProducts, listItem, shop, money, livraison as frais, type Product } from '@/lib/catalog';
-import { SUBFAMILIES, subfamilyFor, subfamilyProducts } from '@/lib/subfamilies';
+import { categoryFor, getCategoryProducts, listItem, shop, livraison as frais, type Product } from '@/lib/catalog';
+import { SUBFAMILIES, subfamilyProducts } from '@/lib/subfamilies';
 import { graph, urlOf, webPageNode, faqNode } from '@/lib/seo';
 import { ogImage } from '@/lib/og';
 import { Breadcrumb, ArrowLink } from './shop-shell';
@@ -8,28 +8,23 @@ import { ProductCard } from './shop-interactions';
 import { SeoBody } from './seo-body';
 import { spaced } from '@/lib/spaced';
 import { dansLeRayon, ENFANT } from '@/lib/rayons';
-import { faits } from '@/lib/guides-rayons';
-import { brandsOf, MIN_BRAND_PRODUCTS } from '@/lib/brands';
-import { RAYONS_TYPE, GUIDES, nomDeRayon } from './liens-du-site';
 import {
-  SOURCE, FRANCE, VILLES, REGIONS, CARREFOUR, villePath, dateSource, regionTotal, regionDisciplines,
+  SOURCE, VILLES, REGIONS, villePath, dateSource, regionTotal, regionDisciplines,
   CLUBS_BOXING_CENTER, NOBLE_ART, A_COTE, BALMA, RAYON, a, de, dansDepartement, siteDe, fine, estBoxingCenter,
   villeTitre, villeDescription, villeDensite, villeChapeau, villeAchatChapeau, villeSections, villeFaq, villeKit, parArrondissement, tour,
-  regionTitre, regionDescription, regionChapeau, regionAchatChapeau, regionFaq, livraison, livraisonPartout, VILLES_COMMERCE_REVISION,
-  SPORTS_BOUTIQUE, CARREFOUR_REVISION, carrefourTitre, carrefourDescription, carrefourChapeau, carrefourFaq, carrefourMarques, franceEnChiffres, type SportBoutique,
+  regionTitre, regionDescription, regionChapeau, regionAchatChapeau, regionFaq, livraison, VILLES_COMMERCE_REVISION,
   VILLE_INDEXEE,
   type Ville, type Region, type Lieu, type Groupe,
 } from '@/lib/villes';
 
 /**
- * Les pages « Boutique de boxe <ville> », la page Île-de-France et le carrefour
- * « Boutique sport de combat France » (29/09). Le contenu propre à chaque ville
+ * Les pages « Boutique de boxe <ville> » et la page Île-de-France (29/09). Leur carrefour
+ * « Boutique sport de combat France » a été fusionné dans l'accueil le 09/11/2026 (proxy.ts, 308) :
+ * il reprenait tout le catalogue de l'accueil, et Google le refusait. Le contenu propre à chaque ville
  * vient de lib/villes.ts et du Recensement des équipements sportifs ; ce fichier
  * ne fait que le poser dans la page et dans le graphe.
  */
 
-const HUB_PATH = '/' + CARREFOUR + '/';
-const HUB_CRUMB = { label: 'Boutique sport de combat', href: HUB_PATH };
 const MATERIEL = '/materiel-sport-de-combat/';
 const IDF = ['75', '92', '93', '94', '78', '91', '95', '77'];
 
@@ -57,9 +52,6 @@ export const regionMetadata = (r: Region) =>
     'salle de boxe ' + r.nom,
     'matériel de boxe ' + r.nom,
   ], false);
-/** Le carrefour compte ses modèles dans le titre et la description : il lui faut le catalogue du jour. */
-export const carrefourMetadata = (all: Product[]) =>
-  meta(HUB_PATH, carrefourTitre(all.length), carrefourDescription(all.length), CARREFOUR, ['boutique sport de combat france', 'boutique sport de combat', 'boutique de boxe en ligne', 'matériel sport de combat']);
 
 /* ── Morceaux partagés ─────────────────────────────────────────────────── */
 
@@ -356,7 +348,7 @@ function Voisines({ v }: { v: Ville }) {
             <a href={villePath(idf.slug)}>{`Boutique de boxe ${idf.nom}, hors Paris`}</a>{' '}
           </>
         ) : null}
-        <a href={HUB_PATH}>{fine('Toutes les villes : la boutique sport de combat France')}</a>
+        <a href="/">{fine('Toute la boutique, livrée partout en France')}</a>
       </nav>
     </section>
   );
@@ -449,8 +441,6 @@ function adressePostale(adresse: string) {
 /** Date de révision des pages-villes : recensement, ouverture ou vrai changement éditorial.
  *  La même date dans le plan du site (app/sitemap.ts) et dans le graphe de la page. */
 export const VILLES_DATE = [SOURCE.maj, ...(shop.ventesOuvertes ? [shop.ouverture.iso] : []), VILLES_COMMERCE_REVISION].sort().at(-1)!;
-/** Le carrefour est daté par sa dernière refonte quand elle est plus récente que le recensement. */
-export const CARREFOUR_DATE = [SOURCE.maj, ...(shop.ventesOuvertes ? [shop.ouverture.iso] : []), CARREFOUR_REVISION].sort().at(-1)!;
 const sourceNode = () => ({ '@type': 'Dataset', name: SOURCE.nom, url: SOURCE.url, license: SOURCE.licenceUrl, creator: { '@type': 'GovernmentOrganization', name: 'Ministère des Sports' }, dateModified: SOURCE.maj });
 
 /* ── Page d'une ville ──────────────────────────────────────────────────── */
@@ -463,7 +453,7 @@ export function VillePage({ ville: v, all }: { ville: Ville; all: Product[] }) {
   const nomListe = `Les lieux de boxe et d’arts martiaux ${de(v.nom)}`;
   return (
     <main id="contenu" className="page-wrap ville-page">
-      <Breadcrumb items={[HUB_CRUMB, { label: 'Boutique de boxe ' + v.nom }]} />
+      <Breadcrumb items={[{ label: 'Boutique de boxe ' + v.nom }]} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -589,7 +579,7 @@ export function RegionPage({ region: r, all }: { region: Region; all: Product[] 
   const pages = VILLES.filter((v) => IDF.includes(v.codeDepartement) && v.slug !== 'paris');
   return (
     <main id="contenu" className="page-wrap ville-page">
-      <Breadcrumb items={[HUB_CRUMB, { label: 'Boutique de boxe ' + r.nom }]} />
+      <Breadcrumb items={[{ label: 'Boutique de boxe ' + r.nom }]} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -670,284 +660,9 @@ export function RegionPage({ region: r, all }: { region: Region; all: Product[] 
       <section className="ville-ailleurs">
         <h2>La boutique de boxe, partout en France.</h2>
         <nav className="subfamily-links" aria-label="Toutes les villes">
-          <a href={HUB_PATH}>{fine('Toutes les villes : la boutique sport de combat France')}</a>{' '}
+          <a href="/">{fine('Toute la boutique, livrée partout en France')}</a>{' '}
           <a href={MATERIEL}>Matériel sport de combat</a>
         </nav>
-      </section>
-    </main>
-  );
-}
-
-/* ── Carrefour « Boutique sport de combat France » ─────────────────────── */
-
-/** Les grandes villes groupées par région (la page Île-de-France avec les siennes), les régions les plus dotées d'abord. */
-function parRegion() {
-  const o = new Map<string, { slug: string; nom: string; lieux: number }[]>();
-  for (const v of VILLES) o.set(v.region, [...(o.get(v.region) || []), { slug: v.slug, nom: v.nom, lieux: v.lieux.length }]);
-  for (const r of REGIONS) o.set(r.nom, [...(o.get(r.nom) || []), { slug: r.slug, nom: r.nom + ' (hors Paris)', lieux: regionTotal(r).lieux }]);
-  return [...o.entries()].map(([region, villes]) => [region, villes.sort((x, y) => y.lieux - x.lieux)] as const).sort((x, y) => y[1].length - x[1].length || y[1][0].lieux - x[1][0].lieux);
-}
-
-/** Le matériel par sport et par rayon : modèles, premier prix, marques, et les familles qui pèsent le plus. */
-function rayonsDuCarrefour(all: Product[]) {
-  // « gants MMA », « équipement d’entraînement » : la première lettre seule passe en minuscule, le sigle reste.
-  const nomFamille = (slug: string) => {
-    const nom = nomDeRayon(slug, categoryFor(slug)?.name || slug);
-    return nom.charAt(0).toLowerCase() + nom.slice(1);
-  };
-  const compte = (slug: string) => {
-    const sub = subfamilyFor(slug);
-    const cat = categoryFor(slug);
-    const items = sub ? subfamilyProducts(sub, all) : cat ? getCategoryProducts(cat, all) : [];
-    const f = faits(slug, items);
-    const familles = new Map<string, number>();
-    for (const p of items) familles.set(p.category, (familles.get(p.category) || 0) + 1);
-    return { n: items.length, min: f.min, marques: f.marques.length, familles: [...familles.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3).map(([c]) => nomFamille(c)) };
-  };
-  const sports: SportBoutique[] = SPORTS_BOUTIQUE.map((s) => ({ ...s, ...compte(s.slug) })).filter((s) => s.n > 0);
-  const types: SportBoutique[] = RAYONS_TYPE.map((r) => ({ nom: r.label, slug: r.href.slice(1, -1), ...compte(r.href.slice(1, -1)) })).filter((t) => t.n > 0);
-  return { sports, types };
-}
-
-/** Un tableau du carrefour : une ligne par sport ou par rayon, la ligne « Toutes les disciplines » en dernier. */
-function TableauRayons({ id, caption, lignes, detail, total, note }: { id: string; caption: string; lignes: SportBoutique[]; detail?: boolean; total?: { n: number; min: number; marques: number }; note: string }) {
-  return (
-    <div className="hub-prices salles-table" id={id}>
-      <table>
-        <caption>{caption}</caption>
-        <thead>
-          <tr>
-            <th scope="col">{detail ? 'Sport' : 'Rayon'}</th>
-            <th scope="col">Modèles</th>
-            <th scope="col">Dès</th>
-            <th scope="col">Marques</th>
-            {detail && <th scope="col">Ce qui pèse le plus</th>}
-          </tr>
-        </thead>
-        <tbody>
-          {lignes.map((l) => (
-            <tr key={l.slug}>
-              <th scope="row">
-                <a href={'/' + l.slug + '/'}>{l.nom}</a>
-              </th>
-              <td data-label="Modèles">{fr(l.n)}</td>
-              <td data-label="Dès">{money(l.min)}</td>
-              <td data-label="Marques">{fr(l.marques)}</td>
-              {detail && <td data-label="Ce qui pèse le plus">{l.familles.join(', ')}</td>}
-            </tr>
-          ))}
-          {total && (
-            <tr>
-              <th scope="row">
-                <a href={MATERIEL}>Toutes les disciplines</a>
-              </th>
-              <td data-label="Modèles">{fr(total.n)}</td>
-              <td data-label="Dès">{money(total.min)}</td>
-              <td data-label="Marques">{fr(total.marques)}</td>
-              {detail && <td data-label="Ce qui pèse le plus">tout le catalogue, les familles du combat d’abord</td>}
-            </tr>
-          )}
-        </tbody>
-      </table>
-      <p className="hub-prices-note">{note}</p>
-    </div>
-  );
-}
-
-export function CarrefourPage({ all }: { all: Product[] }) {
-  const { sports, types } = rayonsDuCarrefour(all);
-  const total = faits('materiel-sport-de-combat', all);
-  const marques = brandsOf(all);
-  const tete = marques.slice(0, 12);
-  const lignes = [
-    ...VILLES.map((v) => ({ slug: v.slug, nom: v.nom, region: v.region, lieux: v.lieux.length, boxe: v.boxe, frappe: v.frappe, densite: v.habitantsParLieu as number | null })),
-    ...REGIONS.map((r) => {
-      const t = regionTotal(r);
-      return { slug: r.slug, nom: r.nom + ' (hors Paris)', region: r.nom, lieux: t.lieux, boxe: t.boxe, frappe: t.frappe, densite: null as number | null };
-    }),
-  ].sort((x, y) => y.lieux - x.lieux);
-  const lieux = lignes.reduce((n, l) => n + l.lieux, 0);
-  const titre = carrefourTitre(all.length);
-  const description = carrefourDescription(all.length);
-  const faq = carrefourFaq({ modeles: all.length, marques: total.marques.length, sports });
-  const [chiffres1, chiffres2] = franceEnChiffres();
-  const guides = GUIDES.filter((g) => ['/guides/choisir-gants-boxe/', '/guides/debuter-boxe/', '/guides/debuter-mma/', '/guides/choisir-protections/'].includes(g.href));
-  return (
-    <main id="contenu" className="page-wrap ville-page">
-      <Breadcrumb items={[{ label: 'Boutique sport de combat' }]} />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: graph([
-            {
-              ...webPageNode({ path: HUB_PATH, name: titre, description, type: 'CollectionPage', image: '/vignette/x/' + CARREFOUR + '.png', dateModified: CARREFOUR_DATE, keywords: ['boutique sport de combat france', 'boutique sport de combat'], mainEntity: urlOf(HUB_PATH) + '#sports' }),
-              isBasedOn: sourceNode(),
-            },
-            {
-              '@type': 'ItemList',
-              '@id': urlOf(HUB_PATH) + '#sports',
-              name: 'Le matériel par sport de combat',
-              numberOfItems: sports.length,
-              itemListElement: sports.map((s, i) => ({ '@type': 'ListItem', position: i + 1, name: s.nom, url: urlOf('/' + s.slug + '/') })),
-            },
-            {
-              '@type': 'ItemList',
-              '@id': urlOf(HUB_PATH) + '#villes',
-              name: 'Boutique de boxe, ville par ville',
-              numberOfItems: lignes.length,
-              itemListElement: lignes.map((l, i) => ({ '@type': 'ListItem', position: i + 1, name: 'Boutique de boxe ' + l.nom, url: urlOf(villePath(l.slug)) })),
-            },
-            faqNode(HUB_PATH, faq),
-          ]),
-        }}
-      />
-      <section className="page-heading">
-        <div>
-          <span className="eyebrow">{`BOUTIQUE SPORT DE COMBAT FRANCE · ${sports.length} SPORTS · ${fr(all.length)} MODÈLES`}</span>
-          <h1>La boutique sport de combat qui livre toute la France.</h1>
-        </div>
-        <div>
-          <div className="label">{fine(`${fr(all.length)} modèles, ${fr(total.marques.length)} marques, ${sports.length} sports : les tailles réelles et le prix TTC sur chaque fiche.`)}</div>
-          <p>{fine(carrefourChapeau(all.length, total.marques.length, sports.length))}</p>
-        </div>
-      </section>
-
-      <section className="observatory-lead" aria-label="La boutique en chiffres">
-        <Chiffres
-          items={[
-            [fr(all.length), 'modèles au catalogue'],
-            [fr(total.marques.length), 'marques'],
-            [frais.relais, 'le point relais, offert dès ' + frais.franco],
-            ['14 jours', 'pour renvoyer un article'],
-          ]}
-        />
-      </section>
-
-      <div className="ville-tableau">
-        <section className="keyword-hub observatory">
-          <h2>Le matériel par sport de combat.</h2>
-          <TableauRayons id="sports" caption="Le matériel de la boutique, sport par sport" lignes={sports} detail total={{ n: all.length, min: total.min, marques: total.marques.length }} note="Premier prix TTC du jour sur chaque page ; les sacs de frappe et le matériel lourd se livrent sur devis." />
-        </section>
-      </div>
-      <div className="ville-tableau">
-        <section className="keyword-hub observatory">
-          <h2>Le matériel par type.</h2>
-          <TableauRayons id="types" caption="Le matériel de la boutique, rayon par rayon" lignes={types} note="Un modèle peut compter dans deux rayons ; chaque page donne ses propres chiffres." />
-        </section>
-      </div>
-
-      <SeoBody
-        sections={[
-          {
-            h2: 'Livraison, paiement, retours : les mêmes règles pour toute la France',
-            paragraphs: [
-              fine(`${livraisonPartout()} Le point relais coûte ${frais.relais} et devient gratuit à partir de ${frais.franco} d’achats ; la livraison à domicile, ${frais.domicile}. La commande part sous ${shop.delais.expedition} et son suivi arrive par e-mail ; les sacs de frappe, bases, portiques et tatamis, trop lourds pour un colis, se livrent sur devis.`),
-              fine('Le règlement se fait par carte, sur la page sécurisée de PayPlug, sans compte à ouvrir. Quatorze jours après la réception, un article non utilisé se renvoie dans son emballage et se rembourse ; pour une autre taille, la page contact suffit, avec le numéro de commande.'),
-            ],
-          },
-        ]}
-      />
-
-      <section className="ville-ailleurs">
-        <h2>Les marques de la boutique.</h2>
-        <p>{fine(carrefourMarques(total.marques.length, tete.slice(0, 3).map((b) => ({ nom: b.name, n: b.products.length })), MIN_BRAND_PRODUCTS))}</p>
-        <nav className="subfamily-links" aria-label="Les marques les plus présentes">
-          {spaced([
-            ...tete.map((b) => (
-              <a key={b.slug} href={'/marques/' + b.slug + '/'}>
-                {`${b.name} · ${fr(b.products.length)} modèles`}
-              </a>
-            )),
-            <a key="toutes" href="/marques/">
-              Toutes les marques
-            </a>,
-          ])}
-        </nav>
-      </section>
-
-      <section className="observatory-lead" aria-label="La France des sports de combat en chiffres">
-        <Chiffres
-          items={[
-            [fr(FRANCE.lieux), 'lieux de sports de combat en France métropolitaine'],
-            [fr(FRANCE.frappe), 'où l’on boxe'],
-            [fr(lignes.length), 'grandes villes et régions, chacune sa page'],
-            [fr(lieux), 'lieux recensés sur ces pages'],
-          ]}
-        />
-        <Source population />
-      </section>
-
-      <SeoBody sections={[{ h2: 'Où l’on pratique : la France des sports de combat, en chiffres', paragraphs: [chiffres1, chiffres2] }]} />
-      <Disciplines titre="Les disciplines en France." par={FRANCE.parDiscipline} total={FRANCE.lieux} />
-
-      <div className="ville-tableau">
-        <section className="keyword-hub observatory">
-          <h2>Les grandes villes, une par une.</h2>
-          <div className="hub-prices salles-table" id="villes">
-            <table>
-              <caption>Lieux de boxe et d’arts martiaux recensés par grande ville</caption>
-              <thead>
-                <tr>
-                  <th scope="col">Ville</th>
-                  <th scope="col">Région</th>
-                  <th scope="col">Lieux</th>
-                  <th scope="col">Où l’on boxe</th>
-                  <th scope="col">Salles de boxe</th>
-                  <th scope="col">Habitants par lieu</th>
-                </tr>
-              </thead>
-              <tbody>
-                {lignes.map((l) => (
-                  <tr key={l.slug}>
-                    <th scope="row">
-                      <a href={villePath(l.slug)}>{'Boutique de boxe ' + l.nom}</a>
-                    </th>
-                    <td data-label="Région">{l.region}</td>
-                    <td data-label="Lieux">{fr(l.lieux)}</td>
-                    <td data-label="Où l’on boxe">{fr(l.frappe)}</td>
-                    <td data-label="Salles de boxe">{fr(l.boxe)}</td>
-                    <td data-label="Habitants par lieu">{l.densite ? fr(l.densite) : VIDE}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <p className="hub-prices-note">
-              {`Une page par commune de plus de ${fr(SOURCE.seuilHabitants)} habitants qui compte au moins ${SOURCE.seuil} lieux, dont ${SOURCE.seuilFrappe} où l’on boxe.`}
-            </p>
-          </div>
-        </section>
-      </div>
-
-      <section className="ville-ailleurs ville-regions">
-        <h2>La boutique de boxe, région par région.</h2>
-        {parRegion().map(([region, villes]) => (
-          <div key={region}>
-            <h3>{'Boutique de boxe ' + region}</h3>
-            <nav className="subfamily-links" aria-label={'Les grandes villes de la région ' + region}>
-              {spaced(
-                villes.map((v) => (
-                  <a key={v.slug} href={villePath(v.slug)}>
-                    {`Boutique de boxe ${v.nom} · ${fr(v.lieux)} lieux`}
-                  </a>
-                )),
-              )}
-            </nav>
-          </div>
-        ))}
-      </section>
-
-      <SeoBody sections={[]} faq={faq} heading="Questions sur la boutique sport de combat" />
-      <section className="spec-section">
-        <div>
-          <h2>Les guides pour choisir.</h2>
-          {spaced(
-            guides.map((g) => (
-              <ArrowLink key={g.href} href={g.href}>
-                {g.label}
-              </ArrowLink>
-            )),
-          )}
-        </div>
       </section>
     </main>
   );

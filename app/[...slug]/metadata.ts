@@ -10,8 +10,8 @@ import { categoryFor, getCategoryProducts, shop, money } from '@/lib/catalog';
 import { readCatalog } from '@/lib/database';
 import { guides, services, guidesEnLettres } from '@/lib/editorial';
 import { ogImage } from '@/lib/og';
-import { villeFor, regionFor, CARREFOUR } from '@/lib/villes';
-import { villeMetadata, regionMetadata, carrefourMetadata } from '@/components/ville-page';
+import { villeFor, regionFor } from '@/lib/villes';
+import { villeMetadata, regionMetadata } from '@/components/ville-page';
 import { venteMetadata, VENTE } from '@/components/vente-page';
 import { PLAN, PLAN_TITRE, PLAN_DESCRIPTION } from '@/components/plan-du-site';
 import { disciplinesMetadata, DISCIPLINES_PAGES } from '@/components/disciplines-page';
@@ -35,13 +35,12 @@ export function splitPage(slug: string[]): { path: string; slug: string[]; page:
 export async function slugMetadata(rawSlug: string[], rawPage?: string): Promise<Metadata> {
   const { slug, path, page: pageParam } = splitPage(rawSlug);
   const requested = pageParam ?? rawPage;
-  // Pages-villes et carrefour « Boutique sport de combat France » (29/09) : tout vient de lib/villes.ts.
+  // Pages-villes (29/09) : tout vient de lib/villes.ts. Leur carrefour a été fusionné dans l'accueil le 09/11.
   if (slug.length === 1 && requested === undefined) {
     const ville = villeFor(path);
     if (ville) return villeMetadata(ville);
     const region = regionFor(path);
     if (region) return regionMetadata(region);
-    if (path === CARREFOUR) return carrefourMetadata(await readCatalog());
     if (path === VENTE) return venteMetadata();
     if (DISCIPLINES_PAGES[path]) return disciplinesMetadata(DISCIPLINES_PAGES[path]);
   }

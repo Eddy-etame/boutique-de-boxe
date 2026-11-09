@@ -44,8 +44,8 @@ import { payplugSettings } from '@/lib/payplug';
 import { CartPage } from './panier-client';
 import selection from '@/lib/data/selection.json';
 import { spaced } from '@/lib/spaced';
-import { villeFor, regionFor, CARREFOUR, VILLES, REGIONS, villePath } from '@/lib/villes';
-import { VillePage, RegionPage, CarrefourPage } from '@/components/ville-page';
+import { villeFor, regionFor, VILLES, REGIONS, villePath } from '@/lib/villes';
+import { VillePage, RegionPage } from '@/components/ville-page';
 import { MaterielParDiscipline, materielFaq } from '@/components/materiel-par-discipline';
 import { entrelace } from '@/lib/rayons';
 import { VentePage, VENTE } from '@/components/vente-page';
@@ -75,7 +75,6 @@ export async function generateStaticParams() {
     ...SUBFAMILIES.map((s) => s.slug),
     ...allFacets(products).map((f) => f.path.replace(/^\/|\/$/g, '')),
     ...[...VILLES, ...REGIONS].map((v) => villePath(v.slug).replace(/^\/|\/$/g, '')),
-    CARREFOUR,
     VENTE,
     PLAN,
     ...Object.keys(DISCIPLINES_PAGES),
@@ -183,7 +182,6 @@ export default async function Page({ params }: Props) {
     if (ville) return <VillePage ville={ville} all={products} />;
     const region = regionFor(path);
     if (region) return <RegionPage region={region} all={products} />;
-    if (path === CARREFOUR) return <CarrefourPage all={products} />;
     if (path === VENTE) return <VentePage all={products} />;
     if (path === PLAN) return <PlanDuSite all={products} />;
     if (DISCIPLINES_PAGES[path]) return <DisciplinesPage config={DISCIPLINES_PAGES[path]} />;
@@ -192,7 +190,7 @@ export default async function Page({ params }: Props) {
     const p = products.find((p) => p.slug === slug[1]);
     if (!p) notFound();
     const cat =
-      categoryFor(p.category) || categoryFor('boutique-arts-martiaux')!;
+      categoryFor(p.category) || categoryFor('materiel-sport-de-combat')!;
     const score = (x: (typeof products)[number]) =>
       (x.brand === p.brand ? 2 : 0) +
       ((x.disciplines || []).some((d) => (p.disciplines || []).includes(d)) ? 1 : 0);
@@ -222,13 +220,14 @@ export default async function Page({ params }: Props) {
     // Les notes des visiteurs (20/10/2026) : la moyenne visible, lue au rendu (ISR), jamais inventée.
     const note = await moyenneDuModele(p.id);
     const declaredLevel = practiceLevel(p);
-    // Chaque fiche vote pour sa page de tête (30/10/2026) : « Matériel MMA » pour les gants MMA, « Boutique arts
-    // martiaux » pour les arts martiaux, « Matériel de boxe » pour tout le reste — l’ancre est la requête visée.
+    // Chaque fiche vote pour sa page de tête (30/10/2026) : « Matériel MMA » pour les gants MMA, « Matériel d’arts
+    // martiaux » pour les arts martiaux (fusion du 09/11 : plus de « Boutique arts martiaux » à part), « Matériel
+    // de boxe » pour tout le reste.
     const tete =
       p.category === 'gants-mma'
         ? { href: '/materiel-mma/', label: 'Matériel MMA' }
         : p.category === 'arts-martiaux'
-        ? { href: '/boutique-arts-martiaux/', label: 'Boutique arts martiaux' }
+        ? { href: '/arts-martiaux/', label: 'Matériel d’arts martiaux' }
         : { href: '/materiel-boxe/', label: 'Matériel de boxe' };
     return (
       <main id="contenu" className="page-wrap">

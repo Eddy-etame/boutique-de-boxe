@@ -14,7 +14,7 @@ import selection from '@/lib/data/selection.json';
 import { observatory, observatorySentences } from '@/lib/observatory';
 import { parseUsage, recommendGloveWeight } from '@/lib/glove-weight';
 import { allFacets, brandFamilyFacet, brandSubfamilyFacetsOf, type Facet } from '@/lib/facets';
-import { VILLES, REGIONS, FRANCE, SOURCE, CARREFOUR, villePath, regionTotal, siteDe } from '@/lib/villes';
+import { VILLES, REGIONS, FRANCE, SOURCE, villePath, regionTotal, siteDe } from '@/lib/villes';
 
 /**
  * Serveur MCP en lecture seule (JSON-RPC 2.0 sur HTTP). Un agent y lit les faits
@@ -300,7 +300,8 @@ export async function POST(request: Request) {
     } else
       value = {
         france: { venues: FRANCE.lieux, rooms: FRANCE.salles, boxingVenues: FRANCE.frappe, byDiscipline: FRANCE.parDiscipline },
-        hub: urlOf('/' + CARREFOUR + '/'),
+        // Le carrefour des villes est fusionné dans l'accueil depuis le 09/11/2026.
+        hub: urlOf('/'),
         cities: VILLES.map((v) => ({ city: v.nom, url: urlOf(villePath(v.slug)), venues: v.lieux.length, boxingVenues: v.frappe, inhabitantsPerVenue: v.habitantsParLieu })),
         regions: REGIONS.map((r) => ({ region: r.nom, url: urlOf(villePath(r.slug)), venues: regionTotal(r).lieux })),
         source,

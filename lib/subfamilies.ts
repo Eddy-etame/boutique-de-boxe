@@ -762,7 +762,7 @@ export const SUBFAMILIES: Subfamily[] = [
   },
   {
     slug: 'equipement-jjb',
-    parent: 'boutique-arts-martiaux',
+    parent: 'arts-martiaux',
     kind: 'discipline',
     discipline: 'Jiu-jitsu brésilien',
     name: 'Équipement JJB et grappling',

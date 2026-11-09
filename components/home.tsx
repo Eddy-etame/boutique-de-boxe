@@ -21,7 +21,7 @@ import { QUERY_MAP } from '@/lib/seo-copy';
 const DEJA_LIEES = new Set([
   ...RAYONS_PRATIQUE, ...RAYONS_TYPE, ...PAR_DISCIPLINE, ...GUIDES,
 ].map((l) => l.href).concat([
-  '/boutique-boxe/', '/vente-materiel-de-boxe/', '/boutique-sport-de-combat/',
+  '/', '/vente-materiel-de-boxe/',
   '/boutique-de-boxe-toulouse/', '/boutique-de-boxe-paris/',
 ]));
 const RECHERCHES_ACCUEIL = QUERY_MAP.filter((q, i, a) => !DEJA_LIEES.has(q.path) && a.findIndex((x) => x.path === q.path) === i);
@@ -102,8 +102,8 @@ export default function Home({ items }: { items: Product[] }) {
                 Me prévenir à l’ouverture <ArrowDown size={20} />
               </a>
             )}
-            <a href="/boutique-boxe/" className="button button-dark">
-              Toute la boutique boxe <ArrowUpRight size={20} />
+            <a href="/materiel-sport-de-combat/" className="button button-dark">
+              Tout le catalogue <ArrowUpRight size={20} />
             </a>
           </div>
           <a className="bench-jump" href="#preparer">
@@ -133,7 +133,7 @@ export default function Home({ items }: { items: Product[] }) {
         <a href="/equipement-jjb/">
           JJB <ArrowUpRight />
         </a>{' '}
-        <a href="/boutique-arts-martiaux/">
+        <a href="/arts-martiaux/">
           Arts martiaux <ArrowUpRight />
         </a>
       </nav>

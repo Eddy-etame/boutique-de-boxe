@@ -151,7 +151,6 @@ const CATEGORY_ENTITY: Record<string, Entity[]> = {
   'arts-martiaux': [ENTITY.jjb, ENTITY.kickBoxing, ENTITY.savate],
   'materiel-boxe': [ENTITY.boxe, ENTITY.muayThai, ENTITY.kickBoxing, ENTITY.savate],
   'materiel-mma': [ENTITY.mma],
-  'boutique-arts-martiaux': [ENTITY.jjb, ENTITY.muayThai, ENTITY.savate],
   'materiel-sport-de-combat': [ENTITY.sportsDeCombat],
 };
 
@@ -176,10 +175,9 @@ export const KEYWORDS = {
     'chaussures-boxe': { head: ['chaussures de boxe', 'acheter chaussures de boxe'], body: ['chaussures de boxe anglaise', 'chaussures de lutte', 'chaussures de boxe Nike', 'chaussures de boxe Adidas', 'chaussures de boxe montantes', 'pointure chaussures de boxe'] },
     'equipement-entrainement': { head: ['équipement d’entraînement boxe', 'matériel d’entraînement boxe'], body: ['pattes d’ours', 'pao boxe', 'bouclier de frappe', 'corde ondulatoire', 'élastique de résistance', 'gilet lesté', 'medicine-ball', 'raquettes de boxe'] },
     'sacs-de-sport': { head: ['sac de sport boxe', 'sac de boxe'], body: ['sac de sport Elion', 'sac à dos boxe', 'sac de sport convertible', 'sac de sport Fairtex', 'sac de sport Venum'] },
-    'arts-martiaux': { head: ['équipement arts martiaux', 'matériel arts martiaux'], body: ['kimono de JJB', 'kimono karaté', 'ceinture de JJB', 'protège-tibias karaté', 'matériel kick-boxing', 'matériel savate'] },
-    'materiel-boxe': { head: ['matériel de boxe', 'matériel de boxe anglaise', 'équipement boxe anglaise'], body: ['gants de boxe', 'bandes de boxe', 'casque de boxe', 'sac de frappe', 'chaussures de boxe', 'budget équipement de boxe'] },
+    'arts-martiaux': { head: ['matériel arts martiaux', 'boutique arts martiaux', 'équipement arts martiaux'], body: ['kimono de JJB', 'kimono karaté', 'ceinture de JJB', 'protège-tibias karaté', 'matériel kick-boxing', 'matériel savate'] },
+    'materiel-boxe': { head: ['matériel de boxe', 'matos boxe', 'matériel de boxe anglaise', 'équipement boxe anglaise'], body: ['gants de boxe', 'bandes de boxe', 'casque de boxe', 'sac de frappe', 'chaussures de boxe', 'budget équipement de boxe'] },
     'materiel-mma': { head: ['matériel MMA', 'équipement MMA'], body: ['gants MMA', 'short MMA', 'protège-dents MMA', 'rashguard', 'protège-tibias MMA'] },
-    'boutique-arts-martiaux': { head: ['boutique arts martiaux', 'matériel arts martiaux en ligne'], body: ['kimono', 'ceinture', 'protections', 'muay-thaï', 'kick-boxing', 'savate'] },
     'materiel-sport-de-combat': { head: ['matériel sport de combat', 'équipement sports de combat'], body: ['boxe anglaise', 'MMA', 'muay-thaï', 'jiu-jitsu brésilien', 'kick-boxing', 'tout le catalogue'] },
   } as Record<string, { head: string[]; body: string[] }>,
   guides: {
@@ -200,7 +198,7 @@ export const KEYWORDS = {
 
 /** Pages de service et pages spéciales : les requêtes qu’elles doivent servir. */
 export const PAGE_KEYWORDS: Record<string, string[]> = {
-  '': ['boutique de boxe', 'matériel de boxe', 'équipement de boxe en ligne', 'gants de boxe', 'sac de frappe', 'protège-dents', 'matériel MMA'],
+  '': ['boutique de boxe', 'boutique boxe', 'boutique sport de combat France', 'matériel de boxe', 'équipement de boxe en ligne', 'gants de boxe', 'sac de frappe', 'protège-dents', 'matériel MMA'],
   guides: ['guide d’achat boxe', 'comment choisir ses gants de boxe', 'quel matériel pour débuter la boxe', 'guide équipement MMA', 'guide protections boxe'],
   nouveautes: ['nouveautés boxe', 'nouveaux gants de boxe', 'nouveau matériel de boxe'],
   contact: ['contact boutique de boxe', 'question matériel de boxe', 'conseil taille gants de boxe'],
@@ -600,6 +598,6 @@ export function graph(nodes: unknown[]) {
 /** Les familles publiées, avec leur nombre de modèles : partagé par llms.txt, catalogue.json et le serveur MCP. */
 export function familiesWithCounts(products: Product[]) {
   return categories
-    .filter((c) => !['materiel-boxe', 'materiel-mma', 'boutique-arts-martiaux', 'materiel-sport-de-combat'].includes(c.slug))
+    .filter((c) => !['materiel-boxe', 'materiel-mma', 'materiel-sport-de-combat'].includes(c.slug))
     .map((c) => ({ slug: c.slug, name: c.name, label: c.label, url: urlOf('/' + c.slug + '/'), count: getCategoryProducts(c, products).length }));
 }

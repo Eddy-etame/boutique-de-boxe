@@ -32,52 +32,7 @@ export type SeoCopy = {
   faq: SeoFaq[];
 };
 
-const ALL = 'gants, bandes, protections, textile, sacs de frappe, chaussures, matériel d’entraînement et sacs de sport';
-
 export const SEO_COPY: Record<string, SeoCopy> = {
-  'boutique-boxe': {
-    title: 'Boutique boxe : matos boxe, gants, sacs de frappe, MMA',
-    description: 'Boutique boxe en ligne et matos boxe : plus de 1 000 modèles de gants, bandes, protections, sacs de frappe et textile, avec leurs tailles et leurs prix TTC. Livraison dans toute la France.',
-    eyebrow: 'BOUTIQUE BOXE · MATOS BOXE',
-    prioritaires: ['boutique boxe', 'boutique de boxe', 'matos boxe'],
-    secondaires: ['boutique de boxe en ligne', 'vente matériel boxe', 'matériel de boxe', 'gants de boxe', 'sac de frappe', 'bandes de boxe', 'protège-dents', 'livraison France', 'prix'],
-    sections: [
-      {
-        h2: 'Une boutique de boxe en ligne, rien d’autre',
-        paragraphs: [
-          `Boutique de Boxe vend du matériel de boxe et de sports de combat, et seulement cela : ${ALL}. Chaque modèle a sa fiche avec ses tailles réelles, ses couleurs, sa référence fabricant et son prix de vente TTC.`,
-          'Nous ne sommes pas un club. Vous ne trouverez ici ni cours ni planning : une boutique boxe, avec un catalogue lisible et des guides pour choisir sans se tromper.',
-        ],
-      },
-      {
-        h2: 'Vente matériel boxe : ce que vous trouvez ici',
-        paragraphs: [
-          'Gants de boxe du 4 au 20 oz, à velcro ou à lacets. Bandes de 2,50 m et 4,50 m. Casques, protège-dents, protège-tibias et coquilles. Shorts, t-shirts, rashguards et sweats. Sacs de frappe, poires de vitesse et pattes d’ours. Chaussures de boxe et de lutte.',
-          'Les marques : Fairtex, Twins, Cleto Reyes, Elion, Adidas, Everlast, Venum, Metal Boxe, Wicked One, Shock Doctor, Century. Le matos boxe de chaque marque est présenté avec ses propres tailles, jamais converties d’une marque à l’autre.',
-        ],
-      },
-      {
-        h2: 'Prix, livraison dans toute la France',
-        paragraphs: [
-          'Les ventes sont ouvertes depuis le 13 octobre 2026. Chaque fiche affiche son prix toutes taxes comprises, hors livraison ; le panier se paie par carte sur la page sécurisée de PayPlug, et la commande part sous 7 jours ouvrés.',
-          `Les conditions de livraison : ${livraison.tarifs} ; matériel lourd sur devis. Expédition sous 7 jours ouvrés, en ${livraison.zone}.`,
-        ],
-      },
-      {
-        h2: 'Par où commencer',
-        paragraphs: [
-          'Vous débutez ? Lisez le guide « Quel équipement pour débuter la boxe anglaise ? » : gants et bandes d’abord, le reste ensuite. Vous cherchez un poids de gant ? Le guide des onces explique 10, 12, 14 et 16 oz en deux minutes. Vous équipez un enfant ? Le guide enfant donne les tranches d’âge et les tailles.',
-        ],
-      },
-    ],
-    faq: [
-      { question: 'Matos boxe : que trouve-t-on ici ?', answer: 'Tout le matos boxe d’une séance : bandes, gants du 4 au 20 oz, protège-dents, casque, sac de frappe, corde, short et chaussures. Le matos boxe, livré chez vous dans toute la France.' },
-      { question: 'Boutique de Boxe est-elle liée à un club ?', answer: 'Non. Boutique de Boxe est une boutique en ligne de matériel de boxe et de sports de combat. Elle ne propose ni cours ni salle ; les mentions légales nomment son éditeur.' },
-      { question: 'Peut-on commander en ligne ?', answer: 'Oui, depuis le 13 octobre 2026 : les prix affichés sont les prix de vente TTC, et le panier se paie par carte sur la page sécurisée de PayPlug.' },
-      { question: 'Livrez-vous partout en France ?', answer: `Oui, dans toute la ${livraison.zone} : ${livraison.tarifs}. Le matériel lourd se livre sur devis ; la Corse, l’outre-mer et Monaco, sur demande.` },
-    ],
-  },
-
   'materiel-boxe': {
     title: 'Matériel de boxe : gants, bandes, protections, sacs de frappe',
     description: 'Matériel de boxe pour l’anglaise, la thaï et le kick-boxing : gants, bandes, protège-dents, casques, sacs de frappe, chaussures. Tailles du fabricant, prix TTC, livraison partout en France.',
@@ -203,40 +158,6 @@ export const SEO_COPY: Record<string, SeoCopy> = {
     ],
   },
 
-  'boutique-arts-martiaux': {
-    title: 'Boutique arts martiaux : kimonos, ceintures, protections',
-    description: 'Boutique arts martiaux en ligne : kimonos de JJB et de karaté, ceintures, protège-tibias, protège-pieds, matériel de grappling. Tailles réelles, prix TTC, livraison en France.',
-    eyebrow: 'BOUTIQUE ARTS MARTIAUX · MATÉRIEL ARTS MARTIAUX',
-    prioritaires: ['boutique arts martiaux', 'arts martiaux', 'matériel arts martiaux'],
-    secondaires: ['kimono JJB', 'kimono karaté', 'ceinture de JJB', 'protège-tibias', 'protège-pieds', 'grappling', 'muay-thaï', 'savate'],
-    sections: [
-      {
-        h2: 'Le matériel d’arts martiaux du catalogue',
-        paragraphs: [
-          'Kimonos de jiu-jitsu brésilien en tailles A0 à A4, kimonos de karaté, ceintures, protège-tibias et protège-pieds, coquilles et protège-dents. Cette page rassemble les arts martiaux et les protections qui leur servent.',
-          'Chaque kimono a son tissage et son poids, indiqués sur la fiche. Les tailles A suivent la taille et le poids du pratiquant, selon le guide de la marque.',
-        ],
-      },
-      {
-        h2: 'JJB, grappling, karaté, boxe thaï',
-        paragraphs: [
-          'Pour le JJB et le grappling : kimono ou rashguard et spats selon le cours, ceinture, protège-dents. Pour le karaté : kimono, ceinture, protège-tibias et pieds, coquille. Pour la boxe thaï et le kick-boxing : gants, protège-tibias avec pied couvert, short.',
-        ],
-      },
-      {
-        h2: 'Choisir sans se tromper',
-        paragraphs: [
-          'Le guide des protections explique quoi porter pour chaque sport et comment vérifier la tenue en mouvement. Le guide des tailles rappelle la règle : le guide de la marque, jamais une équivalence entre marques.',
-        ],
-      },
-    ],
-    faq: [
-      { question: 'Boutique arts martiaux : quelles disciplines sont couvertes ?', answer: 'La boutique arts martiaux réunit le jiu-jitsu brésilien, le grappling, le karaté, le judo et la boxe thaï : kimonos de A0 à A4, rashguards, ceintures, protège-tibias et protège-dents, avec les tailles réelles de chaque modèle.' },
-      { question: 'Quelle taille de kimono de JJB ?', answer: 'Les tailles A0 à A4 suivent votre taille et votre poids, selon le tableau de la marque du kimono. Un kimono en coton se rétrécit légèrement au premier lavage : suivez la notice.' },
-      { question: 'Faut-il un kimono pour débuter le JJB ?', answer: 'Cela dépend du cours : gi ou no-gi. Demandez à votre salle. En no-gi, un rashguard et un short ou des spats suffisent.' },
-      { question: 'Les protections de karaté servent-elles pour la boxe thaï ?', answer: 'Rarement. La boxe thaï demande des protège-tibias avec pied couvert et rembourrage épais. Vérifiez l’usage indiqué par le fabricant.' },
-    ],
-  },
 
   'gants-de-boxe': {
     title: 'Gants de boxe : vente gants de boxe, gants boxe 4 à 20 oz',
@@ -569,19 +490,19 @@ export const QUERY_MAP: { query: string; path: string; answer: string }[] = [
   // Les deux requêtes de tête (03/10) : chacune sa page, en premier dans les « recherches voisines » et dans le pied de page.
   { query: 'Matériel de boxe', path: '/materiel-boxe/', answer: 'Matériel de boxe : huit rayons, gants, bandes et accessoires, protections, textile, sacs de frappe, chaussures, matériel d’entraînement et sacs de sport, pour la boxe anglaise, la boxe thaï, le kick-boxing et la savate. Boutique de Boxe donne les tailles réelles et le prix de chaque modèle.' },
   { query: 'Vente matériel de boxe', path: '/vente-materiel-de-boxe/', answer: 'Vente matériel de boxe en ligne : Boutique de Boxe, boutique en ligne installée à Toulouse, vend plus de 1 000 modèles en dix rayons, livrés en France continentale en point relais ou à domicile, avec quatorze jours pour changer d’avis ; les ventes sont ouvertes depuis le 13 octobre 2026, paiement par carte.' },
-  { query: 'Boutique boxe', path: '/boutique-boxe/', answer: 'Boutique boxe en ligne française et indépendante, Boutique de Boxe vend le matériel de boxe : gants, bandes, protections, textile, sacs de frappe, chaussures, du 4 oz enfant au 20 oz sparring, livrés dans toute la France.' },
-  { query: 'Matos boxe', path: '/boutique-boxe/', answer: 'Matos boxe : gants du 4 au 20 oz, bandes, protège-dents, casques, sacs de frappe et chaussures, des marques Fairtex, Twins, Cleto Reyes, Elion, Adidas et Everlast, chez Boutique de Boxe, livrés dans toute la France.' },
+  { query: 'Boutique boxe', path: '/', answer: 'Boutique boxe en ligne française et indépendante, Boutique de Boxe vend le matériel de boxe : gants, bandes, protections, textile, sacs de frappe, chaussures, du 4 oz enfant au 20 oz sparring, livrés dans toute la France.' },
+  { query: 'Matos boxe', path: '/materiel-boxe/', answer: 'Matos boxe : gants du 4 au 20 oz, bandes, protège-dents, casques, sacs de frappe et chaussures, des marques Fairtex, Twins, Cleto Reyes, Elion, Adidas et Everlast, chez Boutique de Boxe, livrés dans toute la France.' },
   { query: 'Équipement boxe anglaise', path: '/equipement-boxe-anglaise/', answer: 'Équipement boxe anglaise : bandes, gants et protège-dents pour commencer ; casque, coquille et chaussures montantes avec le sparring. Boutique de Boxe réunit ces pièces sur une page, avec la tenue qu’impose le code sportif amateur le jour d’un combat.' },
   { query: 'Matériel MMA', path: '/materiel-mma/', answer: 'Matériel MMA : gants à doigts libres pour le travail mixte, gants de boxe de 14 ou 16 oz pour le sparring debout, protège-tibias, coquille, protège-dents, rashguard et short sans poche, avec les tailles réelles de chaque modèle.' },
   { query: 'Équipement MMA', path: '/materiel-mma/', answer: 'Équipement MMA pour un premier cours : protège-dents, short sans poche, rashguard, puis les gants demandés par le club, gants MMA à doigts libres ou gants de boxe de 14 à 16 oz. Boutique de Boxe les vend en ligne avec leurs tailles réelles.' },
   { query: 'Matériel sport de combat', path: '/materiel-sport-de-combat/', answer: 'Matériel sport de combat pour la boxe anglaise, le MMA, le muay-thaï, le kick-boxing, le jiu-jitsu brésilien et la savate : gants, protections, textile, sacs de frappe et chaussures, chez Boutique de Boxe, livrés dans toute la France.' },
   { query: 'Sport de combat', path: '/sports-de-combat/', answer: 'Sport de combat : une discipline où deux personnes cherchent, selon des règles, à toucher, projeter ou immobiliser l’autre. En France métropolitaine, 6 158 lieux en déclarent au moins un d’après le recensement du ministère des Sports ; le judo y est le plus présent (4 914 lieux), la boxe anglaise la première des boxes (944).' },
-  { query: 'Boutique sport de combat France', path: '/boutique-sport-de-combat/', answer: 'Boutique sport de combat France : Boutique de Boxe expédie dans toute la France continentale, à domicile ou en point relais, le matériel de boxe, de MMA et d’arts martiaux, avec les tailles réelles et les prix TTC.' },
+  { query: 'Boutique sport de combat France', path: '/', answer: 'Boutique sport de combat France : Boutique de Boxe expédie dans toute la France continentale, à domicile ou en point relais, le matériel de boxe, de MMA et d’arts martiaux, avec les tailles réelles et les prix TTC.' },
   { query: 'Boutique de boxe Toulouse', path: '/boutique-de-boxe-toulouse/', answer: `Boutique de boxe Toulouse : commandez en ligne vos gants, protections et accessoires chez Boutique de Boxe, livrés à Toulouse à domicile ou en point relais (${livraison.tarifs}) ; les lieux de pratique et les clubs de la ville complètent le choix du matériel.` },
   { query: 'Boutique de boxe Paris', path: '/boutique-de-boxe-paris/', answer: 'Boutique de boxe Paris : choisissez votre matériel en ligne et faites-le livrer à Paris à domicile ou en point relais ; la page réunit les modèles et les tailles du catalogue, puis les lieux de pratique de la capitale, arrondissement par arrondissement.' },
   { query: 'Boutique de boxe Île-de-France', path: '/boutique-de-boxe-ile-de-france/', answer: 'Boutique de boxe Île-de-France : choisissez les gants, protections et tenues adaptés à votre pratique, en livraison à domicile ou en point relais ; les lieux des sept départements franciliens hors Paris sont recensés commune par commune.' },
   { query: 'Boutique de boxe Marseille', path: '/boutique-de-boxe-marseille/', answer: 'Boutique de boxe Marseille : comparez les modèles, les tailles et les prix du catalogue pour commander en ligne, livré à domicile ou en point relais ; les lieux de pratique de Marseille, arrondissement par arrondissement, viennent ensuite pour préparer votre séance.' },
-  { query: 'Boutique arts martiaux', path: '/boutique-arts-martiaux/', answer: 'Boutique arts martiaux de Boutique de Boxe : kimonos de JJB de A0 à A4, kimonos de karaté, ceintures, protège-tibias et pieds, coquilles et protège-dents, avec les tailles réelles et les prix de chaque modèle.' },
+  { query: 'Boutique arts martiaux', path: '/arts-martiaux/', answer: 'Boutique arts martiaux de Boutique de Boxe : kimonos de JJB de A0 à A4, kimonos de karaté, ceintures et armes d’entraînement, avec les tailles réelles et les prix de chaque modèle.' },
   { query: 'Arts martiaux', path: '/les-arts-martiaux/', answer: 'Arts martiaux : des méthodes de combat transmises par une tradition et enseignées par grades — judo, karaté, aïkido, taekwondo, kendo, tai-chi. En France métropolitaine, 6 119 dojos et salles d’arts martiaux sont recensés ; le judo est déclaré dans 4 914 lieux, le karaté dans 2 743.' },
   { query: 'Vente gants de boxe', path: '/gants-de-boxe/', answer: 'Vente gants de boxe en ligne : plus de 180 modèles du 4 au 20 oz, velcro ou lacets, cuir ou synthétique, Fairtex, Twins, Cleto Reyes, Elion, Adidas et Metal Boxe, avec le poids, la fermeture, la matière et le prix de chaque paire.' },
   { query: 'Gants boxe', path: '/gants-de-boxe/', answer: 'Gants boxe : le poids se choisit par usage, 10 oz pour le sac, 12 oz pour la technique, 14 à 16 oz avec un partenaire, 8 oz en compétition. Les onces sont un poids de rembourrage, pas une taille de main.' },

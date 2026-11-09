@@ -28,7 +28,7 @@ test('maintained priority registry is read without executing application modules
   assert.equal(core.target, null);
   assert.equal(core.measurementOnly, true);
   assert.equal(core.ownerStatus, 'unverified-candidates');
-  assert.deepEqual(core.candidateTargets, ['https://www.boutique-de-boxe.com/', 'https://www.boutique-de-boxe.com/boutique-boxe/']);
+  assert.deepEqual(core.candidateTargets, ['https://www.boutique-de-boxe.com/', 'https://www.boutique-de-boxe.com/materiel-boxe/']);
 });
 
 test('BOM, quoted commas/newlines/quotes and French semicolons parse correctly', () => {
@@ -56,17 +56,17 @@ test('French UI Queries export is useful but never invented as a query-page join
 });
 
 test('non-owner landings are shown separately and never folded into intended owner rank', () => {
-  const csv = 'query,page,clicks,impressions,position\nGants de boxe,https://www.boutique-de-boxe.com/boutique-boxe/,5,100,3\n';
+  const csv = 'query,page,clicks,impressions,position\nGants de boxe,https://www.boutique-de-boxe.com/materiel-boxe/,5,100,3\n';
   const row = analyze(csv).segments[0].queries[0];
   assert.equal(row.status, 'unobserved');
   assert.equal(row.averagePosition, null);
   assert.equal(row.otherLandingPages[0].averagePosition, 3);
-  assert.equal(row.otherLandingPages[0].page, 'https://www.boutique-de-boxe.com/boutique-boxe/');
+  assert.equal(row.otherLandingPages[0].page, 'https://www.boutique-de-boxe.com/materiel-boxe/');
 });
 
 test('mandatory core query retains candidate pages without selecting an owner or claiming cannibalisation', () => {
   const watchlist = priorityQueries(resolve(root, 'lib/seo-copy.ts'));
-  const csv = 'query,page,clicks,impressions,position\nboutique de boxe,https://www.boutique-de-boxe.com/,1,30,4\nboutique de boxe,https://www.boutique-de-boxe.com/boutique-boxe/,1,40,6';
+  const csv = 'query,page,clicks,impressions,position\nboutique de boxe,https://www.boutique-de-boxe.com/,1,30,4\nboutique de boxe,https://www.boutique-de-boxe.com/materiel-boxe/,1,40,6';
   const report = analyzeSnapshot(importGscCsv(csv, context), watchlist, { generatedAt: at });
   const core = report.segments[0].queries.find((row) => row.query === 'boutique de boxe');
   assert.equal(core.target, null);

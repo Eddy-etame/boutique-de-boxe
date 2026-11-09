@@ -11,7 +11,7 @@ import selection from './data/selection.json';
 import { brandFor, brandsOf } from './brands';
 import { facetFor } from './facets';
 import { observatory } from './observatory';
-import { villeFor, regionFor, regionTotal, VILLES, REGIONS, CARREFOUR, FRANCE } from './villes';
+import { villeFor, regionFor, regionTotal, FRANCE } from './villes';
 
 export const OG_WIDTH = 1200;
 export const OG_HEIGHT = 630;
@@ -259,21 +259,6 @@ export function cardFor(kind: CardKind, key: string, products: Product[]): Card 
         photos: gants[i]?.images[0] ? [gants[i].images[0].src] : [],
         photoLabel: 'LE PREMIER SAC ' + (ville ? (ville.nom.startsWith('Le ') ? 'AU ' + ville.nom.slice(3) : 'À ' + ville.nom) : 'EN ' + nom).toUpperCase(),
         path: '/' + key + '/',
-      };
-    }
-    if (key === CARREFOUR) {
-      const lieux = VILLES.reduce((n, v) => n + v.lieux.length, 0) + REGIONS.reduce((n, r) => n + regionTotal(r).lieux, 0);
-      return {
-        title: 'Boutique sport de combat France.',
-        eyebrow: 'BOUTIQUE DE BOXE · VILLE PAR VILLE',
-        facts: [
-          { label: 'VILLES ET RÉGIONS', value: fr(VILLES.length + REGIONS.length) },
-          { label: 'LIEUX RECENSÉS', value: fr(lieux) },
-          { label: 'LIVRAISON', value: 'Toute la France' },
-        ],
-        photos: photosOf(products.filter((p) => p.category === 'protections-boxe' && p.cut?.mode === 'pose')),
-        photoLabel: 'UN MODÈLE DU CATALOGUE',
-        path: '/' + CARREFOUR + '/',
       };
     }
     if (key === 'observatoire-des-prix') {

@@ -1282,7 +1282,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
     ],
     liens: [
       { titre: 'Les guides', liens: [{ href: '/guides/debuter-mma/', texte: 'le matériel pour commencer le MMA et le grappling' }, { href: '/guide-des-tailles/', texte: 'lire un tableau de tailles' }] },
-      { titre: 'Les rayons voisins', liens: [{ href: '/equipement-jjb/', texte: 'équipement JJB et grappling' }, { href: '/ceintures/', texte: 'ceinture de JJB' }, { href: '/rashguards/', texte: 'rashguards' }, { href: '/kimonos/', texte: 'kimonos de karaté et de judo' }, { href: '/boutique-arts-martiaux/', texte: 'boutique arts martiaux' }] },
+      { titre: 'Les rayons voisins', liens: [{ href: '/equipement-jjb/', texte: 'équipement JJB et grappling' }, { href: '/ceintures/', texte: 'ceinture de JJB' }, { href: '/rashguards/', texte: 'rashguards' }, { href: '/kimonos/', texte: 'kimonos de karaté et de judo' }, { href: '/arts-martiaux/', texte: 'matériel d’arts martiaux' }] },
     ],
   },
 
@@ -1833,8 +1833,8 @@ export const GUIDES_RAYONS: GuideRayon[] = [
   },
 
   /* ---------------------------------------------------------------- matériel sport de combat */
-  // « boutique sport de combat France » appartient à /boutique-sport-de-combat/ (CONCOURS-MOTS-CLES.md) : cette page
-  // garde sa requête, « matériel sport de combat », et renvoie vers la boutique par un lien, pas par son titre.
+  // « boutique sport de combat France » est portée par l'accueil depuis le 09/11/2026 (fusion du carrefour des villes) :
+  // cette page garde sa requête, « matériel sport de combat ».
   {
     slug: 'materiel-sport-de-combat',
     requete: 'matériel sport de combat',
@@ -1904,7 +1904,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
         },
         {
           titre: 'Commander, recevoir',
-          texte: ['Le panier se paie par carte ; la livraison, les délais et les retours sont détaillés sur la page de la [boutique sport de combat en France](/boutique-sport-de-combat/). Les sacs de frappe, les bases et les portiques se livrent à domicile, sur devis.'],
+          texte: ['Le panier se paie par carte ; la livraison, les délais et les retours sont détaillés sur les pages [livraison et délais](/livraison/) et [retours et échanges](/retours/). Les sacs de frappe, les bases et les portiques se livrent à domicile, sur devis.'],
         },
       ],
     },
@@ -1954,7 +1954,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
     liens: [
       { titre: 'Par discipline', liens: [{ href: '/materiel-boxe/', texte: 'matériel de boxe' }, { href: '/materiel-mma/', texte: 'matériel MMA' }, { href: '/materiel-boxe-thai/', texte: 'boxe thaï' }, { href: '/materiel-kick-boxing/', texte: 'kick-boxing' }, { href: '/materiel-boxe-francaise/', texte: 'savate boxe française' }, { href: '/equipement-jjb/', texte: 'jiu-jitsu brésilien' }, { href: '/arts-martiaux/', texte: 'matériel d’arts martiaux' }] },
       { titre: 'Les guides', liens: [{ href: '/guides/', texte: 'tous les guides d’achat' }, { href: '/guides/choisir-protections/', texte: 'les protections de chaque sport' }, { href: '/sports-de-combat/', texte: 'les sports de combat en France' }, { href: '/guides/boxe-thai-ou-kick-boxing-differences/', texte: 'boxe thaï ou kick-boxing : les différences' }, { href: '/guides/boxe-anglaise-ou-savate-boxe-francaise/', texte: 'boxe anglaise ou savate : les deux tenues' }] },
-      { titre: 'La boutique', liens: [{ href: '/livraison/', texte: 'livraison et délais' }, { href: '/retours/', texte: 'retours et échanges' }, { href: '/boutique-sport-de-combat/', texte: 'boutique sport de combat en France' }] },
+      { titre: 'La boutique', liens: [{ href: '/livraison/', texte: 'livraison et délais' }, { href: '/retours/', texte: 'retours et échanges' }] },
     ],
   },
   /* ---------------------------------------------------------------- accessoires de boxe (22/10) */
@@ -2417,267 +2417,8 @@ export const GUIDES_RAYONS: GuideRayon[] = [
     ],
   },
 
-  /* ---------------------------------------------------------------- boutique boxe (22/10) : tout le catalogue */
-  {
-    slug: 'boutique-boxe',
-    requete: 'boutique boxe',
-    revision: '2026-10-24',
-    h1: 'Boutique boxe',
-    // « matos boxe », seconde requête du concours pour cette page : dans le titre, le surtitre et un H2 (le titre du guide).
-    eyebrow: 'BOUTIQUE BOXE · MATOS BOXE',
-    titre: ({ f }) => `Boutique boxe : matos boxe, gants, sacs, MMA, ${fr(f.n)} modèles`,
-    description: ({ f }) => `Boutique boxe en ligne, matos boxe : ${fr(f.n)} modèles dès ${money(f.min)}, gants, bandes, protections, sacs de frappe, textile, chaussures. Prix TTC, livraison en France.`,
-    label: ({ f }) => `Toute la boutique : ${fr(f.n)} modèles de ${f.marques.length} marques, dès ${money(f.min)}.`,
-    intro: 'Tout le matériel de boxe et de sports de combat, avec ses tailles réelles et ses prix TTC. Cherchez un modèle, une marque ou une famille ; le guide, sous la liste, dit ce que vend chaque rayon.',
-    guide: {
-      titre: 'Le matos boxe, rayon par rayon',
-      chapeau: ({ f }) => `Une boutique de boxe en ligne, rien d’autre : ${fr(f.n)} modèles en dix rayons, ${f.marques.length} marques, de ${money(f.min)} à ${money(f.max)}. Ce que vend chaque rayon, par où commencer, comment commander.`,
-      chapitres: [
-        {
-          titre: 'Une boutique en ligne, pas un club',
-          texte: [
-            'Boutique de Boxe vend du matériel, et seulement cela : ni cours, ni salle, ni planning. Chaque modèle a sa fiche, avec les tailles telles que la marque les publie, sa référence fabricant, ses couleurs et son prix de vente TTC.',
-            'Rien n’y est inventé : pas de stock affiché, pas de remise barrée, pas d’avis fabriqué. Les notes sous les fiches viennent des visiteurs, sans vérification d’achat, et la [page des questions](/faq/#notes-des-produits) dit comment elles sont modérées.',
-          ],
-        },
-        {
-          titre: 'Ce que vend chaque rayon',
-          texte: [
-            ({ all }) => {
-              const fam: [string, string, string][] = [['gants-de-boxe', 'les gants de boxe', '/gants-de-boxe/'], ['gants-mma', 'les gants MMA', '/gants-mma/'], ['protections-boxe', 'les protections', '/protections-boxe/'], ['textile-boxe', 'le textile', '/textile-boxe/'], ['accessoires-boxe', 'les accessoires', '/accessoires-boxe/'], ['chaussures-boxe', 'les chaussures', '/chaussures-boxe/'], ['equipement-entrainement', 'l’équipement d’entraînement', '/equipement-entrainement/'], ['arts-martiaux', 'les arts martiaux', '/arts-martiaux/'], ['sacs-de-sport', 'les sacs de sport', '/sacs-de-sport/']];
-              const parts = fam.map(([s, l, href]) => {
-                const ps = famille(all, s);
-                return ps.length ? `[${l}](${href}), ${fr(ps.length)} modèles dès ${desDe(ps)}` : '';
-              }).filter(Boolean);
-              const sa = sacs(famille(all, 'sacs-de-frappe'));
-              return `${liste(parts)} ; [les sacs de frappe](/sacs-de-frappe/), ${fr(sa.length)} sacs dès ${desDe(sa)}, se livrent sur devis avec leurs supports.`;
-            },
-          ],
-        },
-        {
-          titre: 'Par où commencer',
-          texte: [
-            'En premier, ce qui vous appartient : des bandes et un protège-dents. Puis les gants, au poids que votre salle demande, et le short de votre boxe. Le casque, la coquille, les chaussures et le sac de frappe viennent quand la pratique s’installe.',
-            'La page [matériel de boxe](/materiel-boxe/) chiffre le sac de chaque niveau, du premier cours au ring ; celle du [matériel de boxe débutant](/materiel-boxe-debutant/) ne garde que les trois pièces du départ.',
-          ],
-        },
-        {
-          titre: 'Les boxes et les sports de combat couverts',
-          texte: [
-            ({ all }) => {
-              const d = (k: string) => all.filter((p) => (p.disciplines || []).includes(k)).length;
-              return `Boxe anglaise, muay-thaï, kick-boxing, savate, MMA, jiu-jitsu brésilien, karaté, judo, taekwondo, krav maga : chaque discipline a sa page d’entrée, avec ce qu’elle demande d’abord. D’après les fiches, ${fr(d('boxe-thai'))} modèles sont classés boxe thaï, ${fr(d('boxe-anglaise'))} boxe anglaise, ${fr(d('mma'))} MMA et ${fr(d('jjb'))} jiu-jitsu brésilien.`;
-            },
-            'Voir la [boxe thaï](/materiel-boxe-thai/), puis le [kick-boxing](/materiel-kick-boxing/), la [savate](/materiel-boxe-francaise/), le [MMA](/materiel-mma/), le [JJB](/equipement-jjb/) et les [arts martiaux](/boutique-arts-martiaux/).',
-          ],
-        },
-        {
-          titre: 'Les marques',
-          texte: [({ f }) => `${marquesTexte(f, 8)} sont les plus présentes, parmi ${fr(f.marques.length)} marques. Les fiches affichent les tailles proposées sans les convertir d’une marque à l’autre : vérifiez la grille propre au modèle chez son fabricant. Chaque [marque a sa page](/marques/).`],
-        },
-        {
-          titre: 'Commander, payer, être livré',
-          texte: [
-            () => `Le panier se paie par carte sur la page sécurisée de PayPlug ; la commande part sous ${shop.delais.expedition}. Livraison en ${livraison.zone}, ${livraison.tarifs}. Le matériel lourd se livre à domicile sur devis ; ${livraison.horsZone}.`,
-            'Quatorze jours après la réception pour changer d’avis : la page [retours et échanges](/retours/) dit comment faire.',
-          ],
-        },
-        {
-          titre: 'Les prix',
-          texte: [
-            ({ f }) => `Les prix sont des prix de vente, toutes taxes comprises, hors livraison. Quand une marque fait varier le prix selon la taille, la carte dit « dès » et la fiche donne chaque prix. Au catalogue, la moitié des modèles coûte moins de ${money(f.mediane)} ; l’[observatoire des prix](/observatoire-des-prix/) suit ces chiffres chaque semaine.`,
-          ],
-        },
-      ],
-    },
-    usages: {
-      titre: 'Un premier achat par rayon',
-      note: 'Pour chaque rayon, le modèle adulte le moins cher qui remplit son rôle, tout le catalogue confondu.',
-      regles: [
-        { usage: 'Gants de boxe', filtre: (p) => gantBoxe(p) && adulte(p) && ouncesOf(p).includes(12) && velcro(p), critere: ({ i, n }) => `${rang(i)} au catalogue parmi ${fr(n)} gants adultes de 12 oz à velcro` },
-        { usage: 'Bandes', filtre: (p) => bandes(p) && longueur(p) === 4.5, critere: ({ i, n }) => `${rang(i, 'f')} au catalogue parmi ${fr(n)} paires de 4,50 m` },
-        { usage: 'Protège-dents', filtre: (p) => protegeDents(p) && adulte(p) && !propose(p, /junior|enfant/i), critere: ({ i, n }) => `${rang(i)} au catalogue parmi ${fr(n)} protège-dents adultes` },
-        { usage: 'Short', filtre: (p) => shortAnglais(p) && adulte(p), critere: ({ i, n }) => `${rang(i)} au catalogue parmi ${fr(n)} shorts d’anglaise` },
-        { usage: 'Chaussures', filtre: (p) => p.category === 'chaussures-boxe' && nom(p).startsWith('chaussures de boxe') && adulte(p), critere: ({ i, n }) => `${rang(i, 'f')} au catalogue parmi ${fr(n)} paires de chaussures de boxe` },
-        { usage: 'Sac de frappe', filtre: (p) => surPied(p) && adulte(p), critere: ({ i, n }) => `${rang(i)} au catalogue parmi ${fr(n)} sacs sur pied, sans rien à percer` },
-        { usage: 'Gants MMA', filtre: (p) => gantMMA(p) && adulte(p), critere: ({ i, n }) => `${rang(i)} au catalogue parmi ${fr(n)} gants à doigts libres` },
-        { usage: 'Rashguard', filtre: (p) => rashguard(p) && adulte(p), critere: ({ i, n }) => `${rang(i)} au catalogue parmi ${fr(n)} rashguards adultes` },
-        { usage: 'Kimono', filtre: (p) => kimonoJJB(p), critere: ({ i, n }) => `${rang(i)} au catalogue parmi ${fr(n)} kimonos de jiu-jitsu brésilien` },
-        { usage: 'Corde à sauter', filtre: (p) => cordeASauter(p), critere: ({ i, n }) => `${rang(i, 'f')} au catalogue parmi ${fr(n)} cordes à sauter` },
-      ],
-    },
-    tableau: ({ all }) => {
-      const fam: [string, string][] = [['gants-de-boxe', 'Gants de boxe'], ['gants-mma', 'Gants MMA'], ['protections-boxe', 'Protections'], ['textile-boxe', 'Textile'], ['accessoires-boxe', 'Accessoires'], ['sacs-de-frappe', 'Sacs de frappe'], ['chaussures-boxe', 'Chaussures'], ['equipement-entrainement', 'Équipement d’entraînement'], ['arts-martiaux', 'Arts martiaux'], ['sacs-de-sport', 'Sacs de sport']];
-      const lignes: Cellule[][] = fam
-        .map(([slug, libelle]) => {
-          const ps = slug === 'sacs-de-frappe' ? sacs(famille(all, slug)) : famille(all, slug);
-          const s = ps.map((p) => p.price).sort((a, b) => a - b);
-          const marques = new Set(ps.map((p) => p.brand.trim().toLowerCase()).filter((b) => b && !NI_MARQUE.test(b))).size;
-          return s.length ? [{ texte: libelle, href: '/' + slug + '/' }, fr(s.length), fr(marques), money(s[0]), money(s[Math.floor(s.length / 2)])] : null;
-        })
-        .filter(nonNul);
-      return { titre: 'Les dix rayons de la boutique', colonnes: ['Rayon', 'Modèles', 'Marques', 'Dès', 'Prix médian'], lignes, note: 'Prix de vente du jour. Seuls les sacs comptent sur la ligne des sacs de frappe ; les semelles ne sont pas des chaussures.' };
-    },
-    faq: ({ f }) => [
-      { question: 'Matos boxe : que trouve-t-on dans cette boutique ?', answer: `Tout ce qu’une séance demande : bandes, gants du 4 au 20 oz, protège-dents, casque, protège-tibias, short, chaussures, sac de frappe et corde, soit ${fr(f.n)} modèles de ${fr(f.marques.length)} marques, livrés dans toute la ${livraison.zone}.` },
-      { question: 'Boutique de Boxe est-elle liée à un club ?', answer: 'Non. C’est une boutique en ligne indépendante de matériel de boxe et de sports de combat, ouverte à tous les pratiquants, sans cours ni salle. L’éditeur est nommé dans les mentions légales.' },
-      { question: 'Peut-on commander en ligne et payer par carte ?', answer: `Oui, depuis le ${shop.ouverture.long} : les prix affichés sont les prix de vente TTC, et le paiement se fait par carte sur la page sécurisée de PayPlug, jamais sur la boutique elle-même.` },
-      { question: 'Livrez-vous partout en France ?', answer: `Dans toute la ${livraison.zone}, à domicile ou en point relais : ${livraison.tarifs}. Le matériel lourd se livre sur devis ; ${livraison.horsZone}.` },
-      { question: 'Combien de temps pour recevoir sa commande ?', answer: `La commande part sous ${shop.delais.expedition} après le paiement ; la livraison arrive au plus tard sous ${shop.delais.livraisonMax}. Si un modèle manque, vous êtes prévenu avant tout envoi.` },
-      { question: 'Peut-on renvoyer un article ?', answer: 'Oui, pendant quatorze jours après la réception, non utilisé et dans son emballage ; un protège-dents descellé fait exception, pour l’hygiène. Pour changer de taille, écrivez-nous avec votre numéro de commande.' },
-      { question: 'Les prix affichés sont-ils définitifs ?', answer: 'Ce sont les prix de vente TTC, hors livraison ; le prix payé est celui affiché au moment de la commande, les frais de livraison s’ajoutent dans le panier avant le paiement.' },
-      { question: 'Quelles marques vend la boutique ?', answer: `${marquesTexte(f, 8)}, parmi ${fr(f.marques.length)} marques ; chacune a sa page et sa grille de tailles.` },
-      { question: 'Comment trouver un modèle précis ?', answer: 'Par la recherche en haut de page, par le rayon, par la marque ou par la discipline. Chaque fiche donne la référence fabricant : elle sert à comparer avec une autre boutique.' },
-    ],
-    liens: [
-      { titre: 'Les rayons', liens: [{ href: '/gants-de-boxe/', texte: 'gants de boxe' }, { href: '/protections-boxe/', texte: 'protections' }, { href: '/textile-boxe/', texte: 'textile' }, { href: '/sacs-de-frappe/', texte: 'sacs de frappe' }, { href: '/accessoires-boxe/', texte: 'accessoires' }] },
-      { titre: 'Par discipline', liens: [{ href: '/materiel-boxe/', texte: 'matériel de boxe' }, { href: '/materiel-mma/', texte: 'matériel MMA' }, { href: '/boutique-arts-martiaux/', texte: 'boutique arts martiaux' }, { href: '/materiel-sport-de-combat/', texte: 'matériel sport de combat' }] },
-      { titre: 'La boutique', liens: [{ href: '/vente-materiel-de-boxe/', texte: 'comment se passe la vente' }, { href: '/livraison/', texte: 'livraison et délais' }, { href: '/retours/', texte: 'retours et échanges' }, { href: '/boutique-sport-de-combat/', texte: 'boutique sport de combat en France' }] },
-    ],
-  },
-
-  /* ---------------------------------------------------------------- boutique arts martiaux (22/10) : tenues et protections */
-  {
-    slug: 'boutique-arts-martiaux',
-    requete: 'boutique arts martiaux',
-    revision: '2026-10-24',
-    h1: 'Boutique arts martiaux',
-    eyebrow: 'BOUTIQUE ARTS MARTIAUX · KIMONOS, CEINTURES, PROTECTIONS',
-    titre: ({ f }) => `Boutique arts martiaux : kimonos, ceintures, ${fr(f.n)} modèles`,
-    description: ({ f }) => `Boutique arts martiaux en ligne : ${fr(f.n)} modèles dès ${money(f.min)}, kimonos de JJB, judo et karaté, doboks, ceintures, protections. Tailles par marque, prix TTC.`,
-    label: ({ f }) => `${fr(f.n)} modèles, dès ${money(f.min)} : le kimono, la ceinture et les protections.`,
-    intro: 'Le kimono à sa taille et la ceinture blanche pour commencer ; les protections, protège-tibias, protège-pieds, casque, quand le combat arrive. Chaque art martial a sa tenue : le guide les distingue.',
-    guide: {
-      titre: 'S’équiper pour son art martial',
-      chapeau: ({ f }) => `${fr(f.n)} modèles et ${f.marques.length} marques, entre ${money(f.min)} et ${money(f.max)} : le kimono selon la discipline, la ceinture selon le grade, les protections selon le contact.`,
-      chapitres: [
-        {
-          titre: 'Un kimono par discipline',
-          texte: [
-            'Le gi de jiu-jitsu brésilien est coupé près du corps et tissé serré, pour ne rien laisser saisir ; le kimono de judo, plus ample et plus lourd, encaisse les prises ; celui de karaté est léger, pour la vitesse. Le dobok de taekwondo se reconnaît à son col en V, le hakama à sa jupe-pantalon plissée.',
-            ({ items }) => {
-              const parts = [combien(items, kimonoJJB, 'kimono de JJB', 'kimonos de JJB'), combien(items, kimonoJudo, 'kimono de judo', 'kimonos de judo'), combien(items, kimonoKarate, 'kimono de karaté', 'kimonos de karaté'), combien(items, dobok, 'dobok', 'doboks'), combien(items, hakama, 'hakama', 'hakamas')].filter(Boolean);
-              return `Au rayon : ${liste(parts as string[])}. Les [kimonos de JJB](/kimonos-jjb/) ont leur page, grammage par grammage.`;
-            },
-          ],
-        },
-        {
-          titre: 'La taille : A pour le JJB, centimètres ailleurs',
-          texte: [
-            ({ items }) => {
-              const cm = centimetres(items.filter((p) => kimono(p) || dobok(p) || hakama(p)));
-              const a = ['A0', 'A1', 'A2', 'A3', 'A4'].filter((x) => items.some((p) => kimonoJJB(p) && tailles(p).some((s) => s.toUpperCase().startsWith(x))));
-              return `Le gi de JJB se taille de ${a[0]} à ${a[a.length - 1]}, d’après la stature et le poids ; judo, karaté et taekwondo se taillent à la stature, en centimètres${cm ? `, entre ${cm[0]} et ${cm[1]} cm dans ce rayon` : ''}. Dans tous les cas, la grille de la marque fait foi, et un enfant prend sa taille du jour.`;
-            },
-          ],
-        },
-        {
-          titre: 'La ceinture',
-          texte: [
-            ({ items }) => {
-              const c = items.filter((p) => ceintureGrade(p) && p.price > 0);
-              const couleurs = [...new Set(c.flatMap((p) => p.colors || []))];
-              return `On commence en blanche ; les suivantes se gagnent, et c’est le professeur qui les remet. ${c.length ? `${fr(c.length)} ceintures de JJB au rayon, à ${desDe(c)}${couleurs.length ? `, en ${liste(couleurs)}` : ''}, taillées comme le kimono, de A0 à A4.` : 'Chaque fiche donne la longueur de la ceinture.'}`;
-            },
-          ],
-        },
-        {
-          titre: 'Les protections des arts martiaux',
-          texte: [
-            'Au karaté, un protège-tibia fin ou en coton et des protège-pieds suffisent souvent ; le taekwondo ajoute le plastron et les protège-avant-bras ; le jiu-jitsu brésilien demande peu, un protège-dents et parfois un protège-oreilles. Ce que le club impose décide, pas le catalogue.',
-            ({ items }) => {
-              const parts = [combien(items, (p) => tibias(p) && (enCoton(p) || tibiaSeul(p)), 'protège-tibia fin ou en coton', 'protège-tibias fins ou en coton'), combien(items, protegePieds, 'protège-pieds', 'protège-pieds'), combien(items, plastron, 'plastron', 'plastrons'), combien(items, avantBras, 'protège-avant-bras de taekwondo', 'protège-avant-bras de taekwondo'), combien(items, casque, 'casque', 'casques'), combien(items, protegeDents, 'protège-dents', 'protège-dents')].filter(Boolean);
-              return `Au rayon des protections : ${liste(parts as string[])}.`;
-            },
-          ],
-        },
-        {
-          titre: 'Armes d’entraînement et casse',
-          texte: [
-            ({ items }) => {
-              const a = items.filter((p) => armeEntrainement(p) && p.price > 0);
-              return a.length ? `Pour la self-défense et le travail des formes : ${liste(a.map((p) => `${citeModele(p)} à ${money(p.price)}`))}. Des répliques inoffensives, plastique ou mousse, réservées au cours encadré.` : 'Les armes d’entraînement sont au rayon des arts martiaux.';
-            },
-          ],
-        },
-        {
-          titre: 'Sans kimono : rashguard et spats',
-          texte: [
-            ({ all }) => `En no-gi et en grappling, la tenue change : un rashguard et un short sans poche ou des spats. Le catalogue compte ${fr(all.filter((p) => rashguard(p) && p.price > 0).length)} rashguards et ${fr(all.filter((p) => spats(p) && p.price > 0).length)} spats et leggings ; la page [équipement JJB](/equipement-jjb/) réunit les deux tenues.`,
-          ],
-        },
-        {
-          titre: 'Laver un kimono',
-          texte: ['Un kimono en coton se lave à l’eau froide et sèche sur un cintre ; au sèche-linge, il perd une taille. Le ripstop bouge moins. La ceinture s’aère entre deux cours et se lave rarement.'],
-        },
-        {
-          titre: 'Les marques du rayon',
-          texte: [
-            ({ f, items }) =>
-              `Marque par marque : ${parMarque('boutique-arts-martiaux', items, f, 6, (ps) => {
-                const n = (t: (p: Product) => boolean) => ps.filter(t).length;
-                return [n(kimono) ? pluriel(n(kimono), 'kimono', 'kimonos') : '', n(ceintureGrade) ? pluriel(n(ceintureGrade), 'ceinture', 'ceintures') : '', n(dobok) ? pluriel(n(dobok), 'dobok', 'doboks') : '', n((p) => p.category === 'protections-boxe') ? pluriel(n((p) => p.category === 'protections-boxe'), 'protection', 'protections') : ''].filter(Boolean).join(', ');
-              }, true)}.`,
-          ],
-        },
-      ],
-    },
-    usages: {
-      titre: 'Quelle pièce pour quel art martial',
-      note: 'Par ligne, le prix le plus bas du rayon qui convient, en taille adulte sauf mention.',
-      regles: [
-        { usage: 'JJB : le gi', filtre: (p) => kimonoJJB(p), critere: ({ i, n }) => `${rang(i)} parmi ${fr(n)} gis de jiu-jitsu brésilien` },
-        { usage: 'JJB : la ceinture', filtre: (p) => ceintureGrade(p), critere: ({ i, n }) => `${rang(i, 'f')} des ${fr(n)} ceintures` },
-        { usage: 'Judo', filtre: (p) => kimonoJudo(p) && !bebe(p), critere: ({ i, n }) => (n === 1 ? 'le seul kimono de judo adulte' : `${rang(i)} des ${fr(n)} kimonos de judo, celui pour bébé à part`) },
-        { usage: 'Karaté', filtre: (p) => kimonoKarate(p) && !bebe(p), critere: ({ i, n }) => (n === 1 ? 'le seul kimono de karaté adulte' : `${rang(i)} des ${fr(n)} kimonos de karaté`) },
-        { usage: 'Taekwondo : le dobok', filtre: (p) => dobok(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} doboks` },
-        { usage: 'Taekwondo : le plastron', filtre: (p) => plastron(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} plastrons` },
-        { usage: 'Aïkido : le hakama', filtre: (p) => hakama(p), critere: ({ i, n }) => (n === 1 ? 'le seul hakama du rayon' : `${rang(i)} des ${fr(n)} hakamas`) },
-        { usage: 'Tout-petits', filtre: (p) => bebe(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} kimonos pour bébé` },
-        { usage: 'Karaté : les tibias', filtre: (p) => tibias(p) && enCoton(p), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} protège-tibias en coton` },
-        { usage: 'Self-défense', filtre: (p) => /^(tanto|couteau)/.test(nom(p)), critere: ({ i, n }) => `${rang(i)} des ${fr(n)} armes d’entraînement` },
-      ],
-    },
-    tableau: ({ items }) =>
-      tableauTypes(
-        items,
-        [
-          ['Kimonos de JJB', kimonoJJB, '/kimonos-jjb/'],
-          ['Kimonos de judo et de karaté', (p) => kimonoJudo(p) || kimonoKarate(p), '/kimonos/'],
-          ['Doboks et hakama', (p) => dobok(p) || hakama(p)],
-          ['Ceintures', ceintureGrade, '/ceintures/'],
-          ['Armes d’entraînement', armeEntrainement],
-          ['Protège-tibias et protège-pieds', (p) => tibias(p) || protegePieds(p), '/protege-tibias/'],
-          ['Casques', casque, '/casques-de-boxe/'],
-          ['Protège-dents', protegeDents, '/protege-dents/'],
-          ['Plastrons, coquilles, maintiens', (p) => plastron(p) || coquille(p) || articulation(p)],
-        ],
-        'La boutique, type par type',
-        'Nombre de modèles du jour et premier prix TTC par type.',
-      ),
-    faq: ({ f, items }) => {
-      const prix = (t: (p: Product) => boolean) => premier(items.filter((p) => p.price > 0 && t(p)));
-      const kk = prix((p) => kimonoKarate(p) && !bebe(p));
-      const pd = prix((p) => protegeDents(p) && adulte(p) && !propose(p, /junior|enfant/i));
-      const kids = items.filter((p) => p.price > 0 && (bebe(p) || enfant(p) || dobok(p)));
-      return [
-        { question: 'Quel kimono pour débuter ?', answer: 'Celui de votre discipline, à votre taille, en blanc : un gi de JJB pour le jiu-jitsu brésilien, un kimono de judo ou de karaté pour ces deux-là, un dobok pour le taekwondo. Beaucoup de clubs en prêtent un à l’essai.' },
-        { question: 'Quelle taille de kimono prendre ?', answer: 'Dans la grille de la marque : par stature et poids pour les tailles A du JJB, par stature en centimètres pour le judo, le karaté et le taekwondo. Un kimono en coton rétrécit un peu au premier lavage.' },
-        { question: 'Judo, karaté, JJB : les kimonos sont-ils interchangeables ?', answer: 'Pour essayer un cours, oui. Pour pratiquer, non : le judo veut une veste lourde qui résiste aux prises, le karaté une toile légère, le JJB une coupe ajustée que l’adversaire ne saisit pas.' },
-        { question: 'Faut-il acheter sa ceinture ?', answer: 'La blanche, oui, si elle n’est pas vendue avec le kimono ; la fiche le précise. Les couleurs suivantes se gagnent et sont remises par le professeur.' },
-        { question: 'Quelles protections pour le karaté ?', answer: 'Un protège-dents, des protège-tibias fins et des protège-pieds, une coquille pour les hommes ; le casque et le plastron selon la fédération et l’âge. Le club donne la liste.' },
-        { question: 'Y a-t-il des kimonos pour les enfants ?', answer: `Oui : ${fr(kids.length)} modèles, dès ${desDe(kids)}, du kimono pour bébé aux doboks en centimètres. On achète à la taille d’aujourd’hui : un kimono trop grand gêne la prise.` },
-        { question: 'Comment laver un kimono ?', answer: 'À l’eau froide, puis séchage sur un cintre, jamais au sèche-linge, surtout pour le coton. Le ripstop supporte mieux la machine.' },
-        { question: 'Quelles marques trouve-t-on ?', answer: `${marquesTexte(f, 6)}. Les tailles proposées sont affichées sur la fiche ; consultez la grille du modèle chez le fabricant avant de choisir.` },
-        ...(kk && pd ? [{ question: 'Combien coûte un premier équipement d’arts martiaux ?', answer: `Au premier prix du rayon, un kimono de karaté et un protège-dents reviennent à ${money(kk.price + pd.price)} ; un gi de JJB avec sa ceinture, à ${money((prix(kimonoJJB)?.price || 0) + (prix(ceintureGrade)?.price || 0))}.` }] : []),
-      ];
-    },
-    liens: [
-      { titre: 'Les sous-rayons', liens: [{ href: '/kimonos/', texte: 'kimonos' }, { href: '/kimonos-jjb/', texte: 'kimonos de JJB' }, { href: '/ceintures/', texte: 'ceintures' }, { href: '/equipement-jjb/', texte: 'équipement JJB et grappling' }] },
-      { titre: 'Les guides', liens: [{ href: '/guides/choisir-protections/', texte: 'les protections de chaque sport' }, { href: '/guide-des-tailles/', texte: 'lire une grille de tailles' }, { href: '/les-arts-martiaux/', texte: 'les arts martiaux et leurs dojos' }] },
-      { titre: 'Les rayons voisins', liens: [{ href: '/arts-martiaux/', texte: 'matériel d’arts martiaux' }, { href: '/protections-boxe/', texte: 'protections' }, { href: '/materiel-mma/', texte: 'matériel MMA' }, { href: '/rashguards/', texte: 'rashguards' }] },
-    ],
-  },
+  /* 09/11/2026 : les pages « boutique boxe » et « boutique arts martiaux » sont fusionnées dans /materiel-boxe/ et
+   * /arts-martiaux/ (proxy.ts, 308) : Google les refusait, chacune doublant une page qu'il garde. */
 
   /* ---------------------------------------------------------------- matériel d’arts martiaux (22/10) : le rayon des tenues */
   {
@@ -2815,7 +2556,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
     liens: [
       { titre: 'Les sous-rayons', liens: [{ href: '/kimonos/', texte: 'kimonos' }, { href: '/kimonos-jjb/', texte: 'kimono JJB' }, { href: '/ceintures/', texte: 'ceintures' }] },
       { titre: 'Les guides', liens: [{ href: '/guide-des-tailles/', texte: 'lire une grille de tailles' }, { href: '/guides/debuter-mma/', texte: 'commencer le MMA et le grappling' }, { href: '/les-arts-martiaux/', texte: 'les arts martiaux, leur origine et leurs dojos' }] },
-      { titre: 'Les rayons voisins', liens: [{ href: '/boutique-arts-martiaux/', texte: 'boutique arts martiaux' }, { href: '/equipement-jjb/', texte: 'équipement JJB' }, { href: '/protections-boxe/', texte: 'protections' }, { href: '/materiel-sport-de-combat/', texte: 'matériel sport de combat' }] },
+      { titre: 'Les rayons voisins', liens: [{ href: '/equipement-jjb/', texte: 'équipement JJB' }, { href: '/protections-boxe/', texte: 'protections' }, { href: '/materiel-sport-de-combat/', texte: 'matériel sport de combat' }] },
     ],
   },
   /* ---------------------------------------------------------------- équipement de boxe anglaise (23/10) */

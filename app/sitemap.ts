@@ -6,8 +6,8 @@ import { EDITORIAL_DATE, CATALOGUE_REVISION, urlOf } from '@/lib/seo';
 import { SUBFAMILIES, subfamilyProducts } from '@/lib/subfamilies';
 import { brandsOf } from '@/lib/brands';
 import { allFacets } from '@/lib/facets';
-import { VILLES, REGIONS, CARREFOUR, SOURCE, villePath, VILLE_INDEXEE } from '@/lib/villes';
-import { VILLES_DATE, CARREFOUR_DATE } from '@/components/ville-page';
+import { VILLES, REGIONS, SOURCE, villePath, VILLE_INDEXEE } from '@/lib/villes';
+import { VILLES_DATE } from '@/components/ville-page';
 import { GUIDES_RAYONS } from '@/lib/guides-rayons';
 import { buyingBrief, BUYING_BRIEF_REVISION } from '@/lib/buying-brief';
 import { PRODUCT_EVIDENCE_REVISION } from '@/lib/describe';
@@ -18,8 +18,9 @@ const TOOL_PATHS = new Set(['/observatoire-des-prix/', '/outils/poids-de-gants/'
 const VENTE_PATH = '/vente-materiel-de-boxe/';
 // « Sport de combat » et « Arts martiaux » (03/10) : pages d'information datées par le recensement qui les nourrit.
 const INFO_PATHS = new Set(['/sports-de-combat/', '/les-arts-martiaux/']);
-// Pages-villes et carrefour (29/09) : datées par le recensement du ministère des Sports qui les nourrit.
-const VILLE_PATHS = new Set(['/' + CARREFOUR + '/', ...[...VILLES, ...REGIONS].map((v) => villePath(v.slug))]);
+// Pages-villes (29/09) : datées par le recensement du ministère des Sports qui les nourrit. Leur carrefour,
+// /boutique-sport-de-combat/, est fusionné dans l'accueil depuis le 09/11/2026 (proxy.ts, 308).
+const VILLE_PATHS = new Set([...VILLES, ...REGIONS].map((v) => villePath(v.slug)));
 // Six heures (30/10/2026) : à 60 s, chaque page redevenait périmée entre deux passages d’un robot et se
 // régénérait en rafale (18 réponses de 2 à 14 s sur 882 mesurées ce jour-là) ; une modification du
 // catalogue appelle déjà revalidatePath('/', 'layout'), une note modérée revalide sa fiche.
@@ -100,7 +101,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
   // Le jour où les ventes ouvrent, le texte des pages-villes passe au présent : leur date le dit.
   for (const path of VILLE_PATHS) dates.set(path, VILLES_DATE);
-  dates.set('/' + CARREFOUR + '/', CARREFOUR_DATE);
   for (const path of INFO_PATHS) dates.set(path, SOURCE.maj);
   // Un guide écrit après le lancement porte sa propre date, jamais celle de la révision générale.
   for (const g of guides) if (guidePublished(g) > EDITORIAL_DATE) dates.set('/guides/' + g.slug + '/', guidePublished(g));
@@ -117,7 +117,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/observatoire-des-prix/',
     '/outils/poids-de-gants/',
     // 06/11/2026 : les pages-villes hors index (lib/villes.ts, VILLE_INDEXEE) ne sont plus proposées à Google.
-    ...[...VILLE_PATHS].filter((p) => p === '/' + CARREFOUR + '/' || p === villePath(VILLE_INDEXEE)),
+    ...[...VILLE_PATHS].filter((p) => p === villePath(VILLE_INDEXEE)),
     ...products.map((p) => '/produits/' + p.slug + '/'),
     '/nouveautes/',
     '/guides/',

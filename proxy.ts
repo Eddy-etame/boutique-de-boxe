@@ -23,9 +23,30 @@ const LISTE = /^\/([a-z0-9-]+)\/$/;
 const PAGE_DIRECTE = /^\/([a-z0-9-]+)\/page-([1-9][0-9]{0,3})\/$/;
 const PAS_UNE_LISTE = new Set(['produits', 'guides', 'marques', 'atelier', 'admin', 'outils', 'labo', 'merci', 'hors-ligne']);
 
+/*
+ * Pages fusionnées le 9/11/2026. Search Console (rapport « Pages ») : Google explorait ces trois pages et
+ * les refusait, chacune doublant une page qu'il garde — /boutique-boxe/ montrait 41 des 50 premiers modèles
+ * de /materiel-boxe/, /boutique-arts-martiaux/ était faite aux trois quarts de protections de boxe, et le
+ * carrefour des villes reprenait tout le catalogue de l'accueil. Une seule adresse par contenu : 308 vers la
+ * page qui reste, avant même la règle de la barre finale, pour un seul saut ; la requête (`?page=N`) ne suit
+ * pas, la pagination de l'ancienne liste n'ayant pas d'équivalent exact.
+ */
+const FUSIONS: Record<string, string> = {
+  '/boutique-boxe/': '/materiel-boxe/',
+  '/boutique-arts-martiaux/': '/arts-martiaux/',
+  '/boutique-sport-de-combat/': '/',
+};
+
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const lecture = request.method === 'GET' || request.method === 'HEAD';
+  const fusion = lecture ? FUSIONS[pathname.endsWith('/') ? pathname : pathname + '/'] : undefined;
+  if (fusion) {
+    const cible = new URL(request.url);
+    cible.pathname = fusion;
+    cible.search = '';
+    return NextResponse.redirect(cible, 308);
+  }
   if (lecture && pathname !== '/' && !pathname.endsWith('/')) {
     const canonical = new URL(request.url);
     canonical.pathname = pathname + '/';

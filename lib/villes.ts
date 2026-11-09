@@ -21,7 +21,7 @@
  */
 import data from './data/villes.json';
 import liensMorts from './data/liens-morts.json';
-import { shop, livraison as frais } from './catalog';
+import { shop } from './catalog';
 import type { SeoFaq, SeoSection } from './seo-copy';
 
 export type Salle = { nom: string; boxe: boolean };
@@ -82,7 +82,6 @@ export const PREFIXE = 'boutique-de-boxe-';
  *  quinzaine. Une page par grande ville est le motif que Google nomme « pages satellites » : seule la ville du
  *  siège (12 rue de Fenouillet, Toulouse) reste indexable ; les autres restent lisibles, hors index et hors plan du site. */
 export const VILLE_INDEXEE = 'toulouse';
-export const CARREFOUR = 'boutique-sport-de-combat';
 export const villePath = (slug: string) => '/' + PREFIXE + slug + '/';
 /** Réorganisation réelle des pages-villes : achat et sélection avant le recensement. Jamais la date du build. */
 export const VILLES_COMMERCE_REVISION = '2026-10-24';
@@ -166,7 +165,7 @@ export const RAYON: Record<string, string> = {
   'Kick-boxing': '/gants-de-boxe-sparring/',
   'Full contact': '/gants-de-boxe/',
   'Judo, jujitsu': '/kimonos/',
-  Karaté: '/boutique-arts-martiaux/',
+  Karaté: '/arts-martiaux/',
   Aïkido: '/ceintures/',
   Taekwondo: '/protections-boxe/',
   Lutte: '/shorts-mma/',
@@ -587,38 +586,10 @@ export function regionFaq(r: Region): SeoFaq[] {
   ];
 }
 
-/* ── Carrefour « Boutique sport de combat France » ─────────────────────── */
-
-/**
- * Refonte du 23/10/2026 : la requête « boutique sport de combat France » cherche une boutique, pas un
- * annuaire. La page vend d'abord — un tableau par sport, un par type de matériel, la livraison, les
- * marques — et garde ensuite les lieux recensés, ville par ville : elle reste le carrefour des pages-villes.
- */
-export const CARREFOUR_REVISION = '2026-10-23';
-/** Les sept sports de la boutique, chacun avec sa page de tête ; la boxe d'abord, comme le catalogue. */
-export const SPORTS_BOUTIQUE: { nom: string; slug: string }[] = [
-  { nom: 'Boxe anglaise', slug: 'equipement-boxe-anglaise' },
-  { nom: 'Muay-thaï', slug: 'materiel-boxe-thai' },
-  { nom: 'Kick-boxing', slug: 'materiel-kick-boxing' },
-  { nom: 'MMA', slug: 'materiel-mma' },
-  { nom: 'Jiu-jitsu brésilien et grappling', slug: 'equipement-jjb' },
-  { nom: 'Savate boxe française', slug: 'materiel-boxe-francaise' },
-  { nom: 'Arts martiaux', slug: 'boutique-arts-martiaux' },
-];
-/** Une ligne des tableaux du carrefour : un sport ou un rayon, avec les chiffres du jour. */
-export type SportBoutique = { nom: string; slug: string; n: number; min: number; marques: number; familles: string[] };
-/** « MMA » reste en capitales au milieu d'une phrase ; « Boxe anglaise » devient « boxe anglaise ». */
-const nomBas = (s: string) => (/^[A-Z]{2,}/.test(s) ? s : min1(s));
-
-export const carrefourTitre = (modeles: number) => `Boutique sport de combat France : ${fr(modeles)} modèles en ligne`;
-export const carrefourDescription = (modeles: number) =>
-  `Boutique sport de combat France : ${fr(modeles)} modèles de boxe, MMA, muay-thaï, JJB, savate et arts martiaux, livrés partout en France, relais offert dès ${frais.franco}.`;
-export function carrefourChapeau(modeles: number, marques: number, sports: number) {
-  return `Boutique de Boxe est une boutique de sport de combat en ligne, basée à Toulouse, qui ${livrer('toute la France continentale')} en point relais ou à domicile : ${fr(modeles)} modèles de ${fr(marques)} marques pour ${sports} sports, de la boxe anglaise aux arts martiaux. Chaque fiche donne les tailles réelles du fabricant et le prix TTC ; plus bas, les lieux où l’on pratique, ville par ville.`;
-}
-/** « 62 marques au catalogue : Elion (157 modèles), Fairtex (63) et Venum (40) en tête ; … » */
-export const carrefourMarques = (total: number, tete: { nom: string; n: number }[], seuil: number) =>
-  `${fr(total)} marques au catalogue : ${liste(tete.map((m, i) => (i === 0 ? `${m.nom} (${fr(m.n)} modèles)` : `${m.nom} (${fr(m.n)})`)))} en tête ; celles qui comptent au moins ${seuil} modèles ont leur page, avec leurs familles et leurs tailles.`;
+/* ── Chiffres nationaux (llms.txt) ─────────────────────────────────────
+ * Le carrefour « Boutique sport de combat France » a été fusionné dans l'accueil le 09/11/2026 :
+ * il reprenait tout le catalogue de l'accueil, et Google le refusait. Ses tableaux et sa FAQ sont partis
+ * avec lui ; les chiffres de la France entière restent pour llms.txt. */
 /** Les chiffres de la France entière, en deux phrases citables. */
 export function franceEnChiffres() {
   const top = Object.entries(FRANCE.parDiscipline).slice(0, 3);
@@ -626,34 +597,5 @@ export function franceEnChiffres() {
   return [
     `En France métropolitaine, le Recensement des équipements sportifs compte ${fr(FRANCE.salles)} salles de combat dans ${fr(FRANCE.lieux)} lieux ouverts aux clubs ou au public, sur ${FRANCE.departements} départements. Les disciplines les plus déclarées sont ${liste(top.map(([d, n]) => `${min1(d)} (${fr(n)} lieux)`))}.`,
     `${fr(FRANCE.frappe)} lieux déclarent une boxe : ${liste(boxes.map(([d, n]) => `${fr(n)} en ${min1(d)}`))}. ${fr(FRANCE.boxe)} salles y sont classées « salle de boxe ».`,
-  ];
-}
-export function carrefourFaq(c: { modeles: number; marques: number; sports: { nom: string; n: number }[] }): SeoFaq[] {
-  const dense = [...VILLES].sort((x, y) => x.habitantsParLieu - y.habitantsParLieu);
-  return [
-    {
-      question: fine('Existe-t-il une boutique sport de combat en ligne qui livre toute la France ?'),
-      answer: fine(`Oui : Boutique de Boxe, boutique sport de combat France basée à Toulouse, ${livrer('toute la France continentale')} en point relais (${frais.relais}, offert dès ${frais.franco} d’achats) ou à domicile (${frais.domicile}).`),
-    },
-    {
-      question: fine('Quels sports de combat la boutique équipe-t-elle ?'),
-      answer: fine(`${liste(c.sports.map((s) => `${nomBas(s.nom)} (${fr(s.n)} modèles)`))} : ${fr(c.modeles)} modèles de ${fr(c.marques)} marques en tout, et une page par sport.`),
-    },
-    {
-      question: fine('En combien de temps la commande arrive-t-elle ?'),
-      answer: fine(`Elle part sous ${shop.delais.expedition}, puis le transporteur la remet en point relais ou à domicile ; le suivi arrive par e-mail. Les sacs de frappe, bases et portiques, trop lourds pour un colis, se livrent sur devis.`),
-    },
-    {
-      question: fine('Peut-on renvoyer un article qui ne va pas ?'),
-      answer: fine('Oui, pendant quatorze jours après la réception, sans motif à donner : l’article revient non utilisé, dans son emballage, et il est remboursé. Pour une autre taille, la page contact suffit, avec le numéro de commande.'),
-    },
-    {
-      question: fine('Quelle grande ville a le plus de salles de sports de combat par habitant ?'),
-      answer: `${dense[0].nom} : un lieu pour ${fr(dense[0].habitantsParLieu)} habitants, devant ${dense[1].nom} (${fr(dense[1].habitantsParLieu)}) et ${dense[2].nom} (${fr(dense[2].habitantsParLieu)}). À l’autre bout, ${dense.at(-1)!.nom} compte un lieu pour ${fr(dense.at(-1)!.habitantsParLieu)} habitants. Recensement du ministère des Sports et populations légales de l’Insee.`,
-    },
-    {
-      question: fine('Comment trouver une salle de boxe dans ma ville ?'),
-      answer: `Chaque commune de plus de ${fr(SOURCE.seuilHabitants)} habitants qui compte au moins ${SOURCE.seuil} lieux, dont ${SOURCE.seuilFrappe} où l’on boxe, a sa page sur Boutique de Boxe : les lieux du recensement, leurs disciplines, leurs adresses et leurs sites.`,
-    },
   ];
 }

@@ -272,17 +272,9 @@ export const categories: Category[] = [
     guide: 'debuter-mma',
     number: '02',
   },
-  {
-    slug: 'boutique-arts-martiaux',
-    name: 'Matériel d’arts martiaux',
-    label: 'Kimonos, ceintures, protections.',
-    intro: 'Kimonos de JJB de A0 à A4, ceintures et protections. Chaque discipline a ses tailles : suivez le guide de la marque.',
-    description:
-      'Boutique arts martiaux : équipements JJB et grappling, kimonos et protections. Préparez vos choix avec des conseils par pratique.',
-    families: ['arts-martiaux', 'protections-boxe'],
-    guide: 'choisir-protections',
-    number: '03',
-  },
+  // 09/11/2026 : « boutique-arts-martiaux » (arts martiaux + toutes les protections de boxe, doublon de
+  // /protections-boxe/) et « boutique-boxe » (tout le catalogue, doublon de /materiel-boxe/) sont fusionnées
+  // dans /arts-martiaux/ et /materiel-boxe/ ; proxy.ts renvoie leurs adresses en 308.
   {
     slug: 'materiel-sport-de-combat',
     name: 'Matériel sport de combat',
@@ -299,7 +291,6 @@ export const categories: Category[] = [
   {slug:'equipement-entrainement',name:'Équipement d’entraînement',label: 'Pattes d’ours, paos, cordes.',intro: 'Le matériel qui se tient en main ou qui équipe l’espace d’entraînement : pattes d’ours, paos, cordes à sauter, élastiques.',description:'Équipement d’entraînement pour la boxe et les sports de combat : pattes d’ours, paos, cibles et préparation physique. Fiches et caractéristiques.',families:['equipement-entrainement'],guide:'debuter-boxe',number:'08'},
   {slug:'sacs-de-sport',name:'Sacs de sport',label: 'Pour transporter tout le reste.',intro: 'Sac à dos, sac de sport ou convertible : comparez le volume, les ouvertures et le portage sur chaque fiche.',description:'Sacs de sport pour votre équipement de boxe : formats, volumes, compartiments et modes de portage. Découvrez les modèles du catalogue.',families:['sacs-de-sport'],guide:'debuter-boxe',number:'09'},
   {slug:'arts-martiaux',name:'Arts martiaux',label: 'Kimonos, ceintures, armes d’entraînement.',intro: 'Kimonos de JJB de A0 à A4, kimonos de karaté, ceintures et armes d’entraînement. Suivez le tableau taille et poids de la marque.',description:'Matériel d’arts martiaux : kimonos de JJB et de karaté, ceintures, tenues et armes d’entraînement. Tailles réelles et prix TTC.',families:['arts-martiaux'],guide:'choisir-protections',number:'10'},
-  {slug:'boutique-boxe',name:'Boutique boxe',label: 'Toute la boutique de boxe en ligne.',intro: 'Tout le matériel de boxe et de sports de combat, avec ses tailles réelles et ses prix TTC. Cherchez un modèle, une marque ou une famille.',description:'Boutique boxe en ligne : plus de 1 000 modèles de matériel de boxe, MMA et sports de combat. Gants, bandes, protections, sacs de frappe. Livraison dans toute la France.',families:[],guide:'debuter-boxe',number:'00'},
 ];
 export const categoryFor = (slug: string) =>
   categories.find((c) => c.slug === slug);

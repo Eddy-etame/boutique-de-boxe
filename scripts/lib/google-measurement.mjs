@@ -112,7 +112,7 @@ export function priorityQueries(file) {
   demand(rows.length > 0 && new Set(rows.map((row) => queryKey(row.query))).size === rows.length, 'Priority queries are empty or ambiguous after case/space normalization.');
   // The owner's exact head query is absent from the application registry. Keep both
   // plausible existing owners visible; this measurement list does not choose one.
-  if (!rows.some((row) => queryKey(row.query) === 'boutique de boxe')) rows.push({ query: 'boutique de boxe', target: null, candidateTargets: [ORIGIN + '/', ORIGIN + '/boutique-boxe/'], ownerStatus: 'unverified-candidates', measurementOnly: true });
+  if (!rows.some((row) => queryKey(row.query) === 'boutique de boxe')) rows.push({ query: 'boutique de boxe', target: null, candidateTargets: [ORIGIN + '/', ORIGIN + '/materiel-boxe/'], ownerStatus: 'unverified-candidates', measurementOnly: true });
   return rows;
 }
 

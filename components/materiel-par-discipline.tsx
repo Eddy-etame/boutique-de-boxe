@@ -1,6 +1,6 @@
 import { categoryFor, getCategoryProducts, money, type Product } from '@/lib/catalog';
 import { SUBFAMILIES, subfamilyProducts } from '@/lib/subfamilies';
-import { FRANCE, SOURCE, CARREFOUR, dateSource, fine } from '@/lib/villes';
+import { FRANCE, SOURCE, dateSource, fine } from '@/lib/villes';
 import type { SeoFaq } from '@/lib/seo-copy';
 import { dansLeRayon } from '@/lib/rayons';
 
@@ -51,8 +51,8 @@ export function MaterielParDiscipline({ all }: { all: Product[] }) {
       <section className="keyword-hub observatory materiel-disciplines">
         <h2>Le matériel sport de combat, discipline par discipline.</h2>
         <p className="materiel-disciplines-lead">
-          {`Neuf sports de combat, ce que chacun demande d’abord et ce qui vient ensuite, avec le nombre de modèles et le premier prix de chaque rayon du catalogue. En regard, le nombre de lieux qui déclarent la discipline en France métropolitaine, sur ${FRANCE.lieux.toLocaleString('fr-FR')} recensés par le ministère des Sports ; ville par ville, voir `}
-          <a href={'/' + CARREFOUR + '/'}>la boutique sport de combat France</a> ; ce que chaque discipline permet, dans <a href="/sports-de-combat/">les sports de combat, discipline par discipline</a>.
+          {`Neuf sports de combat, ce que chacun demande d’abord et ce qui vient ensuite, avec le nombre de modèles et le premier prix de chaque rayon du catalogue. En regard, le nombre de lieux qui déclarent la discipline en France métropolitaine, sur ${FRANCE.lieux.toLocaleString('fr-FR')} recensés par le ministère des Sports ; ce que chaque discipline permet, dans `}
+          <a href="/sports-de-combat/">les sports de combat, discipline par discipline</a>.
         </p>
         <div className="hub-prices salles-table">
           <table>

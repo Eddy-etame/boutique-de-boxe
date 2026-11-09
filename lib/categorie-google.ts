@@ -91,7 +91,6 @@ const PAR_RAYON: Record<string, number> = {
   'equipement-entrainement': 499720,
   'sacs-de-sport': 103,
   'arts-martiaux': 499719,
-  'boutique-arts-martiaux': 499719,
 };
 
 export function categorieGoogle(p: Pick<Product, 'name' | 'category'>): number {

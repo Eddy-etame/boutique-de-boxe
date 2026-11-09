@@ -344,11 +344,18 @@ const homeAnchors = [
 ].map((m) => ({ href: m[1], text: fold(m[2].replace(/<[^>]+>/g, ' ')) }));
 const briefReport = [];
 // Variants of one intent share one readable title; requiring all three would reward repetition.
-const metadataAliases = new Map([['gants boxe', 'gants de boxe'], ['vente gants de boxe', 'gants de boxe']]);
+// 09/11/2026 : les pages fusionnées (proxy.ts) laissent leurs requêtes à la page qui reste ; celle-ci porte la forme
+// principale dans son titre, son H1 et sa description, et la variante dans son graphe (vérifié plus bas, mot pour mot).
+const metadataAliases = new Map([
+  ['/gants-de-boxe/', new Map([['gants boxe', 'gants de boxe'], ['vente gants de boxe', 'gants de boxe']])],
+  ['/', new Map([['boutique boxe', 'boutique de boxe'], ['boutique sport de combat france', 'sports de combat']])],
+  ['/materiel-boxe/', new Map([['matos boxe', 'materiel de boxe']])],
+  ['/arts-martiaux/', new Map([['boutique arts martiaux', 'arts martiaux']])],
+]);
 for (const { query, path } of queryMap) {
   const html = await (await fetch(base + path)).text();
   const q = fold(query);
-  const metadataQuery = path === '/gants-de-boxe/' ? metadataAliases.get(q) || q : q;
+  const metadataQuery = metadataAliases.get(path)?.get(q) || q;
   const title = fold(html.match(/<title>([^<]+)<\/title>/)?.[1]);
   const description = fold(
     html.match(/<meta name="description" content="([^"]+)"/)?.[1],

@@ -57,7 +57,7 @@ const SPORTS: Config = {
     `Un sport de combat oppose deux personnes qui cherchent, selon des règles, à toucher, projeter ou immobiliser l’autre. En France métropolitaine, ${fr(FRANCE.lieux)} lieux en déclarent au moins un, et ${n} disciplines y sont recensées par le ministère des Sports ; le judo y est le plus présent, la boxe anglaise la première des boxes.`,
   fiches: [
     { recensement: 'Judo, jujitsu', nom: 'Judo, jujitsu', colonne: 'Préhension', texte: 'Projections et immobilisations au sol, en kimono ; aucune frappe en judo.', materiel: ['/kimonos/', 'Kimonos'] },
-    { recensement: 'Karaté', nom: 'Karaté', colonne: 'Percussion', texte: 'Coups de poing et de pied contrôlés, travaillés seul en kata et à deux en combat.', materiel: ['/boutique-arts-martiaux/', 'Boutique arts martiaux'] },
+    { recensement: 'Karaté', nom: 'Karaté', colonne: 'Percussion', texte: 'Coups de poing et de pied contrôlés, travaillés seul en kata et à deux en combat.', materiel: ['/arts-martiaux/', 'Matériel d’arts martiaux'] },
     { recensement: 'Aïkido', nom: 'Aïkido', colonne: 'Préhension', texte: 'Clés et projections qui retournent la force de l’attaquant ; sans compétition.', materiel: ['/kimonos/', 'Kimonos'] },
     { recensement: 'Boxe anglaise', nom: 'Boxe anglaise', colonne: 'Percussion', texte: 'Les poings seulement, au-dessus de la ceinture, en rounds de deux ou trois minutes.', materiel: ['/equipement-boxe-anglaise/', 'Équipement de boxe anglaise'] },
     { recensement: 'Taekwondo', nom: 'Taekwondo', colonne: 'Percussion', texte: 'Les jambes avant tout : coups de pied hauts et sautés, plastron électronique en compétition.', materiel: ['/protections-boxe/', 'Protections'] },
@@ -116,7 +116,7 @@ const ARTS: Config = {
     `Un art martial est une méthode de combat transmise par une tradition, enseignée par grades et souvent pratiquée sans adversaire autant qu’avec. En France métropolitaine, ${fr(FRANCE.dojos)} dojos et salles d’arts martiaux sont recensés par le ministère des Sports ; le judo y est déclaré dans ${fr(FRANCE.parDiscipline['Judo, jujitsu'] || 0)} lieux.`,
   fiches: [
     { recensement: 'Judo, jujitsu', nom: 'Judo, jujitsu', colonne: 'Japon', texte: 'Fondé par Jigorō Kanō en 1882 : utiliser le déséquilibre de l’autre pour le projeter.', materiel: ['/kimonos/', 'Kimonos de judo'] },
-    { recensement: 'Karaté', nom: 'Karaté', colonne: 'Okinawa, Japon', texte: 'La « main vide » : frapper sans arme, du poing, du pied et du tranchant de la main.', materiel: ['/boutique-arts-martiaux/', 'Kimonos et protections'] },
+    { recensement: 'Karaté', nom: 'Karaté', colonne: 'Okinawa, Japon', texte: 'La « main vide » : frapper sans arme, du poing, du pied et du tranchant de la main.', materiel: ['/arts-martiaux/', 'Kimonos et ceintures'] },
     { recensement: 'Aïkido', nom: 'Aïkido', colonne: 'Japon', texte: 'Créé par Morihei Ueshiba : se placer et neutraliser l’attaque plutôt que la rendre.', materiel: ['/ceintures/', 'Ceintures'] },
     { recensement: 'Taekwondo', nom: 'Taekwondo', colonne: 'Corée', texte: 'La « voie du pied et du poing », où les jambes portent l’essentiel des techniques.', materiel: ['/protections-boxe/', 'Protections'] },
     { recensement: 'Tai-chi, qi gong', nom: 'Tai-chi, qi gong', colonne: 'Chine', texte: 'Le geste martial ralenti jusqu’à devenir un travail du souffle et de l’équilibre.' },
@@ -311,8 +311,7 @@ export function DisciplinesPage({ config: c }: { config: Config }) {
           {spaced([
             <ArrowLink key="v" href={c.voisine[0]}>{c.voisine[1]}</ArrowLink>,
             <ArrowLink key="m" href="/materiel-sport-de-combat/">Le matériel de chaque sport de combat</ArrowLink>,
-            <ArrowLink key="a" href="/boutique-arts-martiaux/">Boutique arts martiaux</ArrowLink>,
-            <ArrowLink key="c" href="/boutique-sport-de-combat/">Les salles, ville par ville</ArrowLink>,
+            <ArrowLink key="a" href="/arts-martiaux/">Matériel d’arts martiaux</ArrowLink>,
           ])}
         </div>
         <div>
