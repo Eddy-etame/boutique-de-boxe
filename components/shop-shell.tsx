@@ -388,16 +388,6 @@ export function Motion() {
       },
       { threshold: 0.08 },
     );
-    document
-      .querySelectorAll(
-        'main > section:not(.workbench-hero):not(.page-heading):not(.session-bench), main .product-card:not(.catalog .product-card), main .guide-card, main .equipment-rows > a, main .kit-piece, footer',
-      )
-      .forEach((e) => {
-        if (!e.hasAttribute('data-reveal')) e.setAttribute('data-reveal', '');
-      });
-    document
-      .querySelectorAll('[data-reveal]')
-      .forEach((e) => observer.observe(e));
     const prefersStill = () =>
       window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
       document.documentElement.dataset.motion === 'reduce';
@@ -423,9 +413,49 @@ export function Motion() {
       },
       { threshold: 0.6 },
     );
-    document
-      .querySelectorAll<HTMLElement>('[data-count]')
-      .forEach((el) => counters.observe(el));
+    /*
+     * Rien ne se cache tant que le visiteur n’a pas défilé (10/11/2026). Avant, le script cachait chaque
+     * section dès le chargement, puis la révélait à son entrée dans l’écran : sur un téléphone lent le
+     * contenu servi disparaissait avant de revenir, et un moteur de rendu qui ne défile pas ne voyait
+     * que le haut de la page (mesuré : 70 à 82 % du texte invisible à 412 × 732 px sur l’accueil, les
+     * rayons et les fiches ; 13 à 21 % encore avec une fenêtre de 12 140 px sur les pages les plus
+     * longues). Au premier défilement, ce qui est déjà à l’écran reste en place (data-seen) ; ce qui
+     * est plus bas se cache hors champ et entre comme avant. Les compteurs suivent la même règle : un
+     * chiffre visible au chargement ne repart jamais de zéro.
+     */
+    const arm = () => {
+      document
+        .querySelectorAll(
+          'main > section:not(.workbench-hero):not(.page-heading):not(.session-bench), main .product-card:not(.catalog .product-card), main .guide-card, main .equipment-rows > a, main .kit-piece, footer',
+        )
+        .forEach((e) => {
+          if (!e.hasAttribute('data-reveal')) e.setAttribute('data-reveal', '');
+        });
+      const fold = innerHeight;
+      const pending = Array.from(
+        document.querySelectorAll<HTMLElement>('[data-reveal]:not(.in-view)'),
+      );
+      // Toutes les mesures d’abord, toutes les écritures ensuite : une seule mise en page.
+      const below = new Set(
+        pending.filter((e) => e.getBoundingClientRect().top >= fold),
+      );
+      const laterCounters = Array.from(
+        document.querySelectorAll<HTMLElement>('[data-count]'),
+      ).filter((el) => el.getBoundingClientRect().top >= fold);
+      pending.forEach((e) => {
+        if (!below.has(e)) e.setAttribute('data-seen', '');
+      });
+      document.documentElement.setAttribute('data-reveal-armed', '');
+      below.forEach((e) => observer.observe(e));
+      laterCounters.forEach((el) => counters.observe(el));
+    };
+    let armed = false;
+    const onFirstScroll = () => {
+      if (armed || prefersStill()) return;
+      armed = true;
+      requestAnimationFrame(arm);
+    };
+    window.addEventListener('scroll', onFirstScroll, { passive: true });
     // La photo du hero suit le pointeur, à peine : la pièce prend du relief sans bouger de place.
     const stage = document.querySelector<HTMLElement>('.equipment-inspector');
     const onMove = (e: PointerEvent) => {
@@ -541,6 +571,8 @@ export function Motion() {
     return () => {
       observer.disconnect();
       counters.disconnect();
+      window.removeEventListener('scroll', onFirstScroll);
+      document.documentElement.removeAttribute('data-reveal-armed');
       stage?.removeEventListener('pointermove', onMove);
       stage?.removeEventListener('pointerleave', onLeave);
       document.removeEventListener('click', onClick);
@@ -557,7 +589,7 @@ export function Breadcrumb({
 }: {
   items: { label: string; href?: string }[];
 }) {
-  // Le graphe de chaque page renvoie à ce fil d’Ariane par son @id.
+  // Le fil d’Ariane a son propre bloc JSON-LD, complet ; le graphe de la page n’y renvoie pas (lib/seo.ts, webPageNode).
   const pathname = usePathname();
   return (
     <>

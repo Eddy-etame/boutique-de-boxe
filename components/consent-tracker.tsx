@@ -264,48 +264,22 @@ export function ConsentTracker() {
     };
   }, [consent]);
 
-  // La carte prend le focus à l’ouverture ; la page derrière est floutée et ne défile pas.
+  /*
+   * La carte n’est pas une fenêtre modale : la page derrière reste entièrement utilisable.
+   * 10/11/2026 — jusque-là, tant que la carte était ouverte, l’entête, le contenu et le pied de page
+   * étaient rendus « inert » (héritage du voile plein écran du 11/09, réduit à une carte le 06/11) :
+   * un nouveau visiteur qui ne répondait pas à la carte ne pouvait cliquer sur rien, ni produit, ni
+   * menu, ni panier (mesuré en production à 390 et 1 440 px), et ce gel coûtait 1,5 s de processeur
+   * sur un téléphone moyen à chaque première visite. Le focus ne va à la carte que si le visiteur
+   * l’a rouverte lui-même (bouton « Cookies » du pied de page), et lui revient à la fermeture.
+   */
   useEffect(() => {
-    if (!open || (snapshot() && !forced)) return;
+    if (!open || !forced) return;
     const previous = document.activeElement as HTMLElement | null;
-    const veil = document.querySelector('.consent-veil');
-    const background = Array.from(document.body.children).filter(
-      (el): el is HTMLElement =>
-        el instanceof HTMLElement &&
-        el !== veil &&
-        !['SCRIPT', 'STYLE', 'LINK'].includes(el.tagName),
-    );
-    const inertBefore = background.map((el) => el.inert);
-    background.forEach((el) => {
-      el.inert = true;
-    });
     document
       .querySelector<HTMLButtonElement>('.consent-accept')
       ?.focus({ preventScroll: true });
-    const keep = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab') return;
-      const focusables = Array.from(
-        document.querySelectorAll<HTMLElement>(
-          '.consent-card button, .consent-card a',
-        ),
-      );
-      if (!focusables.length) return;
-      const first = focusables[0],
-        last = focusables[focusables.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    };
-    document.addEventListener('keydown', keep);
     return () => {
-      document.removeEventListener('keydown', keep);
-      background.forEach((el, index) => {
-        el.inert = inertBefore[index];
-      });
       if (previous?.isConnected) previous.focus({ preventScroll: true });
     };
   }, [open, forced]);
@@ -340,7 +314,6 @@ export function ConsentTracker() {
     <div className="consent-veil">
       <aside
         className="consent-card"
-        role="dialog"
         aria-labelledby="consent-title"
         aria-describedby="consent-text"
       >

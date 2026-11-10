@@ -135,7 +135,9 @@
 /* Entrée de page : l’entête descend, les sections arrivent une à une. */
 .launch-strip { animation: m-arrive 0.5s var(--m-ease) both; }
 .site-header { animation: m-arrive 0.6s var(--m-ease) both; animation-delay: 0.06s; }
-[data-reveal]:not(.in-view) { opacity: 0.001; transform: translateY(28px); }
+/* Une section ne se cache que si le visiteur a commencé à défiler (html[data-reveal-armed], posé par le script au
+   premier défilement) et qu'elle était alors sous l'écran : la page servie est lisible entière, sans script ni défilement. */
+html[data-reveal-armed] [data-reveal]:not(.in-view):not([data-seen]) { opacity: 0.001; transform: translateY(28px); }
 .in-view { animation: m-reveal 0.8s var(--m-ease) both; }
 @keyframes m-reveal {
   from { opacity: 0; transform: translateY(28px); }
@@ -143,7 +145,7 @@
 }
 .workbench-hero, .page-heading, .breadcrumb { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {
-  [data-reveal]:not(.in-view) { opacity: 1; transform: none; }
+  html[data-reveal-armed] [data-reveal]:not(.in-view):not([data-seen]) { opacity: 1; transform: none; }
 }
 
 /* Hero : la pièce prend du relief sous le pointeur. Variables posées par Motion, remises à zéro à la sortie. */
