@@ -37,6 +37,7 @@ const { modeles, modeleDe, estTete, fichesDeTete, cleDuModele, libelleDeFiche, c
 const textes = load(resolve(root, 'lib/data/modeles-textes'));
 const { titreDeModele, productGraph, TITRE_MAX } = load(resolve(root, 'lib/seo'));
 const tetes = load(resolve(root, 'lib/data/modeles-tetes'));
+const rattaches = load(resolve(root, 'lib/data/modeles-rattaches'));
 const all = ['products', 'imported-products'].flatMap((file) => JSON.parse(readFileSync(resolve(root, 'lib/data', file + '.json'), 'utf8')));
 const bySlug = (slug) => {
   const p = all.find((x) => x.slug === slug);
@@ -57,8 +58,8 @@ test('every product page belongs to exactly one model, and every model has one h
     for (const p of m.fiches) assert.equal(cleDuModele(p), m.cle);
   }
   assert.equal(fichesDeTete(all).length, liste.length);
-  assert.equal(liste.length, 646);
-  assert.equal(plusieurs.length, 183);
+  assert.equal(liste.length, 617);
+  assert.equal(plusieurs.length, 185);
 });
 
 test('pages of one model share family and brand, and never mix two materials', () => {
@@ -85,10 +86,11 @@ test('the written head pages exist, belong to their model and cover every multi-
 
 test('known models group the right pages', () => {
   const bgvl3 = modeleDe(bySlug('gants-de-boxe-dentrainement-twins-bgvl3-rouge'), all);
-  assert.equal(bgvl3.fiches.length, 10);
+  // Dix coloris et une édition, Citrus Lime, rattachée à la main : onze versions.
+  assert.equal(bgvl3.fiches.length, 11);
   assert.equal(bgvl3.nom, 'Gants de boxe d’entraînement Twins BGVL3');
-  assert.equal(bgvl3.coloris, true);
-  assert.equal(compteDuModele(bgvl3), '10 coloris');
+  assert.equal(bgvl3.coloris, false);
+  assert.equal(compteDuModele(bgvl3), '11 versions');
   assert.equal(libelleDeFiche(bySlug('gants-de-boxe-dentrainement-twins-bgvl3-light-blue')), 'bleu clair');
 
   // 19 fiches pour une même bande de boxe : un seul modèle.
@@ -107,9 +109,9 @@ test('known models group the right pages', () => {
 
   // Une édition sous licence est une version, pas un coloris.
   const naruto = modeleDe(bySlug('lelegant-de-boxe-naruto-shippuden-x-elion-paris-edition-limitee-itachi'), all);
-  assert.equal(naruto.fiches.length, 4);
+  assert.equal(naruto.fiches.length, 6);
   assert.equal(naruto.coloris, false);
-  assert.equal(compteDuModele(naruto), '4 versions');
+  assert.equal(compteDuModele(naruto), '6 versions');
   assert.equal(libelleDeFiche(naruto.fiches[0]).length > 0, true);
 
   // Une fiche seule est son propre modèle et garde son nom.
@@ -157,7 +159,7 @@ test('structured data ties the colours of a model together', () => {
   const full = group.hasVariant.filter((v) => v['@type'] === 'Product');
   const refs = group.hasVariant.filter((v) => !v['@type']);
   assert.equal(full.length, rouge.sizes.length);
-  assert.equal(refs.length, 9);
+  assert.equal(refs.length, 10);
   for (const v of full) assert.ok(v.offers && v.name.startsWith(rouge.name));
   for (const r of refs) assert.match(r.url, /^https:\/\/www\.boutique-de-boxe\.com\/produits\/[a-z0-9-]+\/$/);
   assert.ok(!refs.some((r) => r.url.includes(rouge.slug + '/')), 'a page does not cite itself as another colour');
@@ -202,4 +204,22 @@ test('written model descriptions belong to a model, are original to it and stay 
     const t = texteDuModele(m);
     if (t) assert.equal(t, textes[m.cle]);
   }
+});
+
+test('pages attached by hand join a model that other pages carry by name', () => {
+  for (const [slug, r] of Object.entries(rattaches)) {
+    const p = bySlug(slug);
+    const m = modeleDe(p, all);
+    assert.equal(m.cle, r.modele, slug);
+    assert.equal(libelleDeFiche(p), r.libelle);
+    assert.ok(m.fiches.some((x) => !rattaches[x.slug]) || r.nom, 'the model exists without its attached pages, or its name is written: ' + r.modele);
+    if (r.nom) assert.equal(m.nom, r.nom);
+    assert.equal(m.fiches.every((x) => x.category === p.category && x.brand === p.brand), true, slug);
+    assert.ok(!m.nom.includes(r.libelle) || r.libelle.length < 5, 'the model name is not an edition name: ' + m.nom);
+  }
+  // Les huit versions du Cleto Reyes Pro Redesign : quatre teintes et quatre éditions, un seul modèle.
+  const reyes = modeleDe(bySlug('gants-de-boxe-dentrainement-reyes-pro-citrus-green-redesign'), all);
+  assert.equal(reyes.fiches.length, 8);
+  assert.equal(reyes.nom, 'Gants de boxe d’entraînement Cleto Reyes Pro Redesign');
+  assert.equal(compteDuModele(reyes), '8 versions');
 });

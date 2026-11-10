@@ -1,0 +1,144 @@
+{
+ "gants-de-boxe-dentrainement-reyes-pro-bleu": {
+  "modele": "gants-de-boxe:cleto-reyes:gants-de-boxe-d-entrainement-cleto-reyes-pro-redesign",
+  "libelle": "bleu"
+ },
+ "gants-de-boxe-dentrainement-reyes-pro-jaune": {
+  "modele": "gants-de-boxe:cleto-reyes:gants-de-boxe-d-entrainement-cleto-reyes-pro-redesign",
+  "libelle": "jaune"
+ },
+ "gants-de-boxe-dentrainement-reyes-pro-citrus-green-redesign": {
+  "modele": "gants-de-boxe:cleto-reyes:gants-de-boxe-d-entrainement-cleto-reyes-pro-redesign",
+  "libelle": "Citrus Green"
+ },
+ "gants-dentrainement-reyes-pro-mexican-flag": {
+  "modele": "gants-de-boxe:cleto-reyes:gants-de-boxe-d-entrainement-cleto-reyes-pro-redesign",
+  "libelle": "Mexican Flag"
+ },
+ "gants-dentrainement-reyes-pro-silver-redesign": {
+  "modele": "gants-de-boxe:cleto-reyes:gants-de-boxe-d-entrainement-cleto-reyes-pro-redesign",
+  "libelle": "Platinum"
+ },
+ "gants-de-boxe-dentrainement-reyes-pro-tiger-orange-redesign": {
+  "modele": "gants-de-boxe:cleto-reyes:gants-de-boxe-d-entrainement-cleto-reyes-pro-redesign",
+  "libelle": "Tiger orange"
+ },
+ "gants-de-boxe-dentrainement-ffb-adidas-speed-tilt-350-pro-vegan": {
+  "modele": "gants-de-boxe:adidas:gants-de-boxe-d-entrainement-adidas-speed-tilt-350-cactus",
+  "libelle": "bleu, blanc et rouge"
+ },
+ "gants-de-boxe-benlee-wakefield-wine-red": {
+  "modele": "gants-de-boxe:benlee:gants-de-boxe-benlee-wakefield",
+  "libelle": "rouge Wine"
+ },
+ "protege-dents-shock-doctor-gel-max-blau-noir": {
+  "modele": "protections-boxe:shock-doctor:protege-dents-shock-doctor-gel-max",
+  "libelle": "bleu et noir"
+ },
+ "protege-tibias-pieds-elion-extravagant-noir-noir": {
+  "modele": "protections-boxe:elion:protege-tibias-elion-extravagant",
+  "libelle": "noir"
+ },
+ "lelegant-de-boxe-naruto-shippuden-x-elion-paris-edition-limitee-gai": {
+  "modele": "gants-de-boxe:elion:gants-de-boxe-l-elegant-naruto-shippuden-elion",
+  "libelle": "Gaï"
+ },
+ "lelegant-de-boxe-naruto-shippuden-x-elion-paris-edition-limitee-orochimaru": {
+  "modele": "gants-de-boxe:elion:gants-de-boxe-l-elegant-naruto-shippuden-elion",
+  "libelle": "Orochimaru"
+ },
+ "bouteille-700ml-draft-grip-breeze-blue": {
+  "modele": "accessoires-boxe:under-armour:bouteille-under-armour-draft-grip-700-ml",
+  "libelle": "Breeze Blue"
+ },
+ "short-de-boxe-anglaise-elion-bleu-royal-blanc-1": {
+  "modele": "textile-boxe:elion:short-de-boxe-anglaise-elion",
+  "libelle": "bleu roi et blanc"
+ },
+ "gants-de-boxe-elion-lelegant-gris-noir-blanc": {
+  "modele": "gants-de-boxe:elion:gants-de-boxe-l-elegant-elion-velcro",
+  "libelle": "gris mat, noir et blanc mat"
+ },
+ "gants-de-boxe-elion-lelegant-rouge-noir-blanc": {
+  "modele": "gants-de-boxe:elion:gants-de-boxe-l-elegant-elion-velcro",
+  "libelle": "rouge mat, noir et blanc mat"
+ },
+ "lelegant-de-boxe-elion-paris-south-beach-velcro-turquoise": {
+  "modele": "gants-de-boxe:elion:gants-de-boxe-l-elegant-elion-velcro",
+  "libelle": "South Beach turquoise"
+ },
+ "gants-de-boxe-elion-collection-paris-noir-bordeaux-gris": {
+  "modele": "gants-de-boxe:elion:gants-de-boxe-elion",
+  "libelle": "noir, bordeaux et gris"
+ },
+ "gants-de-boxe-elion-collection-paris-bordeaux-vintage": {
+  "modele": "gants-de-boxe:elion:gants-de-boxe-elion",
+  "libelle": "bordeaux vintage"
+ },
+ "gants-de-boxe-elion-collection-paris-gris-mat-bordeaux-vintage": {
+  "modele": "gants-de-boxe:elion:gants-de-boxe-elion",
+  "libelle": "gris mat et bordeaux vintage"
+ },
+ "gants-de-boxe-a-lacets-elion-paris-elegant-cuir-bleu-blanc-rouge": {
+  "modele": "gants-de-boxe:elion:gants-de-boxe-a-lacets-elion-elegant:cuir",
+  "libelle": "bleu, blanc et rouge",
+  "nom": "Gants de boxe à lacets Elion Elegant, cuir"
+ },
+ "gants-de-boxe-a-lacets-elion-paris-elegant-cuir-rouge-blanc-bleu": {
+  "modele": "gants-de-boxe:elion:gants-de-boxe-a-lacets-elion-elegant:cuir",
+  "libelle": "rouge, blanc et bleu",
+  "nom": "Gants de boxe à lacets Elion Elegant, cuir"
+ },
+ "gants-de-boxe-dentrainement-reyes-pro-sparring-green": {
+  "modele": "gants-de-boxe:cleto-reyes:gants-de-boxe-d-entrainement-cleto-reyes-pro-sparring",
+  "libelle": "Citrus Green"
+ },
+ "gants-de-boxe-dentrainement-reyes-pro-sparring-mexican-noir-1": {
+  "modele": "gants-de-boxe:cleto-reyes:gants-de-boxe-d-entrainement-cleto-reyes-pro-sparring",
+  "libelle": "Mexican noir"
+ },
+ "gants-de-boxe-dentrainement-reyes-pro-sparring-gris": {
+  "modele": "gants-de-boxe:cleto-reyes:gants-de-boxe-d-entrainement-cleto-reyes-pro-sparring",
+  "libelle": "Serpent gris"
+ },
+ "gants-dentrainement-fairtex-fxv1-falcon": {
+  "modele": "gants-de-boxe:fairtex:gants-de-boxe-d-entrainement-fairtex-bgv1",
+  "libelle": "Falcon"
+ },
+ "gants-de-boxe-dentrainement-twins-bgvl3-citrus-lime": {
+  "modele": "gants-de-boxe:twins:gants-de-boxe-d-entrainement-twins-bgvl3",
+  "libelle": "Citrus Lime"
+ },
+ "gants-de-boxe-fairtex-fxv16-maroon": {
+  "modele": "gants-de-boxe:fairtex:gants-de-boxe-fairtex-bgv16",
+  "libelle": "Maroon"
+ },
+ "gants-dentrainement-fairtex-thai-pride": {
+  "modele": "gants-de-boxe:fairtex:gants-de-boxe-d-entrainement-fairtex-bgv1",
+  "libelle": "Thai Pride"
+ },
+ "gants-de-boxe-elion-collection-paris-creme": {
+  "modele": "gants-de-boxe:elion:gants-de-boxe-elion",
+  "libelle": "café crème"
+ },
+ "gants-de-boxe-elion-uncage-matblack": {
+  "modele": "gants-de-boxe:elion:gants-de-boxe-elion-uncage-matblack",
+  "libelle": "Matblack noir",
+  "nom": "Gants de boxe Elion Uncage"
+ },
+ "gants-de-boxe-elion-uncage-matblack-pink": {
+  "modele": "gants-de-boxe:elion:gants-de-boxe-elion-uncage-matblack",
+  "libelle": "Matblack rose",
+  "nom": "Gants de boxe Elion Uncage"
+ },
+ "gants-de-boxe-elion-uncage-10eme-anniversaire-noir-or": {
+  "modele": "gants-de-boxe:elion:gants-de-boxe-elion-uncage-matblack",
+  "libelle": "Anniversaire noir et or",
+  "nom": "Gants de boxe Elion Uncage"
+ },
+ "gants-de-boxe-elion-uncage-blue-silk": {
+  "modele": "gants-de-boxe:elion:gants-de-boxe-elion-uncage-matblack",
+  "libelle": "Silk bleu",
+  "nom": "Gants de boxe Elion Uncage"
+ }
+}

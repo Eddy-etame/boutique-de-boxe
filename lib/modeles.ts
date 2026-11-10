@@ -2,6 +2,7 @@ import type { Product } from './catalog';
 import { appellation } from './describe';
 import tetes from './data/modeles-tetes.json';
 import textes from './data/modeles-textes.json';
+import rattaches from './data/modeles-rattaches.json';
 
 /**
  * Un modèle, une page (10/11/2026).
@@ -38,23 +39,35 @@ export type Modele = {
 };
 
 const MATIERE = /^(?:cuir|coton|mesh|gel|pu|mousse|néoprène|synthétique|plastique)$/i;
-const sansAccent = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '');
+const sansAccent = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 const enCle = (s: string) => sansAccent(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
 /** Les mots de matière du coloris, tels qu'écrits : « cuir », « PU », « gel ». */
 const matiereDe = (variante: string) => variante.split(/\s+/).filter((w) => MATIERE.test(w));
 
-export function cleDuModele(p: Product): string {
+/**
+ * Fiches rattachées à la main (lib/data/modeles-rattaches.json) : des coloris ou des éditions d'un modèle que
+ * leur nom ne rattache pas tout seul — « Pro Citrus Green Redesign » et « Pro Redesign, rose » sont le même gant,
+ * « Naruto Shippuden × Elion Gaï » s'écrit sans la virgule des cinq autres. Chaque entrée donne, par adresse de
+ * fiche, la clé de son modèle et son libellé dans le sélecteur ; `nom` écrit le nom du modèle quand aucune
+ * fiche ne le porte telle quelle (deux gants dont le coloris s'écrit « bleu, blanc et rouge »).
+ */
+const RATTACHES = rattaches as Record<string, { modele: string; libelle: string; nom?: string }>;
+
+function cleCalculee(p: Product): string {
   const a = appellation(p);
   const matiere = matiereDe(a.variante).map((w) => w.toLowerCase()).sort().join('-');
   return [p.category, enCle(p.brand || ''), enCle(a.base), ...(matiere ? [enCle(matiere)] : [])].join(':');
 }
+
+export const cleDuModele = (p: Product): string => RATTACHES[p.slug]?.modele ?? cleCalculee(p);
 
 /**
  * Ce qui distingue une fiche dans son modèle : « noir », « bleu clair », « Itachi ». Une fiche dont le nom
  * ne dit aucun coloris se désigne par sa référence, seule donnée sûre.
  */
 export function libelleDeFiche(p: Product): string {
+  if (RATTACHES[p.slug]) return RATTACHES[p.slug].libelle;
   const a = appellation(p);
   const sansMatiere = a.variante.split(/\s+/).filter((w) => !MATIERE.test(w)).join(' ').replace(/^et\s+|\s+et$/g, '').trim();
   if (sansMatiere) return sansMatiere;
@@ -88,17 +101,20 @@ export function modeles(all: Product[]) {
   const parFiche = new Map<string, Modele>();
   const liste: Modele[] = [];
   for (const [cle, fiches] of groupes) {
-    const tete = fiches.find((p) => p.slug === ecrites[cle]) ?? [...fiches].sort(ordreDeTete)[0];
-    const a = appellation(tete);
+    // Sans tête écrite, une fiche que son nom rattache au modèle passe avant une fiche rattachée à la main.
+    const natives = fiches.filter((p) => !RATTACHES[p.slug]);
+    const tete = fiches.find((p) => p.slug === ecrites[cle]) ?? [...(natives.length ? natives : fiches)].sort(ordreDeTete)[0];
+    // Le nom du modèle vient d'une fiche dont le nom le porte, jamais d'une édition rattachée à la main.
+    const a = appellation(natives.includes(tete) ? tete : natives[0] ?? tete);
     const matiere = matiereDe(a.variante);
     const autres = fiches.filter((p) => p.id !== tete.id).sort((x, y) => libelleDeFiche(x).localeCompare(libelleDeFiche(y), 'fr'));
     const modele: Modele = {
       cle,
-      nom: fiches.length > 1 ? a.base + (matiere.length ? ', ' + matiere.join(' ') : '') : tete.name,
+      nom: fiches.map((p) => RATTACHES[p.slug]?.nom).find(Boolean) ?? (fiches.length > 1 ? a.base + (matiere.length ? ', ' + matiere.join(' ') : '') : tete.name),
       tete,
       fiches: [tete, ...autres],
       // Un coloris s'écrit en minuscules (« bleu clair », « blanc, bleu et rose ») ; une édition porte un nom propre.
-      coloris: fiches.every((p) => appellation(p).variante.split(/[\s,]+/).every((w) => !w || MATIERE.test(w) || /^[a-zà-ÿ]+$/.test(w))),
+      coloris: fiches.every((p) => libelleDeFiche(p).replace(/^réf\. .*$/, '').split(/[\s,]+/).every((w) => !w || /^[a-zà-ÿ]+$/.test(w))),
     };
     liste.push(modele);
     for (const p of fiches) parFiche.set(p.id, modele);

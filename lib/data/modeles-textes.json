@@ -216,6 +216,13 @@
    "Il existe dans les deux couleurs des coins, rouge et bleu, et dans les deux poids utilisés en compétition amateur, 10 et 12 oz. Adidas a aussi un gant amateur en PU, sur une autre fiche."
   ]
  },
+ "gants-de-boxe:adidas:gants-de-boxe-amateur-adidas-iba:pu": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le gant de compétition amateur d’Adidas en PU : approuvé par l’IBA pour la boxe anglaise amateur, il porte aussi le label de la FF Boxe. Le moule de mousse IMF absorbe les chocs jusque sur le pouce et la paume ; la forme est dessinée pour ne pas freiner le geste.",
+   "Fermeture par bande auto-agrippante rigide. Rouge ou bleu, les couleurs des deux coins. La version en cuir a sa propre fiche."
+  ]
+ },
  "gants-de-boxe:adidas:gants-de-boxe-amateur-adidas-speed": {
   "ecrit": "2026-11-10",
   "texte": [
@@ -227,7 +234,7 @@
   "ecrit": "2026-11-10",
   "texte": [
    "Le Speed Tilt 350 « Cactus » remplace le cuir par du Desserto, une matière végétale tirée du cactus. À l’intérieur, un moule de mousse multicouche à mémoire de forme et de latex, et le Tilt System d’Adidas : une légère inclinaison de la main, brevet déposé dans 33 pays selon la marque, qui aligne les articulations sur le poignet et le radius.",
-   "Adidas le classe en gant d’entraînement pour boxeurs confirmés et professionnels, et il est approuvé par la Fédération française de boxe. Fermeture auto-agrippante, cinq poids du 10 au 18 oz, trois coloris : blanc et or, bleu et or, noir et or."
+   "Adidas le classe en gant d’entraînement pour boxeurs confirmés et professionnels, et il est approuvé par la Fédération française de boxe. Fermeture auto-agrippante, cinq poids du 10 au 18 oz, quatre coloris : blanc et or, bleu et or, noir et or, et un tricolore bleu, blanc, rouge."
   ]
  },
  "gants-de-boxe:adidas:gants-de-boxe-d-entrainement-adidas-tilt-150": {
@@ -237,11 +244,32 @@
    "Adidas le destine aux débutants comme aux confirmés. Fermeture par large auto-agrippant, coloris noir, vendu par paire en 8, 12 et 14 oz."
   ]
  },
+ "gants-de-boxe:benlee:gants-de-boxe-benlee-wakefield": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le Wakefield de BenLee est un gant en cuir, épais et souple, pour l’entraînement comme pour le combat. La paume et le pouce sont rembourrés en plus du dos de la main, ce qui le rend à l’aise dans le travail avec partenaire.",
+   "Fermeture auto-agrippante, logos imprimés et brodés. Deux versions, noir et or ou rouge lie-de-vin, du 8 au 16 oz."
+  ]
+ },
  "gants-de-boxe:champboxing:gants-de-boxe-d-entrainement-champboxing": {
   "ecrit": "2026-11-10",
   "texte": [
    "Le gant d’entraînement de Champboxing joue la sobriété : du noir mat sur toute la surface, en PU. À l’intérieur, une mousse triple densité, une paume rembourrée qui protège le dessous de la main, et une barre de préhension pour bien fermer le poing.",
    "La marque le destine aux pratiquants débutants à avancés. Large fermeture auto-agrippante ; cinq poids, du 8 au 16 oz."
+  ]
+ },
+ "gants-de-boxe:champboxing:gants-de-boxe-d-entrainement-champboxing-noir": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le gant d’initiation de Champboxing : du PU, une mousse injectée qui le garde léger, une barre de préhension et un large auto-agrippant. La marque le destine aux débutants et à la pratique de loisir, en boxe pieds-poings comme en anglaise.",
+   "Trois couleurs sur la même fiche — noir, rouge ou bleu — et sept poids, du 4 au 16 oz : de quoi équiper un enfant comme un adulte."
+  ]
+ },
+ "gants-de-boxe:cleto-reyes:gants-de-boxe-cleto-reyes-pro-ry2": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le RY2 est un gant de combat : fermeture à lacets, 8 ou 10 oz, les poids du ring. Cleto Reyes y garde le crin de cheval, cousu pour ne pas se déplacer, associé à une mousse triple densité.",
+   "Cuir pleine fleur paraffiné à chaud, doublure en nylon collé, mousse de confort au bout des doigts, manchette haute, pouce attaché, barre de préhension. Trois coloris : rouge, bleu et noir. L’entretien du cuir se fait à la vaseline naturelle."
   ]
  },
  "gants-de-boxe:cleto-reyes:gants-de-boxe-d-entrainement-cleto-reyes-high-precision": {
@@ -251,18 +279,19 @@
    "La fermeture auto-agrippante permet de s’équiper seul ; le pouce est attaché. Chaque paire est numérotée et porte un dessin d’édition spéciale sur le poignet. Six coloris au catalogue, du 10 au 18 oz selon le coloris ; le fabricant prévient que le poids réel peut s’écarter un peu de l’étiquette, fabrication artisanale oblige."
   ]
  },
- "gants-de-boxe:cleto-reyes:gants-de-boxe-d-entrainement-cleto-reyes-pro": {
-  "ecrit": "2026-11-10",
-  "texte": [
-   "Le Pro de Cleto Reyes dans sa coupe « Redesign » : les mousses ont été redessinées, plus épaisses à l’avant du gant et plus arrondies sur le dessus de la main, autour d’une barre de préhension. L’extérieur est en cuir pleine fleur paraffiné à chaud, l’intérieur en nylon collé ; manchette haute, pouce attaché, large fermeture auto-agrippante.",
-   "Reyes y applique son système de trois tailles au lieu des onces : S pour 8-10 oz et les boxeurs de moins de 65 kg, M pour 12-14 oz jusqu’à 85 kg, L pour 16-18 oz au-delà. La marque conseille d’entretenir le cuir à la vaseline naturelle. Deux coloris, bleu et jaune."
-  ]
- },
  "gants-de-boxe:cleto-reyes:gants-de-boxe-d-entrainement-cleto-reyes-pro-redesign": {
   "ecrit": "2026-11-10",
   "texte": [
-   "Deux coloris du Pro Redesign de Cleto Reyes, rose et or. Le gant est celui de la série : cuir pleine fleur, doublure en nylon collé, mousse triple densité répartie pour charger l’avant du gant, mousse de confort au bout des doigts et coutures renforcées.",
-   "Il suit le système de tailles de la marque : S correspond à 8-10 oz, M à 12-14 oz, L à 16-18 oz. Le rose n’est proposé qu’en S ; l’or existe dans les trois tailles. Pouce attaché, manchette haute, fermeture auto-agrippante."
+   "Le Pro de Cleto Reyes dans sa coupe « Redesign » : les mousses ont été redessinées, plus épaisses à l’avant du gant et plus arrondies sur le dessus de la main, autour d’une barre de préhension. L’extérieur est en cuir pleine fleur paraffiné à chaud, l’intérieur en nylon collé ; manchette haute, pouce attaché, large fermeture auto-agrippante.",
+   "Reyes y applique son système de trois tailles au lieu des onces : S pour 8-10 oz et les boxeurs de moins de 65 kg, M pour 12-14 oz jusqu’à 85 kg, L pour 16-18 oz au-delà. La marque conseille d’entretenir le cuir à la vaseline naturelle.",
+   "Huit versions au catalogue : bleu, jaune, rose et or, et quatre éditions, Citrus Green, Mexican Flag aux couleurs du Mexique, Platinum et Tiger orange. Toutes les tailles n’existent pas dans chaque version."
+  ]
+ },
+ "gants-de-boxe:cleto-reyes:gants-de-boxe-d-entrainement-cleto-reyes-pro-sparring": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le Pro Sparring est le gant d’entraînement à fermeture auto-agrippante de Cleto Reyes, la maison mexicaine connue pour ses gants de combat. Le cuir est un pleine fleur paraffiné à chaud ; le rembourrage, une mousse triple densité, s’accompagne d’une mousse de confort au bout des doigts.",
+   "Manchette haute, pouce attaché, barre de préhension, coutures renforcées. La marque conseille de nourrir le cuir à la vaseline naturelle. Treize versions au catalogue, des unis aux métallisés, avec trois éditions, Citrus Green, Mexican et Serpent ; toutes vont du 10 au 18 oz."
   ]
  },
  "gants-de-boxe:cleto-reyes:gants-de-boxe-d-entrainement-cleto-reyes-pro-sparring-re-design": {
@@ -272,11 +301,81 @@
    "Doublure en nylon collé, mousse de confort au bout des doigts, barre de préhension, manchette haute, pouce attaché et large auto-agrippant. Trois tailles — S pour 8-10 oz, M pour 12-14 oz, L pour 16-18 oz — en noir ou en rouge."
   ]
  },
+ "gants-de-boxe:cleto-reyes:gants-de-boxe-d-entrainement-cleto-reyes-wbc-edition": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Cette édition naît d’une collaboration entre Cleto Reyes et la WBC, le World Boxing Council. C’est un gant d’entraînement en cuir, de forme anatomique, à doublure hydrofuge, avec une barre de préhension et un pouce attaché.",
+   "Fermeture auto-agrippante. Chaque paire est numérotée ; le poids marqué sur l’étiquette est approximatif, les gants étant faits à la main. Quatre poids, du 12 au 18 oz."
+  ]
+ },
+ "gants-de-boxe:cleto-reyes:gants-de-sac-cleto-reyes": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Les gants de sac de Cleto Reyes sont plus légers que des gants d’entraînement : une mousse fine, qui protège tout en laissant sentir la vitesse de frappe, sous un cuir pleine fleur. Le bout du pouce est ouvert, pour aérer la main.",
+   "Fermeture par large auto-agrippant. Deux tailles, M et L, en rouge ou en noir. Ils servent au sac et aux appareils de frappe, pas au sparring."
+  ]
+ },
+ "gants-de-boxe:elion:gants-de-boxe-a-lacets-elion-born-in-thailand": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le Born in Thailand est le gant à lacets qu’Elion a dessiné en hommage à ses origines : un cuir de vache bleu aux couleurs de la Thaïlande, coupé pour la compétition dans la tradition du muay-thaï. Mousse triple densité, doublure en toile de nylon, coutures épaisses renforcées.",
+   "Le laçage tient le poignet plus fermement qu’un auto-agrippant et demande un partenaire pour être noué. Trois poids : 8, 10 et 12 oz. Fait main en Thaïlande."
+  ]
+ },
+ "gants-de-boxe:elion:gants-de-boxe-d-entrainement-a-lacets-elion-elegant:cuir": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "L’Elegant à lacets est le premier gant qu’Elion a développé pour la boxe anglaise, après plus d’un an de travail avec les boxeurs de son équipe. La marque a écarté le crin de cheval et choisi une mousse EVA en plusieurs couches, plus sèche et plus rigide, pour protéger d’abord les mains.",
+   "Cuir à l’extérieur, toile de nylon à l’intérieur, coutures épaisses renforcées, fermeture à lacets. Cette version d’entraînement, en noir, va du 10 au 16 oz."
+  ]
+ },
+ "gants-de-boxe:elion:gants-de-boxe-elion": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "La Collection Paris est le gant tout cuir d’Elion : un cuir de vache mat, une forme plus ronde et une mousse triple densité plus épaisse que celle de la génération précédente, sans renfort de paume, dans l’esprit des gants thaïlandais. L’intérieur est en toile de nylon.",
+   "Large fermeture auto-agrippante, coutures épaisses renforcées, fabrication à la main en Thaïlande. Dix coloris au catalogue, des mats unis au café crème et aux deux finitions vintage ; les tailles vont du 8 au 18 oz selon le coloris."
+  ]
+ },
+ "gants-de-boxe:elion:gants-de-boxe-elion-audace": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Avec l’Audace, Elion a présenté en 2018 une paire de gants dépareillée : un gant noir, un gant blanc, relevés d’une touche de doré.",
+   "La construction est celle des gants en Skintex de la marque : cuir synthétique facile d’entretien, mousse triple densité, doublure en toile de nylon, large auto-agrippant et coutures épaisses. Du 8 au 16 oz."
+  ]
+ },
+ "gants-de-boxe:elion:gants-de-boxe-elion-bvtterfleye-pale": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Bvtterfleye est la gamme qu’Elion a créée en 2018 pour les femmes, reconnaissable à son logo en forme de papillon. Ce gant rose pâle reprend la forme tout cuir de la Collection Paris, avec sa mousse triple densité plus épaisse et sa doublure en toile de nylon.",
+   "Fermeture par large auto-agrippant, coutures épaisses renforcées. Du 8 au 16 oz."
+  ]
+ },
  "gants-de-boxe:elion:gants-de-boxe-elion-uncage-matblack": {
   "ecrit": "2026-11-10",
   "texte": [
-   "Gant d’entraînement de la collection Uncage d’Elion : un extérieur en Skintex mat, un cuir synthétique facile à entretenir, une mousse triple densité et une doublure en toile de nylon qui isole les mousses de la transpiration. L’ensemble forme un gant profilé, aux coutures épaisses, fermé par un large auto-agrippant.",
-   "Elion indique une fabrication thaïlandaise. Le noir va du 8 au 18 oz ; le rose n’existe qu’en 8 et 10 oz."
+   "Gant d’entraînement de la collection Uncage d’Elion : un extérieur en Skintex, un cuir synthétique facile à entretenir, une mousse triple densité et une doublure en toile de nylon qui isole les mousses de la transpiration. L’ensemble forme un gant profilé, aux coutures épaisses, fermé par un large auto-agrippant.",
+   "Quatre versions au catalogue : le Matblack, noir mat, du 8 au 18 oz, et sa variante rose en 8 et 10 oz ; le Silk bleu, au Skintex d’aspect métallisé et doux comme de la soie ; l’édition noir et or du dixième anniversaire de la marque. Elion indique une fabrication thaïlandaise."
+  ]
+ },
+ "gants-de-boxe:elion:gants-de-boxe-elion-wing-silk": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le Wing, sorti en 2018, est un gant Elion en Skintex rouge d’aspect métallisé, doux comme de la soie au toucher, d’où son nom de Red Silk.",
+   "Mousse triple densité, doublure en toile de nylon, coupe profilée, large fermeture auto-agrippante, coutures épaisses renforcées. Du 8 au 16 oz."
+  ]
+ },
+ "gants-de-boxe:elion:gants-de-boxe-l-arrogant-dragon-ball-z-elion": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "L’Arrogant est l’autre gant en cuir nappa d’Elion décliné sous licence Dragon Ball Z, cette fois du côté des adversaires : Cell, Frieza et Majin Buu. Édition limitée, faite à la main en Thaïlande.",
+   "Fermeture auto-agrippante, doublure en nylon. Les tailles vont du 10 au 18 oz selon la version."
+  ]
+ },
+ "gants-de-boxe:elion:gants-de-boxe-l-elegant-dragon-ball-z-elion": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Dragon Ball Z rejoint le gant signature d’Elion : L’Élégant en édition limitée, sous licence officielle, fabriqué à la main en Thaïlande dans un cuir nappa. Quatre versions au catalogue, aux couleurs de Goku, Gohan, Vegeta et Shenron.",
+   "Chaque paire vient en coffret, avec une pochette de velours et de mesh brodée du logo de la collaboration et du nom du personnage en japonais. Fermeture auto-agrippante ; tailles du 10 au 16 oz."
   ]
  },
  "gants-de-boxe:elion:gants-de-boxe-l-elegant-elion-smiley-50th-anniversary-velcro": {
@@ -286,11 +385,18 @@
    "Cette version se ferme par auto-agrippant. Deux cuirs au choix : noir, ou un jaune volontairement plus foncé que le jaune Smiley d’origine. Tailles : du 10 au 18 oz."
   ]
  },
+ "gants-de-boxe:elion:gants-de-boxe-l-elegant-elion-velcro": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "L’Élégant est le gant signature d’Elion, lancé pour les cinq ans de la marque après un an et demi de mise au point avec ses combattants. Il est en cuir nappa pleine fleur, fin et profilé : une mousse absorbante protège la main et les métacarpes sans épaissir le gant, et un rembourrage court de chaque côté, sur toute la longueur de la main, pour amortir quand on défend.",
+   "Une couture longe le pouce jusqu’à la base du gant : en garde, les deux mains réunies font apparaître le logo Elion. Chaque paire vient en coffret, avec une pochette en velours et mesh ; fabrication à la main en Thaïlande. Quatre versions à fermeture auto-agrippante, du 8 au 18 oz selon la version."
+  ]
+ },
  "gants-de-boxe:elion:gants-de-boxe-l-elegant-naruto-shippuden-elion": {
   "ecrit": "2026-11-10",
   "texte": [
-   "Édition limitée née de la collaboration entre Naruto Shippuden et Elion Paris : le gant L’Élégant, en cuir nappa pleine fleur doublé de nylon, habillé aux couleurs des personnages de la série. Cette fiche en réunit quatre : Naruto, Kakashi, Sasuke et Itachi.",
-   "La fermeture dépend du personnage, indique Elion. Naruto et Kakashi se ferment par auto-agrippant ; Sasuke et Itachi sont des gants à lacets, livrés avec un convertisseur Lace 2 Velcro assorti qui permet de les serrer seul. Tailles : du 10 au 16 oz."
+   "Édition limitée née de la collaboration entre Naruto Shippuden et Elion Paris : le gant L’Élégant, en cuir nappa pleine fleur doublé de nylon, habillé aux couleurs des personnages de la série. Six paires : Naruto, Kakashi, Gaï, Sasuke, Itachi et Orochimaru.",
+   "La fermeture dépend du personnage, indique Elion. Naruto, Kakashi et Gaï se ferment par auto-agrippant ; Sasuke, Itachi et Orochimaru sont des gants à lacets, livrés avec un convertisseur Lace 2 Velcro assorti qui permet de les serrer seul. Tailles : du 10 au 16 oz."
   ]
  },
  "gants-de-boxe:elion:gants-de-boxe-l-extravagant-elion": {
@@ -300,11 +406,109 @@
    "Le détail de la marque est sur les pouces : chacun porte la moitié d’un regard et, en garde, les deux gants réunis dessinent le logo Elion. Le modèle va du 4 au 16 oz, en six coloris."
   ]
  },
+ "gants-de-boxe:elion:gants-de-boxe-l-extravagant-naruto-elion": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "L’Extravagant d’Elion sous licence Naruto Shippuden : cinq décors, de l’Akatsuki noir et rouge au Kakashi kaki, en passant par trois versions Naruto : une bleue, une rouge, une noire et orange.",
+   "La base est celle du gant de série, avec sa mousse triple densité, sa paume rembourrée, sa barre de préhension et son large auto-agrippant ; les deux pouces réunis forment toujours le logo Elion. Du 4 au 16 oz."
+  ]
+ },
  "gants-de-boxe:elion:gants-de-boxe-l-extravagant-one-piece-elion": {
   "ecrit": "2026-11-10",
   "texte": [
    "La gamme Extravagant d’Elion aux couleurs de One Piece : quatre paires, une par personnage — Luffy en rouge et bleu, Zoro en vert, Ace en noir et orange, Chopper en rose et bleu.",
    "Sous le décor, c’est l’Extravagant de série : PU mat, mousse triple densité, paume rembourrée, barre de préhension et large fermeture auto-agrippante. Les tailles commencent aux 4 et 6 oz des plus jeunes et montent jusqu’au 16 oz."
+  ]
+ },
+ "gants-de-boxe:fairtex:gants-de-boxe-d-entrainement-fairtex-bgv1": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le BGV1 est le gant universel de Fairtex, celui que la marque thaïlandaise destine à toutes les boxes. Cuir pleine fleur, doublure en nylon collé, mousse double densité : une construction classique, avec une barre de préhension et un pouce attaché.",
+   "Sa manchette est courte ; la fermeture est auto-agrippante. Quatre coloris unis, noir, blanc, bleu et rouge, du 8 au 18 oz selon le coloris, et deux éditions limitées : Falcon, un gant doré, la couleur de la puissance en Thaïlande, orné du faucon Horus dont les deux yeux figurent sur la manchette ; et Thai Pride, aux couleurs de la Thaïlande, en cuir nappa enduit."
+  ]
+ },
+ "gants-de-boxe:fairtex:gants-de-boxe-d-entrainement-fairtex-bgv11-f-day-edition-collector": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "« F-Day », pour Fairtex Day : une édition limitée au décor militaire, livrée dans une boîte collector avec une plaque d’identité « Fairtex F-Day » et un avis de mission. Le revêtement est en microfibre, souple et sans odeur ; l’intérieur en mousse haute densité.",
+   "Pouce attaché, barre de préhension, manchette courte, fermeture auto-agrippante. Du 10 au 16 oz."
+  ]
+ },
+ "gants-de-boxe:fairtex:gants-de-boxe-d-entrainement-fairtex-bgv14-solid-black": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le BGV14 reprend des traits du BGV6, le gant de sparring de Fairtex, et y ajoute du rembourrage sur la paume et une manchette longue. Sa coque est en microfibre : aussi durable que le cuir selon la marque, mais plus légère, plus lisse et moins sujette aux odeurs.",
+   "Version Solid Black, entièrement noire. Du 10 au 16 oz."
+  ]
+ },
+ "gants-de-boxe:fairtex:gants-de-boxe-d-entrainement-fairtex-bgv19": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le BGV19 part du BGV1, le gant universel de Fairtex, et le resserre : un compartiment de main plus ajusté et plus compact, un peu plus de rembourrage sur les articulations, et une position du pouce reprise du BGV16. Une barre de préhension complète l’ensemble.",
+   "Cuir. Deux coloris, noir et or, en 10, 12, 14 et 16 oz."
+  ]
+ },
+ "gants-de-boxe:fairtex:gants-de-boxe-d-entrainement-fairtex-bgv24-beauty": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "« Beauty of Survival » est une édition limitée illustrée : un corbeau aux prises avec un serpent, entouré de roses, sérigraphié à la main sur le cuir. Fairtex y voit l’envers de la violence qu’on prête aux sports de combat : la passion de deux adversaires qui se battent pour gagner.",
+   "Sous le dessin, un gant en cuir véritable, à noyau de mousse en trois couches, avec une barre de préhension. Du 8 au 16 oz."
+  ]
+ },
+ "gants-de-boxe:fairtex:gants-de-boxe-d-entrainement-fairtex-bgv6": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le BGV6 est le gant de sparring de Fairtex, dessiné pour les boxes pieds-poings : une paume rembourrée pour bloquer les coups de pied, une manchette longue et rembourrée, et une attache matelassée qui renforce le maintien du poignet.",
+   "Le cuir est un pleine fleur, la doublure un nylon collé, le rembourrage une triple mousse préformée qui reste souple. Pouce attaché, barre de préhension, fermeture auto-agrippante. Fairtex conseille un passage de vaseline naturelle une fois par mois. Quatre coloris, du 10 au 18 oz."
+  ]
+ },
+ "gants-de-boxe:fairtex:gants-de-boxe-d-entrainement-fairtex-cloud": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Dark Cloud est une édition limitée de Fairtex en cuir nappa pleine fleur. Le cuir est enduit, pour résister à l’acidité de la transpiration qui le dessèche, et supporte bien la chaleur et l’humidité.",
+   "Doublure en nylon collé, mousse double densité, pouce attaché, barre de préhension, manchette courte et fermeture auto-agrippante. Du 8 au 16 oz."
+  ]
+ },
+ "gants-de-boxe:fairtex:gants-de-boxe-d-entrainement-fairtex-fxbg-urface": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Une série limitée née de la rencontre entre Fairtex et Urface, marque thaïlandaise de streetwear inspirée du pop art, qui appartient à l’illustrateur Arak Aonwilai. Les gants portent des dessins créés pour l’occasion.",
+   "Ce sont des gants en cuir, du 8 au 16 oz."
+  ]
+ },
+ "gants-de-boxe:fairtex:gants-de-boxe-d-entrainement-fairtex-golden-jubilee": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Fairtex a fêté ses cinquante ans en 2021 avec cette collection Golden Jubilee : des gants en microfibre brillante, durable et sans odeur, décorés d’une sérigraphie faite à la main. Le noyau est une mousse triple densité, avec une barre de préhension pour former le poing sans effort.",
+   "Ils sont livrés dans une boîte dédiée, avec un sac en nylon étanche. Du 10 au 16 oz."
+  ]
+ },
+ "gants-de-boxe:fairtex:gants-de-boxe-d-entrainement-fairtex-harmony-six": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Harmony Six, référence BGV26, est une série limitée dessinée autour du feng shui : la lune et le soleil, le noir et l’or, le phénix et le dragon, réunis par un artiste de studio et sérigraphiés à la main sur le gant.",
+   "C’est un gant en cuir véritable, ajusté, à noyau de mousse en trois couches. Emballage dédié. Du 8 au 16 oz."
+  ]
+ },
+ "gants-de-boxe:fairtex:gants-de-boxe-d-entrainement-fairtex-legacy:cuir": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le Legacy est un gant rétro : il porte le tout premier logo Fairtex, celui de 1971, quand la société était encore une entreprise de confection, et garde l’odeur d’un cuir naturel brut. Édition limitée, en marron.",
+   "Dessous, le système de mousse à trois couches de la marque, préformée mais souple, une paume rembourrée pour les boxes pieds-poings, une barre de préhension et un pouce attaché. Fermeture auto-agrippante, du 8 au 16 oz."
+  ]
+ },
+ "gants-de-boxe:fairtex:gants-de-boxe-d-entrainement-fairtex-metallic": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "La finition métallisée de ces gants Fairtex tient à leur coque : une microfibre, matière végane et sans odeur que la marque annonce plus durable que le cuir. Dessous, un noyau de mousse à trois couches, dans un compartiment de main ajusté doté d’une barre de préhension.",
+   "Fairtex les donne pour l’entraînement comme pour le combat. Trois coloris, vert, rouge et violet, du 8 au 16 oz selon le coloris."
+  ]
+ },
+ "gants-de-boxe:fairtex:gants-de-boxe-d-entrainement-fairtex-serie-limitee-f-day-2": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Second volet de la série militaire de Fairtex, le F-Day 2 mêle le gant d’entraînement quotidien et le gant de sparring : il reprend au BGV6 sa longue manchette, qui protège mieux le poignet, et son supplément de rembourrage sur la paume. La coque est en microfibre, sans odeur et sans matière animale.",
+   "Le pouce est verrouillé pour éviter les luxations, et une barre de préhension aide à fermer le poing. Livré avec un foulard shemagh et une plaque d’identité. Du 10 au 18 oz."
   ]
  },
  "gants-de-boxe:fairtex:gants-de-boxe-d-entrainement-fairtex-tom-atencio-le-c-ur-de-guerrier": {
@@ -321,6 +525,20 @@
    "Fairtex réserve à cette collection une mousse à triple couche et une coupe qui lui sont propres ; une barre de préhension aide à fermer le poing. Au catalogue : 10, 12, 14 et 16 oz."
   ]
  },
+ "gants-de-boxe:fairtex:gants-de-boxe-fairtex-bgv16": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Avec le BGV16, Fairtex a revu la coupe, le dessin et la mousse de ses gants : un rembourrage de nouvelle génération, plus souple et plus léger, dans une forme compacte. Le cuir, mat, est souple lui aussi, ce qui aide à fermer le poing autour de la barre de préhension.",
+   "Fermeture auto-agrippante. Trois versions au catalogue : blanc et crème, du 8 au 16 oz ; vert, en 8, 12, 14 et 16 oz ; et Maroon, un bordeaux, du 8 au 16 oz."
+  ]
+ },
+ "gants-de-boxe:fairtex:gants-de-boxe-fairtex-pro-thai": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Un gant de combat à lacets, fabriqué en Thaïlande : cuir pleine fleur, doublure en nylon collé, triple mousse préformée, mousse de confort au bout des doigts. Le pouce est attaché et une barre de préhension cale le poing.",
+   "Rouge ou bleu, les couleurs des coins ; 8, 10 et 12 oz selon le coloris. Fairtex recommande la vaseline naturelle pour entretenir le cuir."
+  ]
+ },
  "gants-de-boxe:rdx:gants-de-boxe-enfant-rdx-4b-robo": {
   "ecrit": "2026-11-10",
   "texte": [
@@ -328,11 +546,499 @@
    "La fermeture auto-agrippante fait le tour du poignet et se règle sur un bras d’enfant. RDX le donne pour toutes les boxes — anglaise, kick-boxing, boxe thaï — et pour un usage régulier. Deux tailles, 4 et 6 oz, et deux coloris."
   ]
  },
+ "gants-de-boxe:rival:gants-de-boxe-de-sparring-rival-rs11v": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le RS11V Evolution est un gant de sparring : Rival y loge 5 cm de mousse synthétique, une épaisseur prévue pour les mises de gants intenses, dans un grand compartiment de main à doublure souple et rembourrée.",
+   "On retrouve les deux signatures de la marque canadienne : la manchette inclinée à 15°, et le V-Strap Wrist Lock 2, la sangle en V qui verrouille le poignet. Enveloppe en PU microfibre, système AirFlow Control pour l’aération. Poids de sparring uniquement : 14, 16 et 18 oz selon le coloris."
+  ]
+ },
+ "gants-de-boxe:twins:gants-de-boxe-d-entrainement-twins-bgn": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le BGN est un gant d’entraînement Twins en cuir pleine fleur, sur une mousse triple densité, avec une doublure en nylon collé. Sa particularité est sa paume aérée, qui laisse sortir la chaleur de la main.",
+   "Pouce attaché, fermeture auto-agrippante, bon maintien du poignet. Sept poids, du 8 au 20 oz. Coloris noir."
+  ]
+ },
+ "gants-de-boxe:twins:gants-de-boxe-d-entrainement-twins-bgvl3": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le BGVL3 est le gant d’entraînement de Twins Special, la marque de Bangkok : un gant multiboxe, à l’aise en boxe thaï comme en anglaise. Il est en cuir pleine fleur, doublé d’un nylon collé qui laisse s’évacuer la transpiration, sur une mousse triple densité.",
+   "Le pouce est attaché, le poignet bien tenu, et la fermeture auto-agrippante se serre d’une main. Onze versions au catalogue, dont le Citrus Lime ; la plupart vont du 10 au 18 oz, le blanc du 8 au 16 oz."
+  ]
+ },
+ "gants-de-boxe:twins:gants-de-boxe-d-entrainement-twins-bgvl4": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le BGVL4 reprend la construction des gants d’entraînement Twins — cuir pleine fleur, nylon collé à l’intérieur, mousse triple densité, pouce attaché — dans des habillages à plusieurs tons. Le catalogue en propose deux : noir, bordeaux et blanc, ou kaki et blanc.",
+   "Fermeture auto-agrippante et bon maintien du poignet, comme sur le BGVL3 uni. Du 10 au 18 oz."
+  ]
+ },
+ "gants-de-boxe:twins:gants-de-boxe-d-entrainement-twins-bgvl8": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le BGVL8 est un gant Twins à fermeture auto-agrippante, en cuir de vache thaïlandais, que la marque destine à l’entraînement complet : paos, sac lourd et sparring.",
+   "Coloris blanc et or. Quatre poids au catalogue, du 10 au 16 oz."
+  ]
+ },
+ "gants-de-boxe:twins:gants-de-boxe-d-entrainement-twins-bgvla3": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Un gant d’entraînement Twins bicolore, blanc et rouge. Sa construction est celle des BGVL de la marque : cuir pleine fleur, doublure en nylon collé qui évacue la transpiration, mousse triple densité, pouce attaché.",
+   "La fermeture auto-agrippante tient bien le poignet. Cinq poids, du 10 au 18 oz."
+  ]
+ },
+ "gants-de-boxe:twins:gants-de-boxe-d-entrainement-twins-retro": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le Twins Retro ajoute deux détails à la construction classique de la marque : une barre de préhension et une paume aérée. Le reste ne change pas — cuir pleine fleur, nylon collé, mousse triple densité, pouce attaché, fermeture auto-agrippante.",
+   "Trois poids au catalogue : 10, 12 et 14 oz."
+  ]
+ },
  "gants-de-boxe:venum:gants-de-boxe-d-entrainement-venum-contender-2-0": {
   "ecrit": "2026-11-10",
   "texte": [
    "Le Contender 2.0 est la version revue du Contender de Venum : un cuir synthétique que la marque annonce deux fois plus résistant que celui du premier modèle, une coupe réajustée et une mousse injectée haute densité pour absorber les impacts.",
    "C’est un gant synthétique : il s’essuie au chiffon humide et ne demande aucun entretien du cuir. Quatre poids, du 10 au 16 oz, en noir ou en noir et blanc."
+  ]
+ },
+ "gants-de-boxe:venum:gants-de-boxe-enfant-venum-okinawa": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Un gant pour enfant de la collection Okinawa de Venum : un rembourrage de mousse en plusieurs couches, qui amortit en douceur, une paume renforcée en mesh et un pouce attaché contre les torsions.",
+   "Fermeture auto-agrippante. Il convient à toutes les boxes, pour une pratique régulière. Deux tailles, 6 et 8 oz."
+  ]
+ },
+ "protections-boxe:adidas:casque-adidas-competition-aiba-multiboxe:cuir": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Casque de compétition Adidas en cuir de vachette, sur une mousse injectée. Il protège le dessus de la tête, se serre à l’arrière par une bande auto-agrippante élastique de 10 cm et se ferme sous le menton par une mentonnière à velcro semi-rigide.",
+   "Quatre tailles, du S au XL. Adidas propose aussi un casque amateur en PU, l’Hybride, sur une autre fiche."
+  ]
+ },
+ "protections-boxe:adidas:casque-adidas-sparring-ffb-speed": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Casque de sparring de la collection Adidas × FF Boxe : des protège-pommettes, pas de mentonnière rembourrée, pour les entraînements réguliers et intensifs de boxe anglaise. L’extérieur est en PU, l’intérieur en Amara et le rembourrage en mousse EVA, légère.",
+   "Il se ferme à l’arrière par auto-agrippant et se tient par une bande sous le menton. Coloris bleu, blanc et rouge ; quatre tailles, du S (47-51 cm) au XL (58-60 cm)."
+  ]
+ },
+ "protections-boxe:adidas:casque-de-boxe-amateur-ffb-adidas-hybride": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Casque de compétition amateur : Adidas l’annonce homologué par la Fédération française de boxe et conforme au cahier des charges de l’IBA. La mousse, préformée et moulée par injection, amortit de façon homogène ; une zone rembourrée protège le dessus du crâne.",
+   "Extérieur en PU, intérieur anti-transpirant, large bande auto-agrippante à l’arrière et mentonnière réglable. Quatre tailles, du S (47-51 cm de tour de tête) au XL (58-60 cm), dans les deux couleurs des coins."
+  ]
+ },
+ "protections-boxe:adidas:coquille-homme-adidas-pro": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "La coquille Pro d’Adidas, référence BP11, est une coquille de boxe anglaise : cuir de buffle à l’extérieur, PU à l’intérieur, mousse haute densité autour d’une coque renforcée. Elle s’attache à l’arrière par un système de sangles en cuir et d’auto-agrippant.",
+   "Adidas la destine à la boxe anglaise professionnelle. Coloris noir ; trois tailles au catalogue, M, L et XL."
+  ]
+ },
+ "protections-boxe:adidas:plastron-adidas-reversible": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Un plastron d’entraînement réversible : une face rouge, une face bleue, pour distinguer les deux partenaires d’un assaut sans changer d’équipement. Il est en PU, rembourré d’une mousse injectée, et se ferme par un large auto-agrippant qui le rend réglable.",
+   "Cinq tailles, du XS au XL."
+  ]
+ },
+ "protections-boxe:adidas:plastron-adidas-taekwondo-reversible": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le plastron de taekwondo d’Adidas est réversible, rouge d’un côté, bleu de l’autre, et intègre une protection des épaules. Il se lace dans le dos et sert à l’entraînement comme en compétition.",
+   "Enveloppe en PU, mousse EVA. Il se nettoie au chiffon humide et sèche à l’air libre après chaque utilisation. Quatre tailles, du S au XL."
+  ]
+ },
+ "protections-boxe:adidas:protege-avant-bras-adidas-taekwondo-wtf": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Un protège-avant-bras de taekwondo : un rembourrage en mousse EVA couvre les zones de choc, celles qui parent les coups de pied, et l’ensemble tient par deux élastiques de réglage et une fermeture auto-agrippante.",
+   "Coloris blanc, forme ergonomique. Quatre tailles, du S au XL."
+  ]
+ },
+ "protections-boxe:adidas:protege-pieds-adidas-full-contact": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Un protège-pied de full-contact : il tient par un élastique sous les orteils et par une sangle élastique de 4 cm à auto-agrippant. L’enveloppe est en PU, à l’extérieur comme à l’intérieur, sur une mousse de polyuréthane injectée haute densité.",
+   "Six tailles, du XXS au XL. Coloris noir, bleu et rouge."
+  ]
+ },
+ "protections-boxe:budofight:protege-tibias-budofight-larkee": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le Larkee est un protège-tibias pour les boxes pieds-poings, à l’entraînement comme en combat. Il est en cuir synthétique sur une mousse injectée, avec une coupe anatomique, et se ferme par auto-agrippant ; Budofight insiste sur sa légèreté.",
+   "Deux tailles, S/M et L/XL."
+  ]
+ },
+ "protections-boxe:century:casque-century-c-gear-evolution": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le C-Gear Evolution est moulé d’une seule pièce par injection, dans un matériau très léger qui n’absorbe pas la transpiration et se nettoie facilement. Le rembourrage est profilé sur le front ; des sangles intégrées, sous le menton et à l’arrière de la tête, tiennent le casque en place.",
+   "Century a dégagé les yeux et les oreilles pour que le combattant garde sa vision et son audition. Deux tailles, M et L, en noir, bleu ou rouge."
+  ]
+ },
+ "protections-boxe:century:protege-pieds-century-c-gear": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Les protège-pieds C-Gear de Century s’adressent aux compétiteurs d’arts martiaux. Un insert en vinyle sert de semelle : il donne de l’adhérence au sol et du confort sous les orteils. La mousse remonte haut et protège aussi la cheville.",
+   "Des sangles élastiques à auto-agrippant ferment et tiennent le protège-pied. Quatre tailles, du S au XL."
+  ]
+ },
+ "protections-boxe:champboxing:casque-champboxing-face-ouverte": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Un casque à face ouverte : il laisse le visage dégagé, donc toute la vision. Champboxing le présente comme un casque multiboxe pour débuter. PU à l’intérieur comme à l’extérieur, mousse double densité, lanière sous le menton.",
+   "À l’arrière, deux réglages auto-agrippants, en hauteur et en largeur, l’ajustent à la tête pour qu’il ne tourne pas à l’impact. Deux tailles uniques : adulte et enfant."
+  ]
+ },
+ "protections-boxe:champboxing:protege-tibias-et-pieds-champboxing": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Protège-tibias et pieds en PU de Champboxing : une mousse haute densité, renforcée sur l’arête du tibia et sur le pied, dans une coupe fine et profilée. Il se serre sur la jambe par une double attache auto-agrippante et s’enfile vite, grâce aux bandes élastiques qui prennent le pied et la cheville.",
+   "Trois tailles : junior, S/M et L/XL. Coutures renforcées."
+  ]
+ },
+ "protections-boxe:cleto-reyes:casque-cleto-reyes-sparring": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le casque de sparring de Cleto Reyes est un semi-intégral en cuir pleine fleur : il descend sur les pommettes sans barrer le visage. Il se ferme par lacets, ce qui demande un peu plus de temps à ajuster qu’un auto-agrippant mais garde le même serrage toute la séance.",
+   "Quatre tailles, du S au XL."
+  ]
+ },
+ "protections-boxe:cleto-reyes:coquille-cleto-reyes-traditionnelle": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "La coquille traditionnelle de Cleto Reyes est faite à la main, en cuir pleine fleur sur une mousse de latex. La marque la décrit légère et la recommande pour les combats professionnels.",
+   "Des bandes élastiques l’ajustent au corps et elle se ferme par auto-agrippant. Trois tailles : M, L et XL."
+  ]
+ },
+ "protections-boxe:elion:casque-a-barre-elion-extravagant": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Un casque à barre : une traverse rembourrée passe devant le visage et arrête les coups directs avant le nez. Elion le destine aux boxeurs qui veulent faire du sparring avec le plus de protection possible, avant un combat ou à la reprise après une blessure.",
+   "Enveloppe en cuir synthétique, mousse dense et épaisse, doublure matelassée ; le serrage se fait par lacets, au-dessus de la tête et à l’arrière. Le menton est protégé, ce que tous les casques à barre n’offrent pas. Taille unique, en noir ou en noir et or."
+  ]
+ },
+ "protections-boxe:elion:casque-de-boxe-elion-audace": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le casque de la gamme Audace, lancée par Elion en 2018, est en Skintex à l’intérieur comme à l’extérieur : un cuir synthétique qui s’entretient facilement. La mousse est une double densité ; le dessin, fin, ramène les pommettes près du visage pour couvrir le nez et les yeux.",
+   "Fabriqué à la main en Thaïlande. Taille unique, avec un double réglage à l’arrière, hauteur et largeur. Coloris noir et blanc."
+  ]
+ },
+ "protections-boxe:elion:casque-de-boxe-elion-uncage-anniversaire": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Édition du dixième anniversaire d’Elion dans la collection Uncage, en noir et or. Le casque est en Skintex des deux côtés, avec une mousse double densité qui le garde léger, et des coutures épaisses renforcées.",
+   "Sa coupe profilée place des pommettes ajustées devant le nez et les yeux sans rogner l’angle de vue. Taille unique : la hauteur et la largeur se règlent à l’arrière."
+  ]
+ },
+ "protections-boxe:elion:casque-de-boxe-elion-vintage:cuir": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le casque Collection Paris d’Elion dans sa teinte Vintage : un cuir marron, à l’intérieur comme à l’extérieur. Dessous, une mousse double densité ; autour, des coutures épaisses renforcées.",
+   "Le casque est fait main en Thaïlande, en taille unique, et se règle à l’arrière en hauteur et en largeur. La même forme existe en kaki, en noir et en noir et or, sur une autre fiche."
+  ]
+ },
+ "protections-boxe:elion:casque-de-boxe-elion:cuir": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le casque Elion de la Collection Paris est tout en cuir, dedans comme dehors, sur une mousse double densité. Il est fin et profilé : des pommettes ajustées protègent le nez et les yeux sans fermer le champ de vision.",
+   "Fait main en Thaïlande, avec des coutures épaisses renforcées. Taille unique : le réglage se fait à l’arrière, en hauteur comme en largeur. Trois coloris, kaki, noir, noir et or."
+  ]
+ },
+ "protections-boxe:elion:casque-elion-extravagant": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le casque de la gamme Extravagant couvre large : des coussinets multicouches protègent le front, les joues, le menton, les oreilles et l’arrière du crâne. Les protège-joues sont incurvés ; le dessus de la tête est dessiné en croix, pour laisser l’air circuler sans que le casque bouge.",
+   "Taille unique, réglable en tour de tête et en hauteur par auto-agrippant. Cinq coloris, les mêmes que ceux des gants et des protège-tibias Extravagant."
+  ]
+ },
+ "protections-boxe:elion:ceinture-de-frappe-elion-matblack": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "La ceinture de frappe Matblack d’Elion est haute : 36 cm au maximum, pour une protection courbe de 70 cm de large qui enveloppe le ventre et les flancs de l’entraîneur. Elle accepte un tour de hanches jusqu’à 135 cm.",
+   "Elle est en Skintex noir mat, sur des mousses denses et épaisses, et sort des ateliers thaïlandais qui fabriquent le matériel de la marque. Taille adulte."
+  ]
+ },
+ "protections-boxe:elion:coudieres-elion-renforcees": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Des coudières rembourrées d’une mousse épaisse, qui protègent le coude de celui qui frappe autant que le partenaire qui reçoit. Elion a surtout travaillé leur tenue : un manchon en élasthanne comprime le bras et l’avant-bras pour que la coudière ne glisse pas, et une attache supplémentaire la fixe en haut du bras.",
+   "Six coloris au catalogue. Elles se lavent à la main et sèchent à l’air, comme toute protection en tissu élastique."
+  ]
+ },
+ "protections-boxe:elion:protege-cuisses-elion-elice:cuir": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Les Elice sont des protège-cuisses d’entraîneur : ils se sanglent sur les cuisses de celui qui tient les paos, pour que le boxeur puisse placer ses low kicks dans l’enchaînement. Cette version est en cuir, noir mat sur la surface de frappe, noir brillant sur les côtés, avec un intérieur en nylon qui isole les mousses de la transpiration.",
+   "Elion dit avoir cherché l’équilibre entre encombrement et protection. Les logos dorés « Elice » signent les cibles de frappe de la marque."
+  ]
+ },
+ "protections-boxe:elion:protege-cuisses-elion-elice:synthetique": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "La version en PU des protège-cuisses Elice : le même gabarit que le modèle en cuir, dessiné pour protéger sans gêner les déplacements de l’entraîneur, dans une matière synthétique. L’intérieur reste en nylon.",
+   "On la reconnaît à ses logos « Elice » rouges ; ils sont dorés sur la version cuir."
+  ]
+ },
+ "protections-boxe:elion:protege-oreilles-elion": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Un protège-oreilles pour le jiu-jitsu brésilien, le grappling et la lutte, les disciplines où les frottements répétés abîment le cartilage. Deux coques latérales, solides et légères, couvrent les oreilles ; elles sont percées d’ouvertures renforcées pour continuer d’entendre son partenaire et son coach.",
+   "Le contour est en néoprène, plus doux sur la peau. Une fixation en trois points règle le maintien au plus juste ; taille unique."
+  ]
+ },
+ "protections-boxe:elion:protege-tibias-elion-anniversaire": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Un protège-tibias court, sans protège-pied, qu’Elion destine à la boxe française et à la self-défense de type krav maga, où l’on porte des chaussures. Il mesure 33 cm de haut, en taille unique.",
+   "Skintex à l’extérieur, mousse haute densité renforcée sur l’arête du tibia, double attache auto-agrippante. Édition du dixième anniversaire de la marque, en noir et or, fabriquée à la main en Thaïlande."
+  ]
+ },
+ "protections-boxe:elion:protege-tibias-elion-extravagant": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le protège-tibias de la gamme Extravagant a une forme asymétrique : il remonte sur l’extérieur du mollet, là où arrivent les low kicks, et couvre largement le cou-de-pied. Enveloppe en PU mat, mousse injectée, large double fermeture auto-agrippante pour qu’il reste en place.",
+   "Elion le destine aux pratiquants, du débutant à l’avancé, en trois tailles : junior, S/M et L/XL. Cinq coloris, avec le regard de la marque en bas du tibia."
+  ]
+ },
+ "protections-boxe:elion:protege-tibias-elion:coton": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le protège-tibias chaussette d’Elion : un manchon de coton et d’élasthanne que l’on enfile, renforcé sur le tibia par une mousse double épaisseur, et tenu par deux attaches auto-agrippantes supplémentaires. Cette version protège le tibia seul.",
+   "Deux tailles, selon la stature : S-M, dite junior, en dessous de 1,70 m ; L-XL, dite senior, au-dessus. Elion le présente comme un protège-tibias pour commencer."
+  ]
+ },
+ "protections-boxe:elion:protege-tibias-et-pieds-elion:coton": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "La version avec protège-pied du protège-tibias en coton d’Elion : le manchon de coton et d’élasthanne descend sur le cou-de-pied, et la mousse double épaisseur couvre le tibia et le pied. Il s’enfile comme une chaussette et se bloque par deux attaches à scratch.",
+   "Tailles : S-M (junior) pour les pratiquants de moins de 1,70 m, L-XL (senior) au-delà."
+  ]
+ },
+ "protections-boxe:elion:protege-tibias-et-pieds-elion:cuir": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "La version cuir du protège-tibias et pieds Elion : une enveloppe en cuir nappa sur une mousse double densité, renforcée sur l’arête du tibia et sur le pied. Deux larges attaches auto-agrippantes le serrent sur la jambe ; de larges bandes élastiques tiennent le pied et la cheville.",
+   "Les cotes sont données : 22 cm pour le protège-pied, 37 cm de hauteur de tibia en S/M, 39 cm en L/XL. Fait main en Thaïlande, comme le rappelle la signature portée sur le côté. Deux coloris, noir mat ou noir et or."
+  ]
+ },
+ "protections-boxe:everlast:casque-de-boxe-everlast": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Everlast destine ce casque aux pratiquants loisir : un usage régulier, mais pas intensif, pour toutes les boxes. Il est en cuir synthétique traité contre les microbes et les bactéries, protège les pommettes et laisse le champ de vision libre.",
+   "Taille unique. Il se règle par auto-agrippant à l’arrière de la tête et se ferme sous le menton."
+  ]
+ },
+ "protections-boxe:fairtex:casque-fairtex-integral-hg10": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le HG10 est le casque intégral de Fairtex : un profil enveloppant, en cuir nappa épais que la marque enduit, comme les coutures, pour résister à l’acidité de la transpiration. Les mousses haute densité reprennent leur forme après chaque impact.",
+   "Réglage rapide par auto-agrippant. Fairtex conseille de nourrir le cuir à la vaseline naturelle une fois par mois. Au catalogue : le noir en L et XL, le blanc en L."
+  ]
+ },
+ "protections-boxe:fairtex:ceinture-de-frappe-fairtex-thai": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "La ceinture de frappe se porte par l’entraîneur : elle encaisse les coups de genou, les coups de pied au corps et les crochets pendant le travail aux paos. Celle de Fairtex est taillée dans une seule pièce de cuir, enduit puis fini façon nappa pour mieux résister à la chaleur et à l’humidité.",
+   "Elle mesure 48 × 31 × 23 cm et se règle par de larges attaches auto-agrippantes dans le dos. Taille adulte, trois coloris."
+  ]
+ },
+ "protections-boxe:fairtex:protege-cuisses-fairtex-professionel-tp3": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Les TP3 sont les protège-cuisses professionnels de Fairtex, fabriqués en Thaïlande : une mousse multicouche pour les chocs violents, un intérieur en nylon contre la transpiration, des coutures toutes renforcées et une coupe profilée pour qu’ils ne tournent pas sur la jambe.",
+   "Vendus par paire, en noir ou en rouge sur cette fiche. Le TP4, plus récent, est plus compact et plus léger."
+  ]
+ },
+ "protections-boxe:fairtex:protege-cuisses-fairtex-tp4": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le TP4 est le protège-cuisses d’entraîneur de Fairtex dans sa version allégée : plus compact et plus léger que le TP3, environ 2,2 kg la paire. Il permet au boxeur de frapper la jambe sans que l’entraîneur ait à déplacer ses paos ou ses pattes d’ours.",
+   "Skintex à l’extérieur, mousse haute densité, intérieur en nylon ; fait à la main en Thaïlande, en taille unique. Fairtex le conçoit pour être porté avec une ceinture de frappe, en paire ou d’un seul côté."
+  ]
+ },
+ "protections-boxe:fairtex:protege-tibias-et-pieds-fairtex-sp5": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le SP5 est un protège-tibias long : il couvre le pied et le tibia et protège des impacts jusqu’au genou. Fairtex le fabrique en Thaïlande, en Skintex enduit, avec des coutures renforcées et enduites elles aussi, pour que l’acidité de la transpiration n’attaque ni les fils ni les mousses.",
+   "La mousse est renforcée sur l’arête du tibia ; l’intérieur est en nylon. Quatre tailles, du S au XL, et quatre coloris : noir, blanc, bleu, rouge."
+  ]
+ },
+ "protections-boxe:mcdavid:ceinture-mcdavid-lombaire-et-de-sudation:neoprene": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Une ceinture en néoprène sans latex, à deux usages : elle soutient et comprime le bas du dos, et garde la sangle abdominale au chaud pendant l’effort. McDavid la donne pour soulager les douleurs lombaires légères.",
+   "La face intérieure est antidérapante, pour que la ceinture reste en place ; le serrage se règle. Taille unique. Ce n’est pas une protection contre les coups."
+  ]
+ },
+ "protections-boxe:mcdavid:chevilleres-elastique-mcdavid-511": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "La chevillère 511 de McDavid est un maintien léger de la cheville, en maille élastique respirante : 65 % de polyester, 25 % de caoutchouc, 10 % de nylon, et pas de néoprène. La marque la recommande aux personnes qui y sont allergiques.",
+   "Elle se porte indifféremment au pied droit ou au pied gauche. Quatre tailles, du S au XL."
+  ]
+ },
+ "protections-boxe:mcdavid:coudieres-elastique-mcdavid-512": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "La coudière 512 de McDavid comprime les tissus du coude sans retenir la chaleur : une maille élastique de polyester, de caoutchouc et de nylon, sans néoprène, que la marque conseille aux personnes allergiques à cette matière.",
+   "C’est un maintien, facile à enfiler, qui va au coude droit comme au gauche ; il ne protège pas des coups. Quatre tailles, du S au XL."
+  ]
+ },
+ "protections-boxe:mcdavid:genouilleres-elastique-mcdavid-510": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "La genouillère 510 de McDavid est une maille élastique bidirectionnelle : elle comprime et soutient les tissus autour du genou, sans rembourrage. Sa composition — 65 % de polyester, 25 % de caoutchouc, 10 % de nylon — ne contient pas de néoprène, d’où une maille qui respire.",
+   "McDavid la présente comme un soutien de premier niveau en cas de tendinite ou de gêne articulaire. Elle va au genou droit comme au gauche ; quatre tailles, du S au XL."
+  ]
+ },
+ "protections-boxe:mcdavid:genouilleres-mcdavid-coudiere-hex-6440": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Une protection à double emploi : le manchon HEX 6440 de McDavid se porte au genou ou au coude. Sa mousse de polyéthylène est divisée en petits hexagones, la technologie HEX de la marque, qui amortissent l’impact tout en laissant le manchon se plier avec l’articulation.",
+   "Le textile de compression, 80 % de nylon et 20 % d’élasthanne, est traité hDc pour évacuer la transpiration. Vendu par paire, du S au XL."
+  ]
+ },
+ "protections-boxe:mcdavid:genouilleres-mcdavid-flexy-602": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "La Flexy protège le genou de face et de côté : un insert en mousse à cellules fermées sur le devant, et une protection de chaque côté de la rotule pour les chocs latéraux. Elle répond à la norme européenne EN 15613:2008 des genouillères et coudières de sports en salle.",
+   "Manchon élastique en nylon (90 %) et élasthanne (10 %). Vendue par paire, en quatre tailles, du S au XL."
+  ]
+ },
+ "protections-boxe:mcdavid:genouilleres-mcdavid-jumpy-601": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "La Jumpy est la genouillère simple de McDavid : un manchon élastique, 90 % de nylon et 10 % d’élasthanne, avec un insert de mousse à cellules fermées sur le devant du genou. Elle porte la même certification EN 15613:2008 que la Flexy, qui ajoute des protections latérales.",
+   "Vendue par paire, du S au XL. En sports de combat, ce type de genouillère sert surtout au travail au sol."
+  ]
+ },
+ "protections-boxe:mcdavid:protege-avant-bras-hex-mcdavid-651": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Les manchons 651 de McDavid protègent l’avant-bras avec la mousse HEX de la marque, des hexagones de polyéthylène qui suivent le relief du bras. Le textile de compression évacue la transpiration grâce au traitement hDc.",
+   "Composition : 80 % de nylon, 20 % d’élasthanne. Vendus par paire, du S au XL."
+  ]
+ },
+ "protections-boxe:qps:brassiere-qps-protection-femme-pour-coquilles": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Cette brassière de protection QPS reçoit des coquilles de poitrine, vendues à part : elle est livrée sans. Le tissu, un mesh de polyamide et d’élasthanne, maintient fermement et laisse passer l’air.",
+   "La taille de la brassière fixe celle des coquilles qu’elle accepte : S pour des coquilles XS à S, M pour XS à L, L pour S à XL, XL pour L à XL. Six tailles au catalogue, du XXS au XL."
+  ]
+ },
+ "protections-boxe:shock-doctor:boite-pour-protege-dents-shock-doctor": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Une boîte ventilée pour ranger le protège-dents entre deux séances : il y sèche à l’air au lieu de macérer au fond du sac. Shock Doctor la présente comme antibactérienne ; elle se ferme par un clip de sécurité. Deux coloris, bleu et orange."
+  ]
+ },
+ "protections-boxe:shock-doctor:bracelet-shock-doctor-tennis-elbow": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Un bracelet de compression pour l’avant-bras : un coussinet d’air applique une pression homogène sous le coude pour atténuer les douleurs de tendinite. La pression du coussinet se règle ; la doublure est en coton.",
+   "C’est un maintien articulaire, pas une protection contre les coups."
+  ]
+ },
+ "protections-boxe:shock-doctor:chevilleres-shock-doctor-de-compression-ice-recovery": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Une chevillère de récupération, pas de combat : elle maintient des poches de gel autour de la cheville, sous une compression douce, pour refroidir une entorse ou une articulation douloureuse après la séance. Les poches se réchauffent aussi, quand on préfère le chaud.",
+   "Attention : Shock Doctor signale que le produit contient du latex de caoutchouc naturel, qui peut provoquer des réactions allergiques. Deux tailles, S/M et L/XL."
+  ]
+ },
+ "protections-boxe:shock-doctor:protection-pelvienne-shock-doctor": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Une protection pelvienne pour femme, au profil bas : un bouclier moulé reçoit l’impact, une mousse composite à double densité l’amortit, et les bords en mousse thermoformée évitent les points durs. Shock Doctor l’a dessinée pour suivre l’anatomie sans encombrer."
+  ]
+ },
+ "protections-boxe:shock-doctor:protege-dents-et-boite-shock-doctor-gel-max": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le protège-dents Gel Max de Shock Doctor vendu avec sa boîte de rangement, en blanc et bleu. Le protège-dents est celui de la fiche Gel Max : thermoformable, à partir de 11 ans, avec un gel qui épouse les dents et un noyau dur qui répartit le choc.",
+   "La boîte évite de le poser à nu dans le sac entre deux séances. Le moulage se fait à l’eau chaude, selon la notice de la marque."
+  ]
+ },
+ "protections-boxe:shock-doctor:protege-dents-shock-doctor-double-braces-pour-bagues": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Un protège-dents pour les sportifs qui portent un appareil orthodontique. Il est double — il couvre les dents du haut et du bas — et creusé de rainures qui passent par-dessus les bagues, pour protéger aussi la bouche des coupures au contact.",
+   "Il est en silicone médical et ne se moule pas à l’eau chaude : il se porte tel quel. Deux tailles : adulte, et junior pour les moins de 11 ans."
+  ]
+ },
+ "protections-boxe:shock-doctor:protege-dents-shock-doctor-double-nano:gel": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le Nano Double est un protège-dents double : il couvre à la fois l’arcade du haut et celle du bas. Il est thermoformable et se porte à partir de 11 ans. Son gel se moule aux dents et absorbe les chocs de face ; son noyau dur répartit l’impact sur l’ensemble de la mâchoire.",
+   "Il se forme à l’eau chaude puis se fixe à l’eau froide, en suivant les durées de la notice Shock Doctor. Deux coloris, noir et blanc."
+  ]
+ },
+ "protections-boxe:shock-doctor:protege-dents-shock-doctor-gel-max": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le Gel Max est un protège-dents thermoformable, à partir de 11 ans : une couche de gel qui se moule sur les dents et amortit les chocs de face, autour d’un noyau dur qui répartit l’impact. Shock Doctor annonce une protection des dents du haut comme du bas.",
+   "Le moulage suit la notice de la marque : 90 secondes dans une eau portée à ébullition, sans toucher le fond ; une seconde dans l’eau froide ; 20 secondes dents serrées ; puis 30 secondes dans l’eau froide pour fixer l’empreinte. Réussi, il tient seul à la mâchoire supérieure quand on ouvre la bouche. Six coloris."
+  ]
+ },
+ "protections-boxe:shock-doctor:protege-dents-shock-doctor-simple-braces": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "La version simple du protège-dents Shock Doctor pour appareil orthodontique : elle ne couvre que l’arcade du haut, là où la version Double protège aussi celle du bas. Des rainures laissent passer les bagues et le protège-dents les recouvre, ce qui évite les coupures à l’intérieur de la bouche.",
+   "Silicone médical, non moulable à l’eau chaude. Deux tailles : adulte, et junior pour les moins de 11 ans."
+  ]
+ },
+ "protections-boxe:shock-doctor:protege-dents-shock-doctor-ultra-multi-sport": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "L’Ultra Multi-Sport se distingue des autres protège-dents Shock Doctor par son moulage : le système FastFit l’ajuste aux dents sans passer par l’eau bouillante. Sa conception fine laisse respirer et parler avec le protège-dents en bouche.",
+   "La marque annonce une protection des dents et de la mâchoire. Deux coloris, noir et blanc."
+  ]
+ },
+ "protections-boxe:top-ten:casque-de-boxe-top-ten": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le casque Top Ten est moulé en Bayflex, une mousse injectée très haute densité qui garde le même amorti pendant toute la vie du casque, indique la marque. Il couvre le dessus de la tête, laisse les oreilles dégagées et le champ de vision entièrement libre ; il est fabriqué en Allemagne.",
+   "Serrage par auto-agrippant sous le menton et à l’arrière ; entièrement lavable. Deux tailles au catalogue : M pour un tour de tête de 53 à 57 cm, L pour 58 à 64 cm. Trois coloris."
+  ]
+ },
+ "protections-boxe:twins:casque-integral-twins": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Un casque intégral signé Twins, pour les entraînements appuyés : la marque thaïlandaise le recommande pour un usage intensif. Il enveloppe le visage tout en gardant un angle de vision assez large.",
+   "Fermeture auto-agrippante, intérieur noir. Trois tailles, S, M et L, en noir ou en kaki."
+  ]
+ },
+ "protections-boxe:twins:protege-tibias-et-pieds-twins-sgs10": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le SGS10 est le protège-tibias et pieds de Twins : une mousse haute densité sous une enveloppe en Skintex, le cuir synthétique des équipementiers thaïlandais, et une doublure en coton piqué. Il couvre le tibia et le dessus du pied sans remonter jusqu’au genou, ce qui le garde léger.",
+   "Cinq coloris, du XS au XL selon le coloris."
+  ]
+ },
+ "protections-boxe:venum:casque-de-boxe-venum-elite": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Le casque Elite de Venum est fait à la main en Thaïlande, dans un PU fabriqué au Japon, sur une construction en plusieurs couches de mousse. La marque met en avant sa légèreté et le champ de vision qu’il laisse ; il se ferme par un auto-agrippant souple, réglable dans les deux sens.",
+   "Taille unique, conforme à la norme CE selon Venum. Deux coloris kaki, l’un à motif camouflage, l’autre relevé de noir."
+  ]
+ },
+ "protections-boxe:venum:chevilleres-venum-kontact": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Une chevillère en néoprène, coupée pour épouser la cheville : elle tient l’articulation au chaud et la soutient, et porte des reliefs 3D qui améliorent l’adhérence. Venum la présente comme une aide au jeu de jambes et aux appuis, qui limite aussi les glissades dues à la transpiration sur le tatami.",
+   "Plusieurs coloris au catalogue, du S au XL selon la fiche."
+  ]
+ },
+ "protections-boxe:venum:chevilleres-venum-rws": {
+  "ecrit": "2026-11-10",
+  "texte": [
+   "Les chevillères de la collection RWS, que Venum a créée pour le Rajadamnern World Series de Bangkok. Elles sont faites d’un mélange de coton et d’élasthanne et soutiennent la cheville pendant le combat.",
+   "Le logo est floqué dans une matière souple, pour ne pas craqueler. Lavage à 30 °C. Coloris noir."
   ]
  }
 }
