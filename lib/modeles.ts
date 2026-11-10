@@ -1,6 +1,7 @@
 import type { Product } from './catalog';
 import { appellation } from './describe';
 import tetes from './data/modeles-tetes.json';
+import textes from './data/modeles-textes.json';
 
 /**
  * Un modèle, une page (10/11/2026).
@@ -119,6 +120,16 @@ export const fichesDeTete = (all: Product[]) => {
   const { parFiche } = modeles(all);
   return all.filter((p) => parFiche.get(p.id)?.tete.id === p.id);
 };
+
+/**
+ * La description rédigée d'un modèle (lib/data/modeles-textes.json), écrite à la main depuis les faits du
+ * modèle : ce pour quoi le fabricant le destine, ce dont il est fait, ce que le catalogue en propose. Un
+ * texte par modèle, jamais une phrase partagée entre deux modèles, aucune phrase reprise d'un fournisseur,
+ * ni prix ni superlatif (scripts/test-modeles.mjs le vérifie). `ecrit` date le texte : la page et le plan
+ * du site la publient. Un modèle sans texte garde sa phrase de faits (lib/describe.ts, `longDescription`).
+ */
+export type TexteDeModele = { ecrit: string; texte: string[] };
+export const texteDuModele = (m: Modele): TexteDeModele | null => (textes as Record<string, TexteDeModele>)[m.cle] ?? null;
 
 /** « 10 coloris », « 4 versions » : ce que le modèle propose, compté. */
 export const compteDuModele = (m: Modele) => `${m.fiches.length} ${m.coloris ? 'coloris' : 'versions'}`;

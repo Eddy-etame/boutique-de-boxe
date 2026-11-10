@@ -33,7 +33,8 @@ function load(path) {
 }
 
 globalThis.fetch = async () => { throw new Error('Network is forbidden in model checks'); };
-const { modeles, modeleDe, estTete, fichesDeTete, cleDuModele, libelleDeFiche, compteDuModele } = load(resolve(root, 'lib/modeles'));
+const { modeles, modeleDe, estTete, fichesDeTete, cleDuModele, libelleDeFiche, compteDuModele, texteDuModele } = load(resolve(root, 'lib/modeles'));
+const textes = load(resolve(root, 'lib/data/modeles-textes'));
 const { titreDeModele, productGraph, TITRE_MAX } = load(resolve(root, 'lib/seo'));
 const tetes = load(resolve(root, 'lib/data/modeles-tetes'));
 const all = ['products', 'imported-products'].flatMap((file) => JSON.parse(readFileSync(resolve(root, 'lib/data', file + '.json'), 'utf8')));
@@ -173,4 +174,32 @@ test('structured data ties the colours of a model together', () => {
   const seul = liste.find((x) => x.fiches.length === 1).tete;
   const g3 = JSON.parse(productGraph(seul, [], {}))['@graph'];
   assert.ok(!JSON.stringify(g3).includes('inProductGroupWithID'));
+});
+
+test('written model descriptions belong to a model, are original to it and stay sober', () => {
+  const cles = new Set(liste.map((m) => m.cle));
+  // Ce qu'une description rédigée ne dit jamais : un prix (il change), un stock, une promesse, un superlatif.
+  const INTERDIT = /€|euros?|en stock|promo|soldes?|livraison gratuite|Boxing Center|du groupe|id[ée]al(?:e|es|ement)?|parfait(?:e|es|s|ement)?|incontournable|exceptionnel|r[ée]volutionnaire|ultime|meilleure?s?|haut de gamme|n° ?1|num[ée]ro un|in[ée]gal[ée]|imbattable/i;
+  const phrasesVues = new Map();
+  for (const [cle, t] of Object.entries(textes)) {
+    assert.ok(cles.has(cle), 'description for an existing model: ' + cle);
+    assert.match(t.ecrit, /^20\d\d-\d\d-\d\d$/, 'date: ' + cle);
+    assert.ok(Array.isArray(t.texte) && t.texte.length >= 1 && t.texte.length <= 3, 'one to three paragraphs: ' + cle);
+    const tout = t.texte.join(' ');
+    assert.ok(tout.length >= 200 && tout.length <= 1100, `length ${tout.length}: ${cle}`);
+    assert.ok(!INTERDIT.test(tout), 'sober wording: ' + cle + ' → ' + (tout.match(INTERDIT) || [''])[0]);
+    assert.ok(!/\s{2,}|\s[,.]|[a-zà-ÿ]\.[A-ZÀ-Ý]/.test(tout), 'clean typography: ' + cle);
+    for (const para of t.texte) assert.match(para, /[.!?…]$/, 'paragraph ends a sentence: ' + cle);
+    // Aucune phrase d'au moins 60 caractères ne sert à deux modèles.
+    for (const phrase of tout.split(/(?<=[.!?…])\s+/)) {
+      if (phrase.length < 60) continue;
+      const k = phrase.toLowerCase();
+      assert.ok(!phrasesVues.has(k), `sentence shared by ${phrasesVues.get(k)} and ${cle}: ${phrase}`);
+      phrasesVues.set(k, cle);
+    }
+  }
+  for (const m of liste) {
+    const t = texteDuModele(m);
+    if (t) assert.equal(t, textes[m.cle]);
+  }
 });

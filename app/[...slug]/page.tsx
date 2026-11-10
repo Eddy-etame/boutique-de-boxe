@@ -28,7 +28,7 @@ import { readCatalog } from '@/lib/database';
 import { moyenneDuModele } from '@/lib/notes-stockage';
 import { guides, services } from '@/lib/editorial';
 import { guidesDuModele } from '@/lib/guides-fiche';
-import { modeleDe, fichesDeTete, libelleDeFiche } from '@/lib/modeles';
+import { modeleDe, fichesDeTete, libelleDeFiche, texteDuModele } from '@/lib/modeles';
 import { thumbSrc } from '@/lib/vignette';
 import { Breadcrumb, ArrowLink } from '@/components/shop-shell';
 import {
@@ -202,6 +202,8 @@ export default async function Page({ params }: Props) {
     const modele = modeleDe(p, products);
     const plusieurs = modele.fiches.length > 1;
     const tetePage = plusieurs && modele.tete.id === p.id;
+    // La description rédigée du modèle, quand elle existe : elle précède la phrase de faits de la fiche.
+    const redige = texteDuModele(modele);
     const coloris = plusieurs
       ? modele.fiches.map((x) => ({ slug: x.slug, libelle: libelleDeFiche(x), vignette: x.images[0] ? thumbSrc(x.slug, x.images[0]) : undefined, prix: x.price, des: Boolean(x.variants?.some((v) => v.price !== x.price)), affiche: x.id === p.id }))
       : [];
@@ -271,6 +273,7 @@ export default async function Page({ params }: Props) {
               {p.reference && <div><span>{p.referenceLabel || 'Référence'}</span>{' '}{p.reference}</div>}
             </div>
             <h2>En détail.</h2>
+            {redige?.texte.map((t) => <p key={t}>{t}</p>)}
             <p>{longDescription(p)}</p>
             {(() => {
               // 03/10 : le texte que seule cette fiche peut porter, et les pages par boxe et par niveau qui la listent.
@@ -376,7 +379,7 @@ export default async function Page({ params }: Props) {
             </div>
           </section>
         )}
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: productGraph(p, related, { description: longDescription(p), faq: productFaq(p, products), note, revision: PRODUCT_EVIDENCE_REVISION, nom: tetePage ? modele.nom : undefined, modele: plusieurs ? { id: modele.tete.sourceRef || modele.tete.id, nom: modele.nom, autres: modele.fiches.filter((x) => x.id !== p.id) } : undefined }) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: productGraph(p, related, { description: [...(redige?.texte ?? []), longDescription(p)].join(' '), faq: productFaq(p, products), note, revision: [PRODUCT_EVIDENCE_REVISION, redige?.ecrit || ''].sort().at(-1), nom: tetePage ? modele.nom : undefined, modele: plusieurs ? { id: modele.tete.sourceRef || modele.tete.id, nom: modele.nom, autres: modele.fiches.filter((x) => x.id !== p.id) } : undefined }) }} />
       </main>
     );
   }

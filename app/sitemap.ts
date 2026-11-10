@@ -12,7 +12,7 @@ import { GUIDES_RAYONS } from '@/lib/guides-rayons';
 import { buyingBrief, BUYING_BRIEF_REVISION } from '@/lib/buying-brief';
 import { PRODUCT_EVIDENCE_REVISION } from '@/lib/describe';
 import { GLOVE_WEIGHT_REVISION } from '@/lib/glove-weight';
-import { fichesDeTete } from '@/lib/modeles';
+import { fichesDeTete, modeleDe, texteDuModele } from '@/lib/modeles';
 const SUBFAMILY_PATHS = new Set(SUBFAMILIES.map((s) => '/' + s.slug + '/'));
 const TOOL_PATHS = new Set(['/observatoire-des-prix/', '/outils/poids-de-gants/']);
 // « Vente matériel de boxe » (03/10) : une page de catalogue qui n'est pas une famille ; ses chiffres suivent le catalogue.
@@ -59,7 +59,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const dates = new Map(
     products.map((p) => [
       '/produits/' + p.slug + '/',
-      [collectionDate([p]), PRODUCT_EVIDENCE_REVISION].sort().at(-1)!,
+      // Une fiche dont le modèle a reçu sa description rédigée porte la date de ce texte.
+      [collectionDate([p]), PRODUCT_EVIDENCE_REVISION, texteDuModele(modeleDe(p, products))?.ecrit || ''].sort().at(-1)!,
     ]),
   );
 
