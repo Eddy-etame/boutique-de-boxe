@@ -21,7 +21,9 @@ import { NextResponse, type NextRequest } from 'next/server';
  */
 const LISTE = /^\/([a-z0-9-]+)\/$/;
 const PAGE_DIRECTE = /^\/([a-z0-9-]+)\/page-([1-9][0-9]{0,3})\/$/;
-const PAS_UNE_LISTE = new Set(['produits', 'guides', 'marques', 'atelier', 'admin', 'outils', 'labo', 'merci', 'hors-ligne']);
+// « recherche » : la page de recherche pagine dans le navigateur ; sans cette exception, /recherche/?page=2 partait vers
+// une page statique qui n'existe pas (404 relevé par l'exploration du 10/11/2026).
+const PAS_UNE_LISTE = new Set(['produits', 'guides', 'marques', 'atelier', 'admin', 'outils', 'labo', 'merci', 'hors-ligne', 'recherche']);
 
 /*
  * Pages fusionnées le 9/11/2026. Search Console (rapport « Pages ») : Google explorait ces trois pages et
