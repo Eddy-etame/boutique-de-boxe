@@ -12,6 +12,7 @@ import { GUIDES_RAYONS } from '@/lib/guides-rayons';
 import { buyingBrief, BUYING_BRIEF_REVISION } from '@/lib/buying-brief';
 import { PRODUCT_EVIDENCE_REVISION } from '@/lib/describe';
 import { GLOVE_WEIGHT_REVISION } from '@/lib/glove-weight';
+import { fichesDeTete } from '@/lib/modeles';
 const SUBFAMILY_PATHS = new Set(SUBFAMILIES.map((s) => '/' + s.slug + '/'));
 const TOOL_PATHS = new Set(['/observatoire-des-prix/', '/outils/poids-de-gants/']);
 // « Vente matériel de boxe » (03/10) : une page de catalogue qui n'est pas une famille ; ses chiffres suivent le catalogue.
@@ -118,7 +119,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/outils/poids-de-gants/',
     // 06/11/2026 : les pages-villes hors index (lib/villes.ts, VILLE_INDEXEE) ne sont plus proposées à Google.
     ...[...VILLE_PATHS].filter((p) => p === villePath(VILLE_INDEXEE)),
-    ...products.map((p) => '/produits/' + p.slug + '/'),
+    // 10/11/2026 : une adresse par modèle. Les fiches des autres coloris désignent leur fiche de tête comme
+    // canonique (lib/modeles.ts) ; elles restent en ligne, sans être proposées à Google une seconde fois.
+    ...fichesDeTete(products).map((p) => '/produits/' + p.slug + '/'),
     '/nouveautes/',
     '/guides/',
     ...guides.map((g) => '/guides/' + g.slug + '/'),

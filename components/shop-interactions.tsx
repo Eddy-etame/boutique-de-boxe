@@ -841,8 +841,28 @@ function subscribeProductLocation(callback: () => void) {
 const productLocation = () => window.location.search;
 const emptyProductLocation = () => '';
 
-/** La fiche : galerie, achat et, depuis le 20/10/2026, les notes des visiteurs (`note` : la moyenne visible, rendue au serveur). */
-export function ProductDetails({ product: p, note = null }: { product: Product; note?: Moyenne | null }) {
+/** Un coloris du modèle dans le sélecteur de la fiche : sa page, son libellé, sa vignette, son prix. */
+export type ColorisDeFiche = { slug: string; libelle: string; vignette?: string; prix: number; /** Vrai quand ce prix est le plus bas de ses tailles. */ des?: boolean; affiche: boolean };
+
+/**
+ * La fiche : galerie, achat et, depuis le 20/10/2026, les notes des visiteurs (`note` : la moyenne visible, rendue au serveur).
+ * 10/11/2026 : `coloris` liste les fiches du même modèle (lib/modeles.ts) ; chacune est un lien vers sa page, écrit
+ * dans le HTML. `titre` est le nom du modèle sans coloris, porté par la fiche de tête.
+ */
+export function ProductDetails({
+  product: p,
+  note = null,
+  titre,
+  coloris = [],
+  versions = false,
+}: {
+  product: Product;
+  note?: Moyenne | null;
+  titre?: string;
+  coloris?: ColorisDeFiche[];
+  /** Vrai quand les fiches du modèle sont des éditions (Itachi, Goku…) et non des couleurs. */
+  versions?: boolean;
+}) {
   const makerSizing = manufacturerSizingFor(p);
   const [image, setImage] = useState(0);
   // Le flux marchand mène à ?taille= : on sélectionne cette taille réelle sans rendre toutes les
@@ -1017,7 +1037,7 @@ export function ProductDetails({ product: p, note = null }: { product: Product; 
           {badBrand(p.brand) ? null : <>{p.brand} /{' '}</>}
           {categoryFor(p.category)?.name ?? p.category.replaceAll('-', ' ')}
         </span>
-        <h1>{cleanName(p)}</h1>
+        <h1>{titre || cleanName(p)}</h1>
         <p className="product-lead">{p.short}</p>
         <div className="detail-price">
           <strong>
@@ -1037,6 +1057,30 @@ export function ProductDetails({ product: p, note = null }: { product: Product; 
               : `En vente · expédition sous ${shop.delais.expedition}`
             : 'En vente le ' + shop.ouverture.long}
         </div>
+        {coloris.length > 1 && (
+          <nav className="colour-picker" aria-label={versions ? 'Versions du modèle' : 'Coloris du modèle'}>
+            <p className="colour-picker-legend">
+              {versions ? 'Version' : 'Coloris'}
+              <span>{coloris.find((c) => c.affiche)?.libelle}</span>
+              <em>
+                {coloris.length} {versions ? 'versions' : 'coloris'}
+              </em>
+            </p>
+            <ul>
+              {coloris.map((c) => (
+                <li key={c.slug}>
+                  <a href={`/produits/${c.slug}/`} aria-current={c.affiche ? 'page' : undefined}>
+                    <span className="colour-thumb">
+                      {c.vignette && <img src={c.vignette} width={84} height={84} alt="" loading="lazy" decoding="async" />}
+                    </span>
+                    <span className="colour-name">{c.libelle}</span>
+                    {c.prix !== p.price && <small>{c.des ? 'dès ' : ''}{money(c.prix)}</small>}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
         {p.sizes.length > 0 && (
           <fieldset className="variant-picker">
             <legend>

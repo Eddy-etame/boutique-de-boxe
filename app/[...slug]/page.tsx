@@ -28,6 +28,8 @@ import { readCatalog } from '@/lib/database';
 import { moyenneDuModele } from '@/lib/notes-stockage';
 import { guides, services } from '@/lib/editorial';
 import { guidesDuModele } from '@/lib/guides-fiche';
+import { modeleDe, fichesDeTete, libelleDeFiche } from '@/lib/modeles';
+import { thumbSrc } from '@/lib/vignette';
 import { Breadcrumb, ArrowLink } from '@/components/shop-shell';
 import {
   Catalog,
@@ -195,13 +197,23 @@ export default async function Page({ params }: Props) {
     const score = (x: (typeof products)[number]) =>
       (x.brand === p.brand ? 2 : 0) +
       ((x.disciplines || []).some((d) => (p.disciplines || []).includes(d)) ? 1 : 0);
-    const family = products.filter((x) => x.category === p.category);
+    // Un modèle, une page (10/11/2026, lib/modeles.ts) : la fiche de tête porte le nom du modèle sans coloris ;
+    // toutes les fiches du modèle affichent le sélecteur de coloris, chaque coloris étant un lien vers sa page.
+    const modele = modeleDe(p, products);
+    const plusieurs = modele.fiches.length > 1;
+    const tetePage = plusieurs && modele.tete.id === p.id;
+    const coloris = plusieurs
+      ? modele.fiches.map((x) => ({ slug: x.slug, libelle: libelleDeFiche(x), vignette: x.images[0] ? thumbSrc(x.slug, x.images[0]) : undefined, prix: x.price, des: Boolean(x.variants?.some((v) => v.price !== x.price)), affiche: x.id === p.id }))
+      : [];
+    // Les modèles proches sont d'autres modèles : jamais un autre coloris de celui-ci (le sélecteur y mène),
+    // et toujours la fiche de tête, celle que Google garde.
+    const family = fichesDeTete(products).filter((x) => x.category === p.category && x.id !== modele.tete.id);
     // Quatre modèles proches par affinité (marque, discipline), et quatre voisins de rang dans la
     // famille (les deux avant, les deux après, par nom) : chaque fiche reçoit ainsi des liens de
     // ses voisines, jamais seulement des mêmes modèles très liés.
-    const byName = [...family].sort((a, b) => a.name.localeCompare(b.name, 'fr'));
-    const at = byName.findIndex((x) => x.id === p.id);
-    const neighbours = byName.length > 1 ? [-2, -1, 1, 2].map((d) => byName[(at + d + byName.length) % byName.length]).filter((x, i, arr) => x.id !== p.id && arr.findIndex((y) => y.id === x.id) === i) : [];
+    const byName = [...family, modele.tete].sort((a, b) => a.name.localeCompare(b.name, 'fr'));
+    const at = byName.findIndex((x) => x.id === modele.tete.id);
+    const neighbours = byName.length > 1 ? [-2, -1, 1, 2].map((d) => byName[(at + d + byName.length) % byName.length]).filter((x, i, arr) => x.id !== modele.tete.id && arr.findIndex((y) => y.id === x.id) === i) : [];
     const related = [
       ...family
         .filter((x) => x.id !== p.id && x.audience === p.audience && !neighbours.some((n) => n.id === x.id))
@@ -237,11 +249,11 @@ export default async function Page({ params }: Props) {
           items={[
             { label: cat.name, href: '/' + cat.slug + '/' },
             ...(sub ? [{ label: sub.name, href: '/' + sub.slug + '/' }] : []),
-            { label: p.name },
+            { label: tetePage ? modele.nom : p.name },
           ]}
         />
         {seances.length > 0 && <SeanceContext seances={seances} />}
-        <ProductDetails product={p} note={note} />
+        <ProductDetails product={p} note={note} titre={tetePage ? modele.nom : undefined} coloris={coloris} versions={!modele.coloris} />
         <section className="spec-section">
           <div>
             <span className="eyebrow">LE MODÈLE</span>
@@ -364,7 +376,7 @@ export default async function Page({ params }: Props) {
             </div>
           </section>
         )}
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: productGraph(p, related, { description: longDescription(p), faq: productFaq(p, products), note, revision: PRODUCT_EVIDENCE_REVISION }) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: productGraph(p, related, { description: longDescription(p), faq: productFaq(p, products), note, revision: PRODUCT_EVIDENCE_REVISION, nom: tetePage ? modele.nom : undefined, modele: plusieurs ? { id: modele.tete.sourceRef || modele.tete.id, nom: modele.nom, autres: modele.fiches.filter((x) => x.id !== p.id) } : undefined }) }} />
       </main>
     );
   }

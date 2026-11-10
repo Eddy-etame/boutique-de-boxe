@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { catalogPage, PAGE_SIZE } from '@/lib/pagination';
-import { subfamilyKeywords, productKeywords, categoryKeywords, guideKeywords, pageKeywords, titreCourt } from '@/lib/seo';
+import { subfamilyKeywords, productKeywords, categoryKeywords, guideKeywords, pageKeywords, titreCourt, titreDeModele } from '@/lib/seo';
+import { modeleDe, compteDuModele, libelleDeFiche } from '@/lib/modeles';
 import { SEO_COPY } from '@/lib/seo-copy';
 import { subfamilyFor, subfamilyProducts } from '@/lib/subfamilies';
 import { facetMetadata } from '@/components/facet-page';
@@ -49,6 +50,11 @@ export async function slugMetadata(rawSlug: string[], rawPage?: string): Promise
     slug[0] === 'produits'
       ? products.find((p) => p.slug === slug[1])
       : undefined;
+  // Un modèle en plusieurs coloris (lib/modeles.ts) : sa fiche de tête porte le titre et la description du
+  // modèle ; les fiches des autres coloris la désignent comme canonique et gardent leur propre titre.
+  const modele = product ? modeleDe(product, products) : null;
+  const plusieurs = modele && modele.fiches.length > 1 ? modele : null;
+  const tetePage = Boolean(plusieurs && product && plusieurs.tete.id === product.id);
   const cat = categoryFor(path);
   const sub = subfamilyFor(path);
   const facet = slug.length === 1 ? facetFor(path, products) : null;
@@ -113,6 +119,7 @@ export async function slugMetadata(rawSlug: string[], rawPage?: string): Promise
     ],
   };
   const title =
+    (product && tetePage && plusieurs && titreDeModele(plusieurs.nom, compteDuModele(plusieurs), titreCourt(product, products))) ||
     (product && titreCourt(product, products)) ||
     (tete && teteCtx && tete.titre(teteCtx)) ||
     (cat && (SEO_COPY[cat.slug]?.title || cat.name)) ||
@@ -122,7 +129,9 @@ export async function slugMetadata(rawSlug: string[], rawPage?: string): Promise
     special[path]?.[0] ||
     'Page introuvable';
   const canonical =
-    '/' + path + '/' + (paginated && page > 1 ? '?page=' + page : '');
+    product && plusieurs && !tetePage
+      ? '/produits/' + plusieurs.tete.slug + '/'
+      : '/' + path + '/' + (paginated && page > 1 ? '?page=' + page : '');
   const pageTitle = title + (paginated && page > 1 ? ' — Page ' + page : '');
   const og = product
     ? ogImage('p', product.slug, product.name)
@@ -140,16 +149,36 @@ export async function slugMetadata(rawSlug: string[], rawPage?: string): Promise
   const describe = (p: NonNullable<typeof product>) => {
     const family = categoryFor(p.category)?.name.toLowerCase();
     const brand = p.brand && !/pr[ée]ciser/i.test(p.brand) && !p.name.toLowerCase().includes(p.brand.toLowerCase()) ? ' ' + p.brand : '';
-    const parts = [p.name + brand + (family ? ', ' + family : '') + '.'];
     const sizes = p.sizes.filter((s) => s.length <= 14 && s.toLowerCase() !== p.name.toLowerCase());
-    if (sizes.length > 1) parts.push('Tailles : ' + sizes.slice(0, 4).join(', ') + (sizes.length > 4 ? '…' : '') + '.');
+    // Une liste coupée finit par « … », jamais par « …. ».
+    const tailles = sizes.length > 1 ? 'Tailles : ' + sizes.slice(0, 4).join(', ') + (sizes.length > 4 ? '…' : '.') : '';
+    if (tetePage && plusieurs) {
+      // La page d'un modèle dit le modèle, ses coloris, ses tailles et son premier prix. Chaque phrase entre
+      // entière ou n'entre pas : la description ne se termine jamais au milieu d'une phrase.
+      // Une fiche sans coloris dans son nom se désigne par sa référence : utile dans le sélecteur, pas dans une phrase.
+      const libelles = plusieurs.fiches.map(libelleDeFiche).filter((l) => !/^réf\. /.test(l));
+      const tete = (n: number) =>
+        libelles.length
+          ? `${plusieurs.nom}${brand} en ${compteDuModele(plusieurs)} : ${libelles.slice(0, n).join(', ')}${n < plusieurs.fiches.length ? '…' : '.'}`
+          : `${plusieurs.nom}${brand} en ${compteDuModele(plusieurs)}.`;
+      let n = Math.min(4, libelles.length);
+      while (n > 1 && tete(n).length > 118) n--;
+      const prix = plusieurs.fiches.map((x) => x.price).filter((x) => x > 0);
+      const min = prix.length ? Math.min(...prix) : 0;
+      const phrases = [min ? (prix.some((x) => x !== min) ? `Dès ${money(min)} TTC.` : `Prix TTC : ${money(min)}.`) : '', tailles, 'Livraison dans toute la France.'];
+      let out = tete(n);
+      for (const phrase of phrases) if (phrase && (out + ' ' + phrase).length <= 158) out += ' ' + phrase;
+      return out;
+    }
+    const parts = [p.name + brand + (family ? ', ' + family : '') + '.'];
+    if (tailles) parts.push(tailles);
     parts.push('Prix TTC : ' + money(p.price) + '.');
     parts.push('Livraison dans toute la France.');
     return parts.join(' ');
   };
   const rawDescription =
     (product
-      ? product.seoDescription && product.seoDescription.length >= 80
+      ? !tetePage && product.seoDescription && product.seoDescription.length >= 80
         ? product.seoDescription
         : describe(product)
       : undefined) ||

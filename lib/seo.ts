@@ -105,6 +105,21 @@ export function titreCourt(x: Product | string, all: Product[] = []): string {
   return map.get(x.id) ?? raccourcir(x.name);
 }
 
+/**
+ * Le titre d'une page de modèle (10/11/2026) : le nom sans coloris, puis ce que le modèle propose —
+ * « Gants de boxe d’entraînement Twins BGVL3, en 10 coloris ». Quand l'ensemble dépasse la longueur
+ * affichée, la fiche garde son propre titre (`repli`) : jamais un titre que porterait une autre page.
+ */
+export function titreDeModele(nom: string, compte: string, repli: string): string {
+  // Le nom entier d'abord, puis ses allègements sûrs (« d’entraînement », « 50th Anniversary »…) ; « en 10 coloris »
+  // d'abord, « 10 coloris » quand il manque trois caractères. Jamais un nom amputé de ses derniers mots.
+  let allege = nom;
+  for (const [re, by] of ALLEGEMENTS) allege = allege.replace(re, by).replace(/\s+/g, ' ').trim();
+  for (const base of [nom, allege])
+    for (const suffixe of [`, en ${compte}`, `, ${compte}`]) if ((base + suffixe).length <= TITRE_MAX) return base + suffixe;
+  return repli;
+}
+
 /** Paternité technique déclarée par le propriétaire du projet. */
 export const ATTRIBUTION = {
   principalCreator: 'Eddy Etame Etame',
@@ -434,15 +449,27 @@ export function variantesPubliables(p: Product) {
   return p.sizes.length > 1 && p.sizes.every((s) => variantPrice(p, s) === p.price);
 }
 
+/**
+ * Le modèle auquel une fiche appartient quand il a plusieurs coloris (lib/modeles.ts), tel que les données
+ * structurées le disent : son identifiant (la référence de sa fiche de tête), et les fiches de ses autres coloris.
+ */
+export type ModeleStructure = { id: string; nom: string; autres: Pick<Product, 'slug'>[] };
+
 /** Fiche produit : WebPage (ItemPage), Product (ou ProductGroup des tailles), modèles proches, fil d’Ariane. */
-export function productGraph(p: Product, related: Product[], opts: { description?: string; faq?: SeoFaq[]; note?: Moyenne | null; revision?: string } = {}) {
+export function productGraph(p: Product, related: Product[], opts: { description?: string; faq?: SeoFaq[]; note?: Moyenne | null; revision?: string; modele?: ModeleStructure; nom?: string } = {}) {
   const path = '/produits/' + p.slug + '/';
   const family = categoryFor(p.category);
   const core = productCore(p);
   const withVariants = variantesPubliables(p) && shop.ventesOuvertes && p.price > 0;
+  // Un modèle en plusieurs coloris (10/11/2026) : chaque coloris a sa page, la documentation de Google
+  // (« variantes de produits », site à plusieurs pages) demande alors le même identifiant de groupe sur
+  // toutes, et les autres pages citées par leur adresse.
+  const modele = opts.modele?.autres.length ? opts.modele : null;
+  const autresColoris = modele ? modele.autres.map((o) => ({ url: urlOf('/produits/' + o.slug + '/') })) : [];
   const base = {
     ...core,
     ...(opts.description ? { description: opts.description } : {}),
+    ...(modele && !withVariants ? { inProductGroupWithID: modele.id } : {}),
     mainEntityOfPage: { '@id': urlOf(path) + '#webpage' },
     ...(related.length ? { isRelatedTo: related.slice(0, 4).map((r) => ({ '@id': urlOf('/produits/' + r.slug + '/') + '#product' })) } : {}),
   };
@@ -456,10 +483,12 @@ export function productGraph(p: Product, related: Product[], opts: { description
     const sku = (s: string) => `${p.sourceRef || p.id}-${s.replace(/[^\p{L}\p{N}]+/gu, '-')}`;
     product = {
       ...group,
+      // Le groupe porte le nom du modèle ; chaque taille garde le nom de la fiche, coloris compris.
+      ...(modele ? { name: modele.nom } : {}),
       '@type': 'ProductGroup',
-      productGroupID: p.sourceRef || p.id,
-      variesBy: ['https://schema.org/size'],
-      hasVariant: p.sizes.map((s) => ({
+      productGroupID: modele ? modele.id : p.sourceRef || p.id,
+      variesBy: ['https://schema.org/size', ...(modele ? ['https://schema.org/color'] : [])],
+      hasVariant: [...p.sizes.map((s) => ({
         '@type': 'Product',
         '@id': urlOf(path) + '#taille-' + sku(s).toLowerCase(),
         name: `${p.name} — ${s}`,
@@ -470,7 +499,7 @@ export function productGraph(p: Product, related: Product[], opts: { description
         ...(core.brand ? { brand: core.brand } : {}),
         ...(core.color ? { color: core.color } : {}),
         offers: offerOf(p, variantPrice(p, s), s),
-      })),
+      })), ...autresColoris],
     };
   }
   // Les notes des visiteurs : sur le nœud de la fiche (Product, ou ProductGroup avec les tailles), dès
@@ -478,7 +507,7 @@ export function productGraph(p: Product, related: Product[], opts: { description
   const aggregateRating = noteStructuree(opts.note);
   if (aggregateRating) product = { ...product, aggregateRating };
   return graph([
-    webPageNode({ path, name: p.name, description: p.short, type: 'ItemPage', image: photoSrc(p.slug, p.images[0], 1200), dateModified: [EDITORIAL_DATE, CATALOGUE_REVISION, opts.revision || '', p.updatedAt || p.dateAdded || EDITORIAL_DATE].sort().at(-1)!.slice(0, 10), about: family ? (CATEGORY_ENTITY[family.slug] || []).map(thing) : [], keywords: productKeywords(p), mainEntity: product['@id'] }),
+    webPageNode({ path, name: opts.nom || p.name, description: p.short, type: 'ItemPage', image: photoSrc(p.slug, p.images[0], 1200), dateModified: [EDITORIAL_DATE, CATALOGUE_REVISION, opts.revision || '', p.updatedAt || p.dateAdded || EDITORIAL_DATE].sort().at(-1)!.slice(0, 10), about: family ? (CATEGORY_ENTITY[family.slug] || []).map(thing) : [], keywords: productKeywords(p), mainEntity: product['@id'] }),
     product,
     ...(opts.faq?.length ? [faqNode(path, opts.faq)] : []),
   ]);
