@@ -1357,6 +1357,26 @@ html[data-scrolled] .site-header {
   color: var(--muted);
   margin: 12px 0;
 }
+/* Les liens d'une fiche (sous-famille, repères, guides) : une colonne nette, un écart entre deux boutons,
+   de l'air avant le titre qui suit. Sur téléphone, les boutons prennent la largeur et leur texte passe à la ligne. */
+.spec-links {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+  margin-top: 18px;
+}
+.spec-links + h2 {
+  margin-top: 40px;
+}
+@media (max-width: 760px) {
+  .spec-links {
+    justify-items: stretch;
+  }
+  .spec-links .button {
+    white-space: normal;
+    text-align: left;
+  }
+}
 .spec-table {
   width: 100%;
   border-collapse: collapse;

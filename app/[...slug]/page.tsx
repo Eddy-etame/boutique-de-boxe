@@ -27,6 +27,7 @@ import {
 import { readCatalog } from '@/lib/database';
 import { moyenneDuModele } from '@/lib/notes-stockage';
 import { guides, services } from '@/lib/editorial';
+import { guidesDuModele } from '@/lib/guides-fiche';
 import { Breadcrumb, ArrowLink } from '@/components/shop-shell';
 import {
   Catalog,
@@ -217,6 +218,7 @@ export default async function Page({ params }: Props) {
     });
     // Trois niveaux quand la sous-famille existe : famille → sous-famille → modèle.
     const sub = subfamiliesOf(p.category).find((x) => x.match(p));
+    const guidesUtiles = guidesDuModele(p, cat.guide);
     // Les notes des visiteurs (20/10/2026) : la moyenne visible, lue au rendu (ISR), jamais inventée.
     const note = await moyenneDuModele(p.id);
     const declaredLevel = practiceLevel(p);
@@ -289,16 +291,30 @@ export default async function Page({ params }: Props) {
             )}
             <h2>Entretien.</h2>
             <p>{careAdvice(p)}</p>
-            {sub && <ArrowLink href={'/' + sub.slug + '/'}>Tous les modèles : {sub.name}</ArrowLink>}
-            <ArrowLink
-              href={
-                cat.guide === 'guide-des-tailles'
-                  ? '/guide-des-tailles/'
-                  : '/guides/' + cat.guide + '/'
-              }
-            >
-              Les repères pour choisir
-            </ArrowLink>
+            <div className="spec-links">
+              {sub && <ArrowLink href={'/' + sub.slug + '/'}>Tous les modèles : {sub.name}</ArrowLink>}{' '}
+              <ArrowLink
+                href={
+                  cat.guide === 'guide-des-tailles'
+                    ? '/guide-des-tailles/'
+                    : '/guides/' + cat.guide + '/'
+                }
+              >
+                Les repères pour choisir
+              </ArrowLink>
+            </div>
+            {guidesUtiles.length > 0 && (
+              <>
+                <h2>Les guides sur ce matériel.</h2>
+                <div className="spec-links">
+                  {spaced(guidesUtiles.map((g) => (
+                    <ArrowLink key={g.slug} href={'/guides/' + g.slug + '/'}>
+                      {g.title}
+                    </ArrowLink>
+                  )))}
+                </div>
+              </>
+            )}
           </div>
           <div>
             <span className="eyebrow">LES CARACTÉRISTIQUES</span>

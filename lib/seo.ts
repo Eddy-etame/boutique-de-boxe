@@ -338,7 +338,10 @@ export function webPageNode(o: { path: string; name: string; description: string
     inLanguage: 'fr-FR',
     isPartOf: { '@id': ID('site') },
     publisher: { '@id': ID('organisation') },
-    ...(o.breadcrumb === false ? {} : { breadcrumb: { '@id': urlOf(o.path.split('?')[0]) + '#breadcrumb' } }),
+    // Pas de renvoi « breadcrumb » vers le fil d'Ariane (10/11/2026) : il est écrit dans un autre bloc JSON-LD
+    // (components/shop-shell.tsx, Breadcrumb), et le test en direct de Google lisait ce renvoi sur les fiches comme
+    // un second BreadcrumbList vide — « Missing field 'itemListElement' », élément invalide sur chaque fiche produit.
+    // Le fil d'Ariane complet reste dans son bloc, seul et valide.
     dateModified: o.dateModified || EDITORIAL_DATE,
     ...(o.image ? { primaryImageOfPage: { '@type': 'ImageObject', url: abs(o.image) } } : {}),
     ...(o.about?.length ? { about: o.about } : {}),

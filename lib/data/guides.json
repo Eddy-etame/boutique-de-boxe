@@ -1189,6 +1189,8 @@
       }
     ],
     "relatedCategories": [
+      "bandes-de-boxe",
+      "sous-gants",
       "accessoires-boxe",
       "gants-de-boxe",
       "materiel-boxe"
@@ -1309,8 +1311,8 @@
     ],
     "relatedCategories": [
       "bandes-de-boxe",
-      "accessoires-boxe",
       "sous-gants",
+      "accessoires-boxe",
       "gants-de-boxe"
     ],
     "sources": [
@@ -1542,8 +1544,8 @@
     ],
     "relatedCategories": [
       "gants-de-boxe",
-      "accessoires-boxe",
-      "bandes-de-boxe"
+      "bandes-de-boxe",
+      "accessoires-boxe"
     ],
     "sources": [
       {
