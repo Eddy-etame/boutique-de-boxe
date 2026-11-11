@@ -58,8 +58,8 @@ test('every product page belongs to exactly one model, and every model has one h
     for (const p of m.fiches) assert.equal(cleDuModele(p), m.cle);
   }
   assert.equal(fichesDeTete(all).length, liste.length);
-  assert.equal(liste.length, 576);
-  assert.equal(plusieurs.length, 200);
+  assert.equal(liste.length, 570);
+  assert.equal(plusieurs.length, 202);
 });
 
 test('pages of one model share family and brand, and never mix two materials', () => {
@@ -205,6 +205,8 @@ test('written model descriptions belong to a model, are original to it and stay 
     const t = texteDuModele(m);
     if (t) assert.equal(t, textes[m.cle]);
   }
+  // Depuis le 11/11/2026, chaque modèle a sa description : un modèle ajouté sans texte fait échouer le test.
+  assert.deepEqual(liste.filter((m) => !textes[m.cle]).map((m) => m.cle), [], 'every model has its written description');
 });
 
 test('pages attached by hand join a model that other pages carry by name', () => {

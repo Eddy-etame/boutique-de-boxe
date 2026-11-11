@@ -398,6 +398,13 @@
    "Mousse EVA haute densité, qui absorbe l’impact et ménage les articulations. Dimensions : 33 × 33 cm. Elle sert en karaté, en taekwondo et dans les autres arts martiaux qui pratiquent la casse."
   ]
  },
+ "arts-martiaux:manto:kimono-de-jjb-manto-miko": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le Miko de Manto est un kimono de jiu-jitsu brésilien noir, brodé de motifs rouges d’inspiration tatouage : serpents sur les épaules, oiseau sur la poitrine, toile d’araignée sur la manche.",
+   "Veste en pearl weave de 450 g/m², col renforcé de mousse EVA ; pantalon en coton ripstop de 10 oz. Trois tailles au catalogue : A1, A2 et A2L. La ceinture n’est pas comprise."
+  ]
+ },
  "arts-martiaux:metal-boxe:kimono-de-jjb-metal-boxe": {
   "ecrit": "2026-11-11",
   "texte": [
@@ -445,6 +452,13 @@
   "texte": [
    "La Speedex 18 a une coupe ajustée, stable au milieu du pied et souple à l’avant. Sa semelle intercalaire en EVA suit le même principe : tendre sous l’avant-pied et le talon, pour le confort et la réactivité, ferme au milieu, pour le soutien.",
    "Tige en mesh renforcé, sangles de stabilité autour de la cheville et de l’arrière-pied, tirant au talon pour l’enfiler, fermeture à lacets. Coloris noir et or."
+  ]
+ },
+ "chaussures-boxe:adidas:chaussures-de-boxe-adidas-box-hog-2": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La Box Hog 2 en noir, à trois bandes blanches : une chaussure de boxe anglaise à tige moyenne, en mesh, sur une semelle en EVA annoncée non marquante.",
+   "Douze pointures, du 36 au 47 1/3 ; Adidas taille en tiers de pointure, comparez avec une paire de la marque si vous en portez déjà."
   ]
  },
  "chaussures-boxe:adidas:chaussures-de-lutte-adidas-havoc-plus": {
@@ -611,6 +625,13 @@
    "Les poignées sont moulées et scellées à chaud, pour l’adhérence et pour que la corde ne s’effiloche pas, et un manchon la protège à mi-longueur, là où elle frotte sur l’ancrage. Elle s’utilise aussi en plein air. Coloris orange."
   ]
  },
+ "equipement-entrainement:champboxing:pattes-d-ours-champboxing": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Des pattes d’ours en PU noir mat, à mousse haute densité, qui s’enfilent comme des gants. Un coussin protège le poignet de celui qui les tient, et un lacet épais court sur le pourtour, le long de coutures renforcées.",
+   "Vendues par paire, en taille unique."
+  ]
+ },
  "equipement-entrainement:cleto-reyes:bouclier-de-frappe-cleto-reyes-rond:cuir": {
   "ecrit": "2026-11-11",
   "texte": [
@@ -688,10 +709,10 @@
    "Notre fiche ne précise ni la matière des poignées ni le réglage de la longueur. Coloris noir."
   ]
  },
- "equipement-entrainement:elion:corde-ondulatoire-elion-12-m-10-kg": {
+ "equipement-entrainement:elion:corde-ondulatoire-elion": {
   "ecrit": "2026-11-11",
   "texte": [
-   "La Battle Rope d’Elion en version 12 m et 10 kg : passée dans une accroche, elle laisse 6 m de corde de chaque côté. Plus la corde est longue, plus son poids se fait sentir, et l’effort n’a rien de commun avec deux haltères du même poids.",
+   "La Battle Rope d’Elion existe en trois longueurs : 9 m, 12 m et 15 m. Passée dans une accroche, elle se partage en deux brins égaux, de 4,50 m à 7,50 m. Plus la corde est longue, plus son poids se fait sentir, et l’effort n’a rien de commun avec deux haltères du même poids.",
    "On la travaille en vagues, en cercles ou en diagonales, alternés ou synchronisés, à un bras, en avançant ou en reculant : vite pour l’explosivité, plus lentement pour l’endurance. Nylon épais de 2,5 cm, poignées moulées, extrémités scellées à chaud, manchon de protection au milieu. Coloris noir."
   ]
  },
@@ -846,7 +867,7 @@
   "ecrit": "2026-11-11",
   "texte": [
    "Les KPLC sont les paos en cuir de Fairtex, à protection d’avant-bras : une poignée rivetée en tête, deux larges sangles pour le bras et une cible ronde sur la face de frappe. La marque les recommande pour un usage intensif.",
-   "Deux formats au catalogue : le KPLC1, de 31 × 19 × 9 cm, et le KPLC2, de 37 × 19 × 10 cm ; la gamme en compte quatre, jusqu’à 43 × 20 × 14 cm. Vendus à la pièce : il en faut deux pour une paire. Fabriqués en Thaïlande."
+   "Les quatre formats de la gamme sont au catalogue : KPLC1, 31 × 19 × 9 cm ; KPLC2, 37 × 19 × 10 cm ; KPLC3, 40 × 20 × 13 cm ; KPLC4, 43 × 20 × 14 cm. Vendus à la pièce : il en faut deux pour une paire. Fabriqués en Thaïlande."
   ]
  },
  "equipement-entrainement:fairtex:pattes-d-ours-fairtex-cardio-courbees": {
@@ -1198,6 +1219,13 @@
    "Le laçage tient le poignet plus fermement qu’un auto-agrippant et demande un partenaire pour être noué. Trois poids : 8, 10 et 12 oz. Fait main en Thaïlande."
   ]
  },
+ "gants-de-boxe:elion:gants-de-boxe-a-lacets-elion-elegant:cuir": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "L’Elegant à lacets de compétition reprend le modèle signature d’Elion dans l’esprit du muay-thaï, en hommage aux origines de la marque. Il existe dans deux robes tricolores : cuir bleu relevé de blanc et de rouge, ou cuir rouge relevé de blanc et de bleu.",
+   "Cuir nappa, mousse triple densité, doublure en toile de nylon qui évacue la transpiration, coutures épaisses renforcées, fermeture à lacets pour le maintien du poignet. Fait à la main en Thaïlande. En 8 et 10 oz."
+  ]
+ },
  "gants-de-boxe:elion:gants-de-boxe-d-entrainement-a-lacets-elion-elegant:cuir": {
   "ecrit": "2026-11-10",
   "texte": [
@@ -1366,6 +1394,13 @@
    "Ce sont des gants en cuir, du 8 au 16 oz."
   ]
  },
+ "gants-de-boxe:fairtex:gants-de-boxe-d-entrainement-fairtex-glory": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Les gants Fairtex × Glory portent les deux noms : « Fairtex » sur une main, « Glory », l’organisation de kick-boxing, sur l’autre, en lettres dorées sur un fond couvert de volutes inspirées de l’ornement thaï.",
+   "Fermeture par auto-agrippant, à large manchette. Trois versions : noir et argent, noir et or, blanc et argent. Du 10 au 16 oz. Notre fiche n’en précise ni la matière ni le rembourrage : écrivez-nous pour le détail."
+  ]
+ },
  "gants-de-boxe:fairtex:gants-de-boxe-d-entrainement-fairtex-golden-jubilee": {
   "ecrit": "2026-11-10",
   "texte": [
@@ -1436,6 +1471,34 @@
    "Fermeture auto-agrippante. Trois tailles : M, L et XL. La marque les donne pour une pratique intensive des boxes pieds-poings."
   ]
  },
+ "gants-de-boxe:metal-boxe:gants-de-boxe-blade-metal-boxe": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le Blade se reconnaît à sa bande blanche, qui traverse le dos du gant noir en diagonale et porte le logo Metal Boxe. Enveloppe en PU, rembourrage en mousse EVA, aération WindTec.",
+   "La manchette, large, se ferme par une bande auto-agrippante. Trois poids : 10, 12 et 14 oz."
+  ]
+ },
+ "gants-de-boxe:metal-boxe:gants-de-boxe-enfant-one-metal-boxe": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le ONE est le gant de boxe pour enfant de Metal Boxe : enveloppe en PU, mousse injectée, large bande auto-agrippante au poignet. La paume est aérée.",
+   "Deux tailles : 4 à 7 ans et 8 à 15 ans. Noir, à logo blanc."
+  ]
+ },
+ "gants-de-boxe:metal-boxe:gants-de-boxe-ergo-90-metal-boxe-14-oz": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "L’ERGO 90 doit son nom à sa mousse : un rembourrage injecté, de forme anatomique, à 90 degrés. L’enveloppe est en PU, et une bande auto-agrippante fait le tour du poignet.",
+   "Cette fiche est celle du 14 oz. Les coloris seront précisés à l’ouverture des ventes ; les photos en montrent deux, kaki et orange."
+  ]
+ },
+ "gants-de-boxe:metal-boxe:gants-de-boxe-sparring-metal-boxe": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le Sparring de Metal Boxe est un gant à manchette haute et pouce attaché, deux précautions du travail avec partenaire : le poignet est tenu, et le pouce ne peut ni s’accrocher ni blesser.",
+   "Mousse injectée Ergo 90, aération WindTec. Noir mat à manchette rouge sur les photos ; le poids sera confirmé à l’ouverture des ventes."
+  ]
+ },
  "gants-de-boxe:rd-boxing:gants-de-boxe-rd-boxing-ultimate-v6:cuir": {
   "ecrit": "2026-11-11",
   "texte": [
@@ -1455,6 +1518,13 @@
   "texte": [
    "Le RS11V Evolution est un gant de sparring : Rival y loge 5 cm de mousse synthétique, une épaisseur prévue pour les mises de gants intenses, dans un grand compartiment de main à doublure souple et rembourrée.",
    "On retrouve les deux signatures de la marque canadienne : la manchette inclinée à 15°, et le V-Strap Wrist Lock 2, la sangle en V qui verrouille le poignet. Enveloppe en PU microfibre, système AirFlow Control pour l’aération. Poids de sparring uniquement : 14, 16 et 18 oz selon le coloris."
+  ]
+ },
+ "gants-de-boxe:selection-boutique-de-boxe:pack-de-boxe-enfant": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Un pack pour commencer la boxe : une paire de gants pour enfant, des mitaines à porter dessous, et un porte-clés en forme de sac de frappe. Le sac est une miniature, pas un sac d’entraînement.",
+   "Deux tailles : 4 à 7 ans et 8 à 15 ans. Le protège-dents et la tenue se choisissent à part."
   ]
  },
  "gants-de-boxe:twins:gants-de-boxe-d-entrainement-twins-bgn": {
@@ -1569,6 +1639,20 @@
    "La mousse haute densité protège sous une faible épaisseur, et les coutures, en fil épais enduit, résistent à la transpiration et aux torsions. Coloris noir ; trois tailles, M, L et XL."
   ]
  },
+ "gants-mma:metal-boxe:gants-mma-the-shell-metal-boxe": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "The Shell est le gant de sparring MMA de Metal Boxe : un gant rembourré, en mousse injectée, qui couvre aussi le pouce, avec une fermeture à bande auto-agrippante et élastique.",
+   "Quatre tailles de main, du S au XL. Les coloris seront précisés à l’ouverture des ventes ; la photo le montre en kaki, à logo orange."
+  ]
+ },
+ "gants-mma:ufc:gants-mma-ufc-open-palm-femme": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Des gants de MMA à paume ouverte, taillés pour les mains de femme : la paume reste libre pour saisir, les doigts sont dégagés, et une sangle auto-agrippante fait le tour du poignet.",
+   "Cuir synthétique, noir, avec le logo UFC en lettres cuivrées sur le dos de la main. Deux tailles : S/M et M/L."
+  ]
+ },
  "protections-boxe:adidas:casque-adidas-competition-aiba-multiboxe:cuir": {
   "ecrit": "2026-11-10",
   "texte": [
@@ -1623,6 +1707,13 @@
   "texte": [
    "Un protège-pied de full-contact : il tient par un élastique sous les orteils et par une sangle élastique de 4 cm à auto-agrippant. L’enveloppe est en PU, à l’extérieur comme à l’intérieur, sur une mousse de polyuréthane injectée haute densité.",
    "Six tailles, du XXS au XL. Coloris noir, bleu et rouge."
+  ]
+ },
+ "protections-boxe:benlee:coquille-en-benlee-medway:cuir": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La Medway est une coquille de boxe en cuir noir : la plaque de protection remonte haut sur le bas-ventre, avec l’écusson doré BenLee Rocky Marciano au centre.",
+   "Elle se ferme par un laçage, et deux sangles élastiques passent sous les cuisses. Une seule taille au catalogue : L/XL."
   ]
  },
  "protections-boxe:budofight:protege-tibias-budofight-larkee": {
@@ -1709,6 +1800,13 @@
    "Sa coupe profilée place des pommettes ajustées devant le nez et les yeux sans rogner l’angle de vue. Taille unique : la hauteur et la largeur se règlent à l’arrière."
   ]
  },
+ "protections-boxe:elion:casque-de-boxe-elion-uncage-matblack": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le casque Uncage en finition Matblack : un Skintex noir mat, doublé de rouge, avec le nom Elion ton sur ton sur le front et le regard de la marque sur la pommette.",
+   "Mousse double densité, pommettes enveloppantes qui protègent le nez sans fermer le champ de vision, protège-oreilles. Deux versions, noir mat à doublure rouge et Matblack rose ; taille unique."
+  ]
+ },
  "protections-boxe:elion:casque-de-boxe-elion-vintage:cuir": {
   "ecrit": "2026-11-10",
   "texte": [
@@ -1777,6 +1875,13 @@
   "texte": [
    "Le protège-tibias de la gamme Extravagant a une forme asymétrique : il remonte sur l’extérieur du mollet, là où arrivent les low kicks, et couvre largement le cou-de-pied. Enveloppe en PU mat, mousse injectée, large double fermeture auto-agrippante pour qu’il reste en place.",
    "Elion le destine aux pratiquants, du débutant à l’avancé, en trois tailles : junior, S/M et L/XL. Cinq coloris, avec le regard de la marque en bas du tibia."
+  ]
+ },
+ "protections-boxe:elion:protege-tibias-elion-matblack": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Un protège-tibias court, sans protège-pied, en Skintex noir mat frappé du logo rouge d’Elion. Deux larges sangles auto-agrippantes le tiennent au mollet.",
+   "Mousse haute densité. C’est le format que l’on porte avec des chaussures, en boxe française ou en self-défense ; la marque en fait aussi une édition noir et or."
   ]
  },
  "protections-boxe:elion:protege-tibias-elion:coton": {
@@ -1919,6 +2024,27 @@
    "Composition : 80 % de nylon, 20 % d’élasthanne. Vendus par paire, du S au XL."
   ]
  },
+ "protections-boxe:metal-boxe:protege-dents-adulte-metal-boxe": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Un protège-dents simple, pour adulte, translucide, livré avec son boîtier. Il est thermoformable : on le moule à ses dents en suivant la notice de la référence MBPRO458SRT, sans reprendre les temps d’un autre modèle.",
+   "La marque fait aussi un modèle enfant, en gel."
+  ]
+ },
+ "protections-boxe:metal-boxe:protege-dents-enfant-metal-boxe:gel": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le protège-dents enfant de la gamme MB459 JR est en gel thermoformable : il se moule à l’eau chaude, selon la notice du fabricant, pour épouser la dentition de l’enfant.",
+   "Bleu et blanc sur la photo ; les coloris seront précisés à l’ouverture des ventes. Pour un adulte, voyez le modèle translucide de la marque."
+  ]
+ },
+ "protections-boxe:metal-boxe:protege-tibias-pieds-metal-boxe:coton": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Un protège-tibias et pieds en coton élastique : il s’enfile comme une chaussette, la partie basse se prolonge sur le cou-de-pied, et une bande auto-agrippante termine le serrage. Rembourrage en mousse EVA.",
+   "C’est le format léger, celui de l’initiation et des assauts à touche contrôlée. Blanc, du S au XL."
+  ]
+ },
  "protections-boxe:qps:brassiere-qps-protection-femme-pour-coquilles": {
   "ecrit": "2026-11-10",
   "texte": [
@@ -1976,8 +2102,8 @@
  "protections-boxe:shock-doctor:protege-dents-shock-doctor-gel-max": {
   "ecrit": "2026-11-11",
   "texte": [
-   "Le Gel Max est un protège-dents thermoformable, à partir de 11 ans : une couche de gel qui se moule sur les dents et amortit les chocs de face, autour d’un noyau dur qui répartit l’impact. Shock Doctor annonce une protection des dents du haut comme du bas.",
-   "Le moulage suit la notice de la marque : 90 secondes dans une eau portée à ébullition, sans toucher le fond ; une seconde dans l’eau froide ; 20 secondes dents serrées ; puis 30 secondes dans l’eau froide pour fixer l’empreinte. Réussi, il tient seul à la mâchoire supérieure quand on ouvre la bouche. Sept versions au catalogue, dont la Power Trans bleue."
+   "Le Gel Max est un protège-dents thermoformable : une couche de gel qui se moule sur les dents et amortit les chocs de face, autour d’un noyau dur qui répartit l’impact. Shock Doctor annonce une protection des dents du haut comme du bas. La taille adulte convient à partir de 11 ans ; la version junior est faite pour les plus jeunes.",
+   "Le moulage suit la notice de la marque : 90 secondes dans une eau portée à ébullition, sans toucher le fond ; une seconde dans l’eau froide ; 20 secondes dents serrées ; puis 30 secondes dans l’eau froide pour fixer l’empreinte. Réussi, il tient seul à la mâchoire supérieure quand on ouvre la bouche. Huit versions au catalogue, dont la Power Trans bleue et la junior."
   ]
  },
  "protections-boxe:shock-doctor:protege-dents-shock-doctor-simple-braces": {
@@ -2083,6 +2209,13 @@
   "texte": [
    "Le format du milieu parmi les cinq Aqua Punching Bags du catalogue, qui vont de 7 à 85 kg : 33 × 33 × 56 cm, 5 kg à vide, 35 kg une fois rempli d’eau. Son enveloppe est en vinyle épais, conçu pour ne pas fuir.",
    "L’eau donne à la frappe une résistance progressive et épargne les articulations. Il se suspend à une chaîne, vendue séparément. Garantie de deux ans."
+  ]
+ },
+ "sacs-de-frappe:aqua-punching-bag:sac-de-frappe-aqua-punching-bag-55-kg": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "L’Aqua Punching Bag de 55 kg mesure 76 × 38 × 28 cm et pèse 6 kg à vide. Sa forme en goutte laisse passer sous le sac : c’est celui que la marque recommande pour tourner autour et remonter en uppercut.",
+   "L’eau absorbe l’impact et ménage les articulations. Kit de chaîne vendu séparément ; garantie de deux ans. Chaque sac est teint à part : le dessin varie d’un exemplaire à l’autre."
   ]
  },
  "sacs-de-frappe:aqua-punching-bag:sac-de-frappe-aqua-punching-bag-7-kg": {
@@ -2204,6 +2337,13 @@
    "Deux coloris au catalogue, noir et rouge. Elle se monte sur une plateforme de vitesse à rotule."
   ]
  },
+ "sacs-de-frappe:cleto-reyes:poire-de-vitesse-cleto-reyes-16-cm": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le grand format de la poire de vitesse Cleto Reyes : 16 cm de diamètre, un peu plus lente et plus facile à tenir en rythme que celle de 13 cm. Cuir tanné par la maison mexicaine, vessie très épaisse.",
+   "Deux coloris, noir et rouge ; le noir est bordé de rouge. Elle se monte sur une rotule de plateforme."
+  ]
+ },
  "sacs-de-frappe:elion:poire-de-vitesse-elion-13-cm": {
   "ecrit": "2026-11-11",
   "texte": [
@@ -2246,6 +2386,13 @@
    "Il se suspend par des sangles doublées, moins bruyantes que des chaînes, dont les fixations sur le sac sont renforcées ; comptez 25 cm de sangles au-dessus du sac une fois accroché. Une fermeture éclair ferme le dessus, et une boucle en partie basse permet de l’arrimer au sol. Quatre coloris de cuir : noir, bordeaux, kaki et marron."
   ]
  },
+ "sacs-de-frappe:elion:sac-de-frappe-elion-skintex-130-cm": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le sac Skintex d’Elion en 1,30 m : environ 45 kg, noir mat à lettrage or. Il se suspend par des sangles doublées, hautes de 20 cm, ce qui porte l’ensemble à 1,50 m, et il est livré avec son tourillon.",
+   "Fermeture éclair sur le dessus ; une boucle, sous le sac, permet de l’arrimer au sol. Prévoyez un support à la mesure de son poids."
+  ]
+ },
  "sacs-de-frappe:elion:sac-de-frappe-elion-skintex-55-kg-1-60-m": {
   "ecrit": "2026-11-11",
   "texte": [
@@ -2265,6 +2412,13 @@
   "texte": [
    "Un jeu de chaînes en acier pour suspendre un sac de frappe. Ses nombreux points de fixation permettent de l’adapter à la plupart des sacs, quel que soit le nombre de leurs attaches.",
    "Les chaînes remplacent les sangles d’origine quand elles s’usent, ou quand on veut régler la hauteur du sac maillon par maillon."
+  ]
+ },
+ "sacs-de-frappe:everlast:poire-de-vitesse-everlast-23-cm": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Une poire de vitesse en cuir de la collection 1910 d’Everlast, en noir et blanc, avec l’écusson de la marque et sa date de fondation. Avec 23 cm, c’est un format moyen : assez grande pour apprendre le rythme, assez vive pour le garder.",
+   "Elle se suspend à une rotule, sous une plateforme de vitesse."
   ]
  },
  "sacs-de-frappe:everlast:portique-sac-de-frappe-everlast-avec-plateforme": {
@@ -2299,7 +2453,7 @@
   "ecrit": "2026-11-11",
   "texte": [
    "Le HB12 est un sac en forme de poire, en Skintex, pour les boxes pieds-poings : 1,47 m de long, 57 cm de diamètre au plus large, 55 kg.",
-   "Ses attaches sont renforcées. C’est un sac lourd : il se livre à domicile, sur devis, et demande un ancrage à la hauteur de son poids."
+   "Ses attaches sont renforcées. Il existe plein, prêt à suspendre, ou vide, à garnir soi-même. Plein, c’est un sac lourd : il se livre à domicile, sur devis, et demande un ancrage à la hauteur de son poids."
   ]
  },
  "sacs-de-frappe:fairtex:sac-de-frappe-fairtex-hb6-1-80-m": {
@@ -2650,6 +2804,13 @@
   "texte": [
    "Un tee-shirt noir pour enfant, 100 % coton peigné de 180 g/m², col rond. Sur le devant, « Boxing » en bleu, blanc et rouge et « France », sous le logo Adidas ; sur la manche gauche, celui de la Fédération française de boxe.",
    "Quatre tailles, selon la stature : 1,28 m, 1,40 m, 1,52 m et 1,64 m."
+  ]
+ },
+ "textile-boxe:athena:rashguard-femme-athena-fightwear": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Un rashguard à manches courtes coupé pour les femmes : col en V, empiècements en mesh sous les bras, bande de silicone au bas pour qu’il reste en place au sol. 85 % polyester, 15 % élasthanne.",
+   "Noir, à logo doré ; du XS au XXL. Pour le MMA, le grappling et le jiu-jitsu sans kimono."
   ]
  },
  "textile-boxe:athena:short-femme-athena-theia-boxing": {
@@ -3385,6 +3546,20 @@
   "texte": [
    "Un pantalon noir en coton épais, à taille entièrement élastique et bas de jambes élastiqués : la coupe ample du kung-fu, qui laisse passer les coups de pied et les positions basses, et reste en place dans les enchaînements.",
    "Il sert aussi au tai-chi et au qi gong. La série va de 100 à 200 cm de stature ; vérifiez la taille disponible avant de commander."
+  ]
+ },
+ "textile-boxe:metal-boxe:debardeur-metal-boxe-training-tank": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le Training Tank est un débardeur à coupe libre, à larges emmanchures : fait pour le sac et la corde, où les épaules travaillent. Couleur sable sur les photos, avec l’étiquette Metal Boxe sur la poitrine.",
+   "Quatre tailles, du S au XL. Notre fiche n’en précise pas la matière."
+  ]
+ },
+ "textile-boxe:metal-boxe:ensemble-de-boxe-enfant-metal-boxe": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La tenue de boxe anglaise des enfants, en deux pièces : un short en satin et un débardeur. Sur les photos, l’ensemble est noir, avec un liseré rouge et blanc au débardeur et une bande blanche au short.",
+   "Trois tailles : 6-8 ans, 8-10 ans et 10-12 ans. Les coloris proposés seront précisés à l’ouverture des ventes."
   ]
  },
  "textile-boxe:metal-boxe:pantalon-de-jogging-metal-boxe": {

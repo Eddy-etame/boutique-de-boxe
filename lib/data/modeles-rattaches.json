@@ -422,5 +422,38 @@
  "sweat-a-capuche-hayabusa-pour-femme-olive": {
   "modele": "textile-boxe:hayabusa:sweat-a-capuche-pour-femme-hayabusa",
   "libelle": "olive"
+ },
+ "battle-rope-elion-9m-8kgs": {
+  "modele": "equipement-entrainement:elion:corde-ondulatoire-elion",
+  "libelle": "9 m",
+  "nom": "Corde ondulatoire Elion"
+ },
+ "battle-rope-elion-12m-10kgs": {
+  "modele": "equipement-entrainement:elion:corde-ondulatoire-elion",
+  "libelle": "12 m",
+  "nom": "Corde ondulatoire Elion"
+ },
+ "battle-rope-elion-15m-13kgs": {
+  "modele": "equipement-entrainement:elion:corde-ondulatoire-elion",
+  "libelle": "15 m",
+  "nom": "Corde ondulatoire Elion"
+ },
+ "pao-fairtex-cuir-large-piece": {
+  "modele": "equipement-entrainement:fairtex:pao-fairtex-kplc",
+  "libelle": "KPLC3 (40 × 20 × 13 cm)",
+  "nom": "Pao Fairtex KPLC, cuir"
+ },
+ "pao-fairtex-cuir-xlarge-piece": {
+  "modele": "equipement-entrainement:fairtex:pao-fairtex-kplc",
+  "libelle": "KPLC4 (43 × 20 × 14 cm)",
+  "nom": "Pao Fairtex KPLC, cuir"
+ },
+ "protege-dents-shock-doctor-gel-max-bleu-noir-junior-11ans": {
+  "modele": "protections-boxe:shock-doctor:protege-dents-shock-doctor-gel-max",
+  "libelle": "junior (bleu et noir)"
+ },
+ "sac-de-frappe-fairtex-hb12-vide": {
+  "modele": "sacs-de-frappe:fairtex:sac-de-frappe-fairtex-hb12",
+  "libelle": "vide"
  }
 }
