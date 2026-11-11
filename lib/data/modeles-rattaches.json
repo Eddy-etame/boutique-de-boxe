@@ -414,5 +414,13 @@
   "modele": "textile-boxe:elion:short-mma-elion-jjb-aura",
   "libelle": "Pâques",
   "nom": "Short MMA Elion JJB Aura"
+ },
+ "t-shirt-everlast-spark-graphic": {
+  "modele": "textile-boxe:everlast:t-shirt-everlast-spark",
+  "libelle": "Graphic blanc"
+ },
+ "sweat-a-capuche-hayabusa-pour-femme-olive": {
+  "modele": "textile-boxe:hayabusa:sweat-a-capuche-pour-femme-hayabusa",
+  "libelle": "olive"
  }
 }
