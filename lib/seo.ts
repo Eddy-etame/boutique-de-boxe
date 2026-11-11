@@ -25,10 +25,12 @@ export const EDITORIAL_DATE = '2026-10-13';
 /** Dernière révision du gabarit des fiches et des pages de catalogue (texte visible changé partout) :
  *  3 octobre 2026 (place dans la famille, questions), 4 octobre (date d’ouverture des ventes),
  *  13 octobre (ventes ouvertes : offre, prix de vente, disponibilité, livraison au présent),
- *  20 octobre (fiches réécrites une à une, rayons corrigés, livraison à une seule source, adresse de contact).
+ *  20 octobre (fiches réécrites une à une, rayons corrigés, livraison à une seule source, adresse de contact),
+ *  11 novembre (une carte par modèle dans toutes les listes, comptes en modèles ; la place d’une fiche se compte
+ *  parmi les modèles de sa famille).
  *  Les pages de tête (lib/guides-rayons.ts) portent en plus leur propre date, `revision`, quand leur texte change
  *  sans que le gabarit des autres pages bouge : le plan du site et le graphe prennent la plus récente des deux. */
-export const CATALOGUE_REVISION = '2026-10-20';
+export const CATALOGUE_REVISION = '2026-11-11';
 
 /* ------------------------------------------------------------- titres courts */
 
@@ -316,7 +318,7 @@ export function websiteNode() {
     url: shop.origin,
     name: shop.name,
     alternateName: ['Boutique de Boxe en ligne', 'Boxing Boutique', 'boutique-de-boxe.com'],
-    description: 'Matériel de boxe, MMA et sports de combat : plus de 1 000 modèles avec leurs tailles et leurs prix, ' + guidesEnLettres() + ' guides d’achat.',
+    description: 'Matériel de boxe, MMA et sports de combat : plus de 1 000 références avec leurs tailles et leurs prix, ' + guidesEnLettres() + ' guides d’achat.',
     inLanguage: 'fr-FR',
     publisher: { '@id': ID('organisation') },
     dateModified: EDITORIAL_DATE,
@@ -526,7 +528,8 @@ export function collectionGraph(o: { path: string; name: string; description: st
     itemListElement: o.items.map((x, i) => ({
       '@type': 'ListItem',
       position: (o.page - 1) * o.perPage + i + 1,
-      name: x.name,
+      // Le nom que la carte affiche : celui du modèle, sans coloris, quand la fiche le porte (lib/un-par-modele.ts).
+      name: x.modele?.nom || x.name,
       url: urlOf('/produits/' + x.slug + '/'),
       image: abs(photoSrc(x.slug, x.images[0], 480) as string),
     })),
@@ -592,7 +595,7 @@ export function articleGraph(g: Guide) {
   ]);
 }
 
-/** Accueil : la page elle-même, ses familles en liste. */
+/** Accueil : la page elle-même, ses familles en liste. `products` : une fiche par modèle (lib/modeles.ts, `fichesDeTete`). */
 export function homeGraph(products: Product[], faq: SeoFaq[] = []) {
   const fam = familiesWithCounts(products);
   const list = {
@@ -627,7 +630,10 @@ export function graph(nodes: unknown[]) {
   return jsonLd({ '@context': 'https://schema.org', '@graph': nodes });
 }
 
-/** Les familles publiées, avec leur nombre de modèles : partagé par llms.txt, catalogue.json et le serveur MCP. */
+/**
+ * Les familles publiées, avec leur nombre de modèles : partagé par llms.txt, catalogue.json et le serveur MCP.
+ * `products` : une fiche par modèle (lib/modeles.ts, `fichesDeTete` ou `vuesDesModeles`), jamais le catalogue avec ses coloris.
+ */
 export function familiesWithCounts(products: Product[]) {
   return categories
     .filter((c) => !['materiel-boxe', 'materiel-mma', 'materiel-sport-de-combat'].includes(c.slug))

@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { listItem } from '@/lib/catalog';
 import { readCatalog } from '@/lib/database';
 import { matchesSearch } from '@/lib/catalog-tools';
+import { cartesDe } from '@/lib/listing';
 import { catalogPage, PAGE_SIZE } from '@/lib/pagination';
 import { Breadcrumb } from '@/components/shop-shell';
 import { Catalog } from '@/components/shop-interactions';
@@ -21,7 +22,9 @@ export default async function RecherchePage({ searchParams }: Props) {
   const q = await searchParams;
   const query = (q.q || '').slice(0, 80).trim();
   const products = await readCatalog();
-  const data = query ? products.filter((p) => matchesSearch(p, query)) : products;
+  // On cherche dans les fiches (un coloris se cherche), on montre des modèles : une carte par modèle, la fiche de
+  // tête quand elle répond, sinon le coloris qui répond (lib/un-par-modele.ts).
+  const data = cartesDe(query ? products.filter((p) => matchesSearch(p, query)) : products, products);
   const currentPage = catalogPage(q.page, data.length);
   if (currentPage === null) notFound();
   return (

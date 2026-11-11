@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
-import { money, type Product } from '@/lib/catalog';
+import { money } from '@/lib/catalog';
 import type { SeoFaq } from '@/lib/seo-copy';
 import { brandsOf, brandSlug } from '@/lib/brands';
 import { brandFamilyFacet } from '@/lib/facets';
-import { choix, faits, tranches, texte, prixAffiche, resumeFiche, type GuideRayon as Guide, type Cellule } from '@/lib/guides-rayons';
+import { choix, tranches, texte, prixAffiche, resumeFiche, type GuideRayon as Guide, type Cellule, type Contexte } from '@/lib/guides-rayons';
 
 /**
  * Le guide d’achat d’une page de tête (lib/guides-rayons.ts), rendu SOUS la grille : les modèles restent
@@ -36,14 +36,14 @@ const Case = ({ c }: { c: Cellule }) => (typeof c === 'string' ? <>{c}</> : <a h
 /** Au-delà de douze marques (pages qui traversent tout le catalogue), la liste se résume. */
 const MARQUES_MAX = 12;
 
-export function GuideRayon({ g, items, all, faq, apresChapitres }: { g: Guide; items: Product[]; all: Product[]; faq: SeoFaq[]; apresChapitres?: ReactNode }) {
-  const f = faits(g.slug, items);
-  const c = { f, items, all };
+/** `c` est le contexte de la page (lib/listing.ts, `contexteDeRayon`) : le même que celui de son titre et de sa description. */
+export function GuideRayon({ g, c, faq, apresChapitres }: { g: Guide; c: Contexte; faq: SeoFaq[]; apresChapitres?: ReactNode }) {
+  const { f, items } = c;
   const lignes = choix(g, c);
   const tab = g.tableau?.(c);
   const prix = tranches(f, items, g.slug);
   // Le lien d’une marque : sa page dans la famille quand le rayon n’en a qu’une, sinon sa page de marque.
-  const parSlug = new Map(brandsOf(all).map((b) => [b.slug, b]));
+  const parSlug = new Map(brandsOf(c.catalogue).map((b) => [b.slug, b]));
   const familles = [...new Set(items.map((p) => p.category))];
   const lienMarque = (nom: string) => {
     const b = parSlug.get(brandSlug(nom));
@@ -93,7 +93,7 @@ export function GuideRayon({ g, items, all, faq, apresChapitres }: { g: Guide; i
                     <th scope="row">{l.usage}</th>
                     <td data-label="Le modèle">
                       <a href={'/produits/' + l.produit.slug + '/'} data-nom-produit="">
-                        {l.produit.name}
+                        {l.produit.modele?.nom || l.produit.name}
                       </a>
                     </td>
                     <td data-label="Prix">{prixAffiche(l.produit)}</td>

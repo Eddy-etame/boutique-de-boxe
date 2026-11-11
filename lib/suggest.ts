@@ -4,6 +4,8 @@ import { guides, services } from './editorial';
 import { SUBFAMILIES } from './subfamilies';
 import { brandsOf } from './brands';
 import { allFacets } from './facets';
+import { marqueDeModele } from './modeles';
+import { cartesParModele } from './un-par-modele';
 
 /**
  * Les suggestions : ce que la barre de recherche propose pendant la frappe, et ce que la page 404
@@ -38,10 +40,10 @@ export function pageIndex(products: Product[]): Suggestion[] {
 }
 
 const productView = (p: Product): ProductSuggestion => ({
-  name: p.name,
+  name: p.modele?.nom || p.name,
   slug: p.slug,
   brand: p.brand && !NOT_A_BRAND.test(p.brand) ? p.brand : '',
-  price: money(p.price),
+  price: (p.modele?.min ? 'dès ' : '') + money(p.modele?.min || p.price),
   image: p.cut?.small ?? p.images[0]?.small ?? null,
   family: categories.find((c) => c.slug === p.category)?.name || p.category,
 });
@@ -62,8 +64,9 @@ export function suggest(query: string, products: Product[]): { pages: Suggestion
   const hits = products.filter((p) => matchesSearch(p, q));
   // Le nom qui commence par la saisie d'abord, puis la marque, puis le reste, à prix croissant.
   const rank = (p: Product) => (normalizeSearch(p.name).startsWith(q) ? 0 : normalizeSearch(p.brand).startsWith(q) ? 1 : 2);
-  const top = hits.sort((a, b) => rank(a) - rank(b) || a.price - b.price).slice(0, 6);
-  return { pages, products: top.map(productView), total: hits.length };
+  // Une suggestion par modèle (11/11/2026) : la fiche de tête quand elle répond, sinon le coloris qui répond ; le total compte des modèles.
+  const cartes = cartesParModele(hits.sort((a, b) => rank(a) - rank(b) || a.price - b.price).map((p) => ({ ...p, modele: marqueDeModele(p, products) })));
+  return { pages, products: cartes.slice(0, 6).map(productView), total: cartes.length };
 }
 
 /** Distance d'édition bornée : assez pour un « s » en trop, une lettre inversée, un accent oublié. */

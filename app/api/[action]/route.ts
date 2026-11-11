@@ -5,7 +5,7 @@ import { validateProduct } from '@/lib/product-input';
 
 import { shop, listItem, categoryFor } from '@/lib/catalog';
 import { subfamilyFor } from '@/lib/subfamilies';
-import { listingFor } from '@/lib/listing';
+import { listingFor, avecModele } from '@/lib/listing';
 import { nearest, suggest } from '@/lib/suggest';
 
 import { emailValid, ensureAlertContact, insertAlert, normalisePhone, ensureChoices, suspicion } from '@/lib/alerts';
@@ -175,12 +175,15 @@ export async function GET(
   }
   if (action === 'catalog-list') {
     const scope = new URL(request.url).searchParams.get('scope') || '';
+    const tout = await readCatalog();
     const list = /^[a-z0-9-]{1,80}$/.test(scope)
-      ? listingFor(scope, await readCatalog())
+      ? listingFor(scope, tout)
       : null;
     if (!list) return response({ error: 'Liste introuvable.' }, 404);
     return Response.json(
-      { items: list.map(listItem) },
+      // Chaque fiche part avec la marque de son modèle : le navigateur réduit la liste, filtrée ou non, à une carte
+      // par modèle, exactement comme la page l'a fait pour ses 36 premières cartes, et lit « Dès » sur ce qui reste.
+      { items: list.map((p) => listItem(avecModele(p, tout))) },
       {
         headers: {
           'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=86400',

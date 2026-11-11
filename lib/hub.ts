@@ -94,9 +94,20 @@ async function productViews(): Promise<{ path: string; n: number }[]> {
   }
 }
 
-/** Les plus consultés de la page : au moins quatre modèles, chacun vu par au moins trois visites distinctes. */
-export async function mostViewed(items: Product[], count = 4): Promise<Product[]> {
+/**
+ * Les plus consultés de la page : au moins quatre modèles, chacun vu par au moins trois visites distinctes.
+ * `carte` donne la fiche à montrer pour une fiche vue : celle de son modèle. Les visites des coloris d'un même
+ * modèle s'additionnent, et le bloc ne montre jamais deux coloris du même modèle.
+ */
+export async function mostViewed(items: Product[], count = 4, carte: (p: Product) => Product = (p) => p): Promise<Product[]> {
   const bySlug = new Map(items.map((p) => ['/produits/' + p.slug + '/', p]));
-  const seen = (await productViews()).filter((r) => r.n >= 3 && bySlug.has(r.path)).slice(0, count);
-  return seen.length >= count ? seen.map((r) => bySlug.get(r.path)!) : [];
+  const visites = new Map<Product, number>();
+  for (const r of await productViews()) {
+    const p = bySlug.get(r.path);
+    if (!p) continue;
+    const c = carte(p);
+    visites.set(c, (visites.get(c) || 0) + r.n);
+  }
+  const seen = [...visites.entries()].filter(([, n]) => n >= 3).sort((a, b) => b[1] - a[1]).slice(0, count);
+  return seen.length >= count ? seen.map(([p]) => p) : [];
 }

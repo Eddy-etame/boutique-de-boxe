@@ -13,10 +13,11 @@ export function matchesSearch(p: Product, query: string) {
       ' ',
     ),
   );
+  // « gants rouges » ne trouvait rien : les fiches disent « rouge ». Un mot au pluriel (s, x) se cherche aussi au singulier.
   return normalizeSearch(query)
     .split(' ')
     .filter(Boolean)
-    .every((t) => haystack.includes(t));
+    .every((t) => haystack.includes(t) || (t.length > 3 && /[sx]$/.test(t) && haystack.includes(t.slice(0, -1))));
 }
 type Tool = {
   name: string;

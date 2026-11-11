@@ -2,12 +2,13 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { catalogPage, PAGE_SIZE } from '@/lib/pagination';
 import { subfamilyKeywords, productKeywords, categoryKeywords, guideKeywords, pageKeywords, titreCourt, titreDeModele } from '@/lib/seo';
-import { modeleDe, compteDuModele, libelleDeFiche, texteDuModele } from '@/lib/modeles';
+import { modeleDe, compteDuModele, libelleDeFiche, texteDuModele, nombreDeModeles } from '@/lib/modeles';
+import { fichesDePage, contexteDeRayon } from '@/lib/listing';
 import { SEO_COPY } from '@/lib/seo-copy';
-import { subfamilyFor, subfamilyProducts } from '@/lib/subfamilies';
+import { subfamilyFor } from '@/lib/subfamilies';
 import { facetMetadata } from '@/components/facet-page';
 import { facetFor } from '@/lib/facets';
-import { categoryFor, getCategoryProducts, shop, money } from '@/lib/catalog';
+import { categoryFor, shop, money } from '@/lib/catalog';
 import { readCatalog } from '@/lib/database';
 import { guides, services, guidesEnLettres } from '@/lib/editorial';
 import { ogImage } from '@/lib/og';
@@ -16,7 +17,7 @@ import { villeMetadata, regionMetadata } from '@/components/ville-page';
 import { venteMetadata, VENTE } from '@/components/vente-page';
 import { PLAN, PLAN_TITRE, PLAN_DESCRIPTION } from '@/components/plan-du-site';
 import { disciplinesMetadata, DISCIPLINES_PAGES } from '@/components/disciplines-page';
-import { guideRayon, faits } from '@/lib/guides-rayons';
+import { guideRayon } from '@/lib/guides-rayons';
 
 /**
  * Page d’une liste au-delà de la première. L’adresse publique reste `/gants-de-boxe/?page=2` ; le
@@ -65,20 +66,17 @@ export async function slugMetadata(rawSlug: string[], rawPage?: string): Promise
   const paginationCount = facet
     ? facet.products.length
     : sub
-      ? subfamilyProducts(sub, products).length
-      : cat
-        ? getCategoryProducts(cat, products).length
-        : path === 'nouveautes'
-          ? products.length
-          : null;
+      || cat || path === 'nouveautes'
+      ? nombreDeModeles(fichesDePage(path, products), products)
+      : null;
   const paginated = paginationCount !== null;
   const page = paginated ? catalogPage(requested, paginationCount) : requested === undefined ? 1 : null;
   if (page === null) notFound();
   if (facet) return facetMetadata(facet, page);
   // Les douze pages de tête (20/10) : titre et description tirés de leur guide, chiffres du jour.
   const tete = cat || sub ? guideRayon(path) : undefined;
-  const teteItems = tete ? (sub ? subfamilyProducts(sub, products) : getCategoryProducts(cat!, products)) : [];
-  const teteCtx = tete ? { f: faits(path, teteItems), items: teteItems, all: products } : null;
+  // Le même contexte que la page (lib/listing.ts) : les modèles du rayon, vus chacun comme un article.
+  const teteCtx = tete ? contexteDeRayon(path, fichesDePage(path, products), products) : null;
   const guide =
     slug[0] === 'guides' ? guides.find((g) => g.slug === slug[1]) : undefined;
   const service = services[path];

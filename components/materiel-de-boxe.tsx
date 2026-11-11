@@ -3,6 +3,7 @@ import { SUBFAMILIES, subfamilyProducts } from '@/lib/subfamilies';
 import { FRANCE, SOURCE, dateSource } from '@/lib/villes';
 import type { SeoFaq } from '@/lib/seo-copy';
 import { dansLeRayon, ENFANT } from '@/lib/rayons';
+import { vuesDesModeles } from '@/lib/modeles';
 import { LIGNES, rayon } from './materiel-par-discipline';
 
 /**
@@ -23,8 +24,9 @@ const fr = (n: number) => n.toLocaleString('fr-FR');
 function piece(slug: string, all: Product[]) {
   const sub = SUBFAMILIES.find((s) => s.slug === slug);
   const cat = sub ? undefined : categoryFor(slug);
-  const prix = (sub ? subfamilyProducts(sub, all) : cat ? getCategoryProducts(cat, all) : [])
-    .filter((p) => p.price > 0 && dansLeRayon(slug, p) && p.audience !== 'enfant' && !ENFANT.test(p.name))
+  // Un prix par modèle, son premier prix (lib/modeles.ts) : le nombre et le prix médian disent des modèles.
+  const fiches = (sub ? subfamilyProducts(sub, all) : cat ? getCategoryProducts(cat, all) : []).filter((p) => p.price > 0 && dansLeRayon(slug, p) && p.audience !== 'enfant' && !ENFANT.test(p.name));
+  const prix = vuesDesModeles(fiches, all)
     .map((p) => p.price)
     .sort((a, b) => a - b);
   return { slug, nom: sub?.name || cat?.name || slug, n: prix.length, des: prix[0] ?? 0, median: prix[Math.floor(prix.length / 2)] ?? 0 };

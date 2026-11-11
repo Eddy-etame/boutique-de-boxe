@@ -3,6 +3,7 @@ import { SUBFAMILIES, subfamilyProducts } from '@/lib/subfamilies';
 import { FRANCE, SOURCE, dateSource, fine } from '@/lib/villes';
 import type { SeoFaq } from '@/lib/seo-copy';
 import { dansLeRayon } from '@/lib/rayons';
+import { nombreDeModeles } from '@/lib/modeles';
 
 /**
  * « Matériel sport de combat » (29/09) : ce que chaque discipline demande d'abord,
@@ -32,7 +33,7 @@ export function rayon(slug: string, all: Product[]) {
   const cat = sub ? undefined : categoryFor(slug);
   const items = (sub ? subfamilyProducts(sub, all) : cat ? getCategoryProducts(cat, all) : []).filter((p) => dansLeRayon(slug, p));
   const prix = items.map((p) => p.price).filter((n) => n > 0);
-  return { slug, nom: sub?.name || cat?.name || slug, n: items.length, des: prix.length ? Math.min(...prix) : null };
+  return { slug, nom: sub?.name || cat?.name || slug, n: nombreDeModeles(items, all), des: prix.length ? Math.min(...prix) : null };
 }
 
 export function Rayon({ r }: { r: ReturnType<typeof rayon> }) {

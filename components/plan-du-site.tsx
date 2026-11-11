@@ -2,6 +2,7 @@ import { categories, getCategoryProducts, type Product } from '@/lib/catalog';
 import { SUBFAMILIES, subfamilyProducts } from '@/lib/subfamilies';
 import { brandsOf } from '@/lib/brands';
 import { allFacets } from '@/lib/facets';
+import { nombreDeModeles } from '@/lib/modeles';
 import { guides, services } from '@/lib/editorial';
 import { graph, urlOf, webPageNode, pageKeywords } from '@/lib/seo';
 import { VILLES, REGIONS, villePath } from '@/lib/villes';
@@ -36,19 +37,19 @@ function Groupe({ titre, liens }: { titre: string; liens: Lien[] }) {
 }
 
 export function PlanDuSite({ all }: { all: Product[] }) {
-  const sousFamille = (s: (typeof SUBFAMILIES)[number]) => ({ href: '/' + s.slug + '/', nom: s.name, n: subfamilyProducts(s, all).length });
+  const sousFamille = (s: (typeof SUBFAMILIES)[number]) => ({ href: '/' + s.slug + '/', nom: s.name, n: nombreDeModeles(subfamilyProducts(s, all), all) });
   const facettes = allFacets(all);
   const entrees = ['materiel-boxe', 'materiel-mma', 'materiel-sport-de-combat'];
   const groupes: { titre: string; liens: Lien[] }[] = [
     {
       titre: 'Les entrées du catalogue',
       liens: [
-        ...categories.filter((c) => entrees.includes(c.slug)).sort((a, b) => entrees.indexOf(a.slug) - entrees.indexOf(b.slug)).map((c) => ({ href: '/' + c.slug + '/', nom: c.name, n: getCategoryProducts(c, all).length })),
+        ...categories.filter((c) => entrees.includes(c.slug)).sort((a, b) => entrees.indexOf(a.slug) - entrees.indexOf(b.slug)).map((c) => ({ href: '/' + c.slug + '/', nom: c.name, n: nombreDeModeles(getCategoryProducts(c, all), all) })),
         { href: '/vente-materiel-de-boxe/', nom: 'Vente matériel de boxe' },
         { href: '/nouveautes/', nom: 'Les nouveautés' },
       ],
     },
-    { titre: 'Les rayons', liens: categories.filter((c) => c.families.length === 1 && c.families[0] === c.slug).map((c) => ({ href: '/' + c.slug + '/', nom: c.name, n: getCategoryProducts(c, all).length })) },
+    { titre: 'Les rayons', liens: categories.filter((c) => c.families.length === 1 && c.families[0] === c.slug).map((c) => ({ href: '/' + c.slug + '/', nom: c.name, n: nombreDeModeles(getCategoryProducts(c, all), all) })) },
     { titre: 'Par boxe et par niveau', liens: SUBFAMILIES.filter((s) => s.kind || s.parent === 'materiel-boxe').map(sousFamille) },
     { titre: 'Par équipement', liens: SUBFAMILIES.filter((s) => !s.kind && s.parent !== 'materiel-boxe').map(sousFamille) },
     { titre: 'Gants de boxe par poids', liens: facettes.filter((f) => f.kind === 'oz').map((f) => ({ href: f.path, nom: f.name, n: f.products.length })) },

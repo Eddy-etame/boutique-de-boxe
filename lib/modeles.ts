@@ -1,4 +1,5 @@
 import type { Product } from './catalog';
+import { unParModele, type MarqueDeModele } from './un-par-modele';
 import { appellation } from './describe';
 import tetes from './data/modeles-tetes.json';
 import textes from './data/modeles-textes.json';
@@ -149,3 +150,74 @@ export const texteDuModele = (m: Modele): TexteDeModele | null => (textes as Rec
 
 /** « 10 coloris », « 4 versions » : ce que le modèle propose, compté. */
 export const compteDuModele = (m: Modele) => `${m.fiches.length} ${m.coloris ? 'coloris' : 'versions'}`;
+
+/**
+ * Ce qu'une fiche sait de son modèle quand elle part dans une liste (lib/un-par-modele.ts) : la fiche de tête d'un
+ * modèle à plusieurs fiches porte le nom du modèle, sans coloris. Le premier prix, lui, se lit sur la liste
+ * (`cartesParModele`) : il dépend des fiches que la liste contient.
+ */
+export function marqueDeModele(p: Product, all: Product[]): MarqueDeModele {
+  const m = modeleDe(p, all);
+  const tete = m.tete.id === p.id;
+  return { cle: m.cle, tete, n: m.fiches.length, coloris: m.coloris, ...(tete && m.fiches.length > 1 ? { nom: m.nom } : {}) };
+}
+
+/** Une liste réduite à une fiche par modèle (la fiche de tête quand elle y figure), dans l'ordre de la liste. */
+export const fichesParModele = (liste: Product[], all: Product[]) => unParModele(liste, (p) => marqueDeModele(p, all));
+
+/** Le nombre de modèles d'une liste de fiches : ce que compte tout texte du site qui dit « modèles » (11/11/2026). */
+export const nombreDeModeles = (liste: Product[], all: Product[]) => new Set(liste.map((p) => modeleDe(p, all).cle)).size;
+
+const vuesDuCatalogue = new WeakMap<Product[], Product[]>();
+
+/**
+ * Les modèles d'une liste, vus chacun comme un seul article — pour les textes qui comptent ou chiffrent des modèles :
+ * guides de rayon, pages par poids, par couleur ou par marque, observatoire des prix, place d'un prix dans sa famille.
+ *
+ * Compter sur la seule fiche de tête serait faux : dans 22 modèles un autre coloris coûte moins qu'elle (des
+ * chevillères à 29,99 € dont une version est à 9,79 €), dans 63 les tailles changent d'un coloris à l'autre.
+ * La vue d'un modèle est donc la fiche que la liste montre (`unParModele`), à son premier prix dans la liste, avec
+ * les tailles, les couleurs et les déclinaisons de toutes ses fiches listées ; une caractéristique que cette fiche
+ * ne donne pas se lit sur la première qui la donne. Sa marque porte le nom du modèle, et son prix le plus haut dans
+ * la liste quand il dépasse le premier.
+ *
+ * Une vue ne s'affiche pas en carte et ne se vend pas : les cartes montrent une fiche réelle (lib/un-par-modele.ts).
+ */
+export function vuesDesModeles(liste: Product[], all: Product[]): Product[] {
+  const connues = liste === all ? vuesDuCatalogue.get(all) : undefined;
+  if (connues) return connues;
+  const groupes = new Map<string, { m: Modele; fiches: Product[] }>();
+  for (const p of liste) {
+    const m = modeleDe(p, all);
+    const g = groupes.get(m.cle);
+    if (g) g.fiches.push(p);
+    else groupes.set(m.cle, { m, fiches: [p] });
+  }
+  const vues = [...groupes.values()].map(({ m, fiches }): Product => {
+    const montree = fiches.find((p) => p.id === m.tete.id) ?? fiches[0];
+    const marque: MarqueDeModele = { cle: m.cle, tete: montree.id === m.tete.id, n: m.fiches.length, coloris: m.coloris, nom: m.nom };
+    if (fiches.length === 1) return { ...montree, modele: marque };
+    const ordre = [montree, ...fiches.filter((p) => p !== montree)];
+    const prix = ordre.map((p) => p.price).filter((x) => x > 0);
+    const premier = prix.length ? Math.min(...prix) : montree.price;
+    const haut = prix.length ? Math.max(...prix) : montree.price;
+    const specs = { ...montree.specs };
+    for (const p of ordre) for (const [k, v] of Object.entries(p.specs || {})) if (v && !specs[k]) specs[k] = v;
+    // « Dès » (prixAffiche, buyingBrief) se lit dans les déclinaisons : chaque autre prix du modèle y figure.
+    const variants = [...ordre.flatMap((p) => p.variants || []), ...[...new Set(prix)].filter((x) => x !== premier).map((price) => ({ id: '', reference: '', label: '', attributes: {}, price }))];
+    return {
+      ...montree,
+      price: premier,
+      sizes: [...new Set(ordre.flatMap((p) => p.sizes))],
+      colors: [...new Set(ordre.flatMap((p) => p.colors || []))],
+      specs,
+      ...(variants.length ? { variants } : {}),
+      modele: haut > premier ? { ...marque, max: haut } : marque,
+    };
+  });
+  if (liste === all) vuesDuCatalogue.set(all, vues);
+  return vues;
+}
+
+/** Le nom sous lequel citer un article dans une phrase : celui du modèle quand la marque le porte, sinon celui de la fiche. */
+export const nomDeModele = (p: Product) => p.modele?.nom || p.name;

@@ -3,7 +3,7 @@
 // Les boutons d’ajout au panier (fiche, carte de liste, sac de séance) : sans le tunnel de commande.
 // Un modèle « sur devis » (estLourd) ne s’ajoute jamais au panier : il mène à la demande de devis.
 import { useId, useState } from 'react';
-import { ArrowUpRight, Check, Plus } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Check, Plus } from 'lucide-react';
 import { devisHref, estLourd, money, shop, type Product } from '@/lib/catalog';
 import { mutateCart, readCart, type ApiFailure } from './cart-store';
 
@@ -269,6 +269,17 @@ export function QuickAdd({ product }: { product: Product }) {
     return (
       <a className="quick-devis" href={devisHref} aria-label={`${product.name} : livraison sur devis, demander le devis`}>
         Sur devis
+      </a>
+    );
+
+  // Une carte qui réunit plusieurs coloris ou versions d'un modèle (lib/un-par-modele.ts) : le « + » ajouterait la
+  // fiche de tête sans que le visiteur ait rien choisi, parfois à un autre prix que le « Dès » de la carte. Elle
+  // mène à la fiche, où le coloris se choisit.
+  if (product.modele?.nom && product.modele.n > 1)
+    return (
+      <a className="quick-devis quick-choix" href={`/produits/${product.slug}/`} aria-label={`${product.modele.nom} : choisir ${product.modele.coloris ? 'le coloris' : 'la version'} sur la fiche`}>
+        <span className="quick-choix-mot">Choisir</span>
+        <ArrowRight className="quick-choix-fleche" size={16} aria-hidden="true" />
       </a>
     );
 

@@ -1,8 +1,12 @@
 import { readCatalog, cacheCatalogue, catalogueDeSecours } from '@/lib/database';
 import { categoryFor, estLourd, money, shop } from '@/lib/catalog';
 import { ATTRIBUTION, EDITORIAL_DATE, familiesWithCounts, urlOf } from '@/lib/seo';
+import { fichesDeTete, modeleDe } from '@/lib/modeles';
 
-/** Flux machine du catalogue : un objet par modèle, sans offre commerciale tant que la vente n’est pas ouverte. */
+/**
+ * Flux machine du catalogue : un objet par fiche (une par coloris ou par version), sans offre commerciale tant que la
+ * vente n’est pas ouverte. `models` et les familles comptent des modèles ; chaque fiche nomme la page de son modèle.
+ */
 export const dynamic = 'force-dynamic';
 
 // Mémo de rendu : le corps n’est recomposé qu’une fois par 5 min, même si la
@@ -29,7 +33,8 @@ export async function GET() {
     deliveryArea: 'FR',
     publisher: shop.entity,
     developer: ATTRIBUTION.principalCreator,
-    families: familiesWithCounts(products),
+    families: familiesWithCounts(fichesDeTete(products)),
+    models: fichesDeTete(products).length,
     count: products.length,
     products: products.map((p) => ({
       id: p.id,
@@ -38,6 +43,7 @@ export async function GET() {
       family: categoryFor(p.category)?.name ?? p.category,
       familySlug: p.category,
       url: urlOf('/produits/' + p.slug + '/'),
+      modelUrl: urlOf('/produits/' + modeleDe(p, products).tete.slug + '/'),
       image: p.images[0] ? urlOf(p.images[0].src) : null,
       images: p.images.length,
       plannedPriceCents: p.price,

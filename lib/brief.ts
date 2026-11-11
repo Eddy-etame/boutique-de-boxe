@@ -1,7 +1,8 @@
 import { QUERY_MAP, SEO_COPY } from '@/lib/seo-copy';
 import { categoryFor, getCategoryProducts, type Product } from '@/lib/catalog';
 import { subfamilyFor, subfamilyProducts } from '@/lib/subfamilies';
-import { guideRayon, guideEnTexte, faits } from '@/lib/guides-rayons';
+import { guideRayon, guideEnTexte } from '@/lib/guides-rayons';
+import { contexteDeRayon } from '@/lib/listing';
 
 /**
  * Couverture des mots-clés du brief, calculée depuis les textes du site (sans requête réseau) :
@@ -30,7 +31,7 @@ function texteDeTete(slug: string, products: Product[]) {
   const sub = subfamilyFor(slug);
   const cat = categoryFor(slug);
   const items = sub ? subfamilyProducts(sub, products) : cat ? getCategoryProducts(cat, products) : [];
-  const c = { f: faits(slug, items), items, all: products };
+  const c = contexteDeRayon(slug, items, products);
   const t = guideEnTexte(g, c);
   return {
     title: g.titre(c),

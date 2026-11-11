@@ -177,7 +177,7 @@ export const services: Record<string, Service> = {
       {
         title: 'Ce que la boutique vend',
         paragraphs: [
-          'Du matériel de boxe et de sports de combat, et rien d’autre : gants, bandes, protections, textile, sacs de frappe, chaussures, matériel d’entraînement, sacs de sport et tenues d’arts martiaux. Plus de 1 000 modèles, chacun avec les tailles et la référence de son fabricant.',
+          'Du matériel de boxe et de sports de combat, et rien d’autre : gants, bandes, protections, textile, sacs de frappe, chaussures, matériel d’entraînement, sacs de sport et tenues d’arts martiaux. Plus de 1 000 références, coloris compris, chacune avec les tailles données par son fabricant.',
         ],
       },
       {

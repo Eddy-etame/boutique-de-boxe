@@ -1,3 +1,5 @@
+import type { MarqueDeModele } from './un-par-modele';
+
 export type Product = {
   id: string;
   slug: string;
@@ -34,6 +36,8 @@ export type Product = {
   sourceRef: string;
   dateAdded: string;
   updatedAt?: string;
+  /** Posée par les listes de rayon (lib/listing.ts) : ce que la fiche sait de son modèle. Absente de la base. */
+  modele?: MarqueDeModele;
   seoDescription?: string;
   sourceUrl?: string;
   disciplines?: string[];
@@ -278,7 +282,7 @@ export const categories: Category[] = [
   {
     slug: 'materiel-sport-de-combat',
     name: 'Matériel sport de combat',
-    label: 'Plus de 1 000 modèles, discipline par discipline.',
+    label: 'Plus de 1 000 références, discipline par discipline.',
     intro: 'Boxe anglaise, savate, muay-thaï, kick-boxing, full contact, MMA, jiu-jitsu brésilien, judo, karaté : ce que chaque sport de combat demande d’abord, puis tout le catalogue pour le trouver.',
     description:
       'Matériel de sports de combat en France : boxe, MMA, arts martiaux, protections, textile et accessoires. Découvrez le catalogue et les guides.',
@@ -341,6 +345,7 @@ export function listItem(p: Product): Product {
     // « Taille unique » sur la carte seulement quand le fournisseur le dit (jamais une déclinaison du panier).
     sourceSizes: tailleUnique(p) ? ['Taille unique'] : undefined,
     variants: other ? [{ id: '', reference: '', label: '', attributes: {}, price: other.price }] : undefined,
+    ...(p.modele ? { modele: p.modele } : {}),
   };
 }
 

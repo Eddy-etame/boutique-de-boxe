@@ -3,7 +3,7 @@ import { productGraph, collectionGraph, subfamilyGraph, serviceGraph } from '@/l
 import { slugMetadata, splitPage } from './metadata';
 import { SeanceContext } from '@/components/seance-context';
 import { SEO_COPY } from '@/lib/seo-copy';
-import { subfamilyFor, subfamiliesOf, subfamilyProducts } from '@/lib/subfamilies';
+import { subfamilyFor, subfamiliesOf } from '@/lib/subfamilies';
 import { longDescription, practiceLevel, disciplinesOf, careAdvice, productFaq, placeDansLaFamille, PRODUCT_EVIDENCE_REVISION } from '@/lib/describe';
 import { SUBFAMILIES } from '@/lib/subfamilies';
 import { SeoBody } from '@/components/seo-body';
@@ -12,13 +12,12 @@ import { BuyingBrief } from '@/components/buying-brief';
 import { AlerteRayon } from '@/components/alerte-rayon';
 import { ManufacturerSizingGuide } from '@/components/manufacturer-sizing';
 import { FacetPage, BrandPagesOfSubfamily } from '@/components/facet-page';
-import { facetFor, brandFamilyFacet, allFacets } from '@/lib/facets';
+import { facetFor, brandFamilyFacet, allFacets, ficheQuiRemplace } from '@/lib/facets';
 import { brandFor, brandSlug } from '@/lib/brands';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import type { Metadata } from 'next';
 import {
   categoryFor,
-  getCategoryProducts,
   categories,
   shop,
   listItem,
@@ -28,7 +27,8 @@ import { readCatalog } from '@/lib/database';
 import { moyenneDuModele } from '@/lib/notes-stockage';
 import { guides, services } from '@/lib/editorial';
 import { guidesDuModele } from '@/lib/guides-fiche';
-import { modeleDe, fichesDeTete, libelleDeFiche, texteDuModele } from '@/lib/modeles';
+import { modeleDe, fichesDeTete, libelleDeFiche, texteDuModele, vuesDesModeles } from '@/lib/modeles';
+import { cartesDe, fichesDePage, contexteDeRayon } from '@/lib/listing';
 import { thumbSrc } from '@/lib/vignette';
 import { Breadcrumb, ArrowLink } from '@/components/shop-shell';
 import {
@@ -50,12 +50,11 @@ import { spaced } from '@/lib/spaced';
 import { villeFor, regionFor, VILLES, REGIONS, villePath } from '@/lib/villes';
 import { VillePage, RegionPage } from '@/components/ville-page';
 import { MaterielParDiscipline, materielFaq } from '@/components/materiel-par-discipline';
-import { entrelace } from '@/lib/rayons';
 import { VentePage, VENTE } from '@/components/vente-page';
 import { PlanDuSite, PLAN } from '@/components/plan-du-site';
 import { DisciplinesPage, DISCIPLINES_PAGES } from '@/components/disciplines-page';
 import { MaterielParNiveau, KitNiveau, KitDiscipline, budgetFaq } from '@/components/materiel-de-boxe';
-import { guideRayon, faits } from '@/lib/guides-rayons';
+import { guideRayon } from '@/lib/guides-rayons';
 import { GuideRayon } from '@/components/guide-rayon';
 /**
  * Fiches, rayons, sous-familles, pages-villes, guides : un HTML statique régénéré toutes les minutes
@@ -280,7 +279,7 @@ export default async function Page({ params }: Props) {
             <p>{longDescription(p)}</p>
             {(() => {
               // 03/10 : le texte que seule cette fiche peut porter, et les pages par boxe et par niveau qui la listent.
-              const place = placeDansLaFamille(p, products);
+              const place = placeDansLaFamille(p, products, { vues: vuesDesModeles(products, products), cle: modele.cle });
               const entrees = SUBFAMILIES.filter((s) => s.kind && s.match(p));
               return place.length || entrees.length ? (
                 <>
@@ -387,6 +386,9 @@ export default async function Page({ params }: Props) {
     );
   }
   const facet = slug.length === 1 ? facetFor(path, products) : null;
+  // Une page par poids ou par couleur qui ne montrerait qu'un modèle renvoie à la fiche de ce modèle.
+  const remplace = slug.length === 1 && !facet ? ficheQuiRemplace(path, products) : null;
+  if (remplace) permanentRedirect('/produits/' + remplace.slug + '/');
   if (facet) {
     const currentPage = listPage(facet.products.length);
     if (currentPage === null) notFound();
@@ -394,7 +396,12 @@ export default async function Page({ params }: Props) {
   }
   const sub = subfamilyFor(path);
   if (sub) {
-    const data = subfamilyProducts(sub, products);
+    // Une carte par modèle (11/11/2026, lib/un-par-modele.ts) : la grille, les comptes et le graphe parlent de modèles.
+    // `data` sont les cartes, des fiches réelles ; le guide et les repères chiffrés lisent les mêmes modèles vus
+    // chacun comme un article (lib/modeles.ts, `vuesDesModeles`).
+    const fiches = fichesDePage(sub.slug, products);
+    const data = cartesDe(fiches, products);
+    const vues = vuesDesModeles(fiches, products);
     const currentPage = listPage(data.length);
     if (currentPage === null) notFound();
     const pageItems = data.slice(
@@ -405,7 +412,7 @@ export default async function Page({ params }: Props) {
     const siblings = subfamiliesOf(sub.parent).filter((x) => x.slug !== sub.slug);
     // Page de tête (20/10) : H1, titre et texte du guide du rayon ; le guide passe sous la grille.
     const tete = guideRayon(sub.slug);
-    const ctx = tete ? { f: faits(sub.slug, data), items: data, all: products } : null;
+    const ctx = tete ? contexteDeRayon(sub.slug, fiches, products) : null;
     const faqTete = tete && ctx ? tete.faq(ctx) : null;
     return (
       <main id="contenu" className={'page-wrap' + (tete ? ' rayon-tete' : '')}>
@@ -426,7 +433,7 @@ export default async function Page({ params }: Props) {
             )}
           </div>
         </section>
-        {currentPage === 1 && <BuyingBrief scope={sub.slug} name={sub.name} items={data} />}
+        {currentPage === 1 && <BuyingBrief scope={sub.slug} name={sub.name} items={vues} />}
         <nav className="subfamily-links" aria-label="Pages voisines">
           {parent && <><a href={'/' + parent.slug + '/'}>Toute la famille : {parent.name}</a>{' '}</>}
           {spaced(siblings.map((x) => (
@@ -444,8 +451,8 @@ export default async function Page({ params }: Props) {
           showFamilies={false}
         />
         {currentPage === 1 && <AlerteRayon slug={sub.slug} nom={sub.name} modeles={data.length} />}
-        {currentPage === 1 && tete && faqTete && <GuideRayon g={tete} items={data} all={products} faq={faqTete} />}
-        {currentPage === 1 && <KeywordHub scope={sub.slug} name={sub.name} items={data} all={products} prix={!tete} />}
+        {currentPage === 1 && tete && ctx && faqTete && <GuideRayon g={tete} c={ctx} faq={faqTete} />}
+        {currentPage === 1 && <KeywordHub scope={sub.slug} name={sub.name} items={fiches} all={products} prix={!tete} />}
         {currentPage === 1 && !tete && <SeoBody sections={sub.sections} faq={sub.faq} />}
         {currentPage === 1 && !tete && (
           <section className="spec-section">
@@ -461,11 +468,9 @@ export default async function Page({ params }: Props) {
   const cat = categoryFor(path);
   if (cat || path === 'nouveautes') {
     // La recherche (?q=) a sa propre route, app/recherche/page.tsx.
-    const data = cat
-      ? cat.slug === 'materiel-sport-de-combat'
-        ? entrelace(getCategoryProducts(cat, products))
-        : getCategoryProducts(cat, products)
-      : [...products].reverse();
+    const fiches = fichesDePage(path, products);
+    const data = cartesDe(fiches, products);
+    const vues = vuesDesModeles(fiches, products);
     const currentPage = listPage(data.length);
     if (currentPage === null) notFound();
     // « Matériel sport de combat » (29/09) : le tableau par discipline et ses questions, tirés du recensement du ministère.
@@ -474,7 +479,7 @@ export default async function Page({ params }: Props) {
     const boxe = cat?.slug === 'materiel-boxe';
     // Page de tête (20/10) : H1, titre, texte et questions du guide du rayon (lib/guides-rayons.ts).
     const tete = cat ? guideRayon(cat.slug) : undefined;
-    const ctx = tete && cat ? { f: faits(cat.slug, data), items: data, all: products } : null;
+    const ctx = tete && cat ? contexteDeRayon(cat.slug, fiches, products) : null;
     const enPlus = [...(materiel ? materielFaq() : []), ...(boxe ? budgetFaq(products) : [])];
     const faq = tete && ctx ? [...tete.faq(ctx), ...enPlus] : cat && SEO_COPY[cat.slug] ? [...SEO_COPY[cat.slug].faq, ...enPlus] : undefined;
     return (
@@ -528,7 +533,7 @@ export default async function Page({ params }: Props) {
             )}
           </div>
         </section>
-        {cat && currentPage === 1 && <BuyingBrief scope={cat.slug} name={cat.name} items={data} />}
+        {cat && currentPage === 1 && <BuyingBrief scope={cat.slug} name={cat.name} items={vues} />}
         {cat && (() => {
           const subs = [...subfamiliesOf(cat.slug), ...cat.families.flatMap((f) => subfamiliesOf(f))].filter((x, i, a) => a.indexOf(x) === i);
           return subs.length ? (
@@ -550,10 +555,10 @@ export default async function Page({ params }: Props) {
           showFamilies={!cat || cat.families.length > 1}
         />
         {cat && currentPage === 1 && <AlerteRayon slug={cat.slug} nom={cat.name} modeles={data.length} />}
-        {tete && faq && currentPage === 1 && (
-          <GuideRayon g={tete} items={data} all={products} faq={faq} apresChapitres={materiel ? <MaterielParDiscipline all={products} /> : boxe ? <MaterielParNiveau all={products} /> : undefined} />
+        {tete && ctx && faq && currentPage === 1 && (
+          <GuideRayon g={tete} c={ctx} faq={faq} apresChapitres={materiel ? <MaterielParDiscipline all={products} /> : boxe ? <MaterielParNiveau all={products} /> : undefined} />
         )}
-        {cat && currentPage === 1 && <KeywordHub scope={cat.slug} name={cat.name} items={data} all={products} prix={!tete} />}
+        {cat && currentPage === 1 && <KeywordHub scope={cat.slug} name={cat.name} items={fiches} all={products} prix={!tete} />}
         {cat && !tete && (
           <section className="spec-section">
             <div>

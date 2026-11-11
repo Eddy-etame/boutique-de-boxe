@@ -39,10 +39,12 @@ const liste = (xs: string[]) => (xs.length <= 1 ? xs.join('') : xs.slice(0, -1).
 const pluriel = (n: number, un: string, plusieurs: string) => `${fr(n)} ${n > 1 ? plusieurs : un}`;
 /** « 6 m », « 4,50 m », « 1,80 m » : la façon dont le site écrit une longueur. */
 const metres = (x: number) => (Number.isInteger(x) ? String(x) : x.toFixed(2).replace('.', ',')) + ' m';
+/** Le nom sous lequel une phrase cite un article : celui du modèle, sans coloris, quand sa vue le porte (lib/modeles.ts). */
+const nomCite = (p: Product) => p.modele?.nom || p.name;
 /** Un modèle cité dans une phrase : son nom entre guillemets, sans article qui jure avec lui. */
-const cite = (p: Product) => `« ${p.name} »`;
+const cite = (p: Product) => `« ${nomCite(p)} »`;
 /** Le modèle sans le nom générique qui le précède (« Sac de frappe sur pied Century Wavemaster » → « Century Wavemaster »). */
-const citeModele = (p: Product) => `« ${p.name.replace(/^sac de frappe (sur pied )?/i, '')} »`;
+const citeModele = (p: Product) => `« ${nomCite(p).replace(/^sac de frappe (sur pied )?/i, '')} »`;
 const NI_MARQUE = /pr[ée]ciser|^Sélection /i;
 
 /** Le prix d’un modèle tel que la carte l’affiche : « dès » quand ses tailles n’ont pas toutes le même prix. */
@@ -81,6 +83,12 @@ const leCouleur = (c: string) => (/^[aeiouyéèêh]/i.test(c) ? 'l’' + c : 'le
 /* ------------------------------------------------------------------ les faits d’un rayon */
 
 export type Marque = { nom: string; n: number; min: number; max: number };
+/**
+ * Les faits se calculent sur des vues de modèles (lib/modeles.ts, `vuesDesModeles`) : un article par modèle, à son
+ * premier prix. Le prix le plus haut, lui, est celui de la fiche la plus chère : aucun prix du rayon n'en sort.
+ */
+const plusHaut = (p: Product) => p.modele?.max ?? p.price;
+
 export type Faits = {
   /** modèles listés par la page */
   n: number;
@@ -111,10 +119,10 @@ export function faits(slug: string, items: Product[]): Faits {
       // la graphie la plus fréquente, et à égalité celle qui n’est pas en capitales
       const nomMarque = [...graphies.entries()].sort((a, b) => b[1] - a[1] || Number(a[0] === a[0].toUpperCase()) - Number(b[0] === b[0].toUpperCase()))[0][0];
       const s = ps.map((p) => p.price).sort((a, b) => a - b);
-      return { nom: nomMarque, n: ps.length, min: s[0], max: s[s.length - 1] };
+      return { nom: nomMarque, n: ps.length, min: s[0], max: Math.max(...ps.map(plusHaut)) };
     })
     .sort((a, b) => b.n - a.n || a.nom.localeCompare(b.nom, 'fr'));
-  return { n: items.length, compte: comptes.length, min: prix[0] ?? 0, q1: quantile(0.25), mediane: prix[Math.floor(prix.length / 2)] ?? 0, q3: quantile(0.75), max: prix[prix.length - 1] ?? 0, marques };
+  return { n: items.length, compte: comptes.length, min: prix[0] ?? 0, q1: quantile(0.25), mediane: prix[Math.floor(prix.length / 2)] ?? 0, q3: quantile(0.75), max: comptes.length ? Math.max(...comptes.map(plusHaut)) : 0, marques };
 }
 
 /** « Elion (58 modèles), Fairtex (37) et Cleto Reyes (35) » */
@@ -141,7 +149,12 @@ function etendue(ps: Product[], ordre: [string, RegExp][]) {
 
 /* ------------------------------------------------------------------ les types d’un guide */
 
-export type Contexte = { f: Faits; items: Product[]; all: Product[] };
+/**
+ * Ce qu'un guide sait de sa page (lib/listing.ts, `contexteDeRayon`). `items` et `all` sont des vues de modèles : les
+ * modèles de la page et ceux du catalogue, un article par modèle — tout ce qu'un guide compte est un nombre de
+ * modèles. `catalogue` garde les fiches, pour ce qui se décide sur elles (l'existence d'une page par poids).
+ */
+export type Contexte = { f: Faits; items: Product[]; all: Product[]; catalogue: Product[] };
 type Texte = string | ((c: Contexte) => string);
 export const texte = (t: Texte, c: Contexte) => (typeof t === 'function' ? t(c) : t);
 
@@ -195,7 +208,10 @@ export function choix(g: GuideRayon, c: Contexte): Choix[] {
     // Rangée par prix (l’ordre par défaut), la règle compte les prix distincts : un modèle au même prix que celui
     // déjà retenu plus haut reste « le moins cher », pas « le deuxième prix ».
     const i = r.ordre ? k : [...new Set(candidats.map((x) => x.price))].indexOf(p.price);
-    out.push({ usage: r.usage, produit: p, critere: r.critere({ p, i, n: candidats.length, candidats, c }) });
+    const critere = r.critere({ p, i, n: candidats.length, candidats, c });
+    // Un seul candidat : « le moins cher des 1 modèles » ne se dit pas. La ligne dit qu'il est seul à répondre.
+    const seul = candidats.length === 1 && /\b(?:des|parmi(?: les)?) 1\b/.test(critere);
+    out.push({ usage: r.usage, produit: p, critere: seul ? `le seul modèle du ${r.parmi === 'catalogue' ? 'catalogue' : 'rayon'} qui réponde à ce critère` : critere });
   }
   return out;
 }
@@ -514,10 +530,10 @@ export const GUIDES_RAYONS: GuideRayon[] = [
         { usage: 'Poids de 20 oz', filtre: (p) => gantBoxe(p) && ouncesOf(p).includes(20), critere: ({ i, n }) => (n === 1 ? 'le seul modèle du rayon proposé en 20 oz' : `${rang(i)} des ${fr(n)} modèles proposés en 20 oz`) },
       ],
     },
-    tableau: ({ items, all }) => {
+    tableau: ({ items, catalogue }) => {
       const lignes: Cellule[][] = [];
       const oz = [...new Set(items.flatMap(ouncesOf))].sort((a, b) => a - b);
-      const facetPaths = new Set(ozFacets(all).map((f) => f.path));
+      const facetPaths = new Set(ozFacets(catalogue).map((f) => f.path));
       for (const o of oz) {
         const ps = items.filter((p) => p.price > 0 && ouncesOf(p).includes(o));
         const candidate = `/gants-de-boxe-${o}-oz/`;
@@ -1117,7 +1133,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
               const n = new Map<string, number>();
               for (const p of items) for (const c of new Set(p.colors || [])) n.set(c, (n.get(c) || 0) + 1);
               const tri = [...n.entries()].sort((a, b) => b[1] - a[1]);
-              return tri.length >= 3 ? `D’après les fiches, ${leCouleur(tri[0][0])} domine, sur ${fr(tri[0][1])} modèles, devant ${leCouleur(tri[1][0])} (${fr(tri[1][1])}) et ${leCouleur(tri[2][0])} (${fr(tri[2][1])}). Un même modèle se décline souvent en plusieurs coloris : la grille montre chacun à part.` : 'Chaque fiche montre le coloris exact du modèle.';
+              return tri.length >= 3 ? `D’après les fiches, ${leCouleur(tri[0][0])} domine, sur ${fr(tri[0][1])} modèles, devant ${leCouleur(tri[1][0])} (${fr(tri[1][1])}) et ${leCouleur(tri[2][0])} (${fr(tri[2][1])}). Un même modèle se décline souvent en plusieurs coloris : sa carte les réunit, et sa fiche les propose un par un.` : 'Chaque fiche montre le coloris exact du modèle.';
             },
           ],
         },
@@ -1206,7 +1222,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
           titre: 'Le grammage dit la tenue',
           texte: [
             'Autour de 350 g/m², la veste est légère, sèche vite et convient aux débuts et à l’été. Autour de 450 g/m², elle est plus épaisse, plus difficile à saisir et plus chaude.',
-            ({ items }) => `Au rayon : ${fr(items.filter((p) => grammage(p) === 350).length)} modèles en 350 et ${fr(items.filter((p) => grammage(p) === 450).length)} en 450, d’après leur nom ; le pantalon se serre par un cordon.`,
+            ({ items }) => `Au rayon : ${pluriel(items.filter((p) => grammage(p) === 350).length, 'modèle', 'modèles')} en 350 et ${fr(items.filter((p) => grammage(p) === 450).length)} en 450, d’après leur nom ; le pantalon se serre par un cordon.`,
           ],
         },
         {

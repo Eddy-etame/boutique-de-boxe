@@ -1,6 +1,7 @@
 import { categoryFor, money, type Product } from './catalog';
 import { brandsOf } from './brands';
-import { GLOVE_WEIGHTS, ouncesOf } from './facets';
+import { GLOVE_WEIGHTS, ouncesOf, ozFacet, brandFamilyFacet } from './facets';
+import { vuesDesModeles } from './modeles';
 import { isoWeek } from './hub';
 
 /**
@@ -28,8 +29,13 @@ export type PriceRow = {
   max: number;
 };
 
-function stats(prices: number[]) {
-  const s = prices.filter((n) => n > 0).sort((a, b) => a - b);
+/**
+ * Les chiffres d'une ligne, sur des modèles vus chacun comme un article (lib/modeles.ts, `vuesDesModeles`) : un prix
+ * par modèle, son premier prix ; le prix le plus haut de la ligne est celui de la fiche la plus chère.
+ */
+function stats(vues: Product[]) {
+  const comptes = vues.filter((p) => p.price > 0);
+  const s = comptes.map((p) => p.price).sort((a, b) => a - b);
   const at = (q: number) => s[Math.min(s.length - 1, Math.floor(s.length * q))];
   return {
     count: s.length,
@@ -38,37 +44,44 @@ function stats(prices: number[]) {
     median: at(0.5) ?? 0,
     mean: s.length ? Math.round(s.reduce((a, b) => a + b, 0) / s.length) : 0,
     q3: at(0.75) ?? 0,
-    max: s[s.length - 1] ?? 0,
+    max: comptes.length ? Math.max(...comptes.map((p) => p.modele?.max ?? p.price)) : 0,
   };
 }
 
 const NOT_A_BRAND = /pr[ée]ciser|^Sélection /i;
 const FAMILY_ORDER = ['gants-de-boxe', 'gants-mma', 'protections-boxe', 'sacs-de-frappe', 'chaussures-boxe', 'textile-boxe', 'accessoires-boxe', 'equipement-entrainement', 'sacs-de-sport', 'arts-martiaux'];
 
+/**
+ * Le relevé compte des modèles (11/11/2026) : les onze coloris d'une chaussure ne pèsent plus onze fois dans une
+ * médiane. `products` est le catalogue entier, fiches comprises ; une ligne renvoie à sa page quand elle existe.
+ */
 export function observatory(products: Product[], now = new Date()) {
   const { year, week, monday } = isoWeek(now);
-  const priced = products.filter((p) => p.price > 0);
+  const priced = vuesDesModeles(products, products).filter((p) => p.price > 0);
   const families: PriceRow[] = FAMILY_ORDER.map((slug) => {
     const list = priced.filter((p) => p.category === slug);
     const c = categoryFor(slug);
-    return { key: slug, label: c?.name || slug, path: c ? '/' + c.slug + '/' : null, ...stats(list.map((p) => p.price)) };
+    return { key: slug, label: c?.name || slug, path: c ? '/' + c.slug + '/' : null, ...stats(list) };
   }).filter((r) => r.count >= 4);
-  const brands: PriceRow[] = brandsOf(priced).map((b) => ({ key: b.slug, label: b.name, path: '/marques/' + b.slug + '/', ...stats(b.products.map((p) => p.price)) }));
+  const marques = brandsOf(products);
+  const brands: PriceRow[] = marques.map((b) => ({ key: b.slug, label: b.name, path: '/marques/' + b.slug + '/', ...stats(b.vues) }));
   const gloves = priced.filter((p) => p.category === 'gants-de-boxe');
+  // Par poids : les fiches qui proposent ce poids, réunies par modèle — les chiffres de la page du poids elle-même.
+  const fichesDeGants = products.filter((p) => p.category === 'gants-de-boxe' && p.price > 0);
   const weights: PriceRow[] = GLOVE_WEIGHTS.map((oz) => {
-    const list = gloves.filter((p) => ouncesOf(p).includes(oz));
-    return { key: `${oz}-oz`, label: `${oz} oz`, path: list.length >= 6 ? `/gants-de-boxe-${oz}-oz/` : null, ...stats(list.map((p) => p.price)) };
+    const list = vuesDesModeles(fichesDeGants.filter((p) => ouncesOf(p).includes(oz)), products);
+    return { key: `${oz}-oz`, label: `${oz} oz`, path: ozFacet(oz, products) ? `/gants-de-boxe-${oz}-oz/` : null, ...stats(list) };
   }).filter((r) => r.count >= 4);
   // Les gants de boxe par marque : la question la plus posée, « combien coûtent des gants Fairtex ? »
   const gloveBrands: PriceRow[] = [...new Set(gloves.map((p) => p.brand).filter((b) => b && !NOT_A_BRAND.test(b)))]
     .map((name) => {
       const list = gloves.filter((p) => p.brand === name);
-      const b = brandsOf(priced).find((x) => x.name === name);
-      return { key: b?.slug || name, label: name, path: b && list.length >= 6 ? `/marques/${b.slug}/gants-de-boxe/` : b ? '/marques/' + b.slug + '/' : null, ...stats(list.map((p) => p.price)) };
+      const b = marques.find((x) => x.name === name);
+      return { key: b?.slug || name, label: name, path: b ? brandFamilyFacet(b, 'gants-de-boxe')?.path ?? '/marques/' + b.slug + '/' : null, ...stats(list) };
     })
     .filter((r) => r.count >= 4)
     .sort((a, b) => a.median - b.median);
-  const all = stats(priced.map((p) => p.price));
+  const all = stats(priced);
   // Les tranches de prix : où se concentre le catalogue.
   const bands = [
     [0, 2000, 'moins de 20 €'],
@@ -81,7 +94,7 @@ export function observatory(products: Product[], now = new Date()) {
     generated: now.toISOString(),
     week: { year, week, monday: monday.toISOString().slice(0, 10) },
     currency: 'EUR',
-    basis: 'Prix de vente, TTC, hors livraison. Un modèle = un prix (celui de la fiche, hors déclinaisons).',
+    basis: 'Prix de vente, TTC, hors livraison. Un modèle = un prix : le premier prix de ses coloris (celui de la fiche, hors déclinaisons de taille). Le prix le plus haut d’une ligne est celui de la fiche la plus chère.',
     products: priced.length,
     brands: brands.length,
     all,

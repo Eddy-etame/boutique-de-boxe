@@ -37,7 +37,6 @@ export function facetMetadata(f: Facet, page = 1): Metadata {
 
 export function FacetPage({ facet: f, all, page = 1 }: { facet: Facet; all: Product[]; page?: number }) {
   const siblings = facetSiblings(f, all);
-  const prices = f.products.map((p) => p.price).filter((n) => n > 0).sort((a, b) => a - b);
   const pageItems = f.products.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
   // Une marque dans une famille coiffe ses pages par équipement précis (« Protège-tibias Elion ») : elle les lie.
   const rayons = f.kind === 'marque-famille' ? brandSubfamilyFacets(all).filter((x) => x.family?.path === f.path) : [];
@@ -61,7 +60,7 @@ export function FacetPage({ facet: f, all, page = 1 }: { facet: Facet; all: Prod
         </div>
         <div>
           <div className="label">
-            {f.products.length} modèles, {prices[0] === prices.at(-1) ? `à ${money(prices[0])}` : `de ${money(prices[0])} à ${money(prices.at(-1)!)}`}.
+            {f.products.length} modèles, {f.min === f.max ? `à ${money(f.min)}` : `de ${money(f.min)} à ${money(f.max)}`}.
           </div>
           <p>{f.intro}</p>
         </div>
@@ -82,7 +81,7 @@ export function FacetPage({ facet: f, all, page = 1 }: { facet: Facet; all: Prod
         </nav>
       )}
       <Catalog items={pageItems.map(listItem)} total={f.products.length} scope={f.scope} initialPage={page} showFamilies={false} />
-      {page === 1 && <KeywordHub scope={f.scope} name={f.name} items={f.products} all={all} path={f.path} />}
+      {page === 1 && <KeywordHub scope={f.scope} name={f.name} items={f.fiches} all={all} path={f.path} />}
       {page === 1 && <SeoBody sections={[]} faq={f.faq} />}
       {page === 1 && (
         <section className="spec-section">

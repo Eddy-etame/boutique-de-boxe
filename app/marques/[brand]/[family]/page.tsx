@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { readCatalog } from '@/lib/database';
-import { allFacets, facetFor } from '@/lib/facets';
+import { allFacets, facetFor, ficheQuiRemplace } from '@/lib/facets';
 import { FacetPage, facetMetadata } from '@/components/facet-page';
 
 /** HTML statique régénéré toutes les minutes ; `?page=N` se lit dans le navigateur (components/shop-interactions.tsx). */
@@ -32,6 +32,9 @@ export default async function BrandFamilyPage({ params }: Props) {
   const { brand, family } = await params;
   const products = await readCatalog();
   const f = facetFor(`marques/${brand}/${family}`, products);
+  // Une page qui ne montrerait qu'un modèle renvoie à la fiche de ce modèle (lib/facets.ts, `ficheQuiRemplace`).
+  const fiche = f ? null : ficheQuiRemplace(`marques/${brand}/${family}`, products);
+  if (fiche) permanentRedirect('/produits/' + fiche.slug + '/');
   if (!f) notFound();
   return <FacetPage facet={f} all={products} page={1} />;
 }

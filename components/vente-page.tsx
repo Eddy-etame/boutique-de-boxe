@@ -9,6 +9,8 @@ import { spaced } from '@/lib/spaced';
 import { Breadcrumb, ArrowLink } from './shop-shell';
 import { ProductCard } from './shop-interactions';
 import { SeoBody } from './seo-body';
+import { vuesDesModeles } from '@/lib/modeles';
+import { prixDesVues } from '@/lib/brands';
 
 /**
  * « Vente matériel de boxe » (03/10) : la page de la requête d'achat.
@@ -23,8 +25,8 @@ export const VENTE = 'vente-materiel-de-boxe';
 const PATH = '/' + VENTE + '/';
 export const VENTE_TITRE = 'Vente matériel de boxe en ligne : gants, sacs, protections';
 export const VENTE_DESCRIPTION = shop.ventesOuvertes
-  ? 'Vente matériel de boxe en ligne : plus de 1 000 modèles en dix rayons, livrés en France en point relais ou à domicile, 14 jours pour changer d’avis.'
-  : `Vente matériel de boxe en ligne : plus de 1 000 modèles en dix rayons, prix TTC affichés, livraison en France. Ouverture des ventes le ${shop.ouverture.long}.`;
+  ? 'Vente matériel de boxe en ligne : plus de 1 000 références en dix rayons, livrées en France en point relais ou à domicile, 14 jours pour changer d’avis.'
+  : `Vente matériel de boxe en ligne : plus de 1 000 références en dix rayons, prix TTC affichés, livraison en France. Ouverture des ventes le ${shop.ouverture.long}.`;
 const KEYWORDS = ['vente matériel de boxe', 'vente matériel boxe', 'acheter matériel de boxe', 'vente de matériel de boxe en ligne', 'magasin matériel de boxe', 'prix matériel de boxe', 'vente gants de boxe', 'vente sac de frappe'];
 
 export const venteMetadata = (): Metadata => ({
@@ -55,17 +57,14 @@ const PREMIERS: [string, RegExp][] = [
   ['sacs-de-sport', /^sac/i],
 ];
 
-/** Les dix rayons : leurs modèles et leurs prix, sans les accessoires du rayon (lib/rayons.ts). */
-function lesRayons(all: Product[]) {
+/**
+ * Les dix rayons : leurs modèles et leurs prix, sans les accessoires du rayon (lib/rayons.ts). `vues` : les modèles du
+ * catalogue, vus chacun comme un article à son premier prix (lib/modeles.ts).
+ */
+function lesRayons(vues: Product[]) {
   return categories
     .filter((c) => c.families.length === 1 && c.families[0] === c.slug)
-    .map((c) => {
-      const prix = all
-        .filter((p) => p.category === c.slug && p.price > 0 && dansLeRayon(c.slug, p))
-        .map((p) => p.price)
-        .sort((a, b) => a - b);
-      return { slug: c.slug, name: c.name, count: prix.length, min: prix[0], median: prix[Math.floor(prix.length / 2)], max: prix[prix.length - 1] };
-    })
+    .map((c) => ({ slug: c.slug, name: c.name, ...prixDesVues(vues.filter((p) => p.category === c.slug && dansLeRayon(c.slug, p))) }))
     .filter((r) => r.count > 0)
     .sort((a, b) => b.count - a.count);
 }
@@ -148,7 +147,8 @@ function sections(): SeoSection[] {
 
 export function VentePage({ all }: { all: Product[] }) {
   const ouvert = shop.ventesOuvertes;
-  const rayons = lesRayons(all);
+  const vues = vuesDesModeles(all, all);
+  const rayons = lesRayons(vues);
   // Toutes les marques du catalogue, pas seulement celles qui ont leur page.
   const marques = new Set(all.map((p) => p.brand).filter((b) => b && !/pr[ée]ciser|^Sélection /i.test(b))).size;
   const premiers = premiersPrix(all);
@@ -189,7 +189,7 @@ export function VentePage({ all }: { all: Product[] }) {
         <div>
           <div className="label">Vente matériel de boxe : un vendeur, dix rayons, des prix affichés.</div>
           <p>
-            {`Boutique de Boxe ${ouvert ? 'vend en ligne' : 'prépare la vente en ligne de'} ${fr(all.length)} modèles de matériel de boxe et de sports de combat, de ${marques} marques, livrés en ${livraison.zone} en point relais ou à domicile. `}
+            {`Boutique de Boxe ${ouvert ? 'vend en ligne' : 'prépare la vente en ligne de'} ${fr(vues.length)} modèles de matériel de boxe et de sports de combat, soit ${fr(all.length)} références avec leurs coloris, de ${marques} marques, livrés en ${livraison.zone} en point relais ou à domicile. `}
             {ouvert ? 'Chaque prix est donné toutes taxes comprises, et vous avez quatorze jours pour changer d’avis.' : `Les ventes ouvrent le ${shop.ouverture.long} : les prix affichés sont ceux prévus à l’ouverture, et le panier enregistre déjà vos choix, sans paiement.`}
           </p>
         </div>
@@ -199,7 +199,7 @@ export function VentePage({ all }: { all: Product[] }) {
         <div className="observatory-figures">
           {(
             [
-              [fr(all.length), ouvert ? 'modèles en vente' : 'modèles au catalogue'],
+              [fr(vues.length), ouvert ? 'modèles en vente' : 'modèles au catalogue'],
               [fr(marques), 'marques'],
               [livraison.relais, `en point relais, offerts dès ${livraison.franco} d’achats`],
               ['14 jours', 'pour changer d’avis'],

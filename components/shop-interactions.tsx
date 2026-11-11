@@ -1,5 +1,6 @@
 'use client';
 import { pageWindow } from '@/lib/pagination';
+import { cartesParModele } from '@/lib/un-par-modele';
 import { COLOURS, closureOf, coloursOf, materialOf } from '@/lib/facets';
 import {
   useMemo,
@@ -118,12 +119,17 @@ export function ProductCard({
         <span>{cardSizes(p)}</span>
       </div>
       <h3>
-        <a href={`/produits/${p.slug}/`}>{cleanName(p)}</a>
+        <a href={`/produits/${p.slug}/`}>{p.modele?.nom || cleanName(p)}</a>
       </h3>
+      {p.modele && p.modele.n > 1 && (
+        <p className="product-versions">
+          {p.modele.n} {p.modele.coloris ? 'coloris' : 'versions'}
+        </p>
+      )}
       <div className="price-row">
         <strong>
-          {p.variants?.some((v) => v.price !== p.price) ? 'Dès ' : ''}
-          {money(p.price)}
+          {p.modele?.min || p.variants?.some((v) => v.price !== p.price) ? 'Dès ' : ''}
+          {money(p.modele?.min || p.price)}
         </strong>{' '}
         <span className="price-tax">TTC</span>
         <QuickAdd product={p} />
@@ -349,29 +355,39 @@ export function Catalog({
   const sizes = [...new Set(items.flatMap((p) => p.sizes.map(sizeKey)))].filter(
     (s) => s.length <= 16,
   );
-  const result = useMemo(() => {
-    const out = items.filter(
-      (p) =>
-        (brand === 'all' || p.brand === brand) &&
-        (size === 'all' || p.sizes.some((s) => sizeKey(s) === size)) &&
-        (family === 'all' || p.category === family) &&
-        (budget === 'all' || p.price <= Number(budget) * 100) &&
-        (colour === 'all' || coloursOf(p).includes(colour)) &&
-        (material === 'all' || materialOf(p) === material) &&
-        (closure === 'all' || closureOf(p) === closure) &&
-        matchesSearch(p, query),
-    );
-    return out.sort(
-      sort === 'price-up'
-        ? (a, b) => a.price - b.price
-        : sort === 'price-down'
-          ? (a, b) => b.price - a.price
-          : sort === 'name'
-            ? (a, b) => a.name.localeCompare(b.name, 'fr')
-            : () => 0,
-    );
-  }, [items, query, sort, brand, size, family, budget, colour, material, closure]);
-  const count = all ? result.length : total;
+  const result = useMemo(
+    () =>
+      items.filter(
+        (p) =>
+          (brand === 'all' || p.brand === brand) &&
+          (size === 'all' || p.sizes.some((s) => sizeKey(s) === size)) &&
+          (family === 'all' || p.category === family) &&
+          (budget === 'all' || p.price <= Number(budget) * 100) &&
+          (colour === 'all' || coloursOf(p).includes(colour)) &&
+          (material === 'all' || materialOf(p) === material) &&
+          (closure === 'all' || closureOf(p) === closure) &&
+          matchesSearch(p, query),
+      ),
+    [items, query, brand, size, family, budget, colour, material, closure],
+  );
+  // Une carte par modèle : les fiches qui passent les filtres se réduisent comme la page l'a fait
+  // (lib/un-par-modele.ts), « Dès » se lit sur celles qui restent, puis le tri range les cartes par ce qu'elles
+  // affichent : le premier prix du modèle, son nom sans coloris. Une fiche sans marque de modèle reste une carte.
+  const vus = useMemo(() => {
+    const cartes = cartesParModele(result);
+    const prix = (p: Product) => p.modele?.min || p.price;
+    const nom = (p: Product) => p.modele?.nom || p.name;
+    if (sort === 'price-up') cartes.sort((a, b) => prix(a) - prix(b));
+    else if (sort === 'price-down') cartes.sort((a, b) => prix(b) - prix(a));
+    else if (sort === 'name') cartes.sort((a, b) => nom(a).localeCompare(nom(b), 'fr'));
+    return cartes;
+  }, [result, sort]);
+  const count = all ? vus.length : total;
+  // Les cartes de la page affichée. De deux à quatre, la grille n'a pas de carte en vedette : elles se partagent la largeur.
+  const affichees = all
+    ? vus.slice((Math.min(page, Math.max(1, Math.ceil(vus.length / 36))) - 1) * 36, Math.min(page, Math.max(1, Math.ceil(vus.length / 36))) * 36)
+    : pageItems;
+  const courte = affichees.length >= 2 && affichees.length <= 4;
   useEffect(
     () =>
       registerCatalogTools(items, (q) => {
@@ -536,20 +552,15 @@ export function Catalog({
         </span>{' '}
         <span>{shop.ventesOuvertes ? 'EN VENTE' : 'EN VENTE LE ' + shop.ouverture.court.toUpperCase()}</span>
       </div>
-      {result.length ? (
+      {vus.length ? (
         <>
           <div
-            className="product-grid"
+            className={'product-grid' + (courte ? ' product-grid--court' : '')}
+            style={courte ? ({ '--cartes': affichees.length } as React.CSSProperties) : undefined}
             aria-busy={loading || undefined}
             key={[query, sort, brand, size, family, budget, colour, material, closure, page, all ? 1 : 0].join('|')}
           >
-            {(all
-              ? result.slice(
-                  (Math.min(page, Math.max(1, Math.ceil(result.length / 36))) - 1) * 36,
-                  Math.min(page, Math.max(1, Math.ceil(result.length / 36))) * 36,
-                )
-              : pageItems
-            ).map((p, i) => (
+            {affichees.map((p, i) => (
               <ProductCard key={p.id} product={p} index={i} eager />
             ))}
           </div>

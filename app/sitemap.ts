@@ -76,9 +76,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const sub of SUBFAMILIES)
     dates.set('/' + sub.slug + '/', collectionDate(subfamilyProducts(sub, products)));
   for (const brand of brands)
-    dates.set('/marques/' + brand.slug + '/', collectionDate(brand.products));
+    dates.set('/marques/' + brand.slug + '/', collectionDate(brand.fiches));
   for (const facet of facets)
-    dates.set(facet.path, [collectionDate(facet.products), facet.revision || ''].sort().at(-1)!);
+    dates.set(facet.path, [collectionDate(facet.fiches), facet.revision || ''].sort().at(-1)!);
   for (const [slug, service] of Object.entries(services)) {
     if (service.revision) dates.set('/' + slug + '/', service.revision);
   }

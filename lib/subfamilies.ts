@@ -422,7 +422,7 @@ export const SUBFAMILIES: Subfamily[] = [
     name: 'Ceintures',
     eyebrow: 'CEINTURE DE JJB · KARATÉ, JUDO',
     title: 'Ceinture de JJB, de karaté et de judo par grade',
-    description: 'Ceintures de JJB, de karaté et de judo, blanches, bleues, violettes, marron et noires, adulte et enfant. Elion, Kwon, Metal Boxe. Longueurs réelles, prix TTC, livraison en France.',
+    description: 'Ceintures de JJB blanches, bleues, violettes, marron et noires : Elion Squale et Competitor Light, de A0 à A4. Prix TTC, livraison en France.',
     prioritaires: ['ceinture de JJB', 'ceinture'],
     secondaires: ['ceinture de JJB blanche', 'ceinture de JJB bleue', 'ceinture de karaté', 'ceinture de judo', 'ceinture enfant', 'longueur ceinture', 'ceinture Elion Squale'],
     intro: 'La ceinture marque le grade et ferme le kimono. En JJB, blanche, bleue, violette, marron, noire, avec une barre pour les degrés. En karaté et en judo, les couleurs suivent le système de chaque fédération.',
@@ -434,7 +434,8 @@ export const SUBFAMILIES: Subfamily[] = [
       { question: 'Quelle ceinture pour débuter le JJB ?', answer: 'La ceinture blanche. Le professeur la remet souvent avec le premier kimono ; sinon, prenez-la à la longueur du kimono.' },
     ],
     guide: 'choisir-protections',
-    match: (p) => n(p).startsWith('ceinture') && !n(p).includes('ceinture de frappe'),
+    // Une ceinture de grade est dans la famille des arts martiaux : la ceinture lombaire de sudation (protections) n'en est pas une.
+    match: (p) => p.category === 'arts-martiaux' && n(p).startsWith('ceinture') && !n(p).includes('ceinture de frappe'),
   },
   {
     slug: 'gants-de-boxe-enfant',

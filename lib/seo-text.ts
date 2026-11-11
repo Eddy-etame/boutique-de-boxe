@@ -4,7 +4,7 @@
  * en retard sur le site.
  */
 import { shop, money, type Product, livraison, categoryFor, getCategoryProducts } from './catalog';
-import { GUIDES_RAYONS, guideEnTexte, faits, prixAffiche } from './guides-rayons';
+import { GUIDES_RAYONS, guideEnTexte, prixAffiche } from './guides-rayons';
 import { guides, services } from './editorial';
 import { ATTRIBUTION, EDITORIAL_DATE, familiesWithCounts, urlOf } from './seo';
 import { QUERY_MAP } from './seo-copy';
@@ -13,6 +13,8 @@ import { SUBFAMILIES, subfamilyProducts, subfamilyFor } from './subfamilies';
 import { brandsOf } from './brands';
 import { ozFacets, brandFamilyFacets, brandSubfamilyFacets } from './facets';
 import { observatory, observatorySentences } from './observatory';
+import { fichesDeTete, nombreDeModeles, vuesDesModeles, nomDeModele } from './modeles';
+import { contexteDeRayon } from './listing';
 
 const fr = (n: number) => n.toLocaleString('fr-FR');
 
@@ -92,7 +94,7 @@ function villes() {
 }
 
 function subfamilies(products: Product[]) {
-  return ['## Sous-familles (pages dédiées)', ...SUBFAMILIES.map((s) => `- [${s.name}](${urlOf('/' + s.slug + '/')}) : ${subfamilyProducts(s, products).length} modèles. ${s.intro.split('. ')[0]}.`)].join('\n');
+  return ['## Sous-familles (pages dédiées)', ...SUBFAMILIES.map((s) => `- [${s.name}](${urlOf('/' + s.slug + '/')}) : ${nombreDeModeles(subfamilyProducts(s, products), products)} modèles. ${s.intro.split('. ')[0]}.`)].join('\n');
 }
 
 /* Les douze pages de tête (20/10) : le guide de chaque rayon, tiré du même module que la page. */
@@ -105,13 +107,13 @@ function rayonsDeTete(products: Product[]) {
       const cat = categoryFor(g.slug);
       const items = sub ? subfamilyProducts(sub, products) : cat ? getCategoryProducts(cat, products) : [];
       if (!items.length) return [];
-      const c = { f: faits(g.slug, items), items, all: products };
+      const c = contexteDeRayon(g.slug, items, products);
       const t = guideEnTexte(g, c);
       return [
         `### ${g.h1} — ${urlOf('/' + g.slug + '/')}`,
         g.description(c),
         ...t.chapitres.map((x) => '- ' + x),
-        ...t.choix.map((x) => `- ${x.usage} : ${x.produit.name}, ${prixAffiche(x.produit)} — ${x.critere} (${urlOf('/produits/' + x.produit.slug + '/')})`),
+        ...t.choix.map((x) => `- ${x.usage} : ${nomDeModele(x.produit)}, ${prixAffiche(x.produit)} — ${x.critere} (${urlOf('/produits/' + x.produit.slug + '/')})`),
         ...t.faq.map((q) => `- Q : ${q.question} R : ${q.answer}`),
         '',
       ];
@@ -140,11 +142,13 @@ function credits() {
 }
 
 export function llmsTxt(products: Product[]) {
-  const fam = familiesWithCounts(products);
+  // Un modèle, une fiche de tête : les comptes disent des modèles ; le catalogue en propose davantage de références, coloris compris.
+  const tetes = fichesDeTete(products);
+  const fam = familiesWithCounts(tetes);
   return [
     '# Boutique de Boxe',
     '',
-    `> Boutique en ligne française de matériel de boxe, de MMA et de sports de combat : gants, bandes, protections, textile, sacs de frappe, chaussures, équipement d’entraînement et sacs de sport. ${fr(products.length)} modèles, avec leurs tailles réelles et leurs prix TTC. Livraison dans toute la France, paiement par carte.`,
+    `> Boutique en ligne française de matériel de boxe, de MMA et de sports de combat : gants, bandes, protections, textile, sacs de frappe, chaussures, équipement d’entraînement et sacs de sport. ${fr(tetes.length)} modèles en ${fr(products.length)} références, coloris compris, avec leurs tailles réelles et leurs prix TTC. Livraison dans toute la France, paiement par carte.`,
     '',
     status(),
     '',
@@ -179,18 +183,22 @@ export function llmsTxt(products: Product[]) {
 }
 
 export function llmsFullTxt(products: Product[]) {
-  const fam = familiesWithCounts(products);
+  // Une ligne par modèle (11/11/2026) : sa fiche de tête, son premier prix, les tailles et les couleurs de tous ses coloris.
+  const vues = vuesDesModeles(products, products);
+  const fam = familiesWithCounts(vues);
   const byFamily = new Map<string, Product[]>();
   for (const f of fam) byFamily.set(f.slug, []);
-  for (const p of products) if (byFamily.has(p.category)) byFamily.get(p.category)!.push(p);
+  for (const p of vues) if (byFamily.has(p.category)) byFamily.get(p.category)!.push(p);
+  const tailles = (p: Product) => [...new Set(p.sizes.map((s) => s.split(',')[0]))];
+  const prix = (p: Product) => (p.modele?.max ? `de ${money(p.price)} à ${money(p.modele.max)}` : money(p.price));
   const line = (p: Product) =>
-    `- ${p.name} — ${p.brand && !/pr[ée]ciser/i.test(p.brand) ? p.brand + ' · ' : ''}prix ${money(p.price)}${p.sizes.length ? ' · tailles : ' + p.sizes.map((s) => s.split(',')[0]).join(', ') : ''}${p.colors?.length ? ' · couleurs : ' + p.colors.join(', ') : ''} · ${urlOf('/produits/' + p.slug + '/')}`;
+    `- ${nomDeModele(p)} — ${p.brand && !/pr[ée]ciser/i.test(p.brand) ? p.brand + ' · ' : ''}prix ${prix(p)}${tailles(p).length ? ' · tailles : ' + tailles(p).join(', ') : ''}${p.colors?.length ? ' · couleurs : ' + p.colors.join(', ') : ''}${p.modele && p.modele.n > 1 ? ` · ${p.modele.n} ${p.modele.coloris ? 'coloris' : 'versions'}` : ''} · ${urlOf('/produits/' + p.slug + '/')}`;
   return [
     '# Boutique de Boxe — contexte factuel étendu',
     '',
     `Dernière révision éditoriale : ${EDITORIAL_DATE}`,
     'Langue : français. Devise : euro. Zone de livraison : France.',
-    `Modèles publiés : ${fr(products.length)}. Guides d’achat : ${guides.length}.`,
+    `Modèles publiés : ${fr(vues.length)}, en ${fr(products.length)} fiches (une par coloris ou par version). Guides d’achat : ${guides.length}.`,
     '',
     status(),
     '',

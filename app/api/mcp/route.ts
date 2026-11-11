@@ -6,10 +6,11 @@ import { guides, services } from '@/lib/editorial';
 import { ATTRIBUTION, EDITORIAL_DATE, familiesWithCounts, urlOf } from '@/lib/seo';
 import { QUERY_MAP } from '@/lib/seo-copy';
 import { SUBFAMILIES, subfamilyProducts, subfamilyFor } from '@/lib/subfamilies';
-import { guideRayon, guideEnTexte, faits, prixAffiche } from '@/lib/guides-rayons';
+import { guideRayon, guideEnTexte, prixAffiche } from '@/lib/guides-rayons';
 import { brandsOf } from '@/lib/brands';
 import { weekLabel, weeklySelection } from '@/lib/hub';
-import { listingFor } from '@/lib/listing';
+import { listingFor, contexteDeRayon, modelesDe } from '@/lib/listing';
+import { fichesDeTete, nombreDeModeles, nomDeModele } from '@/lib/modeles';
 import selection from '@/lib/data/selection.json';
 import { observatory, observatorySentences } from '@/lib/observatory';
 import { parseUsage, recommendGloveWeight } from '@/lib/glove-weight';
@@ -165,7 +166,7 @@ export async function POST(request: Request) {
   const products = await readCatalog();
   let value: unknown;
   if (name === 'get_shop_info') value = shopInfo();
-  else if (name === 'get_families') value = familiesWithCounts(products);
+  else if (name === 'get_families') value = familiesWithCounts(fichesDeTete(products));
   else if (name === 'search_products') {
     const query = typeof args.query === 'string' ? args.query : '';
     const family = typeof args.family === 'string' ? args.family : '';
@@ -191,16 +192,16 @@ export async function POST(request: Request) {
       const sub = subfamilyFor(r.slug);
       const cat = categoryFor(r.slug);
       const items = sub ? subfamilyProducts(sub, products) : cat ? getCategoryProducts(cat, products) : [];
-      const c = { f: faits(r.slug, items), items, all: products };
+      const c = contexteDeRayon(r.slug, items, products);
       const t = guideEnTexte(r, c);
-      value = { title: r.guide.titre, url: urlOf('/' + r.slug + '/'), intro: t.chapitres[0], sections: t.chapitres.slice(1), choices: t.choix.map((x) => ({ usage: x.usage, product: x.produit.name, price: prixAffiche(x.produit), reason: x.critere, url: urlOf('/produits/' + x.produit.slug + '/') })), faq: t.faq };
+      value = { title: r.guide.titre, url: urlOf('/' + r.slug + '/'), intro: t.chapitres[0], sections: t.chapitres.slice(1), choices: t.choix.map((x) => ({ usage: x.usage, product: nomDeModele(x.produit), price: prixAffiche(x.produit), reason: x.critere, url: urlOf('/produits/' + x.produit.slug + '/') })), faq: t.faq };
     }
   } else if (name === 'get_content_index')
     value = {
       pages: [
         { path: '/', purpose: 'accueil : familles, sélections, guides, vente en ligne' },
-        ...familiesWithCounts(products).map((f) => ({ path: '/' + f.slug + '/', purpose: `${f.name} : ${f.count} modèles` })),
-        ...SUBFAMILIES.map((sf) => ({ path: '/' + sf.slug + '/', purpose: `${sf.name} : ${subfamilyProducts(sf, products).length} modèles` })),
+        ...familiesWithCounts(fichesDeTete(products)).map((f) => ({ path: '/' + f.slug + '/', purpose: `${f.name} : ${f.count} modèles` })),
+        ...SUBFAMILIES.map((sf) => ({ path: '/' + sf.slug + '/', purpose: `${sf.name} : ${nombreDeModeles(subfamilyProducts(sf, products), products)} modèles` })),
         { path: '/marques/', purpose: 'toutes les marques du catalogue' },
         ...brandsOf(products).map((b) => ({ path: '/marques/' + b.slug + '/', purpose: `${b.name} : ${b.products.length} modèles` })),
         // Les pages de longue traîne, adossées à du stock réel : poids et couleur de gants, marque × famille, marque × équipement précis.
@@ -273,7 +274,7 @@ export async function POST(request: Request) {
     const list = page ? listingFor(page, products) : null;
     if (!list || list.length < 4) return fail(id, -32602, 'Page de catalogue introuvable', 404);
     const { week, range } = weekLabel();
-    value = { page: urlOf('/' + page + '/'), week, period: range, note: 'Choix éditorial tournant, une marque par modèle. Ce n’est pas un classement des ventes.', products: weeklySelection(page, list).map(productView) };
+    value = { page: urlOf('/' + page + '/'), week, period: range, note: 'Choix éditorial tournant, une marque par modèle. Ce n’est pas un classement des ventes.', products: weeklySelection(page, modelesDe(list, products)).map(productView) };
   } else if (name === 'get_combat_venues') {
     const plie = (s: unknown) => (typeof s === 'string' ? s : '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
     const source = { name: SOURCE.nom, publisher: SOURCE.editeur, license: SOURCE.licence, updated: SOURCE.maj, url: SOURCE.url };

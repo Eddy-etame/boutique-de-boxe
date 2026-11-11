@@ -10,6 +10,7 @@ import { SUBFAMILIES, subfamilyProducts, type Subfamily } from './subfamilies';
 import selection from './data/selection.json';
 import { brandFor, brandsOf } from './brands';
 import { facetFor } from './facets';
+import { nombreDeModeles } from './modeles';
 import { observatory } from './observatory';
 import { villeFor, regionFor, regionTotal, FRANCE } from './villes';
 
@@ -71,7 +72,7 @@ function categoryCard(c: Category, products: Product[]): Card {
     title: c.name,
     eyebrow: copy?.eyebrow || 'LE CATALOGUE / ' + c.number,
     facts: [
-      { label: 'MODÈLES', value: fr(items.length) },
+      { label: 'MODÈLES', value: fr(nombreDeModeles(items, products)) },
       { label: 'MARQUES', value: fr(brands.size) },
       { label: 'PRIX', value: 'TTC, en vente' },
     ],
@@ -88,7 +89,7 @@ function subfamilyCard(s: Subfamily, products: Product[]): Card {
     title: s.name,
     eyebrow: s.eyebrow,
     facts: [
-      { label: 'MODÈLES', value: fr(items.length) },
+      { label: 'MODÈLES', value: fr(nombreDeModeles(items, products)) },
       { label: 'FAMILLE', value: parent?.name || 'Catalogue' },
       { label: 'PRIX', value: 'TTC, en vente' },
     ],
@@ -122,7 +123,7 @@ const PAGES: Record<string, (products: Product[]) => Card> = {
     title: 'Tout pour la boxe et le MMA.',
     eyebrow: 'BOUTIQUE DE BOXE · MATÉRIEL DE BOXE, MMA ET SPORTS DE COMBAT',
     facts: [
-      { label: 'MODÈLES', value: fr(products.length) },
+      { label: 'MODÈLES', value: fr(nombreDeModeles(products, products)) },
       { label: 'GUIDES D’ACHAT', value: fr(guides.length) },
       { label: 'LIVRAISON', value: 'Toute la France' },
     ],
@@ -146,7 +147,7 @@ const PAGES: Record<string, (products: Product[]) => Card> = {
     title: 'Les nouveautés.',
     eyebrow: 'NOUVEAUTÉS · LES DERNIERS MODÈLES',
     facts: [
-      { label: 'MODÈLES', value: fr(products.length) },
+      { label: 'MODÈLES', value: fr(nombreDeModeles(products, products)) },
       { label: 'FAMILLES', value: '10' },
       { label: 'PRIX', value: 'TTC, en vente' },
     ],
@@ -158,7 +159,7 @@ const PAGES: Record<string, (products: Product[]) => Card> = {
     title: 'Vente de matériel de boxe.',
     eyebrow: 'VENTE MATÉRIEL DE BOXE · EN LIGNE, LIVRÉ EN FRANCE',
     facts: [
-      { label: 'MODÈLES', value: fr(products.length) },
+      { label: 'MODÈLES', value: fr(nombreDeModeles(products, products)) },
       { label: 'POINT RELAIS', value: `${livraison.relais}, offert dès ${livraison.franco}` },
       { label: 'POUR CHANGER D’AVIS', value: '14 jours' },
     ],
@@ -225,7 +226,8 @@ export function cardFor(kind: CardKind, key: string, products: Product[]): Card 
     // Les pages de longue traîne : un poids de gants, une marque dans une famille.
     const facet = facetFor(key, products);
     if (facet) {
-      const s = facet.products.map((p) => p.price).filter((n) => n > 0).sort((a, b) => a - b);
+      // Les cartes de la page, à leur premier prix (lib/un-par-modele.ts).
+      const s = facet.products.map((p) => p.modele?.min || p.price).filter((n) => n > 0).sort((a, b) => a - b);
       return {
         title: facet.name + '.',
         eyebrow: facet.eyebrow.split(' · ').slice(0, 2).join(' · '),

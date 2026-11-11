@@ -34,9 +34,10 @@ function load(path) {
 globalThis.fetch = async () => { throw new Error('Network is forbidden in product evidence checks'); };
 const { practiceLevel, placeDansLaFamille, careAdvice, productFaq, longDescription, PRODUCT_EVIDENCE_REVISION } = load(resolve(root, 'lib/describe'));
 const { ENFANT } = load(resolve(root, 'lib/rayons'));
-const { categories, categoryFor, getCategoryProducts, money } = load(resolve(root, 'lib/catalog'));
-const { subfamilyFor, subfamilyProducts } = load(resolve(root, 'lib/subfamilies'));
-const { GUIDES_RAYONS, guideRayon, faits, texte, choix } = load(resolve(root, 'lib/guides-rayons'));
+const { categories, categoryFor, money } = load(resolve(root, 'lib/catalog'));
+const { subfamilyFor } = load(resolve(root, 'lib/subfamilies'));
+const { GUIDES_RAYONS, guideRayon, texte, choix } = load(resolve(root, 'lib/guides-rayons'));
+const { contexteDeRayon, fichesDePage } = load(resolve(root, 'lib/listing'));
 const { ouncesOf, ozFacets } = load(resolve(root, 'lib/facets'));
 const all = ['products', 'imported-products'].flatMap((file) => JSON.parse(readFileSync(resolve(root, 'lib/data', file + '.json'), 'utf8')));
 const bySlug = (slug) => {
@@ -49,8 +50,8 @@ const contextFor = (slug) => {
   const category = categoryFor(slug);
   const sub = subfamilyFor(slug);
   assert.ok(category || sub, 'Existing guide category/subfamily: ' + slug);
-  const items = category ? getCategoryProducts(category, all) : subfamilyProducts(sub, all);
-  return { f: faits(slug, items), items, all };
+  // Le contexte que la page construit (lib/listing.ts) : les modèles du rayon, vus chacun comme un article.
+  return contexteDeRayon(slug, fichesDePage(slug, all), all);
 };
 const guideText = (g, context) => [g.intro, texte(g.guide.chapeau, context), ...g.guide.chapitres.flatMap((c) => [c.titre, ...c.texte.map((t) => texte(t, context))]), ...g.faq(context).flatMap((f) => [f.question, f.answer])].join(' ');
 

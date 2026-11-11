@@ -59,7 +59,8 @@ export default async function BrandPage({ params }: Props) {
   );
   const copy = brandCopy(b);
   const path = '/marques/' + b.slug + '/';
-  const prices = priceTable(b.products);
+  // Les prix se lisent sur les modèles de la marque, vus chacun comme un article à son premier prix (lib/modeles.ts).
+  const prices = priceTable(b.vues);
   const others = brandsOf(products).filter((x) => x.slug !== b.slug).slice(0, 12);
   // Les familles de la marque qui ont leur propre page (six modèles et plus) : « gants de boxe Fairtex ».
   const familyPages = new Map(b.families.map((f) => [f.slug, brandFamilyFacet(b, f.slug)] as const));

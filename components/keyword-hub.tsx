@@ -1,5 +1,7 @@
 import { listItem, money, shop, type Product, livraison } from '@/lib/catalog';
-import { brandsOf, priceTable } from '@/lib/brands';
+import { brandsOf, priceTable, prixDesVues } from '@/lib/brands';
+import { cartesDe } from '@/lib/listing';
+import { modeleDe, nombreDeModeles, vuesDesModeles } from '@/lib/modeles';
 import { mostViewed, weekLabel, weeklySelection } from '@/lib/hub';
 import { QUERY_MAP } from '@/lib/seo-copy';
 import { urlOf } from '@/lib/seo';
@@ -94,10 +96,16 @@ export async function KeywordHub({
   if (items.length < 4) return null;
   const path = givenPath || '/' + scope + '/';
   const { week, range } = weekLabel();
-  const selection = weeklySelection(scope, items);
-  const viewed = await mostViewed(items);
+  // `items` sont les fiches de la page, coloris compris. Une carte par modèle (11/11/2026) : la sélection et les plus
+  // consultés montrent des modèles, jamais deux coloris du même ; les chiffres comptent des modèles, vus chacun
+  // comme un article à son premier prix (lib/modeles.ts).
+  const cartes = cartesDe(items, all);
+  const carteDuModele = new Map(cartes.map((p) => [p.modele?.cle, p]));
+  const selection = weeklySelection(scope, cartes);
+  const viewed = await mostViewed(items, 4, (p) => carteDuModele.get(modeleDe(p, all).cle) ?? p);
+  const vues = vuesDesModeles(items, all);
   // Ce qui compte dans le rayon seulement (lib/rayons.ts) : sans les semelles, « chaussures dès 1,70 € » était faux.
-  const families = priceTable(items.filter((p) => dansLeRayon(p.category, p)));
+  const families = priceTable(vues.filter((p) => dansLeRayon(p.category, p)));
   // Une seule famille : le tableau se lit par marque, c’est là que les prix diffèrent.
   const byBrand = families.length < 2;
   const brandList = brandsOf(items);
@@ -111,10 +119,7 @@ export async function KeywordHub({
   const rows = byBrand
     ? brandList
         .slice(0, 8)
-        .map((b) => {
-          const s = b.products.map((p) => p.price).filter((n) => n > 0).sort((a, b) => a - b);
-          return { key: b.slug, label: b.name, href: brandHref(b), count: s.length, min: s[0], median: s[Math.floor(s.length / 2)], max: s[s.length - 1] };
-        })
+        .map((b) => ({ key: b.slug, label: b.name, href: brandHref(b), ...prixDesVues(b.vues) }))
     : families.slice(0, 8).map((f) => ({ key: f.slug, label: f.name, href: undefined as string | undefined, count: f.count, min: f.min, median: f.median, max: f.max }));
   const ids = new Set(items.map((p) => p.id));
   // Les poids de gants : sur les pages de gants de boxe seulement, chaque poids qui a sa page.
@@ -124,13 +129,13 @@ export async function KeywordHub({
   const colours = items.some((p) => p.category === 'gants-de-boxe')
     ? colourFacets(all).map((f) => ({ f, n: f.products.filter((p) => ids.has(p.id)).length })).filter((x) => x.n >= 4 && x.f.scope !== scope).slice(0, 8)
     : [];
-  const subs = SUBFAMILIES.map((s) => ({ s, n: subfamilyProducts(s, all).filter((p) => ids.has(p.id)).length }))
+  const subs = SUBFAMILIES.map((s) => ({ s, n: nombreDeModeles(subfamilyProducts(s, all).filter((p) => ids.has(p.id)), all) }))
     .filter((x) => x.n >= 4 && x.s.slug !== scope && !x.s.kind)
     .sort((a, b) => b.n - a.n)
     .slice(0, 8);
   // Les pages d’entrée par boxe et par niveau (03/10) : leur colonne à elles, sur chaque page-pilier.
   const entries = SUBFAMILIES.filter((s) => s.kind && s.slug !== scope)
-    .map((s) => ({ s, n: subfamilyProducts(s, all).filter((p) => ids.has(p.id)).length }))
+    .map((s) => ({ s, n: nombreDeModeles(subfamilyProducts(s, all).filter((p) => ids.has(p.id)), all) }))
     .filter(({ n }) => n >= 4)
     .sort((a, b) => b.n - a.n)
     .slice(0, 4);
@@ -153,30 +158,38 @@ export async function KeywordHub({
     '@id': urlOf(path) + '#selection-semaine',
     name: `${name} : la sélection de la semaine ${week}`,
     numberOfItems: selection.length,
-    itemListElement: selection.map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: p.name, url: urlOf('/produits/' + p.slug + '/') })),
+    itemListElement: selection.map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: p.modele?.nom || p.name, url: urlOf('/produits/' + p.slug + '/') })),
   };
 
+  // Une page de deux ou trois modèles les montre déjà tous dans sa grille : pas de « sélection de quatre modèles »
+  // qui les répéterait. Le reste de la page-pilier (prix, pages voisines) demeure.
+  const avecSelection = selection.length >= 4;
+
   return (
-    <section className="keyword-hub" aria-labelledby={'hub-' + scope}>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(graph) }} />
-      <header className="hub-heading">
-        <div>
-          <span className="eyebrow">CETTE SEMAINE / SEMAINE {week}</span>
-          <h2 id={'hub-' + scope}>
-            {name} :<br />
-            la sélection de la semaine.
-          </h2>
-        </div>
-        <p>
-          Quatre modèles choisis {range}, une marque par modèle. La sélection change chaque lundi ; les
-          prix sont {shop.ventesOuvertes ? 'les prix de vente TTC' : 'ceux prévus à l’ouverture des ventes'}.
-        </p>
-      </header>
-      <div className="product-grid hub-grid">
-        {selection.map((p, i) => (
-          <ProductCard key={p.id} product={listItem(p)} index={i + 4} />
-        ))}
-      </div>
+    <section className="keyword-hub" {...(avecSelection ? { 'aria-labelledby': 'hub-' + scope } : { 'aria-label': name + ' : prix et pages voisines' })}>
+      {avecSelection && (
+        <>
+          <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(graph) }} />
+          <header className="hub-heading">
+            <div>
+              <span className="eyebrow">CETTE SEMAINE / SEMAINE {week}</span>
+              <h2 id={'hub-' + scope}>
+                {name} :<br />
+                la sélection de la semaine.
+              </h2>
+            </div>
+            <p>
+              Quatre modèles choisis {range}, une marque par modèle. La sélection change chaque lundi ; les
+              prix sont {shop.ventesOuvertes ? 'les prix de vente TTC' : 'ceux prévus à l’ouverture des ventes'}.
+            </p>
+          </header>
+          <div className="product-grid hub-grid">
+            {selection.map((p, i) => (
+              <ProductCard key={p.id} product={listItem(p)} index={i + 4} />
+            ))}
+          </div>
+        </>
+      )}
 
       {viewed.length > 0 && (
         <>

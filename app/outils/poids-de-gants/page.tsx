@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import { readCatalog } from '@/lib/database';
 import { listItem, shop } from '@/lib/catalog';
-import { GLOVE_WEIGHTS, ouncesOf } from '@/lib/facets';
+import { GLOVE_WEIGHTS, ouncesOf, ozFacet } from '@/lib/facets';
+import { cartesDe } from '@/lib/listing';
+import { vuesDesModeles } from '@/lib/modeles';
 import { weeklySelection } from '@/lib/hub';
 import { parseNumber, parseUsage, recommendGloveWeight, USAGES, GLOVE_WEIGHT_FAQ, GLOVE_WEIGHT_REVISION } from '@/lib/glove-weight';
 import { graph, urlOf, webPageNode, faqNode } from '@/lib/seo';
@@ -36,9 +38,11 @@ export default async function GloveWeightPage({ searchParams }: Props) {
   const products = await readCatalog();
   const gloves = products.filter((p) => p.category === 'gants-de-boxe' && p.price > 0);
   const facts: WeightFacts[] = GLOVE_WEIGHTS.map((oz) => {
+    // Les fiches qui proposent ce poids, réunies par modèle : les chiffres de la page du poids, et des cartes sans doublon de coloris.
     const list = gloves.filter((p) => ouncesOf(p).includes(oz));
-    const s = list.map((p) => p.price).sort((a, b) => a - b);
-    return { oz, count: list.length, median: s[Math.floor(s.length / 2)] ?? 0, min: s[0] ?? 0, path: list.length >= 6 ? `/gants-de-boxe-${oz}-oz/` : null, picks: list.length >= 4 ? weeklySelection(`gants-de-boxe-${oz}-oz`, list).map(listItem) : [] };
+    const cartes = cartesDe(list, products);
+    const s = vuesDesModeles(list, products).map((p) => p.price).sort((a, b) => a - b);
+    return { oz, count: s.length, median: s[Math.floor(s.length / 2)] ?? 0, min: s[0] ?? 0, path: ozFacet(oz, products) ? `/gants-de-boxe-${oz}-oz/` : null, picks: cartes.length >= 4 ? weeklySelection(`gants-de-boxe-${oz}-oz`, cartes).map(listItem) : [] };
   });
   const advice = initial.usage ? recommendGloveWeight({ usage: initial.usage, kg: initial.kg, age: initial.age }) : null;
   const app = {

@@ -1,6 +1,7 @@
 import { ArrowUpRight, ArrowDown } from 'lucide-react';
 import { categories, categoryFor, getCategoryProducts, listItem, shop, type Product } from '@/lib/catalog';
 import { HOME_FAQ } from '@/lib/seo-copy';
+import { fichesDeTete } from '@/lib/modeles';
 import { SeoBody } from './seo-body';
 import { HeroRing } from './hero-ring';
 import {
@@ -29,6 +30,8 @@ const RECHERCHES_ACCUEIL = QUERY_MAP.filter((q, i, a) => !DEJA_LIEES.has(q.path)
 /** « 1 042 » : un compte tel que les textes l’écrivent (insécable U+00A0, la police d’affichage n’a pas l’espace fine). */
 const nombre = (n: number) => n.toLocaleString('fr-FR').replace(/ /g, ' ');
 export default function Home({ items }: { items: Product[] }) {
+  // Les comptes de l'accueil disent des modèles (11/11/2026) : une fiche de tête par modèle, quel que soit le nombre de ses coloris.
+  const tetes = fichesDeTete(items);
   // Quatre rounds à la une : le rouge qui arrête l’œil, le noir et or, le prix d’entrée du club, une protection.
   // Le nom court est écrit à la main : une fiche de pesée ne porte pas un intitulé de catalogue.
   const rounds = (
@@ -113,7 +116,7 @@ export default function Home({ items }: { items: Product[] }) {
         <HeroRing items={heroes.map((h) => h.product)} labels={heroes.map((h) => h.label)} />
         <div className="bench-signature">
           <span>BOUTIQUE DE BOXE / GANTS, PROTECTIONS, TEXTILE, SACS.</span>
-          <span>{nombre(items.length)} MODÈLES</span>
+          <span>{nombre(tetes.length)} MODÈLES</span>
         </div>
       </section>
       <nav className="practice-index" aria-label="Entrer par la pratique">
@@ -192,7 +195,7 @@ export default function Home({ items }: { items: Product[] }) {
             .filter((c) => c.families.length === 1 && c.families[0] === c.slug)
             .map((c, i) => {
               const p = items.find((p) => p.category === c.slug);
-              const count = items.filter((p) => p.category === c.slug).length;
+              const count = tetes.filter((p) => p.category === c.slug).length;
               return (
                 <a key={c.slug} href={'/' + c.slug + '/'}>
                   <span className="equipment-row-number">
@@ -224,7 +227,7 @@ export default function Home({ items }: { items: Product[] }) {
           <div className="practice-band-grid">
             {spaced(RAYONS_PRATIQUE.filter((r) => r.href !== '/materiel-sport-de-combat/').map((r) => {
               const c = categoryFor(r.href.slice(1, -1));
-              const count = c ? getCategoryProducts(c, items).length : 0;
+              const count = c ? getCategoryProducts(c, tetes).length : 0;
               return (
                 <a key={r.href} href={r.href}>
                   <h3>{r.label}</h3>{' '}

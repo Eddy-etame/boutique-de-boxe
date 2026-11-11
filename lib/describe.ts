@@ -281,19 +281,24 @@ export function longDescription(p: Product): string {
  * place dans la gamme de sa marque et ses autres coloris au catalogue. Les onces présentes sur la
  * fiche ne suffisent pas à établir un usage ou une homologation. Aucun avis, aucune vente.
  */
-export function placeDansLaFamille(p: Product, all: Product[]): string[] {
+export function placeDansLaFamille(p: Product, all: Product[], modeles?: { vues: Product[]; cle: string }): string[] {
   const family = categoryFor(p.category);
   if (!family || p.price <= 0) return [];
   const { a, G, v, le } = reprises(p);
   const out: string[] = [];
   const enfant = (x: Product) => x.audience === 'enfant' || ENFANT.test(x.name);
-  const pairs = all.filter((x) => x.category === p.category && x.price > 0 && dansLeRayon(p.category, x) && enfant(x) === enfant(p));
+  // Les comparables sont des modèles (11/11/2026) : la page passe les modèles du catalogue vus chacun comme un
+  // article (lib/modeles.ts, `vuesDesModeles`) et la clé du modèle de cette fiche. Un prix par modèle, son premier
+  // prix ; pour le modèle de cette fiche, le prix de cette fiche. Les autres coloris du modèle ne comptent donc
+  // ni parmi les moins chers ni parmi les plus chers.
+  const pairs = (modeles?.vues ?? all).filter((x) => x.category === p.category && x.price > 0 && dansLeRayon(p.category, x) && enfant(x) === enfant(p));
+  const prixDe = (x: Product) => (modeles && x.modele?.cle === modeles.cle ? p.price : x.price);
   const compte = (k: number, un: string, plusieurs: string) => (k === 0 ? `aucun n’est ${un}` : k === 1 ? `un seul est ${un}` : `${k} sont ${plusieurs}`);
   const autres = autresColoris(p, all);
   if (autres.length)
     out.push(`Autres ${a.teinte ? 'coloris' : 'versions'} au catalogue : ${autres.join(' / ')} ; cette fiche présente ${a.teinte ? 'le coloris' : 'la version'} ${a.variante}.`);
   if (pairs.length >= 6) {
-    const prix = pairs.map((x) => x.price).sort((x, y) => x - y);
+    const prix = pairs.map(prixDe).sort((x, y) => x - y);
     const moins = prix.filter((x) => x < p.price).length;
     const plus = prix.filter((x) => x > p.price).length;
     const median = prix[Math.floor(prix.length / 2)];
@@ -312,7 +317,7 @@ export function placeDansLaFamille(p: Product, all: Product[]): string[] {
                 : 'ce prix se place dans la moitié la plus chère';
     let gamme = '';
     if (a.marque) {
-      const marque = pairs.filter((x) => x.brand === p.brand).map((x) => x.price).sort((x, y) => x - y);
+      const marque = pairs.filter((x) => x.brand === p.brand).map(prixDe).sort((x, y) => x - y);
       const sous = marque.filter((x) => x < p.price).length;
       const dessus = marque.filter((x) => x > p.price).length;
       if (marque.length >= 2 && marque[0] !== marque[marque.length - 1])

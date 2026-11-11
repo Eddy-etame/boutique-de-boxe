@@ -1,5 +1,8 @@
 import { categories, money, type Product, livraison } from './catalog';
 import type { SeoFaq } from './seo-copy';
+import { marqueDeModele, vuesDesModeles } from './modeles';
+import { cartesParModele } from './un-par-modele';
+import { quiTient } from './phrases';
 
 /**
  * Pages de marque : la longue traîne avec du stock réel.
@@ -15,7 +18,12 @@ const NOT_A_BRAND = /pr[ée]ciser|^Sélection /i;
 export type Brand = {
   slug: string;
   name: string;
+  /** Les cartes de la marque (11/11/2026) : une fiche réelle par modèle, avec la marque de son modèle. Leur nombre est le nombre de modèles. */
   products: Product[];
+  /** Toutes les fiches de la marque, coloris compris : pour les seuils des pages et les listes à filtrer. */
+  fiches: Product[];
+  /** Les modèles de la marque vus chacun comme un article, à son premier prix (lib/modeles.ts) : ce que les textes chiffrent. */
+  vues: Product[];
   families: { slug: string; name: string; count: number }[];
   min: number;
   max: number;
@@ -34,28 +42,39 @@ const familyName = (slug: string) =>
   ({ 'arts-martiaux': 'Arts martiaux', 'chaussures-boxe': 'Chaussures de boxe', 'equipement-entrainement': 'Équipement d’entraînement', 'sacs-de-sport': 'Sacs de sport' } as Record<string, string>)[slug] ||
   slug;
 
+/** Les marques d'un catalogue se calculent une fois par liste : la réduction par modèle relit chaque fiche. */
+const marquesConnues = new WeakMap<Product[], Brand[]>();
+
 export function brandsOf(products: Product[]): Brand[] {
+  const connues = marquesConnues.get(products);
+  if (connues) return [...connues];
   const by = new Map<string, Product[]>();
   for (const p of products) {
     if (!p.brand || NOT_A_BRAND.test(p.brand)) continue;
     by.set(p.brand, [...(by.get(p.brand) || []), p]);
   }
-  return [...by.entries()]
+  const marques = [...by.entries()]
     .filter(([, list]) => list.length >= MIN_BRAND_PRODUCTS)
     .map(([name, list]) => {
+      // Les fiches d'un modèle sont toutes de la même marque : la liste de la marque suffit à les réunir.
+      const modeles = cartesParModele(list.map((p) => ({ ...p, modele: marqueDeModele(p, list) })));
       const counts = new Map<string, number>();
-      for (const p of list) counts.set(p.category, (counts.get(p.category) || 0) + 1);
+      for (const p of modeles) counts.set(p.category, (counts.get(p.category) || 0) + 1);
       const prices = list.map((p) => p.price).filter((n) => n > 0);
       return {
         slug: brandSlug(name),
         name,
-        products: list,
+        products: modeles,
+        fiches: list,
+        vues: vuesDesModeles(list, list),
         families: [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([slug, count]) => ({ slug, name: familyName(slug), count })),
         min: Math.min(...prices),
         max: Math.max(...prices),
       };
     })
     .sort((a, b) => b.products.length - a.products.length);
+  marquesConnues.set(products, marques);
+  return [...marques];
 }
 
 export const brandFor = (slug: string, products: Product[]) => brandsOf(products).find((b) => b.slug === slug);
@@ -67,9 +86,9 @@ const lower = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
 export function brandCopy(b: Brand) {
   const n = b.products.length;
   const top = b.families.slice(0, 3).map((f) => lower(f.name));
-  const sizes = [...new Set(b.products.flatMap((p) => p.sizes.map((s) => s.split(' (')[0])))].filter((s) => s.length <= 8).slice(0, 8);
-  const title = `${b.name} : ${top[0] || 'matériel de boxe'}, ${n} modèles ${b.name}`.slice(0, 60);
-  const description = `${b.name} chez Boutique de Boxe : ${n} modèles, ${list(top)}, de ${money(b.min)} à ${money(b.max)}. Tailles, photos et prix de vente TTC.`.slice(0, 158);
+  const sizes = [...new Set(b.vues.flatMap((p) => p.sizes.map((s) => s.split(' (')[0])))].filter((s) => s.length <= 8).slice(0, 8);
+  const title = quiTient(60, `${b.name} : ${top[0] || 'matériel de boxe'}, ${n} modèles ${b.name}`, `${b.name} : ${n} modèles, ${top[0] || 'matériel de boxe'}`, `${b.name} : ${n} modèles`);
+  const description = quiTient(158, ...[3, 2, 1].map((k) => `${b.name} chez Boutique de Boxe : ${n} modèles, ${list(top.slice(0, k))}, de ${money(b.min)} à ${money(b.max)}. Tailles, photos et prix de vente TTC.`));
   const intro = `${n} modèles ${b.name} au catalogue : ${list(b.families.map((f) => `${f.count} en ${lower(f.name)}`))}. Les prix vont de ${money(b.min)} à ${money(b.max)}. Chaque fiche donne les tailles réellement proposées et le prix de vente TTC.`;
   const faq: SeoFaq[] = [
     { question: `Quels produits ${b.name} trouve-t-on chez Boutique de Boxe ?`, answer: `${n} modèles ${b.name} : ${list(b.families.map((f) => `${f.count} en ${lower(f.name)}`))}. La liste complète est sur cette page, avec un filtre par équipement, par taille et par budget.` },
@@ -81,14 +100,22 @@ export function brandCopy(b: Brand) {
   return { title, description, intro, faq };
 }
 
-/** Par famille : nombre de modèles, prix le plus bas, prix médian, prix le plus haut. Des chiffres du catalogue, pas des estimations. */
-export function priceTable(products: Product[]) {
-  const by = new Map<string, number[]>();
-  for (const p of products) if (p.price > 0) by.set(p.category, [...(by.get(p.category) || []), p.price]);
-  return [...by.entries()]
-    .map(([slug, prices]) => {
-      const s = [...prices].sort((a, b) => a - b);
-      return { slug, name: familyName(slug), count: s.length, min: s[0], median: s[Math.floor(s.length / 2)], max: s[s.length - 1] };
-    })
-    .sort((a, b) => b.count - a.count);
+/** Le prix le plus haut d'un modèle vu comme un article : celui de sa fiche la plus chère. */
+const plusHaut = (p: Product) => p.modele?.max ?? p.price;
+
+/** Les prix d'une liste de vues : nombre de modèles, premier prix, prix médian (un prix par modèle, le premier), prix de la fiche la plus chère. */
+export function prixDesVues(vues: Product[]) {
+  const comptes = vues.filter((p) => p.price > 0);
+  const s = comptes.map((p) => p.price).sort((a, b) => a - b);
+  return { count: s.length, min: s[0], median: s[Math.floor(s.length / 2)], max: comptes.length ? Math.max(...comptes.map(plusHaut)) : 0 };
+}
+
+/**
+ * Par famille : nombre de modèles, prix le plus bas, prix médian, prix le plus haut. Des chiffres du catalogue, pas des
+ * estimations. La liste reçue est faite de vues de modèles (lib/modeles.ts, `vuesDesModeles`).
+ */
+export function priceTable(vues: Product[]) {
+  const by = new Map<string, Product[]>();
+  for (const p of vues) if (p.price > 0) by.set(p.category, [...(by.get(p.category) || []), p]);
+  return [...by.entries()].map(([slug, ps]) => ({ slug, name: familyName(slug), ...prixDesVues(ps) })).sort((a, b) => b.count - a.count);
 }

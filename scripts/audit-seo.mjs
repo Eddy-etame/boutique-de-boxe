@@ -411,7 +411,9 @@ assert.ok(!robots.includes('Disallow: /\n'));
 // Listes paginées par le proxy (un seul segment) : ?page=N (2 à 9999) est servi par la page statique
 // /<liste>/page-N/, sous sa canonique ?page=N. Depuis le 19/10 (proxy.ts), une valeur mal formée sert la
 // page 1 sous sa seule adresse canonique ; un numéro bien formé au-delà de la dernière page n’existe pas.
-const paginationSamples = ['/gants-de-boxe/', '/bandes-de-boxe/', '/gants-de-boxe-noirs/'];
+// Depuis « une carte par modèle » (11/11), une liste a une page 2 à partir de 37 modèles : les bandes (16 modèles)
+// n'en ont plus, les shorts de boxe thaï (63) en ont une.
+const paginationSamples = ['/gants-de-boxe/', '/shorts-de-boxe-thai/', '/gants-de-boxe-noirs/'];
 for (const path of paginationSamples) {
   for (const page of ['0', '-1', '1.5', 'Infinity', '99999']) {
     const r = await fetch(base + path + '?page=' + page);
