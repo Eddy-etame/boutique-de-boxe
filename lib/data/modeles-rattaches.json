@@ -365,5 +365,22 @@
  "bouteille-950-ml-squeeze-black-picht-blanche1-1": {
   "modele": "accessoires-boxe:under-armour:bouteille-under-armour-squeeze-950-ml",
   "libelle": "blanc et noir"
+ },
+ "short-de-boxe-thai-fairtex-bs1938-black-acid-jazz-1": {
+  "modele": "textile-boxe:fairtex:short-de-boxe-thai-fairtex-acid-jazz",
+  "libelle": "noir"
+ },
+ "short-de-boxe-thai-fairtex-bs1939-white-funky-soul": {
+  "modele": "textile-boxe:fairtex:short-de-boxe-thai-fairtex-funky-soul",
+  "libelle": "blanc"
+ },
+ "short-de-boxe-thai-fairtex-bs1710-green-camouflage": {
+  "modele": "textile-boxe:fairtex:short-de-boxe-thai-fairtex-bs1710",
+  "libelle": "vert et camo",
+  "nom": "Short de boxe thaï Fairtex BS1710"
+ },
+ "short-de-muay-thai-8-weapons-carbon-sak-yan-tigers-neon-jaune": {
+  "modele": "textile-boxe:8-weapons:short-de-boxe-thai-8-weapons-carbon-sak-yant-tigers",
+  "libelle": "Neon jaune"
  }
 }
