@@ -215,5 +215,55 @@
  "casque-integral-fairtex-noir-en-cuir": {
   "modele": "protections-boxe:fairtex:casque-fairtex-integral-hg10",
   "libelle": "seconde référence"
+ },
+ "bande-de-resistance-elion-power-11-30kg-noir": {
+  "modele": "equipement-entrainement:elion:bande-de-resistance-elion-power",
+  "libelle": "11 à 30 kg, noire",
+  "nom": "Bande de résistance Elion Power"
+ },
+ "bande-de-resistance-elion-power-16-38kg-violet": {
+  "modele": "equipement-entrainement:elion:bande-de-resistance-elion-power",
+  "libelle": "16 à 38 kg, violette",
+  "nom": "Bande de résistance Elion Power"
+ },
+ "bande-de-resistance-elion-power-23-54kg-vert": {
+  "modele": "equipement-entrainement:elion:bande-de-resistance-elion-power",
+  "libelle": "23 à 54 kg, verte",
+  "nom": "Bande de résistance Elion Power"
+ },
+ "elastic-band-excellerator-16kg": {
+  "modele": "equipement-entrainement:excellerator:elastique-excellerator",
+  "libelle": "16 kg, jaune",
+  "nom": "Élastique Excellerator"
+ },
+ "elastic-band-excellerator-25kg": {
+  "modele": "equipement-entrainement:excellerator:elastique-excellerator",
+  "libelle": "25 kg, rouge",
+  "nom": "Élastique Excellerator"
+ },
+ "elastic-band-excellerator-25kg-duplique": {
+  "modele": "equipement-entrainement:excellerator:elastique-excellerator",
+  "libelle": "20 à 40 kg, vert",
+  "nom": "Élastique Excellerator"
+ },
+ "pao-elion-pro-matblack": {
+  "modele": "equipement-entrainement:elion:pao-elion-pro",
+  "libelle": "Matblack",
+  "nom": "Pao Elion Pro"
+ },
+ "pao-elion-pro-10eme-anniversaire-noir-or": {
+  "modele": "equipement-entrainement:elion:pao-elion-pro",
+  "libelle": "Anniversaire noir et or",
+  "nom": "Pao Elion Pro"
+ },
+ "pao-fairtex-cuir-small-piece": {
+  "modele": "equipement-entrainement:fairtex:pao-fairtex-kplc",
+  "libelle": "KPLC1, 31 × 19 × 9 cm",
+  "nom": "Pao Fairtex KPLC, cuir"
+ },
+ "pao-fairtex-cuir-medium-piece": {
+  "modele": "equipement-entrainement:fairtex:pao-fairtex-kplc",
+  "libelle": "KPLC2, 37 × 19 × 10 cm",
+  "nom": "Pao Fairtex KPLC, cuir"
  }
 }

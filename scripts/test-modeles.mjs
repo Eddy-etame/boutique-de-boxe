@@ -58,8 +58,8 @@ test('every product page belongs to exactly one model, and every model has one h
     for (const p of m.fiches) assert.equal(cleDuModele(p), m.cle);
   }
   assert.equal(fichesDeTete(all).length, liste.length);
-  assert.equal(liste.length, 604);
-  assert.equal(plusieurs.length, 188);
+  assert.equal(liste.length, 598);
+  assert.equal(plusieurs.length, 192);
 });
 
 test('pages of one model share family and brand, and never mix two materials', () => {
