@@ -58,8 +58,8 @@ test('every product page belongs to exactly one model, and every model has one h
     for (const p of m.fiches) assert.equal(cleDuModele(p), m.cle);
   }
   assert.equal(fichesDeTete(all).length, liste.length);
-  assert.equal(liste.length, 617);
-  assert.equal(plusieurs.length, 185);
+  assert.equal(liste.length, 604);
+  assert.equal(plusieurs.length, 188);
 });
 
 test('pages of one model share family and brand, and never mix two materials', () => {
@@ -67,11 +67,12 @@ test('pages of one model share family and brand, and never mix two materials', (
   for (const m of plusieurs) {
     assert.equal(new Set(m.fiches.map((p) => p.category)).size, 1, m.cle);
     assert.equal(new Set(m.fiches.map((p) => p.brand)).size, 1, m.cle);
-    const tails = m.fiches.map((p) => {
+    // Une fiche rattachée à la main (la même paire de gants reprise d'une seconde source, par exemple) échappe à la règle du nom.
+    const tails = m.fiches.filter((p) => !rattaches[p.slug]).map((p) => {
       const at = p.name.lastIndexOf(', ');
       return (at > 0 ? p.name.slice(at + 2) : '').toLowerCase().match(MATIERE)?.sort().join('+') || '';
     });
-    assert.equal(new Set(tails).size, 1, 'one material per model: ' + m.cle + ' → ' + tails.join(' | '));
+    assert.ok(new Set(tails).size <= 1, 'one material per model: ' + m.cle + ' → ' + tails.join(' | '));
   }
 });
 

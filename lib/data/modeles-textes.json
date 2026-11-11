@@ -251,6 +251,13 @@
    "Fermeture auto-agrippante, logos imprimés et brodés. Deux versions, noir et or ou rouge lie-de-vin, du 8 au 16 oz."
   ]
  },
+ "gants-de-boxe:century:gants-de-sac-century-centurion": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le Centurion reprend le dessin du premier gant de sac à barre de préhension de Century, avec une allure vintage : du cuir véritable, noir et marron. Les doigts sont largement couverts, et le dos reçoit une mousse précourbée, pour le travail au sac lourd.",
+   "Le poignet se ferme en deux temps, avec un tour de poignet très long qui le soutient à la frappe. Quatre tailles, du S au XL."
+  ]
+ },
  "gants-de-boxe:champboxing:gants-de-boxe-d-entrainement-champboxing": {
   "ecrit": "2026-11-10",
   "texte": [
@@ -263,6 +270,13 @@
   "texte": [
    "Le gant d’initiation de Champboxing : du PU, une mousse injectée qui le garde léger, une barre de préhension et un large auto-agrippant. La marque le destine aux débutants et à la pratique de loisir, en boxe pieds-poings comme en anglaise.",
    "Trois couleurs sur la même fiche — noir, rouge ou bleu — et sept poids, du 4 au 16 oz : de quoi équiper un enfant comme un adulte."
+  ]
+ },
+ "gants-de-boxe:champboxing:gants-de-sac-champboxing": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Les premiers gants de sac de Champboxing : du Skintex, un cuir synthétique qui résiste aux chocs répétés, sur des mousses multi-densité. Ils existent en taille unique ; le large auto-agrippant les ajuste à la main.",
+   "Ils sont faits pour le sac de frappe, et évitent d’user ses gants d’entraînement sur les séances de frappe. Coloris noir."
   ]
  },
  "gants-de-boxe:cleto-reyes:gants-de-boxe-cleto-reyes-pro-ry2": {
@@ -365,9 +379,9 @@
   ]
  },
  "gants-de-boxe:elion:gants-de-boxe-l-arrogant-dragon-ball-z-elion": {
-  "ecrit": "2026-11-10",
+  "ecrit": "2026-11-11",
   "texte": [
-   "L’Arrogant est l’autre gant en cuir nappa d’Elion décliné sous licence Dragon Ball Z, cette fois du côté des adversaires : Cell, Frieza et Majin Buu. Édition limitée, faite à la main en Thaïlande.",
+   "L’Arrogant est l’autre gant en cuir nappa d’Elion décliné sous licence Dragon Ball Z, cette fois du côté des adversaires : Cell, Frieza, Majin Buu et Majin Vegeta. Édition limitée, faite à la main en Thaïlande.",
    "Fermeture auto-agrippante, doublure en nylon. Les tailles vont du 10 au 18 oz selon la version."
   ]
  },
@@ -399,6 +413,13 @@
    "La fermeture dépend du personnage, indique Elion. Naruto, Kakashi et Gaï se ferment par auto-agrippant ; Sasuke, Itachi et Orochimaru sont des gants à lacets, livrés avec un convertisseur Lace 2 Velcro assorti qui permet de les serrer seul. Tailles : du 10 au 16 oz."
   ]
  },
+ "gants-de-boxe:elion:gants-de-boxe-l-elegant-one-piece-elion": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Première paire de la collaboration entre One Piece et Elion Paris : L’Élégant, le gant signature de la marque, aux couleurs de Monkey D. Luffy, le garçon au chapeau de paille. Édition limitée, en cuir nappa pleine fleur.",
+   "Elion la propose en version sparring à fermeture auto-agrippante ; la version à lacets est livrée avec un convertisseur Lace 2 Velcro. Trois poids au catalogue : 12, 14 et 16 oz."
+  ]
+ },
  "gants-de-boxe:elion:gants-de-boxe-l-extravagant-elion": {
   "ecrit": "2026-11-10",
   "texte": [
@@ -418,6 +439,13 @@
   "texte": [
    "La gamme Extravagant d’Elion aux couleurs de One Piece : quatre paires, une par personnage — Luffy en rouge et bleu, Zoro en vert, Ace en noir et orange, Chopper en rose et bleu.",
    "Sous le décor, c’est l’Extravagant de série : PU mat, mousse triple densité, paume rembourrée, barre de préhension et large fermeture auto-agrippante. Les tailles commencent aux 4 et 6 oz des plus jeunes et montent jusqu’au 16 oz."
+  ]
+ },
+ "gants-de-boxe:elion:gants-de-sac-elion-anniversaire": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Les gants de sac d’Elion dans leur édition du dixième anniversaire, noir et or. Fabrication thaïlandaise, en Skintex, sur des mousses de plusieurs densités : un gant léger, réservé au sac et aux cibles.",
+   "Taille unique, fermeture auto-agrippante."
   ]
  },
  "gants-de-boxe:fairtex:gants-de-boxe-d-entrainement-fairtex-bgv1": {
@@ -442,10 +470,10 @@
   ]
  },
  "gants-de-boxe:fairtex:gants-de-boxe-d-entrainement-fairtex-bgv19": {
-  "ecrit": "2026-11-10",
+  "ecrit": "2026-11-11",
   "texte": [
    "Le BGV19 part du BGV1, le gant universel de Fairtex, et le resserre : un compartiment de main plus ajusté et plus compact, un peu plus de rembourrage sur les articulations, et une position du pouce reprise du BGV16. Une barre de préhension complète l’ensemble.",
-   "Cuir. Deux coloris, noir et or, en 10, 12, 14 et 16 oz."
+   "Cuir. Au catalogue : noir et or, en 10, 12, 14 et 16 oz, et une seconde fiche du noir, vendue sous le nom Deluxe."
   ]
  },
  "gants-de-boxe:fairtex:gants-de-boxe-d-entrainement-fairtex-bgv24-beauty": {
@@ -539,6 +567,20 @@
    "Rouge ou bleu, les couleurs des coins ; 8, 10 et 12 oz selon le coloris. Fairtex recommande la vaseline naturelle pour entretenir le cuir."
   ]
  },
+ "gants-de-boxe:fairtex:gants-de-sac-fairtex": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Les gants de sac de Fairtex sont en cuir, faits à la main en Thaïlande. Le pouce est protégé mais ouvert au bout, pour l’aération ; la mousse est préformée, donc déjà en forme de poing à la première séance.",
+   "Fermeture auto-agrippante. Trois tailles : M, L et XL. La marque les donne pour une pratique intensive des boxes pieds-poings."
+  ]
+ },
+ "gants-de-boxe:rd-boxing:gants-de-boxe-rd-boxing-ultimate-v6:cuir": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "L’Ultimate V6 de RD Boxing est un gant d’entraînement intensif et de sparring, pour toutes les boxes. Son rembourrage est un composite hybride, la mousse 4HFC associée à du gel, formé d’une seule pièce ; sa coque est en cuir de 1,2 mm d’un seul tenant.",
+   "Deux autres points propres à cette version : une fenêtre d’aération en cuir thermosoudée et une manchette rigide, la Stiff Wrist, pour verrouiller le poignet. Coloris noir, du 8 au 16 oz."
+  ]
+ },
  "gants-de-boxe:rdx:gants-de-boxe-enfant-rdx-4b-robo": {
   "ecrit": "2026-11-10",
   "texte": [
@@ -595,6 +637,13 @@
    "Trois poids au catalogue : 10, 12 et 14 oz."
   ]
  },
+ "gants-de-boxe:twins:gants-de-sac-twins-tbm-1": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le TBM 1 est le gant de sac traditionnel de Twins : un pouce complet, un poignet élastique qui s’enfile sans attache, et un rembourrage léger qui laisse de la vitesse sur le sac et les paos tout en protégeant les mains.",
+   "Cuir, entièrement fait à la main en Thaïlande. Coloris noir ; trois tailles, M, L et XL."
+  ]
+ },
  "gants-de-boxe:venum:gants-de-boxe-d-entrainement-venum-contender-2-0": {
   "ecrit": "2026-11-10",
   "texte": [
@@ -607,6 +656,55 @@
   "texte": [
    "Un gant pour enfant de la collection Okinawa de Venum : un rembourrage de mousse en plusieurs couches, qui amortit en douceur, une paume renforcée en mesh et un pouce attaché contre les torsions.",
    "Fermeture auto-agrippante. Il convient à toutes les boxes, pour une pratique régulière. Deux tailles, 6 et 8 oz."
+  ]
+ },
+ "gants-mma:century:gants-mma-century-brave-competition-training": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le Brave de Century est un gant de MMA polyvalent, pour le travail debout comme au sol. Un mesh élastique dans les deux sens l’ajuste à la main et le garde souple ; la marque le donne pour le fitness de combat, le sac et le sparring d’entraînement.",
+   "Deux tailles, S/M et L/XL. Deux coloris : bleu et argent, noir et rouge."
+  ]
+ },
+ "gants-mma:elion:gants-mma-elion-sparring": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le Sparring est le gant de MMA à paume ouverte d’Elion : une mousse injectée encaisse les frappes des sparrings appuyés sans gêner la main, qui reste libre pour saisir. L’extérieur est en cuir synthétique mat, l’intérieur en néoprène.",
+   "Un seul tour de poignet le ferme et tient l’articulation ; le pouce est attaché. Trois coloris mats au catalogue : kaki, bleu marine et noir. Une version en cuir existe sur une autre fiche."
+  ]
+ },
+ "gants-mma:elion:gants-mma-elion-sparring-matblack:cuir": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La version cuir du gant de MMA Sparring d’Elion : un cuir noir mat à la place du synthétique, pour durer plus longtemps, et un intérieur en néoprène rouge marqué du logo de la marque.",
+   "Le reste est identique : mousse injectée pour les sparrings appuyés, paume ouverte pour les saisies, pouce attaché, fermeture par un seul tour de poignet."
+  ]
+ },
+ "gants-mma:elion:gants-mma-elion-super-sparring": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le Super Sparring est le gant de MMA qu’Elion destine aux sparrings appuyés : une mousse injectée qui absorbe les chocs, une paume ouverte qui laisse la main libre pour les saisies, et un pouce attaché qui limite les blessures.",
+   "Extérieur en cuir synthétique, intérieur en néoprène qui absorbe la transpiration. Le poignet se ferme par un seul tour de sangle. Cinq coloris ; taille unique adulte, et une taille junior selon le coloris."
+  ]
+ },
+ "gants-mma:elion:gants-mma-elion-uncage-matblack": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le gant de MMA de la collection Uncage d’Elion est en Skintex mat, sur une mousse double densité, avec une doublure en toile de nylon. Il est profilé au niveau des phalanges, pour une bonne prise en main dans les saisies.",
+   "Large fermeture auto-agrippante, coutures épaisses renforcées, fabrication thaïlandaise. Deux tailles : S/M, la taille standard, et L/XL pour les grandes mains. Trois versions : Matblack noir, Matblack rose et l’édition noir et or du dixième anniversaire."
+  ]
+ },
+ "gants-mma:elion:gants-mma-naruto-elion-super-sparring": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le gant de MMA Super Sparring d’Elion sous licence Naruto Shippuden, en trois versions : Akatsuki, noir et rouge ; Naruto, noir et orange ; Sasuke, bleu.",
+   "Le gant ne change pas sous son décor — cuir synthétique, mousse injectée, doublure en néoprène, paume ouverte, pouce attaché, fermeture par un tour de poignet. Deux tailles : junior et adulte."
+  ]
+ },
+ "gants-mma:fairtex:gants-fairtex-free-fight-v17": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le V17 est le gant de free fight de Fairtex, fait à la main en Thaïlande. Son cuir nappa est paraffiné à chaud contre l’acidité de la transpiration ; un nylon épais, collé directement à la mousse, protège celle-ci de l’humidité.",
+   "La mousse haute densité protège sous une faible épaisseur, et les coutures, en fil épais enduit, résistent à la transpiration et aux torsions. Coloris noir ; trois tailles, M, L et XL."
   ]
  },
  "protections-boxe:adidas:casque-adidas-competition-aiba-multiboxe:cuir": {
@@ -698,6 +796,20 @@
   "texte": [
    "Protège-tibias et pieds en PU de Champboxing : une mousse haute densité, renforcée sur l’arête du tibia et sur le pied, dans une coupe fine et profilée. Il se serre sur la jambe par une double attache auto-agrippante et s’enfile vite, grâce aux bandes élastiques qui prennent le pied et la cheville.",
    "Trois tailles : junior, S/M et L/XL. Coutures renforcées."
+  ]
+ },
+ "protections-boxe:champboxing:support-et-coquille-champboxing-multiboxe": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Un ensemble slip et coquille : le support, en élasthanne, plaque la coquille au corps, et celle-ci se retire pour laver le slip à part. Ses bords sont renforcés de caoutchouc, pour le confort et l’absorption des chocs.",
+   "Champboxing le destine à toutes les boxes. Les tailles suivent les repères de la marque : S pour 26-32, M pour 32-38, L pour 38-44, XL pour 44-50."
+  ]
+ },
+ "protections-boxe:champboxing:support-et-pelvienne-champboxing-protection-femme": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "L’équivalent féminin de l’ensemble slip et coquille : un support en élasthanne et une protection pelvienne dont les bords sont renforcés, pour le confort comme pour l’absorption des chocs.",
+   "Champboxing le destine à toutes les boxes. Trois tailles, selon les repères de la marque : S pour 26-32, M pour 32-38, L pour 38-44."
   ]
  },
  "protections-boxe:cleto-reyes:casque-cleto-reyes-sparring": {
@@ -826,6 +938,13 @@
    "Les cotes sont données : 22 cm pour le protège-pied, 37 cm de hauteur de tibia en S/M, 39 cm en L/XL. Fait main en Thaïlande, comme le rappelle la signature portée sur le côté. Deux coloris, noir mat ou noir et or."
   ]
  },
+ "protections-boxe:elion:protege-tibias-et-pieds-elion:skintex": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le protège-tibias et pieds en Skintex d’Elion : une mousse haute densité, renforcée sur l’arête du tibia et sur le pied, sous un cuir synthétique facile d’entretien, dans une coupe fine. Deux larges attaches auto-agrippantes l’ajustent à la jambe, et de larges bandes élastiques prennent le pied et la cheville.",
+   "Protège-pied de 22 cm ; hauteur de tibia de 37 cm en S/M et de 39 cm en L/XL, 32 cm pour le XS de l’édition anniversaire. Quatre versions, toutes faites à la main en Thaïlande : Audace, une paire dépareillée, un protège-tibias noir et un blanc ; Matblack rose ; Silk bleu, d’aspect métallisé ; et le noir et or du dixième anniversaire."
+  ]
+ },
  "protections-boxe:everlast:casque-de-boxe-everlast": {
   "ecrit": "2026-11-10",
   "texte": [
@@ -866,6 +985,20 @@
   "texte": [
    "Le SP5 est un protège-tibias long : il couvre le pied et le tibia et protège des impacts jusqu’au genou. Fairtex le fabrique en Thaïlande, en Skintex enduit, avec des coutures renforcées et enduites elles aussi, pour que l’acidité de la transpiration n’attaque ni les fils ni les mousses.",
    "La mousse est renforcée sur l’arête du tibia ; l’intérieur est en nylon. Quatre tailles, du S au XL, et quatre coloris : noir, blanc, bleu, rouge."
+  ]
+ },
+ "protections-boxe:fairtex:protege-tibias-fairtex-sp9-ultra-ergo": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le SP9 Ultra Ergo reprend le « système ouvert » de Fairtex : le protège-tibia et le protège-pied sont articulés sans couture et bougent indépendamment l’un de l’autre, jusqu’à 180 degrés. Le pied reste donc libre dans les déplacements et les pivots.",
+   "La coque épouse et soutient le tibia, avec des protections latérales pour élargir la couverture ; les sangles se règlent pour tous les tours de mollet. Coloris noir, du S au XL."
+  ]
+ },
+ "protections-boxe:fairtex:veste-fairtex-de-protection-tv2": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La TV2 est une veste de protection pour entraîneur : un rembourrage épais sur le devant et sur les côtés encaisse les frappes au corps pendant que le coach tient les paos.",
+   "Fairtex la fabrique en Thaïlande, en microfibre, une matière synthétique que la marque dit aussi résistante que le cuir dans la durée. Taille adulte, coloris noir et or."
   ]
  },
  "protections-boxe:mcdavid:ceinture-mcdavid-lombaire-et-de-sudation:neoprene": {
@@ -979,10 +1112,10 @@
   ]
  },
  "protections-boxe:shock-doctor:protege-dents-shock-doctor-gel-max": {
-  "ecrit": "2026-11-10",
+  "ecrit": "2026-11-11",
   "texte": [
    "Le Gel Max est un protège-dents thermoformable, à partir de 11 ans : une couche de gel qui se moule sur les dents et amortit les chocs de face, autour d’un noyau dur qui répartit l’impact. Shock Doctor annonce une protection des dents du haut comme du bas.",
-   "Le moulage suit la notice de la marque : 90 secondes dans une eau portée à ébullition, sans toucher le fond ; une seconde dans l’eau froide ; 20 secondes dents serrées ; puis 30 secondes dans l’eau froide pour fixer l’empreinte. Réussi, il tient seul à la mâchoire supérieure quand on ouvre la bouche. Six coloris."
+   "Le moulage suit la notice de la marque : 90 secondes dans une eau portée à ébullition, sans toucher le fond ; une seconde dans l’eau froide ; 20 secondes dents serrées ; puis 30 secondes dans l’eau froide pour fixer l’empreinte. Réussi, il tient seul à la mâchoire supérieure quand on ouvre la bouche. Sept versions au catalogue, dont la Power Trans bleue."
   ]
  },
  "protections-boxe:shock-doctor:protege-dents-shock-doctor-simple-braces": {
@@ -997,6 +1130,27 @@
   "texte": [
    "L’Ultra Multi-Sport se distingue des autres protège-dents Shock Doctor par son moulage : le système FastFit l’ajuste aux dents sans passer par l’eau bouillante. Sa conception fine laisse respirer et parler avec le protège-dents en bouche.",
    "La marque annonce une protection des dents et de la mâchoire. Deux coloris, noir et blanc."
+  ]
+ },
+ "protections-boxe:shock-doctor:short-et-coquille-shock-doctor-core-compression-221": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Un short de compression long vendu avec sa coquille : la BioFlex de Shock Doctor, bordée de gel, se glisse dans une poche X-Fit qui la tient en place. Le tissu extensible soutient les muscles et évacue l’humidité ; les coutures sont plates et le short ventilé.",
+   "C’est la protection de bas-ventre du MMA et du grappling, où une coquille à ceinture gênerait au sol. Quatre tailles, du S au XL."
+  ]
+ },
+ "protections-boxe:shock-doctor:short-shock-doctor-de-compression-pour-coquille-220": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le short de compression 220 de Shock Doctor reçoit une coquille : une poche en mesh double, intégrée, la maintient fermement et laisse l’air circuler. Le tissu, extensible dans les quatre sens, suit les mouvements et évacue l’humidité ; la ceinture est conçue pour ne pas irriter.",
+   "Coloris blanc, du S au XL. La fiche ne mentionne pas de coquille fournie ; la version 221 est vendue avec la sienne."
+  ]
+ },
+ "protections-boxe:shock-doctor:strap-genou-shock-doctor": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le strap de genou Shock Doctor est une sangle à soutien interne réglable, conçue pour soulager la douleur liée à un mauvais alignement de la rotule. Il est en Lycra et en néoprène N-Tex, sans latex.",
+   "La marque le classe au niveau 1 de sa gamme : un maintien léger, pour des gênes mineures, porté au quotidien. Ce n’est ni une protection contre les coups ni un substitut à un avis médical. Deux tailles, S/M et L/XL."
   ]
  },
  "protections-boxe:top-ten:casque-de-boxe-top-ten": {
@@ -1039,6 +1193,356 @@
   "texte": [
    "Les chevillères de la collection RWS, que Venum a créée pour le Rajadamnern World Series de Bangkok. Elles sont faites d’un mélange de coton et d’élasthanne et soutiennent la cheville pendant le combat.",
    "Le logo est floqué dans une matière souple, pour ne pas craqueler. Lavage à 30 °C. Coloris noir."
+  ]
+ },
+ "sacs-de-frappe:adidas:attache-plafond-adidas-pour-sac-de-frappe": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Une attache de plafond en acier pour suspendre un sac de frappe. Adidas l’annonce pour une charge de 50 kg au plus et la livre avec ses vis, prévues pour une poutre en bois.",
+   "Vérifiez le poids de votre sac rempli avant de choisir : au-delà de 50 kg, il faut une autre fixation. Sur du béton ou une plaque de plâtre, les vis fournies ne conviennent pas : prévoyez une fixation adaptée au support."
+  ]
+ },
+ "sacs-de-frappe:aqua-punching-bag:chaine-renforcee-pour-sac-de-frappe-et-aqua-punching-bag": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Ce kit de chaîne intègre une rotule : le sac tourne sur lui-même sans vriller la chaîne. Il ne pèse que 2 kg, pour ne pas charger inutilement le plafond ou la potence, et supporte pourtant des sacs jusqu’à 100 kg.",
+   "Longueur : 1,20 m. Il convient aux sacs de frappe classiques comme aux Aqua Punching Bags, les sacs remplis d’eau de la marque."
+  ]
+ },
+ "sacs-de-frappe:aqua-punching-bag:sac-de-frappe-aqua-punching-bag-15-kg": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "L’Aqua Punching Bag se remplit d’eau : à l’impact, l’eau se déplace et absorbe le coup, ce qui ménage les poignets, les coudes et les épaules, et donne une sensation plus proche d’un corps que d’un sac classique.",
+   "Le modèle de 15 kg mesure 30 × 30 × 43 cm : assez compact pour un appartement, assez grand pour les poings, les pieds et les coudes. Il pèse 3 kg à vide. Kit de chaîne vendu à part ; garantie de deux ans. Six coloris sur la fiche."
+  ]
+ },
+ "sacs-de-frappe:aqua-punching-bag:sac-de-frappe-aqua-punching-bag-35-kg": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le format du milieu parmi les cinq Aqua Punching Bags du catalogue, qui vont de 7 à 85 kg : 33 × 33 × 56 cm, 5 kg à vide, 35 kg une fois rempli d’eau. Son enveloppe est en vinyle épais, conçu pour ne pas fuir.",
+   "L’eau donne à la frappe une résistance progressive et épargne les articulations. Il se suspend à une chaîne, vendue séparément. Garantie de deux ans."
+  ]
+ },
+ "sacs-de-frappe:aqua-punching-bag:sac-de-frappe-aqua-punching-bag-7-kg": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le plus petit des cinq Aqua Punching Bags du catalogue : 33 × 23 × 23 cm, 2 kg à vide et 7 kg rempli. Un sac d’eau de cette taille se travaille en vitesse et en précision — directs, crochets, uppercuts — et s’accroche presque partout.",
+   "Kit de chaîne vendu séparément. Garantie de deux ans. Six coloris au choix sur la fiche."
+  ]
+ },
+ "sacs-de-frappe:aqua-punching-bag:sac-de-frappe-aqua-punching-bag-85-kg": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le plus lourd des Aqua Punching Bags : 7 kg à vide, environ 85 kg rempli d’eau, pour 79 × 48 × 28 cm. Il est fait pour les enchaînements en puissance, poings et pieds.",
+   "Comme les autres sacs de la marque, il amortit par le déplacement de l’eau, ce qui épargne les articulations. Kit de chaîne vendu séparément ; garantie de deux ans. À ce poids, vérifiez la charge admise par votre point d’accroche."
+  ]
+ },
+ "sacs-de-frappe:century:attache-plafond-century-pour-sac-de-frappe": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "L’attache de plafond de Century est en acier zingué, donc protégée de la corrosion, et supporte jusqu’à 50 kg. Elle est fournie avec des vis pour une fixation dans une poutre en bois.",
+   "Cinquante kilos sont une limite, pas une cible : un sac de 45 kg en mouvement la sollicite déjà fortement."
+  ]
+ },
+ "sacs-de-frappe:century:base-de-frappe-century-versys-vs-1-pro": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le Versys VS.1 Pro est un sac autonome de 1,75 m, 45 cm de diamètre, en vinyle. Il se travaille debout, comme un sac sur pied, et sert aussi aux exercices de base du MMA.",
+   "Il est livré vide et se leste avec 55 à 60 kg de sable, selon la taille des grains. Century le décrit comme plus léger que son Wavemaster XXL, facile à monter, à déplacer et à ranger après la séance."
+  ]
+ },
+ "sacs-de-frappe:century:base-de-frappe-century-versys-vs-bob": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le Versys VS Bob est un mannequin de frappe sur pied : un buste Bob monté sur une structure à trois jambes, stable et 60 % plus légère que la plupart des sacs sur pied lestés, selon Century. On le déplace donc facilement, et plusieurs personnes peuvent le travailler en même temps.",
+   "Il sert au conditionnement, à l’endurance, à la vitesse et au travail technique, frappes basses comprises. Il est livré vide."
+  ]
+ },
+ "sacs-de-frappe:century:mannequin-de-frappe-big-bob-xl-century": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le Big BOB XL est la grande version du mannequin de frappe de Century : un buste en latex injecté, aux formes d’un adversaire, monté sur une base à remplir d’eau ou de sable. On y travaille la précision des frappes sur un visage, un plexus, des côtes, là où un sac n’offre qu’un cylindre.",
+   "Fabrication américaine. Lesté, l’ensemble pèse 115 kg ; la hauteur se règle sur huit crans, de 1,50 m à 1,90 m. Garantie d’un an."
+  ]
+ },
+ "sacs-de-frappe:century:mannequin-de-frappe-century-bob": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le BOB de Century est un buste d’adversaire en latex injecté, posé sur une base lestée : le mannequin de frappe que la marque américaine fabrique aux États-Unis. Il permet de répéter les percussions, les saisies et le placement des coups sur une cible à forme humaine.",
+   "La base se remplit d’eau ou de sable, pour un poids de 115 kg, et le buste se règle en hauteur de 1,50 m à 1,90 m, sur huit positions. Garantie d’un an ; livraison à domicile, sur devis."
+  ]
+ },
+ "sacs-de-frappe:century:portique-century-simple": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le portique simple de Century porte un sac jusqu’à 45 kg et 1,50 m de haut, sans rien fixer au sol ni au mur. La structure, en tube d’acier, mesure 2,10 m de haut pour 1,20 m de large et 1,20 m de profondeur.",
+   "Il se leste avec des poids pour gagner en stabilité. Le colis pèse 22,5 kg ; le sac n’est pas fourni."
+  ]
+ },
+ "sacs-de-frappe:century:portique-sac-de-frappe-century-4-en-1": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Quatre postes sur un seul portique : une barre de tractions, une barre de dips, deux poignées fixes pour les pompes et une accroche pour sac de frappe. Century y réunit le renforcement musculaire et le cardio sur 1,22 m de large et 1,39 m de profondeur, pour 2,25 m de haut.",
+   "Le sac ne doit pas dépasser 1,50 m ni 50 kg. Structure en acier ; le colis pèse 40 kg."
+  ]
+ },
+ "sacs-de-frappe:century:potence-rabattable-century": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Cette potence murale se rabat : l’entraînement fini, le sac se replie contre le mur et libère la pièce. Century l’a testée pour des sacs jusqu’à 45 kg et conseille un ressort de compression pour limiter l’effort sur la fixation.",
+   "Acier renforcé, huit points de fixation, 60 cm de large. Sa tenue dépend de la qualité de la fixation au mur."
+  ]
+ },
+ "sacs-de-frappe:century:sac-de-frappe-sur-pied-century-wavemaster": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le Wavemaster est un sac sur pied : pas de portique, pas de potence, aucun trou dans un mur. La surface de frappe mesure 65 cm de haut pour 32 cm de diamètre, sur une base de 65 cm de diamètre que l’on remplit d’eau ou de sable, jusqu’à 115 kg.",
+   "Century l’habille de mousses épaisses, qui amortissent et gardent leur forme. Il convient au travail des poings comme des pieds. Trois coloris : noir, bleu et rouge."
+  ]
+ },
+ "sacs-de-frappe:century:sac-de-frappe-sur-pied-century-wavemaster-kid-kick": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le Kid Kick est le Wavemaster des enfants : un sac sur pied dont la hauteur se règle sur quatre positions, de 1 m à 1,35 m, pour suivre la croissance. Sa base arrondie permet de le déplacer en le faisant rouler.",
+   "Enveloppe en nylon, mousse intérieure prévue pour les impacts. Rempli d’eau, il pèse environ 77 kg. Garantie d’un an."
+  ]
+ },
+ "sacs-de-frappe:century:sac-de-frappe-sur-pied-century-wavemaster-powerline": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le Powerline est un Wavemaster renforcé : son vinyle recouvre deux fois plus de mousse haute densité que le modèle courant, selon Century. La cible mesure environ 45 cm de diamètre pour 66 cm de haut, et se règle sur huit hauteurs, de 1,19 m à 1,72 m.",
+   "La base se remplit de sable ou d’eau, pour 122 kg environ, et se déplace en la roulant. Century le destine au karaté, au taekwondo, au kick-boxing et à la remise en forme. Coloris bleu."
+  ]
+ },
+ "sacs-de-frappe:century:sac-de-frappe-sur-pied-century-wavemaster-pro": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La version XXL du sac sur pied de Century : une surface de frappe de 1,32 m de haut pour 46 cm de diamètre, de quoi enchaîner du low kick au crochet sans changer de cible. L’ensemble culmine à 1,75 m.",
+   "La base, 80 cm de diamètre pour 45 cm de haut, se remplit d’eau ou de sable jusqu’à 115 kg. Mousses épaisses, qui tiennent leur forme dans le temps. Trois coloris : noir, bleu et rouge."
+  ]
+ },
+ "sacs-de-frappe:century:station-d-entrainement-focusmaster-century-station-d-entrainement": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le Focusmaster G-1000 est une station de frappe en acier, haute de 1,80 m et large de 30 cm, qui se fixe au mur et au sol. Elle porte trois cibles réglables : on les déplace pour varier les hauteurs et les angles, coups de poing comme coups de pied.",
+   "D’autres cibles, vendues séparément, peuvent s’y ajouter. Century la destine à la boxe, aux arts martiaux et au fitness."
+  ]
+ },
+ "sacs-de-frappe:cleto-reyes:poire-de-vitesse-cleto-reyes": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Cette fiche réunit les trois coloris de la poire de vitesse Cleto Reyes : rouge, noir et Mexique, aux couleurs du drapeau. Le cuir, tanné dans les ateliers de la marque au Mexique, est souple et épais ; avec la qualité de la vessie, c’est ce qui la fait durer.",
+   "Son diamètre n’est pas précisé ici : la poire Cleto Reyes de 13 cm a sa propre fiche."
+  ]
+ },
+ "sacs-de-frappe:cleto-reyes:poire-de-vitesse-cleto-reyes-13-cm": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La poire de vitesse de Cleto Reyes est en cuir tanné, autour d’une vessie très épaisse : deux raisons de sa longévité, selon la maison mexicaine. Cette fiche est celle du petit format, 13 cm de diamètre, le plus rapide ; la marque en fait aussi une de 16 cm.",
+   "Deux coloris au catalogue, noir et rouge. Elle se monte sur une plateforme de vitesse à rotule."
+  ]
+ },
+ "sacs-de-frappe:elion:poire-de-vitesse-elion-13-cm": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La poire de vitesse de la collection Uncage d’Elion est faite main, en Skintex mat : des panneaux cousus, et une attache en Skintex doublée d’une bande de nylon rivetée.",
+   "Diamètre maximal : 13 cm, le petit format, vif. Le logo Elion est imprimé en rouge sur deux panneaux opposés. Coloris noir."
+  ]
+ },
+ "sacs-de-frappe:elion:poire-de-vitesse-elion-smiley-50th-anniversary:cuir": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La poire de vitesse en cuir de la Collection Paris d’Elion, dans l’édition limitée des cinquante ans de Smiley : le même dessin épuré, relevé du motif Smiley, en jaune ou en noir.",
+   "Diamètre : 13 cm. Elle est fabriquée à la main en Thaïlande ; le cuir lui donne plus de rebond et de longévité que le synthétique, indique la marque."
+  ]
+ },
+ "sacs-de-frappe:elion:poire-de-vitesse-elion:cuir": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Après ses poires en PU, Elion est passé au cuir avec la Collection Paris : des panneaux en cuir nappa, et une attache en cuir nappa elle aussi, doublée d’une bande de nylon rivetée pour résister à l’arrachement. Le cuir donne plus de rebond et de longévité que le synthétique, indique la marque.",
+   "Diamètre maximal : 13 cm. Fabrication à la main en Thaïlande. Quatre versions : noir, tricolore, et deux teintes vintage, bordeaux et marron."
+  ]
+ },
+ "sacs-de-frappe:elion:ressort-pour-sac-de-frappe-elion": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Un ressort en acier à placer entre le point d’ancrage et le sac de frappe : il absorbe une partie des vibrations et du bruit à chaque impact. Le confort de frappe y gagne, et la fixation au plafond ou à la potence fatigue moins.",
+   "Poids : 0,54 kg."
+  ]
+ },
+ "sacs-de-frappe:elion:rotule-roulement-a-billes-elion": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La rotule Elion fixe une poire de vitesse sous sa plateforme. Elle est en acier chromé, montée sur roulement à billes, et se pose avec quatre vis.",
+   "Une pièce d’usure : c’est elle qui encaisse chaque rebond, et on la remplace quand la rotation n’est plus fluide."
+  ]
+ },
+ "sacs-de-frappe:elion:sac-de-frappe-elion-1-35-m-45-kg:cuir": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le sac de frappe de la Collection Paris d’Elion est taillé dans une seule pièce de cuir et cousu à la main en Thaïlande. Il mesure 1,35 m pour 40 cm de diamètre et pèse 45 kg.",
+   "Il se suspend par des sangles doublées, moins bruyantes que des chaînes, dont les fixations sur le sac sont renforcées ; comptez 25 cm de sangles au-dessus du sac une fois accroché. Une fermeture éclair ferme le dessus, et une boucle en partie basse permet de l’arrimer au sol. Quatre coloris de cuir : noir, bordeaux, kaki et marron."
+  ]
+ },
+ "sacs-de-frappe:elion:sac-de-frappe-elion-skintex-55-kg-1-60-m": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Un sac de frappe Elion de 1,60 m, pour 55 kg environ, en Skintex noir mat relevé d’or. Il est fait à la main en Thaïlande, comme les sacs en cuir de la marque.",
+   "Suspension par sangles doublées, moins bruyantes que des chaînes et renforcées à leur point d’attache ; fermeture éclair sur le dessus. Le Skintex, un cuir synthétique, s’entretient facilement."
+  ]
+ },
+ "sacs-de-frappe:elion:sac-de-frappe-elion-smiley-50th-anniversary-1-30-m-45-kg:cuir": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le sac de frappe en cuir d’Elion dans l’édition limitée Smiley, sous licence officielle : 1,30 m, 45 kg, en jaune ou en noir.",
+   "Comme le sac de la Collection Paris, il se suspend par des sangles doublées, plus silencieuses que des chaînes et renforcées à leur point d’attache, s’ouvre par une fermeture éclair sur le dessus et porte une boucle en partie basse pour l’arrimage."
+  ]
+ },
+ "sacs-de-frappe:everlast:chaine-pour-sac-de-frappe-everlast": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Un jeu de chaînes en acier pour suspendre un sac de frappe. Ses nombreux points de fixation permettent de l’adapter à la plupart des sacs, quel que soit le nombre de leurs attaches.",
+   "Les chaînes remplacent les sangles d’origine quand elles s’usent, ou quand on veut régler la hauteur du sac maillon par maillon."
+  ]
+ },
+ "sacs-de-frappe:everlast:portique-sac-de-frappe-everlast-avec-plateforme": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le portique Everlast réunit deux postes : une potence pour un sac de frappe jusqu’à 1,50 m et 45 kg, et une plateforme pour poire de vitesse. Il se pose au sol, sans percer de mur.",
+   "La structure est en acier trempé, renforcée ; en cas de frappe lourde, on la stabilise avec des lests, non fournis. Emprise au sol : environ 1,21 m sur 1,69 m."
+  ]
+ },
+ "sacs-de-frappe:everlast:rotule-everlast-roulement-a-billes": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La rotule relie la poire de vitesse à sa plateforme. Celle d’Everlast, tout en acier, tourne sur roulement à billes : la rotation est libre sur 360°, et le rebond régulier même à grande vitesse.",
+   "Elle se fixe par quatre trous distants de 5 cm, et ne sert qu’aux poires de vitesse."
+  ]
+ },
+ "sacs-de-frappe:fairtex:cible-de-frappe-fairtex-uppercut-uc1": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "L’UC1 est une cible murale : fixée au mur, elle sert à travailler les uppercuts et les crochets avec précision, deux coups qu’un sac suspendu droit reçoit mal.",
+   "Dimensions : 70 × 40 cm, pour 15 kg. Sa fixation au mur doit être dimensionnée en conséquence."
+  ]
+ },
+ "sacs-de-frappe:fairtex:mannequin-de-frappe-fairtex-de-grappling-gd2-maddox-v2": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le Maddox GD2 est un mannequin de grappling à taille humaine : il se place assis sur ses jambes, allongé ou en garde, pour répéter au sol les passages et les soumissions sans partenaire.",
+   "Fairtex le fabrique en Skintex, facile à nettoyer et résistant aux torsions, avec des coutures épaisses renforcées et des renforts au cou, aux épaules et aux bras."
+  ]
+ },
+ "sacs-de-frappe:fairtex:sac-de-frappe-fairtex-hb12": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le HB12 est un sac en forme de poire, en Skintex, pour les boxes pieds-poings : 1,47 m de long, 57 cm de diamètre au plus large, 55 kg.",
+   "Ses attaches sont renforcées. C’est un sac lourd : il se livre à domicile, sur devis, et demande un ancrage à la hauteur de son poids."
+  ]
+ },
+ "sacs-de-frappe:fairtex:sac-de-frappe-fairtex-hb6-1-80-m": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le HB6 est le grand sac de Fairtex, 1,80 m de haut pour 36 cm de diamètre : assez de hauteur pour travailler les poings, les coudes, les genoux et les coups de pied, low kicks compris. Il pèse environ 40 kg une fois rempli.",
+   "Fait à la main en Thaïlande, en cuir synthétique, avec des sangles en nylon épais. Trois coloris : noir, fluo et marron. Comme tout le matériel lourd du catalogue, il se livre à domicile, sur devis."
+  ]
+ },
+ "sacs-de-frappe:fairtex:sac-de-frappe-fairtex-poire-hb10": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le HB10 est le sac poire de Fairtex au format moyen : 1,20 m de haut, 50 cm de diamètre, 39 kg, suspendu par 40 cm de sangles. Sa forme arrondie reçoit les crochets, les uppercuts, les genoux et les coups de pied circulaires.",
+   "Enveloppe en Skintex, attaches renforcées."
+  ]
+ },
+ "sacs-de-frappe:fairtex:sac-de-frappe-fairtex-tb1": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le TB1 est un autre sac poire de Fairtex, en Skintex, pour les boxes pieds-poings. Notre fiche n’en donne ni les dimensions ni le poids : écrivez-nous avant de commander si vous devez dimensionner une fixation.",
+   "Attaches renforcées ; comme tous les sacs lourds, il se livre à domicile, sur devis."
+  ]
+ },
+ "sacs-de-frappe:fairtex:sac-de-frappe-fairtex-uppercut-hb11": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le HB11 est un sac court et large, 62 cm de haut pour 50 cm de diamètre, conçu pour un seul travail : l’entraînement aux uppercuts. Il pèse 21 kg.",
+   "Enveloppe en Skintex, résistante, et attaches renforcées. Les uppercuts se travaillent aussi au mur, sur la cible UC1 de la marque."
+  ]
+ },
+ "sacs-de-frappe:impact-sport:sac-de-frappe-impact-sport-hydro-bag-punching-50-kg": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "L’Hydro Bag d’Impact Sport est un sac de frappe à eau de 50 kg, 40 cm de diamètre. L’eau absorbe l’impact en se déplaçant : la frappe est moins sèche pour les poignets et les épaules que sur un sac traditionnel, avec une sensation plus proche d’un corps.",
+   "Il sert à la boxe comme au MMA."
+  ]
+ },
+ "sacs-de-frappe:marque-a-preciser:portique-pour-sac-de-frappe": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le portique Performance équipe les salles qui ne peuvent percer ni le sol ni les murs : il tient par son poids, 102 kg, sur des pieds en caoutchouc, et reçoit quatre pratiquants à la fois.",
+   "Cadre en acier de section 10 × 10 cm, garanti à vie, peinture époxy résistante aux chocs et à la corrosion, fabrication européenne. Emprise : 1,83 m sur 1,83 m, pour 2,51 m de haut. Il accepte des sacs de 1,50 m, voire 1,80 m en raccourcissant les chaînes."
+  ]
+ },
+ "sacs-de-frappe:marque-a-preciser:portique-pour-sac-de-frappe-champion": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le portique Champion reçoit jusqu’à quatre sacs de frappe, de toutes formes, jusqu’à 1,80 m. Ses poteaux sont espacés de 2,21 m : assez de place entre deux sacs pour les séances pieds-poings.",
+   "Cadre en acier de section 80 × 80 mm, garanti à vie, peinture époxy, fabrication européenne. Dimensions : 2,22 m sur 2,22 m, pour 2,44 m de haut."
+  ]
+ },
+ "sacs-de-frappe:marque-a-preciser:portique-pour-sac-de-frappe-tidy-fit": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le Tidy Fit est un portique de salle à double fonction : il range le matériel de musculation, haltères compris, et un rail de convoyage amène les sacs de frappe en place en quelques secondes pour ouvrir un espace de cardio-boxe.",
+   "Aucun perçage au mur, sacs jusqu’à 1,80 m, peinture résistante aux chocs et à la corrosion. Ses dimensions se définissent à la demande : il se commande uniquement sur devis, sacs non compris."
+  ]
+ },
+ "sacs-de-frappe:marque-a-preciser:potence-au-sol-avec-rail-integre-pro": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Une potence au sol dont la poutre porte un rail : le sac y est suspendu à un chariot, se déplace d’une poussée et se range à la fin du cours. Elle est conçue pour les clubs, les dojos et les salles polyvalentes, où l’espace change d’usage dans la journée.",
+   "Structure en acier, pour des sacs lourds jusqu’à 1,80 m. L’entretien tient en deux gestes : un chiffon doux sur la structure, et une fois par an le contrôle du serrage des fixations et de l’état du chariot."
+  ]
+ },
+ "sacs-de-frappe:marque-a-preciser:potence-au-sol-pro": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La potence au sol Pro est modulaire : une potence reçoit un sac, et plusieurs potences reliées entre elles forment une rangée, que l’on prolonge quand l’activité de la salle grandit. Des accessoires de préparation physique, barres de traction par exemple, s’y ajoutent.",
+   "Cadre en acier de section 80 × 80 mm, garanti à vie, peinture époxy. Sacs jusqu’à 1,80 m. Elle doit être fixée sur un sol solide, de type dalle béton."
+  ]
+ },
+ "sacs-de-frappe:marque-a-preciser:potence-pour-sac-de-frappe-avec-rail-integre-pro": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La version murale de la potence à rail : un chariot silencieux fait coulisser le sac le long du rail, ce qui permet de réorganiser la salle en quelques secondes. Elle se fixe au mur et ne prend aucune place au sol.",
+   "Acier haute résistance, compatible avec les sacs lourds, prévue pour un usage intensif, sept jours sur sept. La livraison se fait sur rendez-vous."
+  ]
+ },
+ "sacs-de-frappe:marque-a-preciser:potence-sac-de-frappe-mixte-cross-combat": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le Cross Combat mêle le sac de frappe et la préparation physique sur une même structure, évolutive : on l’allonge et on l’équipe à mesure que l’activité se développe.",
+   "Quatre configurations au catalogue, d’un sac pour trois pratiquants à quatre sacs pour sept. Cadre en acier de section 80 × 80 mm, garanti à vie, peinture époxy ; la première configuration mesure 2,21 m de poteau à poteau. Les accessoires de cross-training ne sont pas compris."
+  ]
+ },
+ "sacs-de-frappe:marque-a-preciser:potence-sur-ring-de-boxe": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Cette potence se fixe sur un angle du ring : elle utilise le poteau de coin comme support et évite d’ajouter une structure dans la salle.",
+   "Elle reçoit des sacs lourds jusqu’à 70 kg. Fabrication européenne, vendue à l’unité, avec un délai de fabrication d’environ trois semaines."
+  ]
+ },
+ "sacs-de-frappe:marque-a-preciser:sac-de-frappe-rail-de-convoyage-pour-sac-de-frappe-training": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Un rail de convoyage fixé au mur : les sacs y sont suspendus à des chariots à roulettes et se déplacent, se rangent ou se replacent d’un geste, à n’importe quel point du rail. Il demande un mur en béton armé.",
+   "Quatre longueurs au catalogue : 2,50 m pour deux sacs, 5 m pour quatre, 7,50 m pour six, 10 m pour huit. Entretien : un chiffon doux, sans produit abrasif, et un contrôle annuel des fixations murales et des roulettes."
+  ]
+ },
+ "sacs-de-frappe:metal-boxe:potence-metal-boxe-sac-de-frappe-pro": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La potence Pro de Metal Boxe est une potence murale de grande longueur : elle écarte le sac du mur, pour tourner autour de lui et placer ses enchaînements sous tous les angles.",
+   "Elle se fixe par huit points. La solidité de l’ensemble dépend d’abord du mur et de la fixation : en cas de doute, faites appel à un professionnel. Un ressort de compression peut soulager l’ancrage, sans être indispensable selon la marque."
   ]
  }
 }

@@ -140,5 +140,80 @@
   "modele": "gants-de-boxe:elion:gants-de-boxe-elion-uncage-matblack",
   "libelle": "Silk bleu",
   "nom": "Gants de boxe Elion Uncage"
+ },
+ "gants-mma-elion-sparring-mat-black": {
+  "modele": "gants-mma:elion:gants-mma-elion-sparring",
+  "libelle": "noir mat"
+ },
+ "gants-mma-champboxing-combat-c-black-duplique": {
+  "modele": "gants-mma:elion:gants-mma-elion-uncage-matblack",
+  "libelle": "Matblack noir",
+  "nom": "Gants MMA Elion Uncage"
+ },
+ "gants-mma-elion-uncage-matblack-pink": {
+  "modele": "gants-mma:elion:gants-mma-elion-uncage-matblack",
+  "libelle": "Matblack rose",
+  "nom": "Gants MMA Elion Uncage"
+ },
+ "gants-mma-elion-uncage-10eme-anniversaire-noir-or": {
+  "modele": "gants-mma:elion:gants-mma-elion-uncage-matblack",
+  "libelle": "Anniversaire noir et or",
+  "nom": "Gants MMA Elion Uncage"
+ },
+ "larrogant-de-boxe-dragon-ball-z-x-elion-paris-edition-limitee-majin-vegeta": {
+  "modele": "gants-de-boxe:elion:gants-de-boxe-l-arrogant-dragon-ball-z-elion",
+  "libelle": "Majin Vegeta"
+ },
+ "gants-de-boxe-fairtex-deluxe-noir": {
+  "modele": "gants-de-boxe:fairtex:gants-de-boxe-d-entrainement-fairtex-bgv19",
+  "libelle": "Deluxe noir"
+ },
+ "gants-de-sac-fairtex-cuir": {
+  "modele": "gants-de-boxe:fairtex:gants-de-sac-fairtex",
+  "libelle": "cuir"
+ },
+ "poire-de-vitesse-elion-collection-paris-cuir-tricolore": {
+  "modele": "sacs-de-frappe:elion:poire-de-vitesse-elion:cuir",
+  "libelle": "tricolore"
+ },
+ "poire-de-vitesse-elion-collection-paris-cuir-bordeaux-vintage": {
+  "modele": "sacs-de-frappe:elion:poire-de-vitesse-elion:cuir",
+  "libelle": "bordeaux vintage"
+ },
+ "poire-de-vitesse-elion-paris-cuir-marron-vintage": {
+  "modele": "sacs-de-frappe:elion:poire-de-vitesse-elion:cuir",
+  "libelle": "marron vintage"
+ },
+ "portique-pour-sac-de-frappe": {
+  "modele": "sacs-de-frappe:century:portique-century-simple",
+  "libelle": "seconde référence"
+ },
+ "protege-tibias-pieds-elion-audace-black-and-white": {
+  "modele": "protections-boxe:elion:protege-tibias-et-pieds-elion:skintex",
+  "libelle": "Audace noir et blanc",
+  "nom": "Protège-tibias et pieds Elion, Skintex"
+ },
+ "protege-tibias-pieds-elion-matblack-pink": {
+  "modele": "protections-boxe:elion:protege-tibias-et-pieds-elion:skintex",
+  "libelle": "Matblack rose",
+  "nom": "Protège-tibias et pieds Elion, Skintex"
+ },
+ "protege-tibias-pieds-elion-blue-silk": {
+  "modele": "protections-boxe:elion:protege-tibias-et-pieds-elion:skintex",
+  "libelle": "Silk bleu",
+  "nom": "Protège-tibias et pieds Elion, Skintex"
+ },
+ "protege-tibias-pieds-elion-uncage-10eme-anniversaire-noir-or": {
+  "modele": "protections-boxe:elion:protege-tibias-et-pieds-elion:skintex",
+  "libelle": "Anniversaire noir et or",
+  "nom": "Protège-tibias et pieds Elion, Skintex"
+ },
+ "protege-dents-shock-doctor-gel-max-power-trans-blue": {
+  "modele": "protections-boxe:shock-doctor:protege-dents-shock-doctor-gel-max",
+  "libelle": "Power Trans bleu"
+ },
+ "casque-integral-fairtex-noir-en-cuir": {
+  "modele": "protections-boxe:fairtex:casque-fairtex-integral-hg10",
+  "libelle": "seconde référence"
  }
 }
