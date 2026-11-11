@@ -1,4 +1,18 @@
 {
+ "accessoires-boxe:clean-hugs:boite-a-savon-clean-hugs": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Une boîte en aluminium pour emporter son savon dans le sac de sport sans le glisser dans un sachet : légère, solide, avec une fermeture qui tient. Elle est à la taille d’un savon Clean Hugs.",
+   "Aluminium entièrement recyclable, peinture sans solvants. La marque la propose en noir ou en bleu clair."
+  ]
+ },
+ "accessoires-boxe:clean-hugs:savon-clean-hugs-il-au-beurre-noir": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Un savon au charbon actif, saponifié à froid, que Clean Hugs fabrique en France de façon artisanale, sans huile de palme ni conservateur. Il est parfumé à l’huile essentielle de palmarosa ; la marque le destine à la douche d’après l’entraînement.",
+   "Huiles végétales de coco et de sésame ; huiles essentielles de palmarosa, clémentine, cade et cèdre de l’Atlas. Allergènes déclarés : citral, géraniol, limonène, linalol. Emballage recyclable."
+  ]
+ },
  "accessoires-boxe:cleto-reyes:bandes-de-boxe-cleto-reyes-5-m": {
   "ecrit": "2026-11-10",
   "texte": [
@@ -97,6 +111,20 @@
    "Taille adulte unique. Le maintien se règle moins finement qu’avec une bande posée à la main ; la même mitaine existe sans mousse."
   ]
  },
+ "accessoires-boxe:elion:porte-cles-elion": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Un porte-clés en forme de gant de boxe, aux couleurs d’Elion. Il est vendu à l’unité : un seul gant, pas une paire.",
+   "Quatre coloris au choix dans le sélecteur : noir, rouge, or et argent. Un petit cadeau pour un pratiquant, à accrocher aux clés ou au sac de sport."
+  ]
+ },
+ "accessoires-boxe:elion:sechoir-elion-odor-fighter": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "L’Odor Fighter se glisse dans les gants, les chaussures ou le sac après la séance : ce sont des sachets en tissu noir, remplis de charbon de bois de bambou, qui absorbent l’humidité et les odeurs. Lui-même ne sent rien.",
+   "L’humidité est ce qui abîme les mousses et le cuir d’un gant : le sécher entre deux séances prolonge sa durée de vie. 100 % charbon de bois de bambou, sans parfum."
+  ]
+ },
  "accessoires-boxe:elion:sous-gants-elion-eva-double-bandes:mousse": {
   "ecrit": "2026-11-10",
   "texte": [
@@ -109,6 +137,13 @@
   "texte": [
    "Les Professional sont les sous-gants en gel d’Elion : un gel double densité sur les métacarpes, une enveloppe en néoprène ajourée de mesh pour laisser la main respirer dans le gant, et une fermeture auto-agrippante à double sangle qui serre le poignet.",
    "La marque les recommande aux mains sensibles et au travail soutenu au sac. Deux tailles, S/M et L/XL, en noir et or."
+  ]
+ },
+ "accessoires-boxe:elion:spray-elion-desinfectant-clean-hugs": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Un spray pour l’entretien du matériel, mis au point par Elion avec Clean Hugs : on le vaporise dans les gants, sur les protections ou sur les tapis, contre les mauvaises odeurs.",
+   "La marque le présente comme certifié Ecocert, élaboré en France à partir d’ingrédients d’origine entièrement naturelle, dont des huiles essentielles choisies pour leur action antibactérienne. Flacon de 200 ml, vendu à l’unité."
   ]
  },
  "accessoires-boxe:elion:tape-elion-pour-bandage-2-5-cm-10-metres": {
@@ -139,6 +174,13 @@
    "Trois teintes délavées à choisir sur la fiche : bleu indigo, rouge et brique. Quatre mètres suffisent à une pose croisée sur une main d’adulte."
   ]
  },
+ "accessoires-boxe:fairtex:bandes-de-boxe-fairtex-thai": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Des bandes en coton et lycra : le lycra leur donne une élasticité que n’a pas une bande en coton seul, et elles épousent mieux la main et le poignet. Elles se posent à partir d’un passant de pouce et se ferment par auto-agrippant.",
+   "Outre le maintien du poignet, la bande absorbe la transpiration : c’est elle qui se lave, et le gant dure plus longtemps. Vérifiez la longueur dans le sélecteur avant de commander."
+  ]
+ },
  "accessoires-boxe:fairtex:bandes-de-boxe-fairtex:mesh": {
   "ecrit": "2026-11-10",
   "texte": [
@@ -160,6 +202,13 @@
    "Quatre mètres donnent de quoi croiser entre les doigts et épaissir le bandage sur les métacarpes, ce que demandent le sparring et l’entraînement régulier. Pour une main plus petite ou une pose plus rapide, la marque propose la même bande en 2,50 m."
   ]
  },
+ "accessoires-boxe:metal-boxe:ciseaux-medicaux-metal-boxe": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Des ciseaux à bandes en acier, pour le coach et le soigneur : ils coupent les bandes et le strap, à la pose comme après le combat.",
+   "Ce sont des ciseaux de soin : leur place est dans la trousse du coin, avec la bande adhésive et la vaseline."
+  ]
+ },
  "accessoires-boxe:metal-boxe:gourde-metal-boxe": {
   "ecrit": "2026-11-10",
   "texte": [
@@ -167,25 +216,46 @@
    "Avec 800 ml, elle se place entre les bouteilles de 650 ml et de 950 ml du catalogue."
   ]
  },
+ "accessoires-boxe:sportifrance:trousse-de-soins-sportifrance-22-cm-17-cm-6-cm": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Une trousse de soins vide, à garnir soi-même : toile de nylon renforcée, 22 cm de haut, 17 de large et 6 d’épaisseur. Ses compartiments, plastifiés et zippés, gardent les produits au propre.",
+   "Le format d’une trousse de coin : bandes adhésives, compresses, ciseaux, vaseline. Elle est vendue seule, sans son contenu."
+  ]
+ },
+ "accessoires-boxe:under-armour:bouteille-under-armour-draft-grip-700-ml": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La Draft Grip contient 700 ml. Son corps en Tritan, un copolyester sans bisphénol A, est translucide, pour voir le niveau d’eau, et pris dans un manchon strié qui tient dans une main mouillée.",
+   "Le bouchon à clapet se ferme par un loquet, et son anse permet de l’accrocher à un doigt ou à un sac. Deux versions : charbon et Breeze Blue."
+  ]
+ },
  "accessoires-boxe:under-armour:bouteille-under-armour-infinity-650-ml": {
-  "ecrit": "2026-11-10",
+  "ecrit": "2026-11-11",
   "texte": [
    "L’Infinity est une gourde de 650 ml en Tritan, un copolyester sans bisphénol A : un plastique rigide et léger. Under Armour la propose en quatre coloris, noir, blanc, bleu et rose, dans cette seule contenance.",
-   "C’est la plus petite des trois bouteilles de la marque au catalogue, avant la Squeeze de 950 ml et la Playmaker Jug de 1,9 l."
+   "C’est la plus petite des bouteilles de la marque au catalogue, avant la Draft Grip de 700 ml, la Squeeze de 950 ml et la Playmaker Jug, en 950 ml ou en 1,9 l."
   ]
  },
  "accessoires-boxe:under-armour:bouteille-under-armour-playmaker-jug-1-9-l": {
-  "ecrit": "2026-11-10",
+  "ecrit": "2026-11-11",
   "texte": [
-   "Avec 1,9 l, la Playmaker Jug tient plus de la bonbonne que de la gourde : assez d’eau pour une longue séance ou une journée de stage sans repasser par le robinet. Elle est en Tritan, un copolyester sans bisphénol A, comme les deux autres bouteilles Under Armour du catalogue.",
-   "Trois coloris : cerise, blanc et gris foncé. Pour une contenance plus courante, voyez l’Infinity de 650 ml ou la Squeeze de 950 ml."
+   "Avec 1,9 l, la Playmaker Jug tient plus de la bonbonne que de la gourde : assez d’eau pour une longue séance ou une journée de stage sans repasser par le robinet. Elle est en Tritan, un copolyester sans bisphénol A.",
+   "Trois coloris : cerise, blanc et gris foncé. Pour une contenance plus courante, voyez la même Playmaker Jug en 950 ml, l’Infinity de 650 ml ou la Squeeze de 950 ml."
+  ]
+ },
+ "accessoires-boxe:under-armour:bouteille-under-armour-playmaker-jug-950-ml": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La Playmaker Jug dans son petit format, 950 ml : une bonbonne trapue, avec une grande anse sur le dessus et un bouchon à clapet fermé par un loquet. La même existe en 1,9 l.",
+   "Elle est en Tritan, un copolyester sans bisphénol A. Coloris noir."
   ]
  },
  "accessoires-boxe:under-armour:bouteille-under-armour-squeeze-950-ml": {
-  "ecrit": "2026-11-10",
+  "ecrit": "2026-11-11",
   "texte": [
-   "La Squeeze contient 950 ml, entre la gourde d’une séance et la bonbonne d’une journée. La fiche du fabricant donne pour matières le polyester et le plastique, et Under Armour range ses bouteilles sous le Tritan, un copolyester sans bisphénol A.",
-   "Trois coloris au catalogue : bleu roi, cerise et rouge. La marque propose aussi une contenance plus petite, l’Infinity, et une bien plus grande, la Playmaker Jug."
+   "La Squeeze est une gourde souple de 950 ml : on la presse pour boire, par son bec verseur, sans la dévisser. Ses flancs striés donnent la prise.",
+   "La fiche donne pour matières le polyester et le plastique. Quatre coloris au catalogue : bleu roi, cerise, rouge, et blanc à bouchon noir. Under Armour propose aussi une contenance plus petite, l’Infinity, et une bien plus grande, la Playmaker Jug."
   ]
  },
  "accessoires-boxe:venum:sous-gants-venum-kontact:gel": {
@@ -193,6 +263,338 @@
   "texte": [
    "Les Kontact sont des sous-gants : une enveloppe en néoprène garnie de gel, qui s’enfile comme une mitaine, prolongée par 2,20 m de bande à serrer autour du poignet. Ils remplacent la pose d’une bande classique quand on veut s’équiper vite.",
    "Venum précise qu’ils se portent sous des gants et ne conviennent ni comme gants de sac ni comme gants de MMA. Selon le coloris, ils existent en taille unique ou du XS au XL ; le logo est floqué dans une matière extensible, pour ne pas craqueler."
+  ]
+ },
+ "arts-martiaux:adidas:dobok-adidas-taekwondo-adi-fighter-prime-taille-150": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le dobok Adi-Fighter d’Adidas dans sa version Primegreen, en polyester entièrement recyclé. Le tissu Adilight, très léger, suit les mouvements, et la veste comme le pantalon sont en Aeroready, une matière respirante.",
+   "Il est blanc, à col en V noir. Pantalon à taille élastiquée et cordon de serrage. Livré sans ceinture. Cette fiche correspond à la taille 150 cm."
+  ]
+ },
+ "arts-martiaux:adidas:kimono-de-jjb-adidas-challenge": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le kimono Challenge d’Adidas pour le jiu-jitsu brésilien : une veste en coton de 350 g/m² et un pantalon entièrement en ripstop, renforcé aux genoux. Des bandeaux « Jiu Jitsu » courent sur les manches et le bas du pantalon, et la doublure intérieure est imprimée.",
+   "Coloris blanc. Une seule taille au catalogue : A0, pour une personne d’environ 1,50 m."
+  ]
+ },
+ "arts-martiaux:adidas:kimono-de-judo-adidas": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le J181 est le kimono d’initiation au judo d’Adidas, pour les enfants qui débutent : une toile souple, 60 % coton et 40 % polyester, et un pantalon à taille élastiquée.",
+   "Il n’a pas de bandes aux épaules ; le logo Adidas figure sur une manche. Livré sans ceinture. Taille au catalogue : 100 cm."
+  ]
+ },
+ "arts-martiaux:century:kimono-century-gi-jjb-especial": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le Gi 96 Especial doit son nom aux premiers championnats du monde de l’IBJJF, en 1996 : Century l’a créé en hommage à la performance qu’y a réalisée Ricardo Liborio, et dit l’avoir conçu avec lui.",
+   "Veste de compétition en pearl weave de 440 g/m², à col en mousse EVA ; col et coutures renforcés. Pantalon en coton résistant, à triples coutures aux genoux, serré par un cordon. De A1 à A4."
+  ]
+ },
+ "arts-martiaux:dojo-master:kimono-de-judo-dojo-master-entrainement": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Un kimono de judo pour l’entraînement régulier des premières années : veste en grain de riz, 100 % coton, d’une densité de 425 g, et pantalon élastiqué, avec un cordon de serrage, renforcé aux genoux contre les frottements.",
+   "Taille au catalogue : 200 cm."
+  ]
+ },
+ "arts-martiaux:dojo-master:kimono-de-karate-dojo-master": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le kimono de karaté de Dojo Master, que notre source présente comme une marque française : une toile légère et résistante, 100 % coton, et un pantalon élastiqué à la taille. Il vise les débuts et l’entraînement courant.",
+   "Taille au catalogue : 200 cm."
+  ]
+ },
+ "arts-martiaux:elion:ceinture-de-jjb-elion-competitor-light": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La ceinture de jiu-jitsu brésilien de la ligne Competitor Light d’Elion : 100 % coton, 5 cm de large, en quatre tailles adultes, de A1 à A4.",
+   "Deux couleurs de grade au catalogue dans cette ligne, violet et marron ; les cinq grades adultes sont réunis dans la ceinture Squale de la marque."
+  ]
+ },
+ "arts-martiaux:elion:ceinture-de-jjb-elion-squale": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La ceinture Squale d’Elion est taillée pour le jiu-jitsu brésilien : 100 % coton, 5 cm de large, en cinq tailles adultes, de A0 à A4. Elle se choisit dans la taille du kimono.",
+   "Elle existe dans les cinq couleurs des grades adultes : blanc, bleu, violet, marron et noir."
+  ]
+ },
+ "arts-martiaux:elion:kimono-de-jjb-elion-competitor-light": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le Competitor Light est le premier kimono de jiu-jitsu brésilien d’Elion : une veste en pearl weave de 350 g/m² et un pantalon en ripstop, légers, qui sèchent vite après lavage et se supportent par forte chaleur.",
+   "Renforts aux épaules, aux poignets, aux chevilles et aux pans de la veste ; genoux renforcés. La marque l’annonce conforme aux règles de l’IBJJF et de la CFJJB, et son dessin sobre laisse la place aux écussons. Bleu ou noir."
+  ]
+ },
+ "arts-martiaux:elion:kimono-de-jjb-elion-squale-350": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le Squale 350 ouvre la gamme de kimonos de jiu-jitsu brésilien d’Elion, développée avec Olivier « Mako » Michailesco : le nom Squale vient de son surnom, le requin mako, emblème de son école.",
+   "Sa veste est en pearl weave de 350 g/m², un tissage léger, renforcée à tous les points de tension et pré-rétrécie ; le pantalon, 100 % coton, est renforcé aux genoux. Quatre coloris, noir, blanc, bleu et gris, de A0 à A4, avec les tailles longues A1L, A2L et A3L."
+  ]
+ },
+ "arts-martiaux:elion:kimono-de-jjb-elion-squale-450": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le Squale 450 est le kimono de jiu-jitsu brésilien le plus épais de la gamme d’Elion : une veste en pearl weave de 450 g/m², quand le Squale 350 en fait 350, et un pantalon entièrement en ripstop, une toile légère qui résiste à la déchirure.",
+   "Veste renforcée à tous les points de tension, pré-rétrécie, brodée Elion ; pantalon renforcé aux genoux. Trois coloris, noir, blanc et bleu, de A0 à A4."
+  ]
+ },
+ "arts-martiaux:elion:kimono-de-jjb-naruto-elion-squale-450": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Elion décline pour la première fois son kimono Squale 450 aux couleurs de Naruto, sous licence : quatre versions, Naruto, Sasuke, Itachi et Orochimaru, chacune reprenant les détails de son personnage. L’intérieur de la veste est entièrement doublé de lycra.",
+   "La base est celle du Squale 450 : veste en pearl weave de 450 g/m², renforcée aux points de tension et pré-rétrécie, pantalon en ripstop renforcé aux genoux. De A1 à A4, avec les tailles longues A1L, A2L et A3L."
+  ]
+ },
+ "arts-martiaux:kwon:couteau-d-entrainement-kwon": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Un couteau factice pour le travail de défense contre arme blanche : la forme d’un couteau de cuisine, 25 cm environ, avec une âme en bois sous un revêtement de mousse EVA, pour s’exercer sans se blesser.",
+   "Il sert en self-défense, en krav-maga et dans les arts martiaux qui travaillent le désarmement."
+  ]
+ },
+ "arts-martiaux:kwon:dobok-kwon-taekwondo-song": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le Song est le dobok de taekwondo de Kwon pour débuter et pratiquer en loisir, livré avec sa ceinture blanche. Veste de coupe coréenne, à col en V blanc, en coton et polyester mélangés.",
+   "Le pantalon a une taille élastiquée doublée d’un laçage, et un gousset d’entrejambe pour les techniques hautes. Huit tailles, de 100 à 170 cm."
+  ]
+ },
+ "arts-martiaux:kwon:dobok-kwon-taekwondo-tiger": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le Tiger est un dobok de taekwondo dessiné pour les enfants et les juniors, dans un tissu souple, 65 % polyester et 35 % coton. Il est livré avec sa ceinture : de quoi commencer sans rien acheter d’autre.",
+   "Col en V blanc. Huit tailles, de 100 à 170 cm ; la taille correspond à la hauteur de l’enfant."
+  ]
+ },
+ "arts-martiaux:kwon:etui-pour-armes-kwon-d-entrainement": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Un étui long de 185 cm, en similicuir résistant, pour transporter les armes d’entraînement : il est à la mesure d’un bâton long. Neutre, sans logo, il ne dit rien de ce qu’il contient.",
+   "On y glisse ses armes pour le trajet jusqu’au dojo, à l’abri des chocs."
+  ]
+ },
+ "arts-martiaux:kwon:hakama-kwon": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le hakama est le pantalon large, plissé, des arts martiaux japonais : aïkido, kendo, iaïdo. Celui de la ligne Clubline de Kwon en reprend la coupe traditionnelle, dans un tissu à 65 % de polyester et 35 % de coton : il se froisse peu, sèche vite et garde sa tenue.",
+   "Il convient aux entraînements réguliers comme aux passages de grade. Coloris noir ; cinq tailles, de 150 à 190 cm."
+  ]
+ },
+ "arts-martiaux:kwon:kimono-kwon-pour-bebe": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Un cadeau de naissance plus qu’une tenue de sport : un mini-kimono blanc, 100 % coton, en taille 74 cm, pour un bébé de 8 à 11 mois. Le nom de la discipline est imprimé sur la poitrine, au-dessus d’une ceinture noire.",
+   "Deux versions : motif Judo ou motif Karaté. Une idée pour les parents pratiquants ; ce n’est pas un vêtement de pratique."
+  ]
+ },
+ "arts-martiaux:kwon:planche-de-rupture-enfant-kwon": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Une planche de casse réutilisable, pour initier les enfants à la rupture sans bois : la surface de frappe, amovible, de 15 cm, cède sous le coup et se remet en place aussitôt. L’enfant voit tout de suite s’il a réussi, et recommence.",
+   "Mousse EVA haute densité, qui absorbe l’impact et ménage les articulations. Dimensions : 33 × 33 cm. Elle sert en karaté, en taekwondo et dans les autres arts martiaux qui pratiquent la casse."
+  ]
+ },
+ "arts-martiaux:metal-boxe:kimono-de-jjb-metal-boxe": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le kimono de jiu-jitsu brésilien de Metal Boxe : une veste en tissage grain de riz, souple, d’environ 400 g, et un pantalon entièrement en ripstop, d’environ 284 g. Les marquages sont brodés.",
+   "Une seule taille au catalogue : 200 cm."
+  ]
+ },
+ "arts-martiaux:metal-boxe:tanto-metal-boxe-28-cm:plastique": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Un tanto d’entraînement en plastique, long de 28 cm : la réplique du couteau japonais, sans tranchant, pour travailler les défenses et les désarmements en aïkido, en ju-jitsu ou en self-défense.",
+   "Notre fiche ne précise pas s’il est souple ou rigide."
+  ]
+ },
+ "chaussures-boxe:acoku:chaussures-acoku-kung-fu": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Une chaussure de wushu en toile, légère et souple, sur une semelle en caoutchouc : elle laisse le pied libre pour les coups de pied et les sauts. Elle sert à l’entraînement quotidien comme à la compétition.",
+   "Elle chausse normalement. Une seule pointure au catalogue : le 44."
+  ]
+ },
+ "chaussures-boxe:adidas:chaussures-adidas-box-hog-2-0": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La Box Hog 2.0 est la chaussure de boxe mi-montante d’Adidas dans sa deuxième génération : une tige en mesh léger, tenue par des renforts internes, une semelle intermédiaire en EVA très fine et une semelle extérieure en caoutchouc adhérent.",
+   "Elle vise la stabilité quand le jeu de jambes s’accélère. Coloris noir, du 38 au 49 1/3 ; Adidas taille en tiers de pointure, vérifiez la vôtre dans le sélecteur."
+  ]
+ },
+ "chaussures-boxe:adidas:chaussures-adidas-box-hog-3": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La Box Hog 3 est une chaussure mi-montante de 304 g. Sa tige en mesh respirant enveloppe le pied, avec des empiècements en suède synthétique et un renfort interne sur toute la tige, pour la stabilité.",
+   "La semelle intermédiaire en EVA est fine, pour sentir le sol, sur une semelle extérieure en gomme de caoutchouc ; le bout résiste à l’abrasion. Chaussant standard, fermeture à lacets. Trois versions : bleu, rouge et noir, et l’édition Tokio, blanche."
+  ]
+ },
+ "chaussures-boxe:adidas:chaussures-adidas-box-hog-4": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La Box Hog 4 prend la suite de la Box Hog 3 dans la gamme d’Adidas, sur la même formule : une chaussure de boxe anglaise mi-montante, légère, à tige en mesh et semelle fine.",
+   "Notre fiche lui donne 304 g, un chaussant standard et une fermeture à lacets ; la tige porte des empiècements en suède synthétique, le bout est renforcé contre l’abrasion, et la semelle extérieure est en gomme de caoutchouc. Trois coloris : bleu et blanc, noir et or, rouge et blanc, du 36 au 47."
+  ]
+ },
+ "chaussures-boxe:adidas:chaussures-adidas-speedex-18": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La Speedex 18 a une coupe ajustée, stable au milieu du pied et souple à l’avant. Sa semelle intercalaire en EVA suit le même principe : tendre sous l’avant-pied et le talon, pour le confort et la réactivité, ferme au milieu, pour le soutien.",
+   "Tige en mesh renforcé, sangles de stabilité autour de la cheville et de l’arrière-pied, tirant au talon pour l’enfiler, fermeture à lacets. Coloris noir et or."
+  ]
+ },
+ "chaussures-boxe:adidas:chaussures-de-lutte-adidas-havoc-plus": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La Havoc Plus est une chaussure de lutte : une tige en mesh à larges mailles, qui laisse circuler l’air, des renforts synthétiques qui tiennent le pied dans les mouvements explosifs, et une semelle extérieure antidérapante, pour les appuis sur le tapis.",
+   "Une patte auto-agrippante recouvre les lacets et les maintient en place pendant le combat. Deux coloris, blanc ou rouge et argent, du 31 au 46 : la série commence aux pointures d’enfant."
+  ]
+ },
+ "chaussures-boxe:adidas:chaussures-de-lutte-adidas-mat-wizard-5": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La Mat Wizard est un classique de la lutte des années 1980, que cette cinquième version met à jour. La tige en mesh 3D respire et plie avec le pied ; des renforts légers soutiennent le milieu du pied et la cheville, et les trois bandes, synthétiques, participent au maintien.",
+   "Des feuilles de TPU en V protègent les orteils et l’avant-pied de l’abrasion, et la semelle porte des zones d’accroche qui tiennent le tapis même quand le pied est très incliné. La tige contient 50 % de matière recyclée. Coloris noir et blanc."
+  ]
+ },
+ "chaussures-boxe:adidas:chaussures-de-lutte-enfants-adidas-havoc-plus-k": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La version enfant de la Havoc Plus, la chaussure de lutte d’Adidas : une tige en cuir synthétique, pour le maintien, sur une construction légère qui ne bride pas les mouvements, et une semelle adhérente pour les appuis sur le tapis.",
+   "Elle sert à la lutte, au grappling et aux entraînements multisports. Du 32 au 38."
+  ]
+ },
+ "chaussures-boxe:champboxing:chaussures-champboxing-montante-boxe-anglaise": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Une chaussure montante de boxe anglaise en cuir et nylon. Champboxing la destine à l’entraînement comme à la compétition, et met en avant sa souplesse et sa légèreté.",
+   "Deux versions au catalogue, dont une blanche. Les pointures vont du 36 au 47, avec des manques : vérifiez la vôtre dans le sélecteur."
+  ]
+ },
+ "chaussures-boxe:champboxing:chaussures-multiboxe-champboxing": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Une chaussure semi-montante en synthétique et nylon, souple et légère, pour la pratique en salle. Son épaisseur à la cheville protège la malléole et tient le pied.",
+   "Elle n’est pas homologuée pour la compétition de boxe française : c’est une chaussure d’entraînement. Du 35 au 47."
+  ]
+ },
+ "chaussures-boxe:elion:chaussures-de-boxe-elion-rapide": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La Rapide est la première chaussure de boxe anglaise d’Elion. Sa tige en maille tricotée la rend légère et aérée ; elle est doublée à la cheville, pour le maintien.",
+   "La marque a travaillé l’adhérence de la semelle : en boxe anglaise, tout part des appuis, en défense comme en attaque. Elle chausse normalement : prenez votre pointure habituelle. Cinq coloris, dont deux réfléchissants, du 37 au 46 selon le coloris."
+  ]
+ },
+ "chaussures-boxe:elion:chaussures-de-boxe-elion-volante": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La Volante est la plus légère des chaussures de boxe d’Elion : une tige en mesh fin, aéré et résistant, et un dessin volontairement simple, qui revient à la chaussure de boxe anglaise classique.",
+   "Sa semelle en reprend aussi la construction, avec un amorti que la marque juge disparu des modèles récents. Elle chausse normalement. Noir et blanc, du 40 au 46."
+  ]
+ },
+ "chaussures-boxe:elion:semelles-elion-confort": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Des semelles intérieures à mémoire de forme, en latex traité antibactérien, épaisses de 4 mm : assez fines pour entrer dans une chaussure de boxe, ajustée par nature, et y ajouter de l’amorti sous le pied.",
+   "Fabriquées au Portugal. Du 37 au 46."
+  ]
+ },
+ "chaussures-boxe:isba:chaussures-isba-savate-absorber-2": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "L’Absorber 2 est une chaussure de savate boxe française à tige haute, en cuir et toile polyamide doublée. Des renforts latéraux en cuir tiennent la cheville, et une mousse antichoc garnit la languette et l’avant du pied, les zones qui frappent.",
+   "La semelle ISBA, entièrement en caoutchouc, est donnée pour conforme aux exigences fédérales. La marque recommande l’Absorber 2 pour un usage intensif et la compétition. Du 37 au 47."
+  ]
+ },
+ "chaussures-boxe:kwon:chaussures-de-kung-fu-kwon": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La chaussure de kung-fu de Kwon est en nylon robuste, légèrement brillant, sur une semelle en caoutchouc : la chaussure souple des arts martiaux chinois, pour l’entraînement en salle.",
+   "Le conseil de taille : une pointure de plus que d’habitude. Trois pointures au catalogue : 37, 41 et 45."
+  ]
+ },
+ "chaussures-boxe:nike:chaussures-de-lutte-et-multiboxe-boxe-nike-fury": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La Fury est une chaussure de lutte mi-haute, minimaliste : une tige en mesh monocouche, très légère, doublée d’empiècements en daim et renforcée aux orteils.",
+   "La languette porte une poche où se rangent les lacets, pour qu’ils ne traînent pas pendant le combat. Semelle d’un seul tenant, en caoutchouc, qui accroche le tapis sous tous les angles. Coloris noir et gris."
+  ]
+ },
+ "chaussures-boxe:nike:chaussures-de-lutte-et-multiboxe-boxe-nike-hypersweep": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La Hypersweep est une chaussure de lutte montante, conçue pour la vitesse et la souplesse. Sa tige Hyperfuse, en mesh à deux plis, est ajourée pour réguler la température et sécher vite ; les câbles Dynamic Flywire et une sangle interne verrouillent le pied et la cheville dans les mouvements rapides.",
+   "Le laçage est asymétrique, pour entrer et sortir facilement, sous un rabat auto-agrippant qui cache les lacets, comme la discipline l’exige. La semelle emploie moins de caoutchouc qu’une chaussure de lutte traditionnelle : plus souple, sans perdre l’accroche. Coloris noir et or."
+  ]
+ },
+ "chaussures-boxe:nike:chaussures-multiboxe-nike-inflict-3": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "L’Inflict 3 vient de la lutte. Sa tige en maille respirante se porte près du pied ; sa semelle en caoutchouc accroche dans toutes les directions et plie avec lui.",
+   "Fermeture par lacets, sous une patte auto-agrippante. Elle chausse petit : prenez une demi-pointure à une pointure de plus que la vôtre. Deux coloris au catalogue."
+  ]
+ },
+ "chaussures-boxe:nike:chaussures-nike-hyperko-2": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La HyperKO 2 a remplacé la HyperKO d’origine dans la gamme de boxe de Nike. Le pied y entre comme dans une chaussette : la tige en Flyknit, tricotée, s’ajuste sans couture et suit les mouvements, tandis qu’une enveloppe extérieure, que Nike compare à un exosquelette, soutient la cheville et le milieu du pied.",
+   "La semelle est fendue en deux, avant-pied et talon, pour plier librement tout en restant stable sur les prises d’appui.",
+   "Elle chausse petit : le conseil est de prendre une pointure et demie au-dessus de sa pointure habituelle, 44,5 pour un 43. Onze versions au catalogue, dont les éditions Olympic et Special Edition ; les pointures disponibles changent d’une version à l’autre."
+  ]
+ },
+ "chaussures-boxe:nike:chaussures-nike-ko-rio-olympics-edition": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La Nike KO dans son édition des Jeux de Rio 2016. Le dessus associe une mousse légère et un mesh, renforcé à l’orteil contre l’abrasion ; la semelle intermédiaire cherche le même compromis, solide et légère, pour la vitesse et la stabilité.",
+   "Nike a aminci la semelle en gomme de caoutchouc et en a augmenté l’adhérence, pour mieux sentir le sol : un direct part des appuis. Elle chausse petit : comptez une demi-pointure à une pointure de plus que d’habitude."
+  ]
+ },
+ "chaussures-boxe:nike:chaussures-nike-machomai-2": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La Machomai 2 repose sur trois techniques de Nike : un mesh dont l’aération est répartie par zones, des filaments Flywire qui tiennent le pied là où il en a besoin sans ajouter de poids, et une semelle en mousse Lunarlite, que la marque annonce 30 % plus légère que sa mousse Phylon.",
+   "La voûte plantaire est marquée, pour la stabilité ; la semelle extérieure, à peine renforcée à l’avant et à l’arrière, reste souple. Nike donne 266 g pour la version mi-haute et 292 g pour la montante.",
+   "Elle chausse petit : comptez une demi-pointure à une pointure au-dessus de la vôtre. Quatre versions au catalogue, dont l’édition Olympic."
+  ]
+ },
+ "chaussures-boxe:nike:chaussures-nike-machomai-3": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La Machomai 3 pèse 256 g. Sa tige en maille a été revue pour l’aération, sa semelle en caoutchouc souple accroche le ring, et ses œillets ont été redessinés : le fabricant les donne pour plus confortables au port.",
+   "Elle chausse petit : prenez une pointure au-dessus de la vôtre. Six coloris ; les pointures, du 41 au 49, dépendent du coloris choisi."
+  ]
+ },
+ "chaussures-boxe:rivat:chaussures-rivat-f1-bf": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La F1 est la chaussure de savate boxe française de Rivat pour le travail intensif et la compétition. Sa tige trois-quarts, en toile entièrement doublée de mousse, est renforcée de croûte de cuir velours à l’avant-pied, au talon et sur les côtés ; un matelassage ferme de 5 mm protège l’avant du pied, celui qui frappe.",
+   "Laçage variable sous une double languette qui cache les lacets, contrefort long indéformable, semelle cuvette en caoutchouc, soudée, qui remonte pour protéger. Rivat donne 390 g en pointure 41, et la présente comme homologuée par la fédération."
+  ]
+ },
+ "chaussures-boxe:rivat:chaussures-rivat-rookie-bf": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La Rookie est la chaussure de savate boxe française que Rivat destine aux débutants de moins de 65 kg. Tige en synthétique souple et toile mesh en nid d’abeille, doublée ; un matelassage protège l’avant-pied, la zone de frappe.",
+   "Les appliques de laçage, renforcées, permettent un laçage variable. La semelle Rivat, en caoutchouc souple, est collée et cousue, non blessante, d’une couleur crêpe claire qui ne marque pas les sols. Du 35 au 45."
+  ]
+ },
+ "chaussures-boxe:rivat:chaussures-rivat-top": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La Top est la chaussure montante de Rivat pour la savate boxe française : cuir et toile renforcée, entièrement doublée. Les renforts de côté, le bracelet de maintien et le double laçage variable serrent la cheville comme un strap.",
+   "Les zones de frappe sont matelassées d’une mousse compacte, ferme, à mémoire de forme. Rivat la donne pour conforme au règlement d’arbitrage de la fédération, et fabriquée en Europe. Noir et anthracite, du 38 au 47, demi-pointures comprises."
+  ]
+ },
+ "chaussures-boxe:rivat:chaussures-rivat-top-light": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "La Top Light est la version allégée de la Top, la chaussure montante de Rivat pour la savate boxe française : cuir velours et toile mesh à larges mailles, pour la souplesse et la ventilation. La marque l’a développée pour la compétition.",
+   "Des bracelets de renfort permettent un laçage variable et un serrage précis ; les renforts et les protections sont en mousse à mémoire de forme.",
+   "Le conseil de Rivat, si vous ne connaissez pas votre pointure dans la marque : une pointure au-dessus de celle de vos chaussures de ville. Bleu, blanc et rouge, du 38 au 47."
   ]
  },
  "equipement-entrainement:century:assouplisseur-de-jambes-century-versaflex-2-0": {
@@ -2003,6 +2405,118 @@
   "texte": [
    "La potence Pro de Metal Boxe est une potence murale de grande longueur : elle écarte le sac du mur, pour tourner autour de lui et placer ses enchaînements sous tous les angles.",
    "Elle se fixe par huit points. La solidité de l’ensemble dépend d’abord du mur et de la fixation : en cas de doute, faites appel à un professionnel. Un ressort de compression peut soulager l’ancrage, sans être indispensable selon la marque."
+  ]
+ },
+ "sacs-de-sport:adidas:sac-de-sport-adidas-combat-2-en-1": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le Combat 2 en 1 d’Adidas est un sac de sport qui se porte aussi sur le dos, grâce à deux bretelles escamotables. Un de ses côtés est taillé en angle : le sac tient debout, posé à la verticale.",
+   "Large ouverture zippée sur le dessus, poche latérale à zone en mesh pour les chaussures et les protections, poignées en nylon, sangle d’épaule réglable ; enveloppe en PU. Trois formats : S, 56 × 29 × 29 cm, et M, 62 × 31 × 31 cm, en noir et blanc ; L, 72 × 34 × 34 cm, en noir et or."
+  ]
+ },
+ "sacs-de-sport:elion:sac-a-dos-elion-extensible-boost": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Un sac à dos de 20 à 25 litres qui s’agrandit par le bas : sous le compartiment principal, un soufflet zippé, aéré par du mesh, reçoit le linge de la séance et le tient à l’écart du reste.",
+   "Au dos, un compartiment caché pour l’ordinateur portable ; à l’intérieur, deux poches zippées ; sur les côtés, une poche extensible pour la gourde et une poche zippée. PVC, rembourrage ergonomique, 29 × 20 × 48,5 cm. Deux coloris : noir et gris, noir et or."
+  ]
+ },
+ "sacs-de-sport:elion:sac-a-dos-elion-jungle-classic": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le Jungle Classic est un sac à dos de forme baril, en PVC, de 63 × 36 × 36 cm pour 80 litres : la place qu’il faut au pratiquant de MMA ou de boxe pieds-poings, protège-tibias compris.",
+   "Un compartiment principal, une poche zippée sur le devant, une autre dans le rabat ; coutures renforcées, bretelles réglables, tirettes Elion. Il se lave à l’eau chaude. Trois coloris, tous à base de noir : noir, bleu, gris."
+  ]
+ },
+ "sacs-de-sport:elion:sac-a-dos-elion-jungle-mini": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le Jungle Mini reprend la forme baril du Jungle Classic dans un format de tous les jours : 44 × 28 × 28 cm, 30 litres. De quoi porter les gants, les bandes et une tenue ; pour les protège-tibias, il faut le Classic.",
+   "PVC, coutures renforcées, bretelles réglables ; un compartiment principal, une poche zippée devant et une dans le rabat. Lavable à l’eau chaude. Noir, bleu et noir, ou gris et noir."
+  ]
+ },
+ "sacs-de-sport:elion:sac-a-dos-elion-subliminal-convertible": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le premier sac à dos de la gamme Subliminal d’Elion se transforme : ses bretelles se rangent, et le corps du sac s’allonge de 60 à 88 cm pour devenir un sac de sport porté à l’épaule.",
+   "Nylon, boucles et fermetures robustes, coutures renforcées ; des compartiments de plusieurs tailles séparent petits et grands objets. En sac à dos, il mesure 40 × 50 × 30 cm. Noir, à marquages réfléchissants."
+  ]
+ },
+ "sacs-de-sport:elion:sac-de-sport-convertible-elion-boost": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le Boost convertible se porte en bandoulière ou sur le dos. C’est un sac de 60 à 65 litres, de 62 × 33 × 31 cm, assez long pour des protège-tibias.",
+   "Un compartiment principal avec deux poches zippées, deux compartiments latéraux zippés, et, caché sur le devant, un compartiment séparé pour le linge sale. PVC, coutures renforcées ; il se lave à l’eau chaude. Noir et gris, ou noir et or."
+  ]
+ },
+ "sacs-de-sport:elion:sac-de-sport-elion": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le premier sac 2 en 1 d’Elion : un sac cylindrique de 60 cm de long et 30 cm de diamètre, qui se porte en bandoulière ou sur le dos. Il reprend le noir mat des gants de la marque, avec des marquages argentés.",
+   "Deux poches extérieures, une poche zippée à l’intérieur. Assez sobre pour passer de la salle au bureau."
+  ]
+ },
+ "sacs-de-sport:fairtex:sac-a-dos-fairtex-bag4": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le BAG4 est le sac à dos d’entraînement de Fairtex, de 56 × 44 × 26 cm : la plus grande taille de protège-tibias y entre avec le reste. Deux compartiments séparés, accessibles par le bas, reçoivent les chaussures, une paire de gants de 16 oz et le linge humide.",
+   "Fermeture à glissière verrouillable, poignée renforcée, soutien dorsal et sangle de poitrine. Deux coloris camouflage, noir ou vert."
+  ]
+ },
+ "sacs-de-sport:fairtex:sac-a-dos-fairtex-baril": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le BAG18 est le petit sac à dos de Fairtex : 45 × 33 × 16 cm, 20 litres, en nylon. Le format d’une tenue, d’une paire de gants et d’une gourde, pour aller à la salle sans sac de sport.",
+   "Deux coloris : vert et bleu marine. Notre fiche n’en détaille pas les poches."
+  ]
+ },
+ "sacs-de-sport:fairtex:sac-de-sport-fairtex": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le grand sac de sport de Fairtex : 72 × 36 × 32 cm, en nylon imperméable, sur une base renforcée. Il réunit l’équipement complet, gants, protège-tibias, casque, chaussures et vêtements, dans un seul sac.",
+   "Un compartiment à chaussures, un compartiment séparé en dessous pour le linge mouillé, une pochette latérale pour le téléphone, deux filets, dont un pour la bouteille, et des fermetures éclair verrouillables, pour les trajets et les voyages. Quatre versions : noir, gris et noir, vert et noir, et Vintage."
+  ]
+ },
+ "sacs-de-sport:fairtex:sac-de-sport-fairtex-baril-bag-9": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le Bag 9 est le sac baril de Fairtex, au dessin rétro : un cylindre compact de 50 cm sur 30, en nylon imperméable, pour les affaires d’une séance comme pour celles de tous les jours.",
+   "Une poche intérieure, deux compartiments extérieurs, une fermeture éclair YKK. Quatre coloris : noir, bleu marine, rouge et vert."
+  ]
+ },
+ "sacs-de-sport:leone-1947:sac-de-sport-leone-1947-back-pack": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Un sac de sport de 70 litres, de 60 × 40 × 30 cm, dont les bretelles font aussi un sac à dos. Leone y a prévu un grand compartiment principal, deux poches de côté, une grande poche sur le devant et une poche pour le linge humide.",
+   "Matière anti-déchirure, grande bandoulière. Coloris vert."
+  ]
+ },
+ "sacs-de-sport:twins:sac-de-sport-convertible-twins": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Un grand sac de sport de 88 × 40 × 28 cm, qui se porte sur le dos grâce à deux bretelles matelassées et réglables. Twins le fabrique en Thaïlande.",
+   "Il compte une poche isotherme, une poche à filet, une poche latérale, une grande poche intérieure et deux petites poches pour le téléphone et les objets de valeur. Coloris gris."
+  ]
+ },
+ "sacs-de-sport:venum:sac-a-dos-venum-challenger-pro": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le Challenger Pro est un sac à dos à trois compartiments, de 30 × 50 × 15 cm. Des poches extérieures et latérales reçoivent les petits objets et la bouteille d’eau ; le dos et les bretelles sont garnis d’un maillage respirant.",
+   "Bretelles et brides réglables. Noir et camouflage."
+  ]
+ },
+ "sacs-de-sport:venum:sac-de-sport-venum-electron-3-0": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "L’Electron 3.0 est un sac de sport de 62 × 31 × 31 cm, à la mesure d’un équipement de boxe pieds-poings : gants, protège-tibias et accessoires y tiennent ensemble.",
+   "Flancs en mousse, anses latérales et bandoulière réglable. Coloris noir."
+  ]
+ },
+ "sacs-de-sport:venum:sac-de-sport-venum-trainer-lite": {
+  "ecrit": "2026-11-11",
+  "texte": [
+   "Le Trainer Lite est un sac de sport de 63 litres, de 60 × 33 × 25 cm. À l’intérieur, des compartiments séparés et ventilés isolent les affaires humides après l’entraînement ; des poches intérieures, extérieures et latérales rangent le reste, bouteille d’eau comprise.",
+   "Broderie Venum, bretelles et brides réglables. Camouflage et kaki."
   ]
  }
 }

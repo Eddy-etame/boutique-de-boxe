@@ -218,32 +218,32 @@
  },
  "bande-de-resistance-elion-power-11-30kg-noir": {
   "modele": "equipement-entrainement:elion:bande-de-resistance-elion-power",
-  "libelle": "11 à 30 kg, noire",
+  "libelle": "11 à 30 kg (noire)",
   "nom": "Bande de résistance Elion Power"
  },
  "bande-de-resistance-elion-power-16-38kg-violet": {
   "modele": "equipement-entrainement:elion:bande-de-resistance-elion-power",
-  "libelle": "16 à 38 kg, violette",
+  "libelle": "16 à 38 kg (violette)",
   "nom": "Bande de résistance Elion Power"
  },
  "bande-de-resistance-elion-power-23-54kg-vert": {
   "modele": "equipement-entrainement:elion:bande-de-resistance-elion-power",
-  "libelle": "23 à 54 kg, verte",
+  "libelle": "23 à 54 kg (verte)",
   "nom": "Bande de résistance Elion Power"
  },
  "elastic-band-excellerator-16kg": {
   "modele": "equipement-entrainement:excellerator:elastique-excellerator",
-  "libelle": "16 kg, jaune",
+  "libelle": "16 kg (jaune)",
   "nom": "Élastique Excellerator"
  },
  "elastic-band-excellerator-25kg": {
   "modele": "equipement-entrainement:excellerator:elastique-excellerator",
-  "libelle": "25 kg, rouge",
+  "libelle": "25 kg (rouge)",
   "nom": "Élastique Excellerator"
  },
  "elastic-band-excellerator-25kg-duplique": {
   "modele": "equipement-entrainement:excellerator:elastique-excellerator",
-  "libelle": "20 à 40 kg, vert",
+  "libelle": "20 à 40 kg (vert)",
   "nom": "Élastique Excellerator"
  },
  "pao-elion-pro-matblack": {
@@ -258,12 +258,112 @@
  },
  "pao-fairtex-cuir-small-piece": {
   "modele": "equipement-entrainement:fairtex:pao-fairtex-kplc",
-  "libelle": "KPLC1, 31 × 19 × 9 cm",
+  "libelle": "KPLC1 (31 × 19 × 9 cm)",
   "nom": "Pao Fairtex KPLC, cuir"
  },
  "pao-fairtex-cuir-medium-piece": {
   "modele": "equipement-entrainement:fairtex:pao-fairtex-kplc",
-  "libelle": "KPLC2, 37 × 19 × 10 cm",
+  "libelle": "KPLC2 (37 × 19 × 10 cm)",
   "nom": "Pao Fairtex KPLC, cuir"
+ },
+ "chaussures-nike-hyperko-2-white-bright-crimson-black-001": {
+  "modele": "chaussures-boxe:nike:chaussures-nike-hyperko-2",
+  "libelle": "Bright Crimson blanc et noir"
+ },
+ "chaussures-nike-hyperko-2-limited-edition-olympic-orange": {
+  "modele": "chaussures-boxe:nike:chaussures-nike-hyperko-2",
+  "libelle": "Olympic orange"
+ },
+ "chaussures-nike-hyperko-2-olympic-inspired-900-se": {
+  "modele": "chaussures-boxe:nike:chaussures-nike-hyperko-2",
+  "libelle": "Olympic Inspired SE"
+ },
+ "chaussures-nike-hyperko-2-special-edition-blanche-rose": {
+  "modele": "chaussures-boxe:nike:chaussures-nike-hyperko-2",
+  "libelle": "Special Edition blanc et rose"
+ },
+ "chaussures-nike-machomai-2-olympic-orange": {
+  "modele": "chaussures-boxe:nike:chaussures-nike-machomai-2",
+  "libelle": "Olympic orange"
+ },
+ "chaussure-adidas-box-hog-3-tokio-blanc": {
+  "modele": "chaussures-boxe:adidas:chaussures-adidas-box-hog-3",
+  "libelle": "Tokio blanc"
+ },
+ "chaussures-de-boxe-elion-rapide-noir-reflechissant-reflective": {
+  "modele": "chaussures-boxe:elion:chaussures-de-boxe-elion-rapide",
+  "libelle": "noir et or réfléchissant"
+ },
+ "chaussure-rivat-top-light-bf-1": {
+  "modele": "chaussures-boxe:rivat:chaussures-rivat-top-light",
+  "libelle": "bleu, blanc et rouge",
+  "nom": "Chaussures Rivat Top Light"
+ },
+ "kimono-jjb-naruto-x-elion-squale-450-orochimaru": {
+  "modele": "arts-martiaux:elion:kimono-de-jjb-naruto-elion-squale-450",
+  "libelle": "Orochimaru"
+ },
+ "ceinture-de-jjb-elion-competitor-marron": {
+  "modele": "arts-martiaux:elion:ceinture-de-jjb-elion-competitor-light",
+  "libelle": "marron",
+  "nom": "Ceinture de JJB Elion Competitor Light"
+ },
+ "ceinture-de-jjb-elion-competitor-light-violette": {
+  "modele": "arts-martiaux:elion:ceinture-de-jjb-elion-competitor-light",
+  "libelle": "violet",
+  "nom": "Ceinture de JJB Elion Competitor Light"
+ },
+ "kimono-jjb-elion-competitor-light-bleu": {
+  "modele": "arts-martiaux:elion:kimono-de-jjb-elion-competitor-light",
+  "libelle": "bleu",
+  "nom": "Kimono de JJB Elion Competitor Light"
+ },
+ "kimono-jjb-elion-competitor-light-noir": {
+  "modele": "arts-martiaux:elion:kimono-de-jjb-elion-competitor-light",
+  "libelle": "noir",
+  "nom": "Kimono de JJB Elion Competitor Light"
+ },
+ "kimono-pour-bebe-zen": {
+  "modele": "arts-martiaux:kwon:kimono-kwon-pour-bebe",
+  "libelle": "motif Judo",
+  "nom": "Kimono Kwon pour bébé"
+ },
+ "kimono-pour-bebe-karate-1": {
+  "modele": "arts-martiaux:kwon:kimono-kwon-pour-bebe",
+  "libelle": "motif Karaté",
+  "nom": "Kimono Kwon pour bébé"
+ },
+ "sac-de-sport-fairtex-vintage": {
+  "modele": "sacs-de-sport:fairtex:sac-de-sport-fairtex",
+  "libelle": "Vintage"
+ },
+ "sac-de-sport-fairtex-fxbag4-noir-camo": {
+  "modele": "sacs-de-sport:fairtex:sac-a-dos-fairtex-bag4",
+  "libelle": "noir et camo",
+  "nom": "Sac à dos Fairtex BAG4"
+ },
+ "sac-de-sport-fairtex-fxbag4-vert-camo-1": {
+  "modele": "sacs-de-sport:fairtex:sac-a-dos-fairtex-bag4",
+  "libelle": "vert et camo",
+  "nom": "Sac à dos Fairtex BAG4"
+ },
+ "sac-de-sport-adidas-combat-2-en-1-noir-blanc-2": {
+  "modele": "sacs-de-sport:adidas:sac-de-sport-adidas-combat-2-en-1",
+  "libelle": "S (noir et blanc)",
+  "nom": "Sac de sport Adidas Combat 2 en 1"
+ },
+ "sac-de-sport-adidas-combat-2-en-1-noir-blanc": {
+  "modele": "sacs-de-sport:adidas:sac-de-sport-adidas-combat-2-en-1",
+  "libelle": "M (noir et blanc)",
+  "nom": "Sac de sport Adidas Combat 2 en 1"
+ },
+ "sac-de-sport-adidas-2en1-black-gold": {
+  "modele": "sacs-de-sport:adidas:sac-de-sport-adidas-combat-2-en-1",
+  "libelle": "L (noir et or)",
+  "nom": "Sac de sport Adidas Combat 2 en 1"
+ },
+ "bouteille-950-ml-squeeze-black-picht-blanche1-1": {
+  "modele": "accessoires-boxe:under-armour:bouteille-under-armour-squeeze-950-ml",
+  "libelle": "blanc et noir"
  }
 }
