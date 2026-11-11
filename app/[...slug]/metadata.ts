@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { catalogPage, PAGE_SIZE } from '@/lib/pagination';
 import { subfamilyKeywords, productKeywords, categoryKeywords, guideKeywords, pageKeywords, titreCourt, titreDeModele } from '@/lib/seo';
-import { modeleDe, compteDuModele, libelleDeFiche } from '@/lib/modeles';
+import { modeleDe, compteDuModele, libelleDeFiche, texteDuModele } from '@/lib/modeles';
 import { SEO_COPY } from '@/lib/seo-copy';
 import { subfamilyFor, subfamilyProducts } from '@/lib/subfamilies';
 import { facetMetadata } from '@/components/facet-page';
@@ -55,6 +55,10 @@ export async function slugMetadata(rawSlug: string[], rawPage?: string): Promise
   const modele = product ? modeleDe(product, products) : null;
   const plusieurs = modele && modele.fiches.length > 1 ? modele : null;
   const tetePage = Boolean(plusieurs && product && plusieurs.tete.id === product.id);
+  // Un nom écrit à la main vaut aussi pour un modèle d'une seule fiche (voir page.tsx).
+  const nomEcrit = product && modele && !plusieurs && modele.nom !== product.name ? modele.nom : null;
+  // La description rédigée d'un modèle d'une seule fiche : la page s'annonce par elle (voir describe).
+  const redigeSeul = modele && !plusieurs ? texteDuModele(modele) : null;
   const cat = categoryFor(path);
   const sub = subfamilyFor(path);
   const facet = slug.length === 1 ? facetFor(path, products) : null;
@@ -120,6 +124,7 @@ export async function slugMetadata(rawSlug: string[], rawPage?: string): Promise
   };
   const title =
     (product && tetePage && plusieurs && titreDeModele(plusieurs.nom, compteDuModele(plusieurs), titreCourt(product, products))) ||
+    (nomEcrit && titreCourt(nomEcrit)) ||
     (product && titreCourt(product, products)) ||
     (tete && teteCtx && tete.titre(teteCtx)) ||
     (cat && (SEO_COPY[cat.slug]?.title || cat.name)) ||
@@ -170,7 +175,21 @@ export async function slugMetadata(rawSlug: string[], rawPage?: string): Promise
       for (const phrase of phrases) if (phrase && (out + ' ' + phrase).length <= 158) out += ' ' + phrase;
       return out;
     }
-    const parts = [p.name + brand + (family ? ', ' + family : '') + '.'];
+    if (redigeSeul) {
+      // Les premières phrases du texte, entières, puis le prix s'il tient. Une initiale (« E. Colette ») ne finit pas une phrase.
+      const phrases = redigeSeul.texte.join(' ').split(/(?<=(?<!\b[A-ZÀ-Ý])[.!?…])\s+(?=[A-ZÀ-ÝŒ«])/);
+      let out = phrases[0];
+      let i = 1;
+      for (; i < phrases.length; i++) {
+        if ((out + ' ' + phrases[i]).length > 158) break;
+        out += ' ' + phrases[i];
+      }
+      // Trop court pour dire la page : la phrase suivante entre aussi, coupée proprement à la limite (trimmed, plus bas).
+      if (out.length < 90 && i < phrases.length) return out + ' ' + phrases[i];
+      const prix = p.price > 0 ? 'Prix TTC : ' + money(p.price) + '.' : '';
+      return prix && (out + ' ' + prix).length <= 158 ? out + ' ' + prix : out;
+    }
+    const parts = [(nomEcrit ?? p.name) + brand + (family ? ', ' + family : '') + '.'];
     if (tailles) parts.push(tailles);
     parts.push('Prix TTC : ' + money(p.price) + '.');
     parts.push('Livraison dans toute la France.');
@@ -178,7 +197,7 @@ export async function slugMetadata(rawSlug: string[], rawPage?: string): Promise
   };
   const rawDescription =
     (product
-      ? !tetePage && product.seoDescription && product.seoDescription.length >= 80
+      ? !tetePage && !nomEcrit && !redigeSeul && product.seoDescription && product.seoDescription.length >= 80
         ? product.seoDescription
         : describe(product)
       : undefined) ||

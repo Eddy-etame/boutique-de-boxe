@@ -202,6 +202,9 @@ export default async function Page({ params }: Props) {
     const modele = modeleDe(p, products);
     const plusieurs = modele.fiches.length > 1;
     const tetePage = plusieurs && modele.tete.id === p.id;
+    // Un nom écrit à la main (lib/data/modeles-rattaches.json) vaut aussi pour un modèle d'une seule fiche :
+    // la Rivat Top Light, enregistrée « Chaussures Rivat Top », porte ici son vrai nom.
+    const nomDePage = tetePage || (!plusieurs && modele.nom !== p.name) ? modele.nom : undefined;
     // La description rédigée du modèle, quand elle existe : elle précède la phrase de faits de la fiche.
     const redige = texteDuModele(modele);
     const coloris = plusieurs
@@ -251,11 +254,11 @@ export default async function Page({ params }: Props) {
           items={[
             { label: cat.name, href: '/' + cat.slug + '/' },
             ...(sub ? [{ label: sub.name, href: '/' + sub.slug + '/' }] : []),
-            { label: tetePage ? modele.nom : p.name },
+            { label: nomDePage ?? p.name },
           ]}
         />
         {seances.length > 0 && <SeanceContext seances={seances} />}
-        <ProductDetails product={p} note={note} titre={tetePage ? modele.nom : undefined} coloris={coloris} versions={!modele.coloris} />
+        <ProductDetails product={p} note={note} titre={nomDePage} coloris={coloris} versions={!modele.coloris} />
         <section className="spec-section">
           <div>
             <span className="eyebrow">LE MODÈLE</span>
@@ -379,7 +382,7 @@ export default async function Page({ params }: Props) {
             </div>
           </section>
         )}
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: productGraph(p, related, { description: [...(redige?.texte ?? []), longDescription(p)].join(' '), faq: productFaq(p, products), note, revision: [PRODUCT_EVIDENCE_REVISION, redige?.ecrit || ''].sort().at(-1), nom: tetePage ? modele.nom : undefined, modele: plusieurs ? { id: modele.tete.sourceRef || modele.tete.id, nom: modele.nom, autres: modele.fiches.filter((x) => x.id !== p.id) } : undefined }) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: productGraph(p, related, { description: [...(redige?.texte ?? []), longDescription(p)].join(' '), faq: productFaq(p, products), note, revision: [PRODUCT_EVIDENCE_REVISION, redige?.ecrit || ''].sort().at(-1), nom: nomDePage, modele: plusieurs ? { id: modele.tete.sourceRef || modele.tete.id, nom: modele.nom, autres: modele.fiches.filter((x) => x.id !== p.id) } : undefined }) }} />
       </main>
     );
   }
