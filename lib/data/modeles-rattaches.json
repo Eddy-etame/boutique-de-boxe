@@ -382,5 +382,37 @@
  "short-de-muay-thai-8-weapons-carbon-sak-yan-tigers-neon-jaune": {
   "modele": "textile-boxe:8-weapons:short-de-boxe-thai-8-weapons-carbon-sak-yant-tigers",
   "libelle": "Neon jaune"
+ },
+ "short-de-boxe-thai-naruto-x-elion-jiraya-kaki-rouge": {
+  "modele": "textile-boxe:elion:short-de-boxe-thai-naruto-elion",
+  "libelle": "Jiraya kaki et rouge"
+ },
+ "short-mma-seyant-elion-forest": {
+  "modele": "textile-boxe:elion:short-mma-elion-seyant",
+  "libelle": "Forest"
+ },
+ "short-mma-seyant-gladiator-elion-forest": {
+  "modele": "textile-boxe:elion:short-mma-elion-seyant-gladiator",
+  "libelle": "Forest"
+ },
+ "short-mma-jjb-aura-1-elion-noir": {
+  "modele": "textile-boxe:elion:short-mma-elion-jjb-aura",
+  "libelle": "Aura 1",
+  "nom": "Short MMA Elion JJB Aura"
+ },
+ "short-mma-jjb-aura-2-elion-noir": {
+  "modele": "textile-boxe:elion:short-mma-elion-jjb-aura",
+  "libelle": "Aura 2",
+  "nom": "Short MMA Elion JJB Aura"
+ },
+ "short-mma-jjb-aura-3-elion-noir": {
+  "modele": "textile-boxe:elion:short-mma-elion-jjb-aura",
+  "libelle": "Aura 3",
+  "nom": "Short MMA Elion JJB Aura"
+ },
+ "short-paques": {
+  "modele": "textile-boxe:elion:short-mma-elion-jjb-aura",
+  "libelle": "Pâques",
+  "nom": "Short MMA Elion JJB Aura"
  }
 }
