@@ -17,7 +17,7 @@ export const dynamic = 'force-dynamic';
 const PATH = '/outils/poids-de-gants/';
 const TITLE = 'Quel poids de gants de boxe choisir ? Calculateur en onces';
 const DESCRIPTION =
-  'Calculateur de poids de gants de boxe : un repère indicatif en onces selon la séance, le poids et l’âge. Comparez les modèles et vérifiez les indications du fabricant.';
+  'Calculateur de poids de gants de boxe : un repère indicatif en onces selon la séance, le poids et l’âge. Comparez les modèles et les indications du fabricant.';
 type Props = { searchParams: Promise<Record<string, string | undefined>> };
 
 export const metadata: Metadata = {

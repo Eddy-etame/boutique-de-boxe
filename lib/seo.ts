@@ -548,11 +548,11 @@ export function collectionGraph(o: { path: string; name: string; description: st
 const DISCIPLINE_ENTITY: Record<string, Entity> = { 'Boxe anglaise': ENTITY.boxe, 'Muay-thaï': ENTITY.muayThai, 'Kick-boxing': ENTITY.kickBoxing, 'Savate boxe française': ENTITY.savate, 'Jiu-jitsu brésilien': ENTITY.jjb };
 
 /** Sous-famille : CollectionPage, liste, questions ; renvoie à la famille parente par `about`. */
-export function subfamilyGraph(sub: Subfamily, items: Product[], page = 1, tete?: { faq: SeoFaq[]; description: string; name: string; requete: string; revision: string }) {
+export function subfamilyGraph(sub: Subfamily, items: Product[], page = 1, tete?: { faq: SeoFaq[]; description: string; name: string; requete: string; revision: string }, description?: string) {
   const parent = categoryFor(sub.parent);
   const own = sub.discipline ? DISCIPLINE_ENTITY[sub.discipline] : undefined;
   // Une page de tête publie les questions et la description de son guide, celles que la page affiche.
-  return collectionGraph({ path: '/' + sub.slug + '/', name: tete?.name || sub.name, description: tete?.description || sub.description, items: items.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE), total: items.length, page, perPage: PAGE_SIZE, category: parent, faq: tete?.faq || sub.faq, keywords: subfamilyKeywords(sub), requete: tete?.requete, revision: tete?.revision, about: own ? [thing(own)] : parent ? (CATEGORY_ENTITY[parent.slug] || []).map(thing) : [] });
+  return collectionGraph({ path: '/' + sub.slug + '/', name: tete?.name || sub.name, description: tete?.description || description || sub.description, items: items.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE), total: items.length, page, perPage: PAGE_SIZE, category: parent, faq: tete?.faq || sub.faq, keywords: subfamilyKeywords(sub), requete: tete?.requete, revision: tete?.revision, about: own ? [thing(own)] : parent ? (CATEGORY_ENTITY[parent.slug] || []).map(thing) : [] });
 }
 
 /** Guide : Article + FAQPage, auteur et éditeur = la boutique. */

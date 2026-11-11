@@ -3,7 +3,8 @@ import { notFound } from 'next/navigation';
 import { catalogPage, PAGE_SIZE } from '@/lib/pagination';
 import { subfamilyKeywords, productKeywords, categoryKeywords, guideKeywords, pageKeywords, titreCourt, titreDeModele } from '@/lib/seo';
 import { modeleDe, compteDuModele, libelleDeFiche, texteDuModele, nombreDeModeles } from '@/lib/modeles';
-import { fichesDePage, contexteDeRayon } from '@/lib/listing';
+import { fichesDePage, contexteDeRayon, descriptionDeRayon } from '@/lib/listing';
+import { phrasesEntieres } from '@/lib/phrases';
 import { SEO_COPY } from '@/lib/seo-copy';
 import { subfamilyFor } from '@/lib/subfamilies';
 import { facetMetadata } from '@/components/facet-page';
@@ -200,18 +201,16 @@ export async function slugMetadata(rawSlug: string[], rawPage?: string): Promise
         : describe(product)
       : undefined) ||
     (tete && teteCtx && tete.description(teteCtx)) ||
-    (cat && (SEO_COPY[cat.slug]?.description || cat.description)) ||
-    sub?.description ||
+    // La description écrite d'un rayon nomme les marques qu'il vend aujourd'hui (lib/listing.ts, `descriptionDeRayon`).
+    (cat && descriptionDeRayon(SEO_COPY[cat.slug]?.description || cat.description, cat.slug, fichesDePage(cat.slug, products), products)) ||
+    (sub && descriptionDeRayon(sub.description, sub.slug, fichesDePage(sub.slug, products), products)) ||
     guide?.description ||
     service?.description ||
     special[path]?.[1] ||
     'Cette page n’existe pas.';
-  const description = trimmed(
-    paginated && page > 1
-      ? `Page ${page} sur ${Math.ceil(paginationCount / PAGE_SIZE)}. ${rawDescription}`
-      : rawDescription,
-    158,
-  );
+  const entiere = paginated && page > 1 ? `Page ${page} sur ${Math.ceil(paginationCount / PAGE_SIZE)}. ${rawDescription}` : rawDescription;
+  // Une fiche coupe sa liste de tailles par « … » ; un texte écrit à la main garde ses phrases entières (lib/phrases.ts).
+  const description = product ? trimmed(entiere, 158) : phrasesEntieres(entiere, 158);
   const seoTitle = pageTitle.length > 41 ? { absolute: pageTitle } : pageTitle;
   return {
     title: seoTitle,

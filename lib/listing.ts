@@ -6,6 +6,7 @@ import { marqueDeModele, fichesParModele, vuesDesModeles } from './modeles';
 import { cartesParModele } from './un-par-modele';
 import { faits, type Contexte } from './guides-rayons';
 import { entrelace } from './rayons';
+import { phrasesDe, phrasesEntieres } from './phrases';
 
 /**
  * Une liste, trois lectures (11/11/2026) :
@@ -28,6 +29,28 @@ export const cartesDe = (liste: Product[], all: Product[]) => cartesParModele(li
 export function contexteDeRayon(slug: string, fiches: Product[], all: Product[]): Contexte {
   const items = vuesDesModeles(fiches, all);
   return { f: faits(slug, items), items, all: vuesDesModeles(all, all), catalogue: all };
+}
+
+/** Une phrase qui n'est qu'une liste de marques : « Elion, Venum, Everlast. » — chaque mot commence par une majuscule ou un chiffre. */
+const listeDeMarques = (phrase: string) => {
+  const noms = phrase.replace(/[.!?]$/, '').split(', ');
+  return noms.length >= 2 && noms.every((x) => x.split(' ').every((mot) => /^[\p{Lu}\d]/u.test(mot)));
+};
+
+/**
+ * La description écrite d'un rayon, telle qu'elle se publie (11/11/2026). Quinze descriptions citaient des marques
+ * que leur rayon ne vend pas (des gants à lacets « Cleto Reyes, Fairtex, Twins » pour un rayon tout Elion) : la
+ * phrase qui n'est qu'une liste de marques est remplacée par les marques du rayon, les plus fournies d'abord,
+ * lues sur le catalogue du jour. Le texte garde ensuite ses phrases entières dans la limite.
+ */
+export function descriptionDeRayon(texte: string, slug: string, fiches: Product[], all: Product[], max = 158): string {
+  const phrases = phrasesDe(texte);
+  if (!phrases.some(listeDeMarques)) return phrasesEntieres(texte, max);
+  // Une marque que le catalogue écrit tout en capitales (« CHAMPBOXING ») se lit en bas de casse ; un sigle (« RDX ») reste.
+  const lisible = (nom: string) => (nom.length > 4 && nom === nom.toUpperCase() ? nom.toLowerCase().replace(/(^|[\s-])\p{L}/gu, (c) => c.toUpperCase()) : nom);
+  const marques = faits(slug, vuesDesModeles(fiches, all)).marques.slice(0, 5).map((m) => lisible(m.nom));
+  const vraie = marques.length > 1 ? marques.join(', ') + '.' : marques.length ? `Marque : ${marques[0]}.` : '';
+  return phrasesEntieres(phrases.map((p) => (listeDeMarques(p) ? vraie : p)).filter(Boolean).join(' '), max);
 }
 
 /** Les fiches d'une page de rayon, de sous-famille ou des nouveautés, dans l'ordre où la page les montre. */

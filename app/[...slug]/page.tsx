@@ -28,7 +28,7 @@ import { moyenneDuModele } from '@/lib/notes-stockage';
 import { guides, services } from '@/lib/editorial';
 import { guidesDuModele } from '@/lib/guides-fiche';
 import { modeleDe, fichesDeTete, libelleDeFiche, texteDuModele, vuesDesModeles } from '@/lib/modeles';
-import { cartesDe, fichesDePage, contexteDeRayon } from '@/lib/listing';
+import { cartesDe, fichesDePage, contexteDeRayon, descriptionDeRayon } from '@/lib/listing';
 import { thumbSrc } from '@/lib/vignette';
 import { Breadcrumb, ArrowLink } from '@/components/shop-shell';
 import {
@@ -417,7 +417,7 @@ export default async function Page({ params }: Props) {
     return (
       <main id="contenu" className={'page-wrap' + (tete ? ' rayon-tete' : '')}>
         <Breadcrumb items={[...(parent ? [{ label: parent.name, href: '/' + parent.slug + '/' }] : []), { label: sub.name }]} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: subfamilyGraph(sub, data, currentPage, tete && ctx ? { faq: faqTete!, description: tete.description(ctx), name: tete.h1, requete: tete.requete, revision: tete.revision } : undefined) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: subfamilyGraph(sub, data, currentPage, tete && ctx ? { faq: faqTete!, description: tete.description(ctx), name: tete.h1, requete: tete.requete, revision: tete.revision } : undefined, descriptionDeRayon(sub.description, sub.slug, fiches, products)) }} />
         <section className="page-heading" {...(tete ? { 'data-rayon-texte': '' } : {})}>
           <div>
             <span className="eyebrow">{tete ? tete.eyebrow : sub.eyebrow}</span>
@@ -498,7 +498,7 @@ export default async function Page({ params }: Props) {
             __html: collectionGraph({
               path: '/' + path + '/',
               name: tete ? tete.h1 : cat?.name || 'Nouveautés',
-              description: tete && ctx ? tete.description(ctx) : cat?.description || 'Les derniers modèles ajoutés au catalogue Boutique de Boxe.',
+              description: tete && ctx ? tete.description(ctx) : cat ? descriptionDeRayon(SEO_COPY[cat.slug]?.description || cat.description, cat.slug, fiches, products) : 'Les derniers modèles ajoutés au catalogue Boutique de Boxe.',
               requete: tete?.requete,
               revision: tete?.revision,
               items: data.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE),

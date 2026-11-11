@@ -47,7 +47,7 @@ export type Service = {
 export const services: Record<string, Service> = {
   faq: {
     title: 'Questions fréquentes : commande, livraison, tailles, retours',
-    description: 'Les réponses de Boutique de Boxe : commande et paiement par carte, livraison dans toute la France, tailles et onces, retours sous 14 jours, matériel lourd sur devis, données.',
+    description: 'Les réponses de Boutique de Boxe : commande et paiement par carte, livraison en France, tailles et onces, retours sous 14 jours, matériel lourd sur devis.',
     eyebrow: 'QUESTIONS FRÉQUENTES',
     sections: [
       {

@@ -405,3 +405,40 @@ test('search finds a plural, and the belts aisle lists belts of rank only', () =
   assert.ok(ceintures.length >= 6);
   assert.ok(ceintures.every((p) => p.category === 'arts-martiaux'), ceintures.map((p) => p.name).join(' | '));
 });
+
+test('an aisle description names the brands it sells and never ends in the middle of a sentence', () => {
+  const { descriptionDeRayon, fichesDePage } = load(resolve(root, 'lib/listing'));
+  const { phrasesEntieres } = load(resolve(root, 'lib/phrases'));
+  const { categories } = load(resolve(root, 'lib/catalog'));
+  const { SUBFAMILIES } = load(resolve(root, 'lib/subfamilies'));
+  const { SEO_COPY } = load(resolve(root, 'lib/seo-copy'));
+  const { guideRayon } = load(resolve(root, 'lib/guides-rayons'));
+  const { guides, services } = load(resolve(root, 'lib/editorial'));
+  const plie = (t) => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const rayons = [
+    ...categories.filter((c) => !guideRayon(c.slug)).map((c) => [c.slug, SEO_COPY[c.slug]?.description || c.description]),
+    ...SUBFAMILIES.filter((s) => !guideRayon(s.slug)).map((s) => [s.slug, s.description]),
+  ];
+  assert.ok(rayons.length >= 30);
+  for (const [slug, ecrite] of rayons) {
+    const fiches = fichesDePage(slug, all);
+    const publiee = descriptionDeRayon(ecrite, slug, fiches, all);
+    assert.ok(publiee.length >= 90 && publiee.length <= 158, slug + ' : ' + publiee.length);
+    assert.ok(/[.!?»)]$/.test(publiee) && !publiee.includes('…'), slug + ' : ' + publiee);
+    // Une phrase qui n'est qu'une liste de noms propres est une liste de marques : chacune est vendue dans le rayon.
+    const vendues = new Set(fiches.map((p) => plie((p.brand || '').trim())));
+    for (const phrase of publiee.split(/(?<=[.!?])\s+/)) {
+      const noms = phrase.replace(/^Marque : /, '').replace(/[.!?]$/, '').split(', ');
+      if (!(phrase.startsWith('Marque : ') || noms.length >= 2) || !noms.every((x) => x.split(' ').every((mot) => /^[\p{Lu}\d]/u.test(mot)))) continue;
+      for (const nom of noms) assert.ok(vendues.has(plie(nom)), slug + ' names a brand it does not sell: ' + nom);
+    }
+  }
+  // Un texte écrit trop long perd sa dernière phrase, jamais la fin d'un mot.
+  assert.equal(phrasesEntieres('Une phrase. Une autre phrase.', 15), 'Une phrase.');
+  assert.equal(phrasesEntieres('Une phrase. Une autre phrase.', 100), 'Une phrase. Une autre phrase.');
+  assert.equal(phrasesEntieres('Une seule phrase bien trop longue pour la limite.', 20), 'Une seule phrase…');
+  for (const d of [...guides.map((g) => g.description), ...Object.values(services).map((x) => x.description)]) {
+    const publiee = phrasesEntieres(d, 158);
+    assert.ok(publiee.length <= 158 && !publiee.endsWith('…'), publiee);
+  }
+});
