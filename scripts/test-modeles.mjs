@@ -13,7 +13,7 @@ const requireNode = createRequire(resolve(root, 'package.json'));
 const ts = requireNode('typescript');
 const modules = new Map();
 function load(path) {
-  const file = [path, path + '.ts', path + '.json'].find((p) => {
+  const file = [path, path + '.ts', path + '.tsx', path + '.json'].find((p) => {
     try { return statSync(p).isFile(); } catch { return false; }
   });
   assert.ok(file, 'Existing local module: ' + path);
@@ -25,7 +25,8 @@ function load(path) {
     return mod.exports;
   }
   const code = ts.transpileModule(readFileSync(file, 'utf8'), {
-    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true, resolveJsonModule: true },
+    fileName: file,
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true, resolveJsonModule: true, jsx: ts.JsxEmit.ReactJSX },
   }).outputText;
   const requireLocal = (id) => id.startsWith('@/') ? load(resolve(root, id.slice(2))) : id.startsWith('.') ? load(resolve(dirname(file), id)) : requireNode(id);
   vm.compileFunction(code, ['exports', 'require', 'module'], { filename: file })(mod.exports, requireLocal, mod);
@@ -310,21 +311,49 @@ test('texts count models: one view per model, at its entry price, with every siz
 });
 
 test('pages by weight, colour and brand list real pages and count models', () => {
-  const { allFacets, facetFor, ficheQuiRemplace, MIN_FACET_PRODUCTS, MIN_FACET_MODELES } = load(resolve(root, 'lib/facets'));
+  const { allFacets, facetFor, adresseQuiRemplace, MIN_FACET_PRODUCTS, MIN_FACET_MODELES, SOUS_FAMILLES_PAR_MARQUE, COLOURS, GLOVE_WEIGHTS } = load(resolve(root, 'lib/facets'));
   const { brandsOf, MIN_BRAND_PRODUCTS, brandCopy } = load(resolve(root, 'lib/brands'));
   const { listingFor } = load(resolve(root, 'lib/listing'));
   const { nombreDeModeles } = load(resolve(root, 'lib/modeles'));
   const facettes = allFacets(all);
-  // 95 pages avant la réduction : une seule ne montrerait plus qu'un modèle (six coloris d'un short), et son adresse
-  // renvoie à la fiche de ce modèle.
-  assert.equal(facettes.length, 94);
+  // 95 pages quand une liste comptait des fiches ; 67 depuis que chacune montre six modèles au moins (12/11/2026).
+  assert.equal(MIN_FACET_MODELES, 6);
+  assert.equal(facettes.length, 67);
   const seule = 'marques/everlast/shorts-de-boxe-thai';
   assert.equal(facetFor(seule, all), null);
   assert.equal(facetFor(seule, all, true).fiches.length, 6);
-  const fiche = ficheQuiRemplace(seule, all);
-  assert.ok(fiche && estTete(fiche, all) && modeleDe(fiche, all).fiches.length === 6, 'the address of a one-model page leads to that model');
-  assert.equal(ficheQuiRemplace('marques/everlast/shorts-de-boxe', all), null, 'a page that exists is replaced by nothing');
-  assert.equal(ficheQuiRemplace('marques/inconnue/shorts-de-boxe', all), null);
+  // Un seul modèle : l'adresse renvoie à sa fiche de tête.
+  const fiche = bySlug(adresseQuiRemplace(seule, all).replace(/^\/produits\/|\/$/g, ''));
+  assert.ok(estTete(fiche, all) && modeleDe(fiche, all).fiches.length === 6, 'the address of a one-model page leads to that model');
+  assert.equal(adresseQuiRemplace('marques/everlast/textile-boxe', all), null, 'a page that exists is replaced by nothing');
+  assert.equal(adresseQuiRemplace('marques/inconnue/shorts-de-boxe', all), null);
+  // Deux à cinq modèles : l'adresse renvoie à la page la plus proche qui les montre tous.
+  assert.equal(adresseQuiRemplace('marques/everlast/shorts-de-boxe', all), '/marques/everlast/textile-boxe/');
+  assert.equal(adresseQuiRemplace('marques/twins/protections-boxe', all), '/marques/twins/');
+  assert.equal(adresseQuiRemplace('gants-de-boxe-gris', all), '/gants-de-boxe/');
+  const adresses = new Set([
+    ...GLOVE_WEIGHTS.map((oz) => `gants-de-boxe-${oz}-oz`),
+    ...COLOURS.map((c) => `gants-de-boxe-${c.slug}`),
+    ...brandsOf(all).flatMap((b) => [...b.families.map((f) => `marques/${b.slug}/${f.slug}`), ...SOUS_FAMILLES_PAR_MARQUE.map((s) => `marques/${b.slug}/${s.slug}`)]),
+  ]);
+  const pagesDeMarque = new Map(brandsOf(all).map((b) => ['/marques/' + b.slug + '/', b.fiches]));
+  const pagesDeFacette = new Map(facettes.map((f) => [f.path, f.fiches]));
+  const renvoyees = [];
+  for (const k of adresses) {
+    const petite = facetFor(k, all) ? null : facetFor(k, all, true);
+    if (!petite) continue;
+    const vers = adresseQuiRemplace(k, all);
+    renvoyees.push(k);
+    assert.ok(petite.products.length < MIN_FACET_MODELES, k);
+    if (petite.products.length === 1) {
+      assert.match(vers, /^\/produits\/[a-z0-9-]+\/$/, k);
+      continue;
+    }
+    const arrivee = vers === '/gants-de-boxe/' ? listingFor('gants-de-boxe', all) : pagesDeFacette.get(vers) || pagesDeMarque.get(vers);
+    assert.ok(arrivee, `${k} leads to a page that exists: ${vers}`);
+    assert.ok(petite.fiches.every((p) => arrivee.some((x) => x.id === p.id)), `${k} leads to ${vers}, which shows every model of the merged page`);
+  }
+  assert.equal(renvoyees.length, 28, renvoyees.join(' '));
   for (const f of facettes) {
     assert.ok(f.fiches.length >= MIN_FACET_PRODUCTS, f.scope);
     assert.ok(f.products.length >= MIN_FACET_MODELES, f.scope);
@@ -384,13 +413,13 @@ test('a small count never breaks a sentence: every computed text agrees in numbe
   }
   for (const f of allFacets(all)) ajoute(f.scope, f.eyebrow, f.title, f.description, f.intro, f.faq.flatMap((q) => [q.question, q.answer]));
   for (const b of brandsOf(all)) { const c = brandCopy(b); ajoute(b.slug, c.title, c.description, c.intro, c.faq.flatMap((q) => [q.question, q.answer])); }
-  assert.ok(textes.length > 2000);
+  assert.ok(textes.length > 1500, String(textes.length));
   // « 1 modèles », « les 1 paires », « 0 modèle » : ce qu'un compte passé de fiches à modèles fait apparaître.
   const faux = /(?:^|[^\d,.])1 (?:modèles|paires|pièces|kimonos|sacs|marques|teintes|tailles|fiches|gants|casques|protections|références|versions|rayons|familles)|(?:les|des|ces) 1 |(?:^|[^\d,.])0 (?:modèle|paire|pièce)/i;
   assert.deepEqual(textes.filter(([, t]) => faux.test(t)).map(([ou, t]) => ou + ' : ' + t.slice(0, 140)), []);
 });
 
-test('search finds a plural, and the belts aisle lists belts of rank only', () => {
+test('search finds a plural, and the belts aisle holds JJB belts and says so', () => {
   const { matchesSearch } = load(resolve(root, 'lib/catalog-tools'));
   const { subfamilyFor, subfamilyProducts } = load(resolve(root, 'lib/subfamilies'));
   // « gants rouges » ne trouvait rien : les fiches disent « rouge ».
@@ -404,6 +433,17 @@ test('search finds a plural, and the belts aisle lists belts of rank only', () =
   const ceintures = subfamilyProducts(subfamilyFor('ceintures'), all);
   assert.ok(ceintures.length >= 6);
   assert.ok(ceintures.every((p) => p.category === 'arts-martiaux'), ceintures.map((p) => p.name).join(' | '));
+  // Le rayon ne tient que des ceintures de JJB (12/11/2026) : ni son nom, ni son titre, ni ses mots-clés ne promettent
+  // le karaté, le judo ou une taille enfant, et aucun tableau par discipline n'y envoie un autre art martial.
+  const rayon = subfamilyFor('ceintures');
+  assert.ok(ceintures.every((p) => /^ceinture de jjb/i.test(p.name)), ceintures.map((p) => p.name).join(' | '));
+  assert.equal(rayon.name, 'Ceintures de JJB');
+  assert.ok(rayon.title.length <= 60, rayon.title);
+  for (const texte of [rayon.name, rayon.eyebrow, rayon.title, rayon.description, rayon.intro, ...rayon.prioritaires, ...rayon.secondaires]) assert.doesNotMatch(texte, /karat|judo|enfant/i);
+  const { LIGNES } = load(resolve(root, 'components/materiel-par-discipline'));
+  assert.deepEqual(LIGNES.filter((l) => [...l.essentiel, ...l.ensuite].includes('ceintures')).map((l) => l.discipline), ['Jiu-jitsu brésilien']);
+  const { RAYON } = load(resolve(root, 'lib/villes'));
+  assert.deepEqual(Object.keys(RAYON).filter((d) => RAYON[d] === '/ceintures/'), []);
 });
 
 test('an aisle description names the brands it sells and never ends in the middle of a sentence', () => {

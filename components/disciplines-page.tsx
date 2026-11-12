@@ -116,8 +116,8 @@ const ARTS: Config = {
     `Un art martial est une méthode de combat transmise par une tradition, enseignée par grades et souvent pratiquée sans adversaire autant qu’avec. En France métropolitaine, ${fr(FRANCE.dojos)} dojos et salles d’arts martiaux sont recensés par le ministère des Sports ; le judo y est déclaré dans ${fr(FRANCE.parDiscipline['Judo, jujitsu'] || 0)} lieux.`,
   fiches: [
     { recensement: 'Judo, jujitsu', nom: 'Judo, jujitsu', colonne: 'Japon', texte: 'Fondé par Jigorō Kanō en 1882 : utiliser le déséquilibre de l’autre pour le projeter.', materiel: ['/kimonos/', 'Kimonos de judo'] },
-    { recensement: 'Karaté', nom: 'Karaté', colonne: 'Okinawa, Japon', texte: 'La « main vide » : frapper sans arme, du poing, du pied et du tranchant de la main.', materiel: ['/arts-martiaux/', 'Kimonos et ceintures'] },
-    { recensement: 'Aïkido', nom: 'Aïkido', colonne: 'Japon', texte: 'Créé par Morihei Ueshiba : se placer et neutraliser l’attaque plutôt que la rendre.', materiel: ['/ceintures/', 'Ceintures'] },
+    { recensement: 'Karaté', nom: 'Karaté', colonne: 'Okinawa, Japon', texte: 'La « main vide » : frapper sans arme, du poing, du pied et du tranchant de la main.', materiel: ['/kimonos/', 'Kimonos de karaté'] },
+    { recensement: 'Aïkido', nom: 'Aïkido', colonne: 'Japon', texte: 'Créé par Morihei Ueshiba : se placer et neutraliser l’attaque plutôt que la rendre.', materiel: ['/arts-martiaux/', 'Hakama'] },
     { recensement: 'Taekwondo', nom: 'Taekwondo', colonne: 'Corée', texte: 'La « voie du pied et du poing », où les jambes portent l’essentiel des techniques.', materiel: ['/protections-boxe/', 'Protections'] },
     { recensement: 'Tai-chi, qi gong', nom: 'Tai-chi, qi gong', colonne: 'Chine', texte: 'Le geste martial ralenti jusqu’à devenir un travail du souffle et de l’équilibre.' },
     { recensement: 'Kendo', nom: 'Kendo', colonne: 'Japon', texte: 'La « voie du sabre » : l’escrime des samouraïs, au shinai de bambou.' },

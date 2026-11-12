@@ -23,6 +23,8 @@ export type Subfamily = {
   faq: SeoFaq[];
   guide: string;
   match: (p: Product) => boolean;
+  /** Le jour où le texte du rayon a été réécrit, quand il est plus récent que la révision du catalogue : sa date au plan du site. */
+  revision?: string;
   /**
    * Page d’entrée par discipline ou par niveau (03/10) : elle traverse les familles au lieu d’en
    * découper une. Ses modèles alternent d’une famille à l’autre, elle a son bloc de liens à elle
@@ -419,13 +421,13 @@ export const SUBFAMILIES: Subfamily[] = [
   {
     slug: 'ceintures',
     parent: 'arts-martiaux',
-    name: 'Ceintures',
-    eyebrow: 'CEINTURE DE JJB · KARATÉ, JUDO',
-    title: 'Ceinture de JJB, de karaté et de judo par grade',
+    name: 'Ceintures de JJB',
+    eyebrow: 'CEINTURE DE JJB · DE LA BLANCHE À LA NOIRE',
+    title: 'Ceinture de JJB : blanche, bleue, violette, marron, noire',
     description: 'Ceintures de JJB blanches, bleues, violettes, marron et noires : Elion Squale et Competitor Light, de A0 à A4. Prix TTC, livraison en France.',
-    prioritaires: ['ceinture de JJB', 'ceinture'],
-    secondaires: ['ceinture de JJB blanche', 'ceinture de JJB bleue', 'ceinture de karaté', 'ceinture de judo', 'ceinture enfant', 'longueur ceinture', 'ceinture Elion Squale'],
-    intro: 'La ceinture marque le grade et ferme le kimono. En JJB, blanche, bleue, violette, marron, noire, avec une barre pour les degrés. En karaté et en judo, les couleurs suivent le système de chaque fédération.',
+    prioritaires: ['ceinture de JJB', 'ceinture jiu-jitsu brésilien'],
+    secondaires: ['ceinture de JJB blanche', 'ceinture de JJB bleue', 'ceinture de JJB violette', 'ceinture de JJB marron', 'ceinture de JJB noire', 'longueur ceinture JJB', 'ceinture Elion Squale'],
+    intro: 'La ceinture marque le grade et ferme le kimono. En jiu-jitsu brésilien, elle va de la blanche à la noire, par la bleue, la violette et la marron, avec une barre pour les degrés.',
     sections: [
       { h2: 'Grades et longueurs', paragraphs: ['Une ceinture se prend à la longueur de la taille du kimono, A0 à A4 ou 200 à 300 cm selon la marque. Deux tours de taille et vingt centimètres de chaque côté du nœud : c’est la bonne longueur.'] },
       { h2: 'Entretien', paragraphs: ['Une ceinture de JJB se lave, contrairement à la légende : à froid, sans sèche-linge, pour qu’elle garde sa longueur.'] },
@@ -434,8 +436,11 @@ export const SUBFAMILIES: Subfamily[] = [
       { question: 'Quelle ceinture pour débuter le JJB ?', answer: 'La ceinture blanche. Le professeur la remet souvent avec le premier kimono ; sinon, prenez-la à la longueur du kimono.' },
     ],
     guide: 'choisir-protections',
-    // Une ceinture de grade est dans la famille des arts martiaux : la ceinture lombaire de sudation (protections) n'en est pas une.
-    match: (p) => p.category === 'arts-martiaux' && n(p).startsWith('ceinture') && !n(p).includes('ceinture de frappe'),
+    // Le rayon ne tient que des ceintures de JJB (12/11/2026) : son titre promettait le karaté et le judo, que le
+    // catalogue n'a pas. Une ceinture d'un autre art martial n'entrerait pas sous ce titre ; la ceinture lombaire de
+    // sudation (protections) et la ceinture de frappe non plus.
+    match: (p) => p.category === 'arts-martiaux' && n(p).startsWith('ceinture de jjb'),
+    revision: '2026-11-12',
   },
   {
     slug: 'gants-de-boxe-enfant',

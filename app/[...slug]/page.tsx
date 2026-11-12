@@ -12,7 +12,7 @@ import { BuyingBrief } from '@/components/buying-brief';
 import { AlerteRayon } from '@/components/alerte-rayon';
 import { ManufacturerSizingGuide } from '@/components/manufacturer-sizing';
 import { FacetPage, BrandPagesOfSubfamily } from '@/components/facet-page';
-import { facetFor, brandFamilyFacet, allFacets, ficheQuiRemplace } from '@/lib/facets';
+import { facetFor, brandFamilyFacet, allFacets, adresseQuiRemplace } from '@/lib/facets';
 import { brandFor, brandSlug } from '@/lib/brands';
 import { notFound, permanentRedirect } from 'next/navigation';
 import type { Metadata } from 'next';
@@ -386,9 +386,9 @@ export default async function Page({ params }: Props) {
     );
   }
   const facet = slug.length === 1 ? facetFor(path, products) : null;
-  // Une page par poids ou par couleur qui ne montrerait qu'un modèle renvoie à la fiche de ce modèle.
-  const remplace = slug.length === 1 && !facet ? ficheQuiRemplace(path, products) : null;
-  if (remplace) permanentRedirect('/produits/' + remplace.slug + '/');
+  // Une page par poids ou par couleur qui montrerait moins de six modèles renvoie à la page qui les montre déjà.
+  const remplace = slug.length === 1 && !facet ? adresseQuiRemplace(path, products) : null;
+  if (remplace) permanentRedirect(remplace);
   if (facet) {
     const currentPage = listPage(facet.products.length);
     if (currentPage === null) notFound();

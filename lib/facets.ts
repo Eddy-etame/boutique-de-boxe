@@ -24,14 +24,17 @@ import { quiTient } from './phrases';
  */
 export const MIN_FACET_PRODUCTS = 6;
 /**
- * Une page de longue traîne montre au moins deux modèles (11/11/2026). Six coloris d'un seul short ne font pas une
- * liste : la fiche du modèle est déjà cette page, et l'adresse y renvoie (`ficheQuiRemplace`). Les constructeurs
- * prennent `tous` pour rendre la page quand même : c'est ainsi que l'on sait à quelle fiche renvoyer.
+ * Une page de longue traîne montre au moins six modèles (12/11/2026) : la règle écrite en tête de ce fichier, que
+ * le compte en fiches ne tenait plus depuis qu'une liste montre une carte par modèle. Vingt-sept pages montraient
+ * deux à cinq cartes, toutes déjà présentes sur la page qui les coiffe ; au relevé Search Console du 9 novembre,
+ * Google n'avait jamais ouvert seize d'entre elles et aucune n'avait reçu un clic. Sous six modèles, l'adresse
+ * renvoie à cette page (`adresseQuiRemplace`). Les constructeurs prennent `tous` pour rendre la page quand même :
+ * c'est ainsi que l'on sait où renvoyer.
  */
-export const MIN_FACET_MODELES = 2;
+export const MIN_FACET_MODELES = 6;
 /**
- * Une page de facette existe à partir de six fiches (le seuil ne change pas, les adresses non plus) et montre une
- * carte par modèle (11/11/2026, lib/un-par-modele.ts). Ses cartes sont des fiches réelles : sur une page par
+ * Une page de facette montre une carte par modèle (11/11/2026, lib/un-par-modele.ts), six au moins. Ses cartes
+ * sont des fiches réelles : sur une page par
  * couleur, la carte d'un modèle est sa fiche dans cette couleur. Ses textes, eux, comptent et chiffrent des
  * modèles, vus chacun comme un article à son premier prix (lib/modeles.ts, `vuesDesModeles`).
  */
@@ -578,13 +581,18 @@ export function facetFor(key: string, products: Product[], tous = false): Facet 
 }
 
 /**
- * Une adresse de longue traîne dont la page n'existe pas parce qu'elle ne montrerait qu'un modèle : la fiche de tête
- * de ce modèle. La route y renvoie en 308 — une seule adresse par contenu.
+ * Une adresse de longue traîne dont la page n'existe pas parce qu'elle montrerait moins de six modèles : l'adresse
+ * qui la remplace, où la route renvoie en 308 — une seule adresse par contenu. Un seul modèle : sa fiche de tête.
+ * Deux à cinq : la page la plus proche qui les montre tous — la marque dans la famille quand elle a sa page et
+ * les contient, sinon la marque ; « gants de boxe » pour un poids ou une couleur.
  */
-export function ficheQuiRemplace(key: string, products: Product[]): Product | null {
+export function adresseQuiRemplace(key: string, products: Product[]): string | null {
   if (facetFor(key, products)) return null;
-  const seule = facetFor(key, products, true);
-  return seule && seule.products.length === 1 ? modeleDe(seule.products[0], products).tete : null;
+  const petite = facetFor(key, products, true);
+  if (!petite) return null;
+  if (petite.products.length === 1) return '/produits/' + modeleDe(petite.products[0], products).tete.slug + '/';
+  const famille = petite.family ? facetFor(petite.family.path.replace(/^\/|\/$/g, ''), products) : null;
+  return famille && petite.fiches.every((p) => famille.fiches.some((x) => x.id === p.id)) ? famille.path : petite.parent.path;
 }
 
 /**

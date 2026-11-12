@@ -73,8 +73,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const c of categories) {
     dates.set('/' + c.slug + '/', collectionDate(getCategoryProducts(c, products)));
   }
+  // Un rayon dont le texte a été réécrit (lib/subfamilies.ts, `revision`) porte la date de cette réécriture.
   for (const sub of SUBFAMILIES)
-    dates.set('/' + sub.slug + '/', collectionDate(subfamilyProducts(sub, products)));
+    dates.set('/' + sub.slug + '/', [collectionDate(subfamilyProducts(sub, products)), sub.revision || ''].sort().at(-1)!);
   for (const brand of brands)
     dates.set('/marques/' + brand.slug + '/', collectionDate(brand.fiches));
   for (const facet of facets)

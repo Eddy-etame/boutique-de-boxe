@@ -372,6 +372,8 @@ const kimonoKarate = (p: Product) => kimono(p) && /karat/.test(nom(p));
 const dobok = commence(/^dobok/);
 const hakama = commence(/^hakama/);
 const ceintureGrade = (p: Product) => nom(p).startsWith('ceinture') && !/frappe|mcdavid/.test(nom(p));
+/** Les ceintures du rayon « Ceintures de JJB » (lib/subfamilies.ts) : la ligne du tableau qui y mène compte les mêmes. */
+const ceintureJJB = (p: Product) => nom(p).startsWith('ceinture de jjb');
 const armeEntrainement = commence(/^(tanto|couteau|planche de rupture|étui pour armes)/);
 const bebe = commence(/bébé/);
 /** Les tailles en centimètres d’une tenue (« 150 cm ») : la plus petite et la plus grande. */
@@ -2547,7 +2549,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
           ['Kimonos de karaté', kimonoKarate],
           ['Doboks', dobok],
           ['Hakama', hakama],
-          ['Ceintures', ceintureGrade, '/ceintures/'],
+          ['Ceintures de JJB', ceintureJJB, '/ceintures/'],
           ['Armes d’entraînement et casse', armeEntrainement],
         ],
         'Le rayon, tenue par tenue',
@@ -2570,7 +2572,7 @@ export const GUIDES_RAYONS: GuideRayon[] = [
       ];
     },
     liens: [
-      { titre: 'Les sous-rayons', liens: [{ href: '/kimonos/', texte: 'kimonos' }, { href: '/kimonos-jjb/', texte: 'kimono JJB' }, { href: '/ceintures/', texte: 'ceintures' }] },
+      { titre: 'Les sous-rayons', liens: [{ href: '/kimonos/', texte: 'kimonos' }, { href: '/kimonos-jjb/', texte: 'kimono JJB' }, { href: '/ceintures/', texte: 'ceintures de JJB' }] },
       { titre: 'Les guides', liens: [{ href: '/guide-des-tailles/', texte: 'lire une grille de tailles' }, { href: '/guides/debuter-mma/', texte: 'commencer le MMA et le grappling' }, { href: '/les-arts-martiaux/', texte: 'les arts martiaux, leur origine et leurs dojos' }] },
       { titre: 'Les rayons voisins', liens: [{ href: '/equipement-jjb/', texte: 'équipement JJB' }, { href: '/protections-boxe/', texte: 'protections' }, { href: '/materiel-sport-de-combat/', texte: 'matériel sport de combat' }] },
     ],

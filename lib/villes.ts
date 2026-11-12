@@ -166,7 +166,7 @@ export const RAYON: Record<string, string> = {
   'Full contact': '/gants-de-boxe/',
   'Judo, jujitsu': '/kimonos/',
   Karaté: '/arts-martiaux/',
-  Aïkido: '/ceintures/',
+  Aïkido: '/arts-martiaux/',
   Taekwondo: '/protections-boxe/',
   Lutte: '/shorts-mma/',
   Sambo: '/materiel-mma/',

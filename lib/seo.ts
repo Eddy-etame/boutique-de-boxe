@@ -552,7 +552,7 @@ export function subfamilyGraph(sub: Subfamily, items: Product[], page = 1, tete?
   const parent = categoryFor(sub.parent);
   const own = sub.discipline ? DISCIPLINE_ENTITY[sub.discipline] : undefined;
   // Une page de tête publie les questions et la description de son guide, celles que la page affiche.
-  return collectionGraph({ path: '/' + sub.slug + '/', name: tete?.name || sub.name, description: tete?.description || description || sub.description, items: items.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE), total: items.length, page, perPage: PAGE_SIZE, category: parent, faq: tete?.faq || sub.faq, keywords: subfamilyKeywords(sub), requete: tete?.requete, revision: tete?.revision, about: own ? [thing(own)] : parent ? (CATEGORY_ENTITY[parent.slug] || []).map(thing) : [] });
+  return collectionGraph({ path: '/' + sub.slug + '/', name: tete?.name || sub.name, description: tete?.description || description || sub.description, items: items.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE), total: items.length, page, perPage: PAGE_SIZE, category: parent, faq: tete?.faq || sub.faq, keywords: subfamilyKeywords(sub), requete: tete?.requete, revision: [tete?.revision || '', sub.revision || ''].sort().at(-1), about: own ? [thing(own)] : parent ? (CATEGORY_ENTITY[parent.slug] || []).map(thing) : [] });
 }
 
 /** Guide : Article + FAQPage, auteur et éditeur = la boutique. */

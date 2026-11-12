@@ -15,6 +15,7 @@ import { nombreDeModeles } from '@/lib/modeles';
 
 export type Ligne = { discipline: string; recensement: string | null; essentiel: string[]; ensuite: string[] };
 
+// Les ceintures du catalogue sont des ceintures de JJB (12/11/2026) : elles ne figurent que sur sa ligne.
 export const LIGNES: Ligne[] = [
   { discipline: 'Boxe anglaise', recensement: 'Boxe anglaise', essentiel: ['bandes-de-boxe', 'gants-de-boxe', 'protege-dents'], ensuite: ['casques-de-boxe', 'chaussures-boxe', 'cordes-a-sauter'] },
   { discipline: 'Savate boxe française', recensement: 'Savate boxe française', essentiel: ['chaussures-boxe', 'gants-de-boxe', 'protege-dents'], ensuite: ['coquilles', 'casques-de-boxe'] },
@@ -23,8 +24,8 @@ export const LIGNES: Ligne[] = [
   { discipline: 'Full contact', recensement: 'Full contact', essentiel: ['gants-de-boxe', 'protege-tibias', 'casques-de-boxe'], ensuite: ['protege-dents', 'bandes-de-boxe'] },
   { discipline: 'MMA', recensement: null, essentiel: ['gants-mma', 'shorts-mma', 'protege-dents'], ensuite: ['rashguards', 'protege-tibias', 'coquilles'] },
   { discipline: 'Jiu-jitsu brésilien', recensement: null, essentiel: ['kimonos', 'ceintures'], ensuite: ['rashguards', 'shorts-mma'] },
-  { discipline: 'Judo, jujitsu', recensement: 'Judo, jujitsu', essentiel: ['kimonos', 'ceintures'], ensuite: [] },
-  { discipline: 'Karaté', recensement: 'Karaté', essentiel: ['kimonos', 'ceintures'], ensuite: ['protege-tibias', 'protege-dents', 'coquilles'] },
+  { discipline: 'Judo, jujitsu', recensement: 'Judo, jujitsu', essentiel: ['kimonos'], ensuite: [] },
+  { discipline: 'Karaté', recensement: 'Karaté', essentiel: ['kimonos'], ensuite: ['protege-tibias', 'protege-dents', 'coquilles'] },
 ];
 
 /** Un rayon du catalogue : son nom, son adresse, son nombre de modèles et son premier prix. */
